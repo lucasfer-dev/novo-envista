@@ -62,6 +62,7 @@ type ChatMessage = { from: string; text: string; time: string };
 type MessageThreads = Record<string, ChatMessage[]>;
 type SocialPost = { id: string; author: string; handle: string; body: string; likes: number; time: string; image?: string; comments?: Array<{id:string;author:string;text:string}> };
 import { storage } from "@/lib/storage";
+import { isNavItemActive } from "@/lib/navigation";
 import { canFollowProject, getGreeting, normalizeSearch, toggleSocialPostLike, validateParticipantLocation } from "@/lib/mvp";
 
 const navParticipant = [
@@ -92,6 +93,19 @@ const navAdmin = [
   ["/admin/content", FileText, "Conteúdo"],
   ["/admin/analytics", Eye, "Cliques e métricas"],
   ["/admin/moderation", CheckCircle2, "Moderação"],
+] as const;
+
+const participantMobileNav = [
+  ["/app", Home, "Início"],
+  ["/app/explore", Compass, "Explorar"],
+  ["/app/projects", FolderKanban, "Projetos"],
+  ["/app/messages", MessageCircle, "Mensagens"],
+] as const;
+const investorMobileNav = [
+  ["/investor", Home, "Início"],
+  ["/investor/explore", Compass, "Explorar"],
+  ["/investor/saved", Bookmark, "Salvos"],
+  ["/investor/messages", MessageCircle, "Mensagens"],
 ] as const;
 
 function cx(...v: (string | false | undefined)[]) {
@@ -307,21 +321,33 @@ export default function EnvistaApp() {
 
   return (
     <div className="app-shell">
-      <aside className={cx("sidebar", mobileOpen && "mobile-open")}>
-        <button className="mobile-close" onClick={() => setMobileOpen(false)}>
+      {mobileOpen && (
+        <button
+          className="sidebar-backdrop"
+          aria-label="Fechar navegação"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+      <aside
+        id="app-navigation"
+        aria-label="Navegação principal"
+        className={cx("sidebar", mobileOpen && "mobile-open")}
+      >
+        <button className="mobile-close" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)}>
           <X size={20} />
         </button>
         <button
           className="brand"
-          onClick={() =>
+          onClick={() => {
             router.push(
               activeRole === "admin"
                 ? "/admin"
                 : activeRole === "investor"
                   ? "/investor"
                   : "/app",
-            )
-          }
+            );
+            setMobileOpen(false);
+          }}
         >
           <img src="/envista-logo.png" alt="" />
           <b>Envista</b>
@@ -334,7 +360,8 @@ export default function EnvistaApp() {
                 router.push(href);
                 setMobileOpen(false);
               }}
-              className={cx(pathname === href && "active")}
+              className={cx(isNavItemActive(pathname, href) && "active")}
+              aria-current={isNavItemActive(pathname, href) ? "page" : undefined}
             >
               <Icon size={18} />
               <span>{label}</span>
@@ -344,15 +371,15 @@ export default function EnvistaApp() {
         {activeRole === "participant" && (
           <div className="side-section">
             <span>Configurações</span>
-            <button onClick={() => router.push("/app/profile/lucasfer")}>
+            <button onClick={() => { router.push("/app/profile/lucasfer"); setMobileOpen(false); }}>
               <CircleUserRound size={18} />
               Perfil
             </button>
-            <button onClick={() => router.push("/app/settings#preferences")}>
+            <button onClick={() => { router.push("/app/settings#preferences"); setMobileOpen(false); }}>
               <Settings size={18} />
               Preferências
             </button>
-            <button onClick={() => router.push("/app/settings#notifications")}>
+            <button onClick={() => { router.push("/app/settings#notifications"); setMobileOpen(false); }}>
               <Bell size={18} />
               Notificações
             </button>
@@ -360,15 +387,16 @@ export default function EnvistaApp() {
         )}
         <div className="side-bottom">
           {activeRole !== "participant" && <button
-            onClick={() =>
+            onClick={() => {
               router.push(
                 activeRole === "admin"
                   ? "/admin/settings"
                   : activeRole === "investor"
                     ? "/investor/settings"
                     : "/app/settings",
-              )
-            }
+              );
+              setMobileOpen(false);
+            }}
           >
             <Settings size={18} />
             Configurações
@@ -378,7 +406,10 @@ export default function EnvistaApp() {
               className="profile-avatar-btn"
               aria-label="Abrir meu perfil"
               title="Abrir meu perfil"
-              onClick={() => router.push(activeRole === "participant" ? "/app/profile/lucasfer" : activeRole === "investor" ? "/investor/profile" : "/admin/settings")}
+              onClick={() => {
+                router.push(activeRole === "participant" ? "/app/profile/lucasfer" : activeRole === "investor" ? "/investor/profile" : "/admin/settings");
+                setMobileOpen(false);
+              }}
             >
               <Avatar name={me.name} />
             </button>
@@ -402,7 +433,7 @@ export default function EnvistaApp() {
 
       <main className="main">
         <header className="topbar">
-          <button className="mobile-menu" onClick={() => setMobileOpen(true)}>
+          <button className="mobile-menu" aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="app-navigation" onClick={() => setMobileOpen(true)}>
             <Menu />
           </button>
           <button
@@ -499,16 +530,36 @@ export default function EnvistaApp() {
         </div>
       )}
       <nav className="bottom-nav">
-        {nav.slice(0, 5).map(([href, Icon, label]) => (
+        {(activeRole === "participant"
+          ? participantMobileNav
+          : activeRole === "investor"
+            ? investorMobileNav
+            : navAdmin
+        ).map(([href, Icon, label]) => (
           <button
             key={href}
             onClick={() => router.push(href)}
-            className={cx(pathname === href && "active")}
+            className={cx(isNavItemActive(pathname, href) && "active")}
+            aria-current={isNavItemActive(pathname, href) ? "page" : undefined}
           >
             <Icon size={19} />
             <span>{label}</span>
           </button>
         ))}
+        {activeRole !== "admin" && (
+          <button
+            onClick={() => setMobileOpen(true)}
+            className={cx(!(
+              activeRole === "participant" ? participantMobileNav : investorMobileNav
+            ).some(([href]) => isNavItemActive(pathname, href)) && "active")}
+            aria-label="Abrir mais destinos"
+            aria-expanded={mobileOpen}
+            aria-controls="app-navigation"
+          >
+            <MoreHorizontal size={19} />
+            <span>Mais</span>
+          </button>
+        )}
       </nav>
     </div>
   );
@@ -637,18 +688,34 @@ function Landing({ go }: { go: (p: string) => void }) {
   );
 }
 function PublicHeader({ go }: { go: (p: string) => void }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = (path: string) => {
+    setMenuOpen(false);
+    go(path);
+  };
   return (
     <header className="public-header">
-      <button className="brand" onClick={() => go("/")}>
+      <button className="brand" onClick={() => navigate("/")}>
         <img src="/envista-logo.png" alt="" />
         <b>Envista</b>
       </button>
       <nav>
-        <button onClick={() => go("/about")}>Sobre</button>
-        <button onClick={() => go("/schools")}>Para escolas</button>
-        <button onClick={() => go("/login")}>Entrar</button>
-        <button className="primary small" onClick={() => go("/register")}>
+        <div id="public-navigation-links" className={cx("public-navigation-links", menuOpen && "mobile-open")}>
+          <button onClick={() => navigate("/about")}>Sobre</button>
+          <button onClick={() => navigate("/schools")}>Para escolas</button>
+        </div>
+        <button className="public-login" onClick={() => navigate("/login")}>Entrar</button>
+        <button className="primary small" onClick={() => navigate("/register")}>
           Criar conta
+        </button>
+        <button
+          className="public-menu"
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={menuOpen}
+          aria-controls="public-navigation-links"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </nav>
     </header>
