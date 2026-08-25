@@ -44,4 +44,3 @@ npm run build
 ```
 
 O frontend usa TypeScript em modo `strict`. O tipo das threads de mensagens foi explicitado para evitar `implicit any` durante o build de produção.
-
