@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
+  Activity,
   Bell,
   BookOpen,
   BriefcaseBusiness,
@@ -65,9 +66,9 @@ import { canFollowProject, getGreeting, normalizeSearch, toggleSocialPostLike, v
 
 const navParticipant = [
   ["/app", Home, "Início"],
-  ["/app/social", MessageCircle, "Social"],
+  ["/app/social", Activity, "Social"],
   ["/app/explore", Compass, "Explorar"],
-  ["/app/projects", FolderKanban, "Meus Projetos"],
+  ["/app/projects", FolderKanban, "Meus projetos"],
   ["/app/teams", Users, "Minhas equipes"],
   ["/app/competitions", Trophy, "Competições"],
   ["/app/learn", GraduationCap, "Aprender"],
@@ -75,9 +76,9 @@ const navParticipant = [
 ] as const;
 const navInvestor = [
   ["/investor", Home, "Início"],
-  ["/investor/social", MessageCircle, "Social"],
+  ["/investor/social", Activity, "Social"],
   ["/investor/explore", Compass, "Explorar"],
-  ["/investor/projects", FolderKanban, "Meus Projetos"],
+  ["/investor/projects", FolderKanban, "Meus projetos"],
   ["/investor/teams", Users, "Minhas equipes"],
   ["/investor/competitions", Trophy, "Competições"],
   ["/investor/saved", Bookmark, "Projetos salvos"],
