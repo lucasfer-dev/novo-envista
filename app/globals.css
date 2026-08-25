@@ -309,6 +309,10 @@ h3 {
   padding: 20px 12px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-backdrop {
+  display: none;
 }
 .sidebar > .brand {
   padding: 0 9px;
@@ -1887,10 +1891,19 @@ h3 {
   align-items: center;
   gap: 18px;
 }
-.public-header nav > button:not(.primary) {
+.public-navigation-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.public-navigation-links button,
+.public-header .public-login {
   border: 0;
   background: none;
   color: #a5b3c2;
+}
+.public-menu {
+  display: none;
 }
 .hero {
   max-width: 1180px;
@@ -2271,6 +2284,17 @@ h3 {
     transform: translateX(0);
     box-shadow: var(--shadow);
   }
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    z-index: 29;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: rgba(4, 10, 17, 0.68);
+  }
   .mobile-close {
     display: flex;
     align-items: center;
@@ -2329,8 +2353,41 @@ h3 {
   .lesson-sidebar {
     position: static;
   }
-  .public-header nav button:not(.primary) {
+  .public-header {
+    position: relative;
+  }
+  .public-navigation-links {
     display: none;
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 1px);
+    right: 16px;
+    width: min(240px, calc(100vw - 32px));
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-item);
+    background: #162331;
+    box-shadow: var(--shadow);
+  }
+  .public-navigation-links.mobile-open {
+    display: grid;
+  }
+  .public-navigation-links button {
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: var(--radius-control);
+    text-align: left;
+  }
+  .public-menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: transparent;
   }
   .hero {
     grid-template-columns: 1fr;
