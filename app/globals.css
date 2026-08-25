@@ -831,6 +831,35 @@ h3 {
   min-height: 95px;
   resize: vertical;
 }
+.onboard-card .organization-type-select {
+  width: 100%;
+  min-height: 41px;
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background-color: #162331;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2355d7c6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  color: var(--text);
+  cursor: pointer;
+  outline: 0;
+  padding: 11px 40px 11px 12px;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+.onboard-card .organization-type-select:hover {
+  background-color: #192838;
+  border-color: rgba(85, 215, 198, 0.35);
+}
+.onboard-card .organization-type-select:focus-visible {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(0, 191, 166, 0.14);
+}
+.onboard-card .organization-type-select option {
+  background: #162331;
+  color: var(--text);
+}
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2121,6 +2150,22 @@ h3 {
   justify-content: space-between;
   margin-top: 20px;
 }
+.onboard-card > .form-error {
+  margin: 4px 0 12px;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 154, 171, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 154, 171, 0.07);
+}
+.onboard-card [aria-invalid="true"] {
+  border-color: rgba(255, 154, 171, 0.7);
+  box-shadow: 0 0 0 3px rgba(255, 154, 171, 0.08);
+}
+.onboard-card .chip-picker[aria-invalid="true"] {
+  padding: 8px;
+  border: 1px solid rgba(255, 154, 171, 0.45);
+  border-radius: 10px;
+}
 .chip-picker {
   display: flex;
   gap: 8px;
@@ -2784,6 +2829,9 @@ h3 {
 .social-post footer button:hover {
   background: rgba(255, 255, 255, 0.05);
   color: #d8e2ec;
+}
+.social-post footer button.liked {
+  color: #ef4444;
 }
 .social-comments {
   display: grid;

@@ -61,7 +61,7 @@ type ChatMessage = { from: string; text: string; time: string };
 type MessageThreads = Record<string, ChatMessage[]>;
 type SocialPost = { id: string; author: string; handle: string; body: string; likes: number; time: string; image?: string; comments?: Array<{id:string;author:string;text:string}> };
 import { storage } from "@/lib/storage";
-import { canFollowProject, getGreeting, normalizeSearch, validateParticipantLocation } from "@/lib/mvp";
+import { canFollowProject, getGreeting, getOnboardingValidationError, normalizeSearch, toggleSocialPostLike } from "@/lib/mvp";
 
 const navParticipant = [
   ["/app", Home, "Início"],
@@ -824,18 +824,38 @@ function Register({
   setRole: (r: Role) => void;
 }) {
   const [step, setStep] = useState(0);
-  const [r, setR] = useState<Role>("participant");
+  const [r, setR] = useState<"participant" | "investor">("participant");
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [participantCity, setParticipantCity] = useState("");
   const [participantState, setParticipantState] = useState("");
+  const [participantSkills, setParticipantSkills] = useState<string[]>([]);
+  const [participantGoals, setParticipantGoals] = useState<string[]>([]);
+  const [organizationType, setOrganizationType] = useState("Pessoa física");
+  const [organizationName, setOrganizationName] = useState("");
+  const [investorLocation, setInvestorLocation] = useState("");
+  const [investorDescription, setInvestorDescription] = useState("");
+  const [investorSectors, setInvestorSectors] = useState<string[]>([]);
+  const [investorStages, setInvestorStages] = useState<string[]>([]);
   const [validationError, setValidationError] = useState("");
+  const validateCurrentStep = () => {
+    const error = getOnboardingValidationError(r, step, {
+      name, username, city: participantCity, state: participantState,
+      organizationType, organizationName, location: investorLocation,
+      description: investorDescription, participantSkills, participantGoals,
+      investorSectors, investorStages,
+    });
+    setValidationError(error);
+    return !error;
+  };
   const nextStep = () => {
-    if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
-      setValidationError("Preencha Cidade e Estado para continuar.");
-      return;
-    }
-    setValidationError("");
+    if (!validateCurrentStep()) return;
     setStep((current) => current + 1);
+  };
+  const finishOnboarding = () => {
+    if (!validateCurrentStep()) return;
+    setRole(r);
+    go(r === "participant" ? "/app" : "/investor");
   };
   if (step === 0)
     return (
@@ -885,18 +905,18 @@ function Register({
           <i className={cx(step >= 4 && "done")} />
         </div>
         {r === "participant" ? (
-          <ParticipantOnboarding step={step} name={name} setName={setName} city={participantCity} state={participantState} setCity={setParticipantCity} setState={setParticipantState} />
+          <ParticipantOnboarding step={step} showValidation={!!validationError} name={name} setName={setName} username={username} setUsername={setUsername} city={participantCity} state={participantState} setCity={setParticipantCity} setState={setParticipantState} skills={participantSkills} setSkills={setParticipantSkills} goals={participantGoals} setGoals={setParticipantGoals} />
         ) : (
-          <InvestorOnboarding step={step} name={name} setName={setName} />
+          <InvestorOnboarding step={step} showValidation={!!validationError} name={name} setName={setName} orgType={organizationType} setOrgType={setOrganizationType} orgName={organizationName} setOrgName={setOrganizationName} location={investorLocation} setLocation={setInvestorLocation} description={investorDescription} setDescription={setInvestorDescription} sectors={investorSectors} setSectors={setInvestorSectors} stages={investorStages} setStages={setInvestorStages} />
         )}
+        {validationError && <p className="form-error" role="alert">{validationError}</p>}
         <div className="onboard-actions">
           <button
             className="secondary"
-            onClick={() => setStep(Math.max(0, step - 1))}
+            onClick={() => { setValidationError(""); setStep(Math.max(0, step - 1)); }}
           >
             Voltar
           </button>
-          {validationError && <p className="form-error" role="alert">{validationError}</p>}
           {step < 4 ? (
             <button className="primary" onClick={nextStep}>
               Continuar
@@ -904,10 +924,7 @@ function Register({
           ) : (
             <button
               className="primary"
-              onClick={() => {
-                setRole(r);
-                go(r === "participant" ? "/app" : "/investor");
-              }}
+              onClick={finishOnboarding}
             >
               Entrar no Envista
             </button>
@@ -919,20 +936,34 @@ function Register({
 }
 function ParticipantOnboarding({
   step,
+  showValidation,
   name,
   setName,
+  username,
+  setUsername,
   city,
   state,
   setCity,
   setState,
+  skills,
+  setSkills,
+  goals,
+  setGoals,
 }: {
   step: number;
+  showValidation: boolean;
   name: string;
   setName: (s: string) => void;
+  username: string;
+  setUsername: (s: string) => void;
   city: string;
   state: string;
   setCity: (s: string) => void;
   setState: (s: string) => void;
+  skills: string[];
+  setSkills: (values: string[]) => void;
+  goals: string[];
+  setGoals: (values: string[]) => void;
 }) {
   if (step === 1)
     return (
@@ -940,16 +971,18 @@ function ParticipantOnboarding({
         <span className="eyebrow">ETAPA 1 DE 4</span>
         <h1>Vamos criar seu perfil.</h1>
         <label>
-          Nome
+          Nome <b className="required">obrigatório</b>
           <input
+            required
+            aria-invalid={showValidation && !name.trim()}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Seu nome"
           />
         </label>
         <label>
-          Username
-          <input placeholder="@seuusername" />
+          Username <b className="required">obrigatório</b>
+          <input required aria-invalid={showValidation && !username.trim()} value={username} onChange={(e) => setUsername(e.target.value)} placeholder="@seuusername" />
         </label>
       </>
     );
@@ -965,11 +998,11 @@ function ParticipantOnboarding({
           </label>
           <label>
             Cidade <b className="required">obrigatório</b>
-            <input required value={city} onChange={(event) => setCity(event.target.value)} placeholder="Rio de Janeiro" />
+            <input required aria-invalid={showValidation && !city.trim()} value={city} onChange={(event) => setCity(event.target.value)} placeholder="Rio de Janeiro" />
           </label>
           <label>
             Estado <b className="required">obrigatório</b>
-            <input required value={state} onChange={(event) => setState(event.target.value)} placeholder="RJ" />
+            <input required aria-invalid={showValidation && !state.trim()} value={state} onChange={(event) => setState(event.target.value)} placeholder="RJ" />
           </label>
           <label>
             Área de interesse <small className="optional">opcional</small>
@@ -987,7 +1020,11 @@ function ParticipantOnboarding({
       <>
         <span className="eyebrow">ETAPA 3 DE 4</span>
         <h1>Quais habilidades você traz?</h1>
+        <b className="required">obrigatório</b>
         <ChipPicker
+          value={skills}
+          invalid={showValidation && skills.length === 0}
+          onChange={setSkills}
           values={[
             "Programação",
             "Robótica",
@@ -1006,7 +1043,11 @@ function ParticipantOnboarding({
     <>
       <span className="eyebrow">ETAPA 4 DE 4</span>
       <h1>O que você quer fazer primeiro?</h1>
+      <b className="required">obrigatório</b>
       <ChipPicker
+        value={goals}
+        invalid={showValidation && goals.length === 0}
+        onChange={setGoals}
         values={[
           "Criar projetos",
           "Encontrar equipe",
@@ -1020,30 +1061,62 @@ function ParticipantOnboarding({
 }
 function InvestorOnboarding({
   step,
+  showValidation,
   name,
   setName,
+  orgType,
+  setOrgType,
+  orgName,
+  setOrgName,
+  location,
+  setLocation,
+  description,
+  setDescription,
+  sectors,
+  setSectors,
+  stages,
+  setStages,
 }: {
   step: number;
+  showValidation: boolean;
   name: string;
   setName: (s: string) => void;
+  orgType: string;
+  setOrgType: (s: string) => void;
+  orgName: string;
+  setOrgName: (s: string) => void;
+  location: string;
+  setLocation: (s: string) => void;
+  description: string;
+  setDescription: (s: string) => void;
+  sectors: string[];
+  setSectors: (values: string[]) => void;
+  stages: string[];
+  setStages: (values: string[]) => void;
 }) {
-  const [orgType, setOrgType] = useState("Pessoa física");
   if (step === 1)
     return (
       <>
         <span className="eyebrow">ETAPA 1 DE 4</span>
         <h1>Seu perfil profissional.</h1>
         <label>
-          Nome
+          Nome <b className="required">obrigatório</b>
           <input
+            required
+            aria-invalid={showValidation && !name.trim()}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Seu nome"
           />
         </label>
         <label>
-          Tipo de organização
-          <select value={orgType} onChange={(e) => setOrgType(e.target.value)}>
+          Tipo de organização <b className="required">obrigatório</b>
+          <select
+            required
+            className="organization-type-select"
+            value={orgType}
+            onChange={(e) => setOrgType(e.target.value)}
+          >
             <option>Pessoa física</option>
             <option>Empresa</option>
             <option>Startup</option>
@@ -1056,8 +1129,8 @@ function InvestorOnboarding({
         </label>
         {orgType !== "Pessoa física" && (
           <label>
-            Nome da organização
-            <input placeholder="Nome da organização" />
+            Nome da organização <b className="required">obrigatório</b>
+            <input required aria-invalid={showValidation && !orgName.trim()} value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="Nome da organização" />
           </label>
         )}
       </>
@@ -1073,13 +1146,13 @@ function InvestorOnboarding({
             <input placeholder="Cargo" />
           </label>
           <label>
-            Localização
-            <input placeholder="São Paulo, SP" />
+            Localização <b className="required">obrigatório</b>
+            <input required aria-invalid={showValidation && !location.trim()} value={location} onChange={(e) => setLocation(e.target.value)} placeholder="São Paulo, SP" />
           </label>
         </div>
         <label>
-          Descrição
-          <textarea placeholder="Conte o que busca no ecossistema." />
+          Descrição <b className="required">obrigatório</b>
+          <textarea required aria-invalid={showValidation && !description.trim()} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Conte o que busca no ecossistema." />
         </label>
       </>
     );
@@ -1088,7 +1161,11 @@ function InvestorOnboarding({
       <>
         <span className="eyebrow">ETAPA 3 DE 4</span>
         <h1>Setores de interesse.</h1>
+        <b className="required">obrigatório</b>
         <ChipPicker
+          value={sectors}
+          invalid={showValidation && sectors.length === 0}
+          onChange={setSectors}
           values={[
             "Educação",
             "Tecnologia",
@@ -1106,25 +1183,28 @@ function InvestorOnboarding({
     <>
       <span className="eyebrow">ETAPA 4 DE 4</span>
       <h1>Estágio preferido.</h1>
+      <b className="required">obrigatório</b>
       <ChipPicker
+        value={stages}
+        invalid={showValidation && stages.length === 0}
+        onChange={setStages}
         values={["Ideia", "Validação", "Protótipo", "MVP", "Projeto ativo"]}
       />
     </>
   );
 }
-function ChipPicker({ values }: { values: string[] }) {
-  const [v, setV] = useState<string[]>([]);
+function ChipPicker({ values, value, onChange, invalid = false }: { values: string[]; value: string[]; onChange: (values: string[]) => void; invalid?: boolean }) {
   return (
-    <div className="chip-picker">
+    <div className="chip-picker" aria-invalid={invalid}>
       {values.map((x) => (
         <button
           key={x}
           onClick={() =>
-            setV(v.includes(x) ? v.filter((i) => i !== x) : [...v, x])
+            onChange(value.includes(x) ? value.filter((i) => i !== x) : [...value, x])
           }
-          className={cx(v.includes(x) && "selected")}
+          className={cx(value.includes(x) && "selected")}
         >
-          {v.includes(x) && <Check size={15} />} {x}
+          {value.includes(x) && <Check size={15} />} {x}
         </button>
       ))}
     </div>
@@ -3338,7 +3418,7 @@ function SettingsPage({
   };
   const resetDemo = () => {
     if (!confirm("Restaurar todos os dados locais do MVP? Projetos, equipes, mensagens, Social e preferências voltarão ao estado inicial.")) return;
-    ["saved","following","liked-projects","projects","teams","progress","messages","notifications","social-posts","social-following","analytics-events","admin-lessons","admin-moderation","settings-participant","settings-investor","settings-admin"].forEach((key)=>storage.remove(key));
+    ["saved","following","liked-projects","projects","teams","progress","messages","notifications","social-posts","social-following","social-liked-posts","analytics-events","admin-lessons","admin-moderation","settings-participant","settings-investor","settings-admin"].forEach((key)=>storage.remove(key));
     setToast("Dados do MVP restaurados.");
     setTimeout(()=>location.assign(me.role === "investor" ? "/investor" : me.role === "admin" ? "/admin" : "/app"),500);
   };
@@ -3449,6 +3529,7 @@ function SocialFeed({
   const [socialComment, setSocialComment] = useState("");
   const imageInput = useRef<HTMLInputElement>(null);
   const [followingSocial, setFollowingSocial] = useState<string[]>(() => storage.get("social-following", []));
+  const [likedSocialPosts, setLikedSocialPosts] = useState<Record<string, string[]>>(() => storage.get("social-liked-posts", {}));
   const [posts, setPosts] = useState<SocialPost[]>(() => storage.get<SocialPost[]>("social-posts", [
     {
       id: "s1",
@@ -3476,6 +3557,16 @@ function SocialFeed({
     },
   ]));
   const persistPosts = (next: SocialPost[]) => { setPosts(next); storage.set("social-posts", next); };
+  const toggleLike = (postId: string) => {
+    const currentLikedPostIds = likedSocialPosts[me.id] || [];
+    const result = toggleSocialPostLike(posts, currentLikedPostIds, postId);
+    const nextLikedSocialPosts = { ...likedSocialPosts, [me.id]: result.likedPostIds };
+
+    persistPosts(result.posts);
+    setLikedSocialPosts(nextLikedSocialPosts);
+    storage.set("social-liked-posts", nextLikedSocialPosts);
+    setToast(result.liked ? "Publicação curtida." : "Curtida removida.");
+  };
   const normalizedQuery = normalizeSearch(q);
   const visible = posts.filter(
     (p) =>
@@ -3597,8 +3688,13 @@ function SocialFeed({
               <p>{post.body}</p>
               {post.image && <img className="social-post-image" src={post.image} alt={`Imagem publicada por ${post.author}`}/>} 
               <footer>
-                <button onClick={() => {persistPosts(posts.map(p => p.id === post.id ? {...p, likes: p.likes + 1} : p));setToast("Publicação curtida.")}}>
-                  <Heart size={17} />
+                <button
+                  className={cx((likedSocialPosts[me.id] || []).includes(post.id) && "liked")}
+                  aria-label={(likedSocialPosts[me.id] || []).includes(post.id) ? "Remover curtida" : "Curtir publicação"}
+                  aria-pressed={(likedSocialPosts[me.id] || []).includes(post.id)}
+                  onClick={() => toggleLike(post.id)}
+                >
+                  <Heart size={17} fill={(likedSocialPosts[me.id] || []).includes(post.id) ? "currentColor" : "none"} />
                   {post.likes}
                 </button>
                 <button onClick={() => setCommentPost(commentPost===post.id?"":post.id)}>
