@@ -13,3 +13,23 @@ export function normalizeSearch(value: string) {
 export function canFollowProject(authorType: "user" | "team", authorId: string) {
   return authorId !== "u1" && !(authorType === "team" && ["t1", "t2"].includes(authorId));
 }
+
+export function toggleSocialPostLike<T extends { id: string; likes: number }>(
+  posts: T[],
+  likedPostIds: string[],
+  postId: string,
+) {
+  const wasLiked = likedPostIds.includes(postId);
+
+  return {
+    posts: posts.map((post) =>
+      post.id === postId
+        ? { ...post, likes: Math.max(0, post.likes + (wasLiked ? -1 : 1)) }
+        : post,
+    ),
+    likedPostIds: wasLiked
+      ? likedPostIds.filter((id) => id !== postId)
+      : [...new Set([...likedPostIds, postId])],
+    liked: !wasLiked,
+  };
+}
