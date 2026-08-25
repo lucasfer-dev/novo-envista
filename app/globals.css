@@ -2785,6 +2785,9 @@ h3 {
   background: rgba(255, 255, 255, 0.05);
   color: #d8e2ec;
 }
+.social-post footer button.liked {
+  color: #ef4444;
+}
 .social-comments {
   display: grid;
   gap: 8px;
