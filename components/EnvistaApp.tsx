@@ -61,7 +61,7 @@ type ChatMessage = { from: string; text: string; time: string };
 type MessageThreads = Record<string, ChatMessage[]>;
 type SocialPost = { id: string; author: string; handle: string; body: string; likes: number; time: string; image?: string; comments?: Array<{id:string;author:string;text:string}> };
 import { storage } from "@/lib/storage";
-import { canFollowProject, getGreeting, normalizeSearch, validateParticipantLocation } from "@/lib/mvp";
+import { canFollowProject, getGreeting, normalizeSearch, toggleSocialPostLike, validateParticipantLocation } from "@/lib/mvp";
 
 const navParticipant = [
   ["/app", Home, "Início"],
@@ -1043,7 +1043,11 @@ function InvestorOnboarding({
         </label>
         <label>
           Tipo de organização
-          <select value={orgType} onChange={(e) => setOrgType(e.target.value)}>
+          <select
+            className="organization-type-select"
+            value={orgType}
+            onChange={(e) => setOrgType(e.target.value)}
+          >
             <option>Pessoa física</option>
             <option>Empresa</option>
             <option>Startup</option>
@@ -3338,7 +3342,7 @@ function SettingsPage({
   };
   const resetDemo = () => {
     if (!confirm("Restaurar todos os dados locais do MVP? Projetos, equipes, mensagens, Social e preferências voltarão ao estado inicial.")) return;
-    ["saved","following","liked-projects","projects","teams","progress","messages","notifications","social-posts","social-following","analytics-events","admin-lessons","admin-moderation","settings-participant","settings-investor","settings-admin"].forEach((key)=>storage.remove(key));
+    ["saved","following","liked-projects","projects","teams","progress","messages","notifications","social-posts","social-following","social-liked-posts","analytics-events","admin-lessons","admin-moderation","settings-participant","settings-investor","settings-admin"].forEach((key)=>storage.remove(key));
     setToast("Dados do MVP restaurados.");
     setTimeout(()=>location.assign(me.role === "investor" ? "/investor" : me.role === "admin" ? "/admin" : "/app"),500);
   };
@@ -3449,6 +3453,7 @@ function SocialFeed({
   const [socialComment, setSocialComment] = useState("");
   const imageInput = useRef<HTMLInputElement>(null);
   const [followingSocial, setFollowingSocial] = useState<string[]>(() => storage.get("social-following", []));
+  const [likedSocialPosts, setLikedSocialPosts] = useState<Record<string, string[]>>(() => storage.get("social-liked-posts", {}));
   const [posts, setPosts] = useState<SocialPost[]>(() => storage.get<SocialPost[]>("social-posts", [
     {
       id: "s1",
@@ -3476,6 +3481,16 @@ function SocialFeed({
     },
   ]));
   const persistPosts = (next: SocialPost[]) => { setPosts(next); storage.set("social-posts", next); };
+  const toggleLike = (postId: string) => {
+    const currentLikedPostIds = likedSocialPosts[me.id] || [];
+    const result = toggleSocialPostLike(posts, currentLikedPostIds, postId);
+    const nextLikedSocialPosts = { ...likedSocialPosts, [me.id]: result.likedPostIds };
+
+    persistPosts(result.posts);
+    setLikedSocialPosts(nextLikedSocialPosts);
+    storage.set("social-liked-posts", nextLikedSocialPosts);
+    setToast(result.liked ? "Publicação curtida." : "Curtida removida.");
+  };
   const normalizedQuery = normalizeSearch(q);
   const visible = posts.filter(
     (p) =>
@@ -3597,8 +3612,13 @@ function SocialFeed({
               <p>{post.body}</p>
               {post.image && <img className="social-post-image" src={post.image} alt={`Imagem publicada por ${post.author}`}/>} 
               <footer>
-                <button onClick={() => {persistPosts(posts.map(p => p.id === post.id ? {...p, likes: p.likes + 1} : p));setToast("Publicação curtida.")}}>
-                  <Heart size={17} />
+                <button
+                  className={cx((likedSocialPosts[me.id] || []).includes(post.id) && "liked")}
+                  aria-label={(likedSocialPosts[me.id] || []).includes(post.id) ? "Remover curtida" : "Curtir publicação"}
+                  aria-pressed={(likedSocialPosts[me.id] || []).includes(post.id)}
+                  onClick={() => toggleLike(post.id)}
+                >
+                  <Heart size={17} fill={(likedSocialPosts[me.id] || []).includes(post.id) ? "currentColor" : "none"} />
                   {post.likes}
                 </button>
                 <button onClick={() => setCommentPost(commentPost===post.id?"":post.id)}>

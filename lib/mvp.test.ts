@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canFollowProject, getGreeting, normalizeSearch, validateParticipantLocation } from "./mvp";
+import { canFollowProject, getGreeting, normalizeSearch, toggleSocialPostLike, validateParticipantLocation } from "./mvp";
 
 describe("regras do MVP", () => {
   it("calcula a saudação por faixa horária", () => {
@@ -25,5 +25,19 @@ describe("regras do MVP", () => {
     expect(canFollowProject("user", "u1")).toBe(false);
     expect(canFollowProject("team", "t1")).toBe(false);
     expect(canFollowProject("team", "t5")).toBe(true);
+  });
+
+  it("alterna uma única curtida por usuário em uma publicação social", () => {
+    const posts = [{ id: "s1", likes: 18 }];
+    const firstLike = toggleSocialPostLike(posts, [], "s1");
+
+    expect(firstLike.posts[0].likes).toBe(19);
+    expect(firstLike.likedPostIds).toEqual(["s1"]);
+    expect(firstLike.liked).toBe(true);
+
+    const unlike = toggleSocialPostLike(firstLike.posts, firstLike.likedPostIds, "s1");
+    expect(unlike.posts[0].likes).toBe(18);
+    expect(unlike.likedPostIds).toEqual([]);
+    expect(unlike.liked).toBe(false);
   });
 });
