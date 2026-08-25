@@ -1043,7 +1043,11 @@ function InvestorOnboarding({
         </label>
         <label>
           Tipo de organização
-          <select value={orgType} onChange={(e) => setOrgType(e.target.value)}>
+          <select
+            className="organization-type-select"
+            value={orgType}
+            onChange={(e) => setOrgType(e.target.value)}
+          >
             <option>Pessoa física</option>
             <option>Empresa</option>
             <option>Startup</option>
