@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import NotificationsBell from "@/components/real/NotificationsBell";
 import type { User } from "@/types";
 import styles from "./ProductShell.module.css";
 
@@ -15,7 +16,7 @@ function initials(name: string) {
 export default function ProductShell({ user, children, title = "Envista" }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const prefix = user.role === "investor" ? "/investor" : "/app";
+  const prefix: "/app" | "/investor" = user.role === "investor" ? "/investor" : "/app";
   const nav = user.role === "investor"
     ? [
         [prefix, "Início"],
@@ -68,7 +69,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         <header className={styles.topbar}>
           <button className={styles.menu} aria-label="Abrir navegação" onClick={() => setOpen(true)}>☰</button>
           <span className={styles.topbarTitle}>{title}</span>
-          <span>@{user.username}</span>
+          <span className={styles.topbarActions}><NotificationsBell userId={user.id} prefix={prefix}/><span>@{user.username}</span></span>
         </header>
         <div className={styles.content}>{children}</div>
       </main>
