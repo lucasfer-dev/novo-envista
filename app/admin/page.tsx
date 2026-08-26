@@ -5,13 +5,12 @@ import { requireAdminUser } from "@/lib/admin/require-admin";
 
 export default async function AdminDashboard() {
   const { supabase, profile } = await requireAdminUser();
-  const [users, participants, investors, teams, projects, competitions, courses, reports, privacy, audit] = await Promise.all([
+  const [users, participants, investors, teams, projects, courses, reports, privacy, audit] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "participant"),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "investor"),
     supabase.from("teams").select("id", { count: "exact", head: true }),
     supabase.from("projects").select("id", { count: "exact", head: true }),
-    supabase.from("competitions").select("id", { count: "exact", head: true }),
     supabase.from("courses").select("id", { count: "exact", head: true }),
     supabase.from("message_reports").select("id", { count: "exact", head: true }).in("status", ["open", "reviewing"]),
     supabase.from("privacy_requests").select("id", { count: "exact", head: true }).in("status", ["open", "in_review"]),
@@ -24,7 +23,6 @@ export default async function AdminDashboard() {
     ["Investidores", investors.count ?? 0, "/admin/users?role=investor"],
     ["Equipes", teams.count ?? 0, "/admin/teams"],
     ["Projetos", projects.count ?? 0, "/admin/users"],
-    ["Competições", competitions.count ?? 0, "/admin/competitions"],
     ["Cursos", courses.count ?? 0, "/admin/courses"],
     ["Denúncias pendentes", reports.count ?? 0, "/admin/moderation"],
     ["Pedidos de privacidade", privacy.count ?? 0, "/admin/privacy"],
