@@ -58,7 +58,7 @@ export default async function OnboardingPage({
       description="Seu perfil começa privado e sem mensagens. Primeiro configuramos identidade, faixa etária mínima e ciência dos documentos internos."
     >
       <div className={styles.notice}>
-        Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. O cadastro público continua fechado enquanto os textos jurídicos e o fluxo de responsável são finalizados.
+        Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.
       </div>
       {errorCode ? <div className={styles.error}>{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
       <form action={onboardingAction} className={styles.form}>
