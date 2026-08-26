@@ -1,49 +1,62 @@
 # Gate de Privacidade e LGPD antes de usuários reais
 
-Este checklist é um controle de produto/engenharia e não substitui revisão jurídica.
+Este checklist é um controle de produto/engenharia e não substitui revisão jurídica. A existência de controles técnicos, RLS, rate limiting ou documentos provisórios não deve ser interpretada como declaração de conformidade jurídica.
 
-## Bloqueadores antes de abrir cadastro real
+## Situação do ambiente de teste
+
+O cadastro foi habilitado para testes reais, mas o gate de lançamento público amplo **continua incompleto**. Enquanto os itens jurídicos/operacionais abaixo estiverem pendentes, o ambiente deve ser tratado como beta/teste controlado e não como produto juridicamente pronto para escala.
+
+Já implementado na camada técnica:
+
+- [x] RLS e menor privilégio nas tabelas públicas;
+- [x] perfil novo privado e mensagens desabilitadas por padrão;
+- [x] exportação de dados e fila de solicitações de privacidade;
+- [x] Security Advisor sem findings conhecidos na última auditoria;
+- [x] Security CI com testes, build, dependency audit e secret scan;
+- [x] rate limiting de aplicação e quotas atômicas no banco para superfícies de abuso;
+- [x] headers de segurança, limitação de payload e validação de origem para requisições inseguras.
+
+## Bloqueadores antes de lançamento público amplo
 
 - [ ] definir quem é o controlador dos dados e seus dados de contato;
-- [ ] definir canal para exercício de direitos dos titulares;
-- [ ] publicar Aviso de Privacidade com linguagem clara e adequada ao público;
-- [ ] publicar Termos de Uso e versionar ambos os documentos;
+- [ ] definir canal oficial para exercício de direitos dos titulares;
+- [ ] publicar Aviso de Privacidade final com linguagem clara e adequada ao público;
+- [ ] publicar Termos de Uso finais e versionar ambos os documentos;
 - [ ] registrar aceite dos Termos e ciência/apresentação da versão do Aviso de Privacidade por fluxo confiável;
 - [ ] mapear bases legais por finalidade, sem usar consentimento como solução genérica;
 - [ ] quando consentimento for de fato a base legal, criar registro específico, livre, informado, inequívoco e revogável;
 - [ ] definir retenção e rotina de exclusão/anonimização por categoria;
 - [ ] documentar operadores/terceiros e transferências internacionais;
 - [ ] decidir e documentar a atuação do encarregado/DPO quando aplicável;
-- [ ] implementar acesso, correção, exclusão e demais direitos do titular;
-- [ ] implementar fluxo seguro de exclusão de conta;
-- [ ] configurar Auth: confirmação de e-mail, rate limits e CAPTCHA quando necessário;
-- [ ] revisar logs para impedir vazamento de dados pessoais/tokens;
-- [ ] executar Supabase Security Advisor sem findings críticos;
-- [ ] executar dependency/security CI sem vulnerabilidade alta/crítica não tratada.
+- [ ] concluir fluxo seguro de exclusão de conta e processo operacional de atendimento de direitos;
+- [ ] revisar/configurar limites nativos do Supabase Auth e CAPTCHA/Bot protection conforme risco real;
+- [ ] configurar SMTP próprio, templates e URLs de e-mail para produção;
+- [ ] revisar logs para impedir vazamento de dados pessoais, tokens ou conteúdo privado;
+- [ ] executar dependency/security CI sem vulnerabilidade alta/crítica não tratada antes de cada release relevante;
+- [ ] avaliar e documentar a necessidade de Relatório de Impacto à Proteção de Dados (RIPD).
 
 ## Crianças e adolescentes — requisito de primeira classe
 
-A LGPD exige melhor interesse de crianças e adolescentes. Para crianças, o art. 14 prevê consentimento específico e em destaque de ao menos um dos pais ou responsável legal, além de transparência sobre dados e uso.
+A LGPD exige que o melhor interesse de crianças e adolescentes prevaleça no tratamento de seus dados. A Lei nº 15.211/2025 (Estatuto Digital da Criança e do Adolescente) também alcança produtos ou serviços digitais direcionados a esse público ou de acesso provável por ele e exige proteção por padrão, prevenção de riscos e mecanismos adequados ao desenvolvimento de crianças e adolescentes.
 
-A Lei nº 15.211/2025 (Estatuto Digital da Criança e do Adolescente), vigente desde 17/03/2026, acrescenta deveres específicos para produtos/serviços direcionados ou de acesso provável por crianças e adolescentes.
+Antes de abrir o produto em escala para esse público:
 
-Antes de habilitar conta real para esse público:
-
-- [ ] definir método proporcional de aferição de idade;
+- [ ] definir método proporcional e juridicamente revisado de aferição de idade;
 - [x] impedir exposição pública enquanto a faixa etária estiver `unknown` no banco;
-- [x] evitar persistir data de nascimento completa nesta fundação;
-- [ ] implementar fluxo verificável de responsável legal quando exigido;
+- [x] evitar persistir data de nascimento completa na fundação atual;
+- [ ] implementar fluxo verificável de responsável/supervisão parental quando exigido pelo caso de uso e pela legislação aplicável;
 - [x] perfil novo nasce com privacidade elevada e mensagens desligadas;
-- [ ] revisar localização/escola e demais campos públicos por faixa etária;
-- [ ] fornecer explicações em linguagem simples e adequada à idade;
-- [ ] revisar mecanismos sociais, mensagens e exposição pública sob a ótica do melhor interesse;
-- [ ] avaliar necessidade de Relatório de Impacto à Proteção de Dados (RIPD), especialmente por envolver menores e funcionalidades sociais.
+- [ ] revisar localização, escola e demais campos públicos por faixa etária;
+- [ ] fornecer explicações e controles em linguagem simples e adequada à idade;
+- [ ] revisar mecanismos sociais, mensagens, denúncias, bloqueio e exposição pública sob a ótica do melhor interesse;
+- [ ] definir a política final para contas de adolescentes antes de permitir exposição/mensagens em escala;
+- [ ] documentar avaliação de riscos específica de crianças/adolescentes e a decisão sobre RIPD.
 
-A tabela `account_compliance` foi criada justamente para que o cliente não consiga declarar sozinho faixa etária/consentimento verificado. A policy atual mantém perfil privado/mensagens desligadas enquanto a idade está `unknown`; para `child`, perfil de plataforma depende de responsável verificado e mensagens continuam bloqueadas.
+A tabela `account_compliance` separa a faixa etária do perfil público e impede que a aplicação trate a idade como simples preferência visual. Hoje, contas novas começam privadas e sem mensagens. A política final de supervisão para adolescentes ainda é uma decisão jurídica/produto pendente e não deve ser presumida como resolvida apenas pela autodeclaração de faixa etária.
 
 ## Direitos dos titulares
 
-O produto deve permitir processo claro para:
+O produto e a operação devem suportar processo claro para:
 
 - confirmação de tratamento;
 - acesso;
@@ -54,16 +67,21 @@ O produto deve permitir processo claro para:
 - portabilidade quando aplicável;
 - oposição e revisão de decisões automatizadas quando aplicável.
 
+A interface já registra solicitações, mas isso não substitui um canal oficial, responsáveis internos, prazos e procedimento documentado de atendimento.
+
 ## Incidentes
 
-Seguir `docs/security/incident-response.md`. A Resolução CD/ANPD nº 15/2024 disciplina comunicação de incidentes que possam acarretar risco ou dano relevante e prevê prazo geral de 3 dias úteis para comunicação à ANPD e titulares, além de registro de incidentes por pelo menos 5 anos.
+Seguir `docs/security/incident-response.md`. A Resolução CD/ANPD nº 15/2024 disciplina comunicação de incidentes que possam acarretar risco ou dano relevante. A análise de obrigação, prazo e conteúdo da comunicação deve fazer parte da resposta a incidentes, com apoio jurídico/DPO quando necessário.
 
 ## Decisões que precisam de revisão jurídica antes do lançamento
 
 - bases legais definitivas por finalidade;
 - texto final de Aviso de Privacidade e Termos;
-- política de retenção;
-- fluxo de menores e consentimento de responsável;
+- identidade e papel do controlador, operadores e parceiros;
+- política de retenção e descarte;
+- fluxo de menores, aferição etária e supervisão/responsável;
 - transferência internacional de dados;
 - papel do Envista, escolas e parceiros como controlador/operador em cada cenário;
-- critérios e procedimento para solicitações de titulares.
+- critérios e procedimento para solicitações de titulares;
+- política de moderação e resposta a conteúdo/conduta denunciada;
+- necessidade, escopo e versão publicável de RIPD.

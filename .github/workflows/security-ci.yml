@@ -24,6 +24,9 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Scan tracked files for secrets
+        run: npm run security:scan
+
       - name: Install
         run: npm ci
 
