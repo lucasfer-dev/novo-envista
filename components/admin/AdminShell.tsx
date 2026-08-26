@@ -12,7 +12,6 @@ export default function AdminShell({ profile, title, children }: Props) {
     ["/admin", "Visão geral"],
     ["/admin/users", "Usuários"],
     ["/admin/teams", "Equipes"],
-    ["/admin/competitions", "Competições"],
     ["/admin/courses", "Cursos"],
     ["/admin/moderation", "Moderação"],
     ["/admin/privacy", "Privacidade"],
