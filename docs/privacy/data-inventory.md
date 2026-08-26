@@ -20,7 +20,6 @@ Este inventário deve ser atualizado junto com o schema. Nenhuma categoria nova 
 | Bloqueios e denúncias | usuário bloqueado, denúncia, motivo, status | `public.user_blocks`, `public.message_reports` | titular e moderação conforme necessidade | segurança, prevenção de abuso e moderação | enquanto necessário para segurança, contestação e obrigações aplicáveis |
 | Cursos e progresso | matrícula, aulas concluídas e datas | `public.course_enrollments`, `public.lesson_progress` | somente titular + operação autorizada | aprendizado e acompanhamento de progresso | enquanto a conta existir ou conforme política educacional definida |
 | Notificações | tipo, título, referência interna, leitura | `public.notifications` | somente titular | informar eventos do produto | enquanto útil ao usuário; política de expiração pode ser aplicada posteriormente |
-| Competições | competição, datas, regras, equipe inscrita e observação administrativa | `public.competitions`, `public.competition_team_registrations` | competição publicada para usuários autenticados; gestão e observações para admin | organizar competições e inscrições de equipes | enquanto a competição/histórico operacional for necessário |
 | Solicitações de privacidade | tipo do pedido, detalhes, status e resposta administrativa | `public.privacy_requests` | titular + admin | atender direitos do titular e registrar tratamento do pedido | conforme necessidade de comprovação e política final de retenção |
 | Trilha administrativa | ação, tipo/alvo técnico e metadata curta | `public.admin_audit_log` | somente admin | responsabilização e investigação operacional | prazo final deve ser definido antes do go-live |
 
@@ -47,9 +46,9 @@ Perfis novos nascem privados e mensagens desabilitadas. Enquanto `age_band` esti
 
 Mensagens não são tratadas como criptografia ponta a ponta. O acesso normal é restrito aos participantes pela RLS. O painel administrativo não recebe leitura geral das conversas: a política administrativa de moderação permite acesso ao conteúdo de mensagem somente quando houver denúncia relacionada.
 
-## Competições
+## Schema histórico inativo
 
-A criação, edição e inscrição manual de equipes é administrativa. Usuários autenticados só podem ler competições em estado publicado/encerrado e inscrições associadas a essas competições. Rascunhos e observações de gestão permanecem sob autorização administrativa.
+As tabelas `public.competitions` e `public.competition_team_registrations` podem existir em ambientes que receberam uma migration anterior. Elas não fazem parte do produto ativo, não possuem interface e o papel `authenticated` não recebe acesso a elas. Nenhuma nova coleta ou gravação deve ocorrer nessas tabelas enquanto o módulo permanecer desativado.
 
 ## Documentos legais
 
