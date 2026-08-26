@@ -1,5 +1,7 @@
 import Link from "next/link";
 import TeamLogoPanel from "@/components/storage/TeamLogoPanel";
+import FollowEntityButton from "@/components/real/FollowEntityButton";
+import EntityPostsPanel from "@/components/real/EntityPostsPanel";
 import type { User } from "@/types";
 import {
   cancelTeamInvitationAction,
@@ -148,7 +150,7 @@ export function TeamsIndex({ role, memberships, invitations, status, error }: { 
                     <span className={styles.pill}>{membership.role_label}</span>
                     {team.category && <span className={styles.pill}>{team.category}</span>}
                     {team.city && <span className={styles.pill}>{team.city}</span>}
-                    <span className={styles.pill}>{team.visibility === "private" ? "Privada" : "Na plataforma"}</span>
+                    <div className={styles.actions}><span className={styles.pill}>{team.visibility === "private" ? "Privada" : "Na plataforma"}</span>{team.visibility === "platform" ? <FollowEntityButton targetType="team" targetId={team.id} returnTo={`${base}/${team.slug}`} /> : null}</div>
                   </div>
                 </article>
               );
@@ -217,6 +219,7 @@ export function TeamDetailView({ role, user, team, members, invitations, canMana
               );
             })}
           </section>
+          <EntityPostsPanel teamId={team.id} />
         </div>
 
         <aside className={styles.stack}>
