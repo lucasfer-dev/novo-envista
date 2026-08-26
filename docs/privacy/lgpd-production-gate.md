@@ -33,11 +33,11 @@ Já implementado na camada técnica:
 - [ ] configurar SMTP próprio, templates e URLs de e-mail para produção;
 - [ ] revisar logs para impedir vazamento de dados pessoais, tokens ou conteúdo privado;
 - [ ] executar dependency/security CI sem vulnerabilidade alta/crítica não tratada antes de cada release relevante;
-- [ ] avaliar e documentar a necessidade de Relatório de Impacto à Proteção de Dados (RIPD).
+- [ ] avaliar e documentar a necessidade/obrigação concreta de Relatório de Impacto à Proteção de Dados (RIPD) e relatórios de risco aplicáveis.
 
 ## Crianças e adolescentes — requisito de primeira classe
 
-A LGPD exige que o melhor interesse de crianças e adolescentes prevaleça no tratamento de seus dados. A Lei nº 15.211/2025 (Estatuto Digital da Criança e do Adolescente) também alcança produtos ou serviços digitais direcionados a esse público ou de acesso provável por ele e exige proteção por padrão, prevenção de riscos e mecanismos adequados ao desenvolvimento de crianças e adolescentes.
+A LGPD exige que o melhor interesse de crianças e adolescentes prevaleça no tratamento de seus dados. A Lei nº 15.211/2025 (Estatuto Digital da Criança e do Adolescente) está em vigor desde 17/03/2026 e alcança produtos ou serviços digitais direcionados a esse público ou de acesso provável por ele. Entre outras obrigações, prevê proteção por padrão, gerenciamento de riscos, mecanismos adequados à idade e salvaguardas de supervisão parental.
 
 Antes de abrir o produto em escala para esse público:
 
@@ -50,9 +50,14 @@ Antes de abrir o produto em escala para esse público:
 - [ ] fornecer explicações e controles em linguagem simples e adequada à idade;
 - [ ] revisar mecanismos sociais, mensagens, denúncias, bloqueio e exposição pública sob a ótica do melhor interesse;
 - [ ] definir a política final para contas de adolescentes antes de permitir exposição/mensagens em escala;
-- [ ] documentar avaliação de riscos específica de crianças/adolescentes e a decisão sobre RIPD.
+- [ ] documentar avaliação de riscos específica de crianças/adolescentes e a decisão/obrigação de relatório de impacto;
+- [ ] avaliar formalmente se o Envista se enquadra no conceito legal de rede social da Lei nº 15.211/2025;
+- [ ] se houver enquadramento como rede social, implementar o vínculo exigido pelo art. 24 para contas de crianças e adolescentes de até 16 anos com conta de responsável legal;
+- [ ] substituir a faixa ampla `adolescent` por mecanismo que permita cumprir o corte jurídico aplicável sem coletar dados além do necessário; hoje o sistema não distingue 16 de 17 anos;
+- [ ] implementar mecanismo público e acessível para notificação de violações de direitos de crianças/adolescentes, com processo de análise, retirada quando cabível, comunicação e recurso, conforme requisitos legais aplicáveis;
+- [ ] definir procedimento contra uso abusivo dos instrumentos de denúncia, incluindo critérios, notificação, recurso, sanções proporcionais e registro dos casos quando exigido.
 
-A tabela `account_compliance` separa a faixa etária do perfil público e impede que a aplicação trate a idade como simples preferência visual. Hoje, contas novas começam privadas e sem mensagens. A política final de supervisão para adolescentes ainda é uma decisão jurídica/produto pendente e não deve ser presumida como resolvida apenas pela autodeclaração de faixa etária.
+A tabela `account_compliance` separa a faixa etária do perfil público e impede que a aplicação trate a idade como simples preferência visual. Hoje, contas novas começam privadas e sem mensagens. Isso é uma salvaguarda técnica, mas **não resolve sozinho** o requisito de vínculo com responsável para usuários de até 16 anos caso o produto seja enquadrado como rede social, nem substitui aferição etária proporcional.
 
 ## Direitos dos titulares
 
@@ -80,8 +85,10 @@ Seguir `docs/security/incident-response.md`. A Resolução CD/ANPD nº 15/2024 d
 - identidade e papel do controlador, operadores e parceiros;
 - política de retenção e descarte;
 - fluxo de menores, aferição etária e supervisão/responsável;
+- enquadramento ou não do Envista como rede social para fins da Lei nº 15.211/2025;
+- procedimento de notificação, moderação, retirada e recurso relacionado a violações de direitos de crianças/adolescentes;
 - transferência internacional de dados;
 - papel do Envista, escolas e parceiros como controlador/operador em cada cenário;
 - critérios e procedimento para solicitações de titulares;
 - política de moderação e resposta a conteúdo/conduta denunciada;
-- necessidade, escopo e versão publicável de RIPD.
+- necessidade, escopo e versão publicável de RIPD/relatórios de risco aplicáveis.
