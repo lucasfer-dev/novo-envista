@@ -20,6 +20,11 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
+    const markRead = () => supabase.from("message_read_state").upsert(
+      { conversation_id: conversationId, user_id: currentUserId, last_read_at: new Date().toISOString() },
+      { onConflict: "conversation_id,user_id" },
+    );
+    void markRead();
     const channel = supabase
       .channel(`direct:${conversationId}`)
       .on(
@@ -28,11 +33,12 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
         (payload) => {
           const incoming = payload.new as Message;
           setMessages((current) => current.some((item) => item.id === incoming.id) ? current : [...current, incoming]);
+          void markRead();
         },
       )
       .subscribe();
     return () => { void supabase.removeChannel(channel); };
-  }, [conversationId, supabase]);
+  }, [conversationId, currentUserId, supabase]);
 
   return (
     <>
