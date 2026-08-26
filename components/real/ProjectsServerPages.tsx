@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import ProductShell from "@/components/real/ProductShell";
 import SaveProjectButton from "@/components/real/SaveProjectButton";
+import ProjectInterestPanel from "@/components/real/ProjectInterestPanel";
 import { NewProjectView, ProjectDetailView, ProjectsIndex } from "@/components/real/ProjectsViews";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
@@ -34,5 +35,5 @@ export async function ProjectServerDetail({expectedRole,slug,searchParams}:{expe
  const project=decorate(raw); let canEdit=project.owner_user_id===userId; let canDelete=canEdit;
  if(project.owner_team_id){const {data:membership}=await supabase.from("team_members").select("access_level").eq("team_id",project.owner_team_id).eq("user_id",userId).maybeSingle();canEdit=Boolean(membership);canDelete=membership?.access_level==="owner"||membership?.access_level==="admin";}
  const returnTo=`${expectedRole==="investor"?"/investor":"/app"}/projects/${project.slug}`;
- return <ProductShell user={appUser} title={project.title}>{expectedRole==="investor"&&project.visibility==="platform"?<div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}><SaveProjectButton projectId={project.id} returnTo={returnTo}/></div>:null}<ProjectDetailView role={expectedRole} project={project} canEdit={canEdit} canDelete={canDelete} status={first(query.status)} error={first(query.error)}/></ProductShell>;
+ return <ProductShell user={appUser} title={project.title}>{expectedRole==="investor"&&project.visibility==="platform"?<><div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}><SaveProjectButton projectId={project.id} returnTo={returnTo}/></div><ProjectInterestPanel projectId={project.id} returnTo={returnTo}/></>:null}<ProjectDetailView role={expectedRole} project={project} canEdit={canEdit} canDelete={canDelete} status={first(query.status)} error={first(query.error)}/></ProductShell>;
 }
