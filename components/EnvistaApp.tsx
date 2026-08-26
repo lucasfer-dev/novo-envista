@@ -864,54 +864,54 @@ function AdminLogin({
           <input
             value={pass}
             onChange={(e) => setPass(e.target.value)}
-            type="password"
-            placeholder="••••••••"
-          />
-        </label>
-        <button
-          className="primary full"
-          onClick={enterAdmin}
-        >
-          Entrar como administrador
-        </button>
-        {error && <p className="form-error" role="alert">{error}</p>}
-        <p className="security-note">
-          Este formulário ainda é visual. O backend Java já está estruturado
-          para trocar isso por autenticação real e autorização por role no
-          Supabase.
-        </p>
-      </div>
+          type="password"
+          placeholder="••••••••"
+        />
+      </label>
+      <button
+        className="primary full"
+        onClick={enterAdmin}
+      >
+        Entrar como administrador
+      </button>
+      {error && <p className="form-error" role="alert">{error}</p>}
+      <p className="security-note">
+        Este formulário ainda é visual. O backend Java já está estruturado
+        para trocar isso por autenticação real e autorização por role no
+        Supabase.
+      </p>
     </div>
-  );
+  </div>
+);
 }
 
 function Register({
-  go,
-  setRole,
+go,
+setRole,
 }: {
-  go: (p: string) => void;
-  setRole: (r: Role) => void;
+go: (p: string) => void;
+setRole: (r: Role) => void;
 }) {
-  const [step, setStep] = useState(0);
-  const [r, setR] = useState<Role>("participant");
-  const [name, setName] = useState("");
-  const [participantCity, setParticipantCity] = useState("");
-  const [participantState, setParticipantState] = useState("");
-  const [validationError, setValidationError] = useState("");
-  const nextStep = () => {
-    if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
-      setValidationError("Preencha Cidade e Estado para continuar.");
-      return;
-    }
-    setValidationError("");
-    setStep((current) => current + 1);
-  };
-  if (step === 0)
-    return (
-      <div className="simple-auth">
-        <button className="brand" onClick={() => go("/")}>
-          <img src="/envista-logo.png" alt="" />
-          <b>Envista</b>
+const [step, setStep] = useState(0);
+const [r, setR] = useState<Role>("participant");
+const [name, setName] = useState("");
+const [participantCity, setParticipantCity] = useState("");
+const [participantState, setParticipantState] = useState("");
+const [validationError, setValidationError] = useState("");
+const nextStep = () => {
+if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
+  setValidationError("Preencha Cidade e Estado para continuar.");
+  return;
+}
+setValidationError("");
+setStep((current) => current + 1);
+};
+if (step === 0)
+return (
+    <div className="simple-auth">
+      <button className="brand" onClick={() => go("/")}>
+        <img src="/envista-logo.png" alt="" />
+  <b>Envista</b>
         </button>
         <div className="onboard-card">
           <span className="eyebrow">CRIAR CONTA</span>
