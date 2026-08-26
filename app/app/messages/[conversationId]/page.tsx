@@ -1,0 +1,2 @@
+import { ConversationServerPage } from "@/components/real/MessagesServerPages";
+export default async function Page({params,searchParams}:{params:Promise<{conversationId:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){const {conversationId}=await params;return <ConversationServerPage expectedRole="participant" conversationId={conversationId} searchParams={searchParams}/>;}
