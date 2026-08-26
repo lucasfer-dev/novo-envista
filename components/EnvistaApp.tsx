@@ -2449,24 +2449,26 @@ function TeamDetail({
         <ArrowLeft size={16} /> Minhas equipes
       </button>
       <div className="team-hero panel">
-        <Avatar name={team.name} />
-        <div>
-          <h1>Equipe {team.name}</h1>
-          <p>{team.description}</p>
-          <div className="meta-row">
-            <span>
-              <Building2 size={14} />
-              {team.institution || "Instituição independente"}
-            </span>
-            <span>
-              <MapPin size={14} />
-              {team.city}
-            </span>
-          </div>
-          <div className="chips">
-            {team.tags.map((t) => (
-              <span key={t}>{t}</span>
-            ))}
+        <div className="team-hero-main">
+          <Avatar name={team.name} />
+          <div>
+            <h1>Equipe {team.name}</h1>
+            <p>{team.description}</p>
+            <div className="meta-row">
+              <span>
+                <Building2 size={14} />
+                {team.institution || "Instituição independente"}
+              </span>
+              <span>
+                <MapPin size={14} />
+                {team.city}
+              </span>
+            </div>
+            <div className="chips">
+              {team.tags.map((t) => (
+                <span key={t}>{t}</span>
+              ))}
+            </div>
           </div>
         </div>
         <div className="actions">
@@ -3487,17 +3489,19 @@ function SettingsPage({
             Configurações sensíveis serão validadas pelo backend Java e pelas
             políticas do Supabase.
           </p>
-          <button
-            className="danger"
-            onClick={() =>
-              setToast(
-                "Exclusão de conta exige confirmação e backend conectado.",
-              )
-            }
-          >
-            Excluir minha conta
-          </button>
-          <button className="secondary" onClick={resetDemo}>Restaurar dados do MVP</button>
+          <div className="actions">
+            <button
+              className="danger"
+              onClick={() =>
+                setToast(
+                  "Exclusão de conta exige confirmação e backend conectado.",
+                )
+              }
+            >
+              Excluir minha conta
+            </button>
+            <button className="secondary" onClick={resetDemo}>Restaurar dados do MVP</button>
+          </div>
         </section>
       </div>
     </>
@@ -3818,25 +3822,27 @@ function InvestorTeamDetail({
         <ArrowLeft size={16} /> Equipes
       </button>
       <div className="team-hero panel">
-        <Avatar name={team.name} />
-        <div>
-          <span className="eyebrow">EQUIPE</span>
-          <h1>{team.name}</h1>
-          <p>{team.description}</p>
-          <div className="meta-row">
-            <span>
-              <Building2 size={14} />
-              {team.institution}
-            </span>
-            <span>
-              <MapPin size={14} />
-              {team.city}
-            </span>
-          </div>
-          <div className="chips">
-            {team.tags.map((t) => (
-              <span key={t}>{t}</span>
-            ))}
+        <div className="team-hero-main">
+          <Avatar name={team.name} />
+          <div>
+            <span className="eyebrow">EQUIPE</span>
+            <h1>{team.name}</h1>
+            <p>{team.description}</p>
+            <div className="meta-row">
+              <span>
+                <Building2 size={14} />
+                {team.institution}
+              </span>
+              <span>
+                <MapPin size={14} />
+                {team.city}
+              </span>
+            </div>
+            <div className="chips">
+              {team.tags.map((t) => (
+                <span key={t}>{t}</span>
+              ))}
+            </div>
           </div>
         </div>
       </div>

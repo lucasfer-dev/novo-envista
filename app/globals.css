@@ -617,12 +617,20 @@ h3 {
   padding: 14px;
 }
 .card-meta {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  align-items: start;
+  gap: 8px;
   color: #75869a;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+.card-meta span {
+  min-width: 0;
+}
+.card-meta span:last-child {
+  text-align: right;
 }
 .card-body h3 {
   font-size: 17px;
@@ -949,6 +957,13 @@ h3 {
   display: flex;
   gap: 14px;
   flex: 1;
+  min-width: 0;
+}
+.team-hero-main {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
 }
 .project-hero h1,
 .team-hero h1,
@@ -959,11 +974,31 @@ h3 {
   margin: 7px 0;
 }
 .project-hero .actions,
+.team-hero .actions,
 .competition-hero > button,
 .course-hero > button,
-.team-hero > button,
 .profile-head > button {
   margin-left: auto;
+}
+.project-hero .actions,
+.team-hero .actions {
+  justify-content: flex-end;
+  align-content: flex-start;
+}
+@media (max-width: 1150px) {
+  .project-hero,
+  .team-hero {
+    flex-wrap: wrap;
+  }
+  .project-hero > div:first-child,
+  .team-hero-main {
+    flex-basis: 100%;
+  }
+  .project-hero .actions,
+  .team-hero .actions {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 .detail-grid {
   display: grid;
@@ -2447,6 +2482,22 @@ h3 {
   }
 }
 @media (max-width: 650px) {
+  .project-hero .actions,
+  .team-hero .actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .project-hero .actions > *,
+  .team-hero .actions > * {
+    width: 100%;
+    min-height: 44px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .team-hero .actions > :first-child:nth-last-child(3) {
+    grid-column: 1 / -1;
+  }
   .social-post footer button,
   .small-follow,
   .comment-box button,
@@ -2623,13 +2674,21 @@ h3 {
 .required {
   color: #68e1d1;
   font-size: 12px;
-  margin-left: 5px;
 }
 .optional {
   color: #748598;
   font-size: 12px;
   font-weight: 500;
-  margin-left: 5px;
+}
+.onboard-card label {
+  position: relative;
+}
+.onboard-card label > .required,
+.onboard-card label > .optional {
+  position: absolute;
+  top: 0;
+  right: 0;
+  line-height: inherit;
 }
 .profile-title-line {
   display: flex;
@@ -2690,6 +2749,23 @@ h3 {
 .settings-card > label:not(.toggle-row) input,
 .settings-card > label:not(.toggle-row) select {
   width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: #162331;
+  color: var(--text);
+  padding: 0 12px;
+  outline: 0;
+  font-weight: 400;
+}
+.settings-card > label:not(.toggle-row) input:hover,
+.settings-card > label:not(.toggle-row) select:hover {
+  border-color: rgba(85, 215, 198, 0.35);
+}
+.settings-card > label:not(.toggle-row) input:focus-visible,
+.settings-card > label:not(.toggle-row) select:focus-visible {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(0, 191, 166, 0.14);
 }
 .settings-card.danger-zone {
   grid-column: 1/-1;
@@ -2716,9 +2792,24 @@ h3 {
   margin-top: 4px;
 }
 .toggle-row input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--green);
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  background: #162331;
+  cursor: pointer;
+}
+.toggle-row input:checked {
+  border-color: var(--green);
+  background-color: var(--green);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23061916' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 4 4L19 6'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.settings-card .actions {
+  margin-top: 16px;
 }
 .social-layout {
   display: grid;
