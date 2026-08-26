@@ -60,7 +60,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
           })}
         </nav>
         <div className={styles.bottom}>
-          <Link className={styles.profile} href="/account/profile">
+          <Link className={styles.profile} href="/account">
             <span className={styles.avatar}>{initials(user.name)}</span>
             <span className={styles.meta}><strong>{user.name}</strong><span>@{user.username}</span></span>
           </Link>

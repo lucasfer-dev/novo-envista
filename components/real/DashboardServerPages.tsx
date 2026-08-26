@@ -1,11 +1,8 @@
 import Link from "next/link";
 import ProductShell from "@/components/real/ProductShell";
+import FirstSteps from "@/components/real/FirstSteps";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import styles from "./Dashboard.module.css";
-
-function base(role: ProductRole) {
-  return role === "investor" ? "/investor" : "/app";
-}
 
 function firstName(name: string) {
   return name.trim().split(/\s+/)[0] || name;
@@ -18,7 +15,7 @@ function uniqueById(items: any[]) {
 }
 
 export async function ParticipantDashboardServerPage() {
-  const { supabase, userId, appUser } = await requireProductUser("participant");
+  const { supabase, userId, appUser, profile } = await requireProductUser("participant");
   const [{ data: memberships }, { data: personalProjects }, { data: notifications }, { count: completedLessons }, { data: enrollments }] = await Promise.all([
     supabase.from("team_members").select("team_id,teams(id,slug,name)").eq("user_id", userId).order("joined_at", { ascending: false }).limit(8),
     supabase.from("projects").select("id,slug,title,short_description,stage,updated_at").eq("owner_user_id", userId).order("updated_at", { ascending: false }).limit(8),
@@ -37,6 +34,7 @@ export async function ParticipantDashboardServerPage() {
   const unread = (notifications ?? []).filter((item: any) => !item.read_at).length;
   const teams = (memberships ?? []).map((item: any) => Array.isArray(item.teams) ? item.teams[0] : item.teams).filter(Boolean);
   const courses = (enrollments ?? []).map((item: any) => Array.isArray(item.courses) ? item.courses[0] : item.courses).filter(Boolean);
+  const profileReady = Boolean(profile.bio && (profile.public_school || profile.public_city));
 
   return (
     <ProductShell user={appUser} title="Início">
@@ -45,6 +43,13 @@ export async function ParticipantDashboardServerPage() {
           <div><h1>Olá, {firstName(appUser.name)}.</h1><p>Acompanhe seus projetos, equipes, aprendizado e o que precisa da sua atenção no Envista.</p></div>
           <div className={styles.actions}><Link className={styles.primary} href="/app/projects/new">Criar projeto</Link><Link className={styles.secondary} href="/app/teams/new">Criar equipe</Link></div>
         </section>
+
+        <FirstSteps steps={[
+          { label: "Complete seu perfil", description: "Adicione bio e contexto de escola ou cidade para dar mais confiança ao seu perfil.", href: "/account/profile", done: profileReady },
+          { label: "Entre ou crie uma equipe", description: "Colabore com outras pessoas e publique projetos em conjunto.", href: "/app/teams", done: teams.length > 0 },
+          { label: "Publique seu primeiro projeto", description: "Transforme uma ideia ou trabalho em um portfólio vivo.", href: "/app/projects/new", done: projects.length > 0 },
+          { label: "Comece uma trilha", description: "Matricule-se em um curso e acompanhe seu progresso.", href: "/app/learn", done: courses.length > 0 },
+        ]} />
 
         <section className={styles.metrics}>
           <div className={styles.metric}><strong>{projects.length}</strong><span>Projetos ativos no seu contexto</span></div>
@@ -92,17 +97,19 @@ async function fetchProjectsByIds(supabase: any, ids: string[]) {
 }
 
 export async function InvestorDashboardServerPage() {
-  const { supabase, userId, appUser } = await requireProductUser("investor");
-  const [{ data: saves }, { data: follows }, { data: recommendations }, { data: notifications }] = await Promise.all([
+  const { supabase, userId, appUser, profile } = await requireProductUser("investor");
+  const [{ data: saves }, { data: follows }, { data: recommendations }, { data: notifications }, { count: interests }] = await Promise.all([
     supabase.from("project_saves").select("project_id,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
     supabase.from("follows").select("target_project_id,created_at").eq("follower_id", userId).not("target_project_id", "is", null).order("created_at", { ascending: false }).limit(20),
     supabase.from("projects").select("id,slug,title,short_description,stage,category,updated_at").eq("visibility", "platform").order("updated_at", { ascending: false }).limit(8),
     supabase.from("notifications").select("id,title,body,href,read_at,created_at").order("created_at", { ascending: false }).limit(6),
+    supabase.from("project_interests").select("id", { count: "exact", head: true }).eq("investor_id", userId).eq("status", "active"),
   ]);
   const savedIds = await projectIdsFromRows(saves, "project_id");
   const followedIds = await projectIdsFromRows(follows, "target_project_id");
   const savedProjects = await fetchProjectsByIds(supabase, savedIds.slice(0, 5));
   const unread = (notifications ?? []).filter((item: any) => !item.read_at).length;
+  const profileReady = Boolean(profile.bio && profile.organization);
 
   return (
     <ProductShell user={appUser} title="Início">
@@ -111,6 +118,14 @@ export async function InvestorDashboardServerPage() {
           <div><h1>Olá, {firstName(appUser.name)}.</h1><p>Descubra projetos, acompanhe equipes e mantenha perto as oportunidades que fazem sentido para você.</p></div>
           <div className={styles.actions}><Link className={styles.primary} href="/investor/explore">Explorar projetos</Link><Link className={styles.secondary} href="/investor/saved">Projetos salvos</Link></div>
         </section>
+
+        <FirstSteps steps={[
+          { label: "Complete seu perfil", description: "Adicione bio e organização para contextualizar seu perfil de investidor.", href: "/account/profile", done: profileReady },
+          { label: "Salve um projeto", description: "Monte uma lista privada de projetos para revisar depois.", href: "/investor/explore", done: savedIds.length > 0 },
+          { label: "Acompanhe um projeto", description: "Siga um projeto para receber novas atualizações.", href: "/investor/explore", done: followedIds.length > 0 },
+          { label: "Demonstre interesse", description: "Envie uma manifestação de interesse ao responsável por um projeto.", href: "/investor/explore", done: (interests ?? 0) > 0 },
+        ]} />
+
         <section className={styles.metrics}>
           <div className={styles.metric}><strong>{savedIds.length}</strong><span>Projetos salvos</span></div>
           <div className={styles.metric}><strong>{followedIds.length}</strong><span>Projetos acompanhados</span></div>
