@@ -1,0 +1,24 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import AdminShell from "@/components/admin/AdminShell";
+import styles from "@/components/admin/AdminViews.module.css";
+import { createLessonAdminAction, createModuleAdminAction, updateCourseAdminAction, updateLessonAdminAction } from "@/lib/admin/actions";
+import { requireAdminUser } from "@/lib/admin/require-admin";
+
+export default async function Page({params,searchParams}:{params:Promise<{courseId:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){
+ const {courseId}=await params;
+ const query=await searchParams;
+ const {supabase,profile}=await requireAdminUser();
+ const {data:course}=await supabase.from("courses").select("id,slug,title,description,instructor,level,duration_minutes,status,course_modules(id,title,position,course_lessons(id,title,description,content_md,position,duration_minutes))").eq("id",courseId).maybeSingle();
+ if(!course)notFound();
+ const modules=(course.course_modules??[]).sort((a:any,b:any)=>a.position-b.position);
+ return <AdminShell profile={profile} title={course.title}>
+  <div className={styles.head}><div><Link href="/admin/courses">← Cursos</Link><h1>{course.title}</h1><p className={styles.muted}>/{course.slug}</p></div></div>
+  {query.status?<div className={styles.notice}>Alterações salvas.</div>:null}{query.error?<div className={styles.error}>Não foi possível salvar. Revise os dados e as posições.</div>:null}
+  <div className={styles.grid}>
+   <section className={styles.card}><h2>Curso</h2><form className={styles.form} action={updateCourseAdminAction}><input type="hidden" name="course_id" value={course.id}/><label>Título<input name="title" defaultValue={course.title} maxLength={160} required/></label><label>Descrição<textarea name="description" defaultValue={course.description} maxLength={3000}/></label><label>Instrutor<input name="instructor" defaultValue={course.instructor} maxLength={160}/></label><label>Nível<input name="level" defaultValue={course.level} maxLength={80}/></label><label>Duração (min)<input type="number" name="duration_minutes" min="0" defaultValue={course.duration_minutes}/></label><label>Status<select name="status" defaultValue={course.status}><option value="draft">Rascunho</option><option value="published">Publicado</option><option value="archived">Arquivado</option></select></label><button className={styles.primary}>Salvar curso</button></form></section>
+   <section className={styles.card}><h2>Novo módulo</h2><form className={styles.form} action={createModuleAdminAction}><input type="hidden" name="course_id" value={course.id}/><label>Título<input name="title" maxLength={160} required/></label><label>Posição<input name="position" type="number" min="1" defaultValue={modules.length+1}/></label><button className={styles.primary}>Adicionar módulo</button></form></section>
+  </div>
+  <div className={styles.stack} style={{marginTop:18}}>{modules.map((module:any)=><section className={styles.card} key={module.id}><h2>{module.position}. {module.title}</h2>{(module.course_lessons??[]).sort((a:any,b:any)=>a.position-b.position).map((lesson:any)=><details className={styles.request} key={lesson.id}><summary><strong>{lesson.position}. {lesson.title}</strong></summary><form className={styles.form} action={updateLessonAdminAction} style={{marginTop:12}}><input type="hidden" name="course_id" value={course.id}/><input type="hidden" name="lesson_id" value={lesson.id}/><label>Título<input name="title" defaultValue={lesson.title} maxLength={180} required/></label><label>Descrição<textarea name="description" defaultValue={lesson.description} maxLength={3000}/></label><label>Conteúdo<textarea name="content_md" defaultValue={lesson.content_md} maxLength={50000} rows={6}/></label><label>Posição<input type="number" name="position" min="1" defaultValue={lesson.position}/></label><label>Duração (min)<input type="number" name="duration_minutes" min="0" defaultValue={lesson.duration_minutes}/></label><button className={styles.primary}>Salvar aula</button></form></details>)}<div className={styles.divider}/><h3>Nova aula</h3><form className={styles.form} action={createLessonAdminAction}><input type="hidden" name="course_id" value={course.id}/><input type="hidden" name="module_id" value={module.id}/><label>Título<input name="title" maxLength={180} required/></label><label>Descrição<textarea name="description" maxLength={3000}/></label><label>Conteúdo<textarea name="content_md" maxLength={50000} rows={4}/></label><label>Posição<input name="position" type="number" min="1" defaultValue={(module.course_lessons??[]).length+1}/></label><label>Duração (min)<input name="duration_minutes" type="number" min="0" defaultValue="0"/></label><button className={styles.secondary}>Adicionar aula</button></form></section>)}</div>
+ </AdminShell>;
+}
