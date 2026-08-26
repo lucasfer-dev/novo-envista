@@ -1,0 +1,19 @@
+{
+  "name": "ENVISTA Preview",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "ENVISTA Preview",
+      "onAutoForward": "openBrowser",
+      "visibility": "private"
+    }
+  },
+  "containerEnv": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://yeqdalgzuutbputhjvwt.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_cSr3SceabilO7-j-UO2aAQ_ZpIWlSgI"
+  },
+  "postCreateCommand": "npm ci",
+  "postStartCommand": "nohup npm run dev -- --hostname 0.0.0.0 > /tmp/envista-next.log 2>&1 &",
+  "remoteUser": "node"
+}
