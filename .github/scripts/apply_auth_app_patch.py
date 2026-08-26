@@ -100,5 +100,13 @@ replace(
     '<p className="security-note">Autenticação e perfil usam Supabase Auth + RLS. Mensagens ainda são simuladas nesta etapa e não há alegação de criptografia ponta a ponta.</p>',
     'security note', 1,
 )
-
 path.write_text(text, encoding="utf-8")
+
+actions_path = Path("app/auth/actions.ts")
+actions = actions_path.read_text(encoding="utf-8")
+actions = actions.replace('  type ProductRole,\n', '')
+role_helper = '''\nexport function roleLabel(role: ProductRole) {\n  return role === "investor" ? "Investidor" : "Participante";\n}\n'''
+if role_helper not in actions:
+    raise SystemExit("pattern not found: role helper")
+actions = actions.replace(role_helper, "\n")
+actions_path.write_text(actions, encoding="utf-8")
