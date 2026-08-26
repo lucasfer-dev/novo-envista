@@ -1,0 +1,35 @@
+name: Sync Node lock
+
+on:
+  push:
+    branches:
+      - feat/auth-onboarding-real
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: feat/auth-onboarding-real
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Sync lock metadata
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Cleanup and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/sync-node-lock.yml
+          git add package-lock.json
+          git commit -m "chore: sincroniza lockfile do Node 22.x"
+          git push origin HEAD:feat/auth-onboarding-real
