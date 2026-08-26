@@ -3,6 +3,7 @@ export type DeclaredAgeBand = "child" | "adolescent" | "adult";
 
 export const INTERNAL_TERMS_VERSION = "internal-2026-08-26-v2";
 export const INTERNAL_PRIVACY_VERSION = "internal-2026-08-26-v2";
+export const MIN_PASSWORD_LENGTH = 12;
 
 export function safeInternalPath(value: unknown, fallback = "/") {
   if (typeof value !== "string") return fallback;
@@ -37,7 +38,7 @@ export function isValidEmail(value: unknown) {
 
 export function validatePassword(value: unknown) {
   if (typeof value !== "string") return "A senha é obrigatória.";
-  if (value.length < 10) return "Use pelo menos 10 caracteres.";
+  if (value.length < MIN_PASSWORD_LENGTH) return `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
   if (value.length > 128) return "A senha deve ter no máximo 128 caracteres.";
   return null;
 }

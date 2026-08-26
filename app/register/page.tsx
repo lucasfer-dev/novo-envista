@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
+import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
+import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { registerAction } from "@/app/auth/actions";
+import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
 
 export default async function RegisterPage({
   searchParams,
@@ -12,13 +15,25 @@ export default async function RegisterPage({
   const error = typeof params.error === "string" ? params.error : "";
   const status = typeof params.status === "string" ? params.status : "";
 
+  const errorMessage =
+    error === "password"
+      ? `Confira as senhas. Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`
+      : error === "captcha"
+        ? "Conclua a verificação de segurança e tente novamente."
+        : error === "rate"
+          ? "Muitas tentativas de cadastro em pouco tempo. Aguarde alguns minutos."
+          : error === "temporary"
+            ? "O cadastro está temporariamente indisponível. Tente novamente em instantes."
+            : error
+              ? "Revise os dados informados."
+              : "";
+
   return (
-    <AuthShell title="Criar conta" description="Contas reais serão protegidas pelo Supabase Auth e pelas políticas RLS do Envista.">
+    <AuthShell title="Criar conta" description="Cadastro protegido pelo Supabase Auth, RLS e controles antiabuso do Envista.">
       {!enabled || status === "closed" ? (
         <>
           <div className={styles.notice}>
-            O cadastro público está temporariamente fechado enquanto finalizamos os documentos de privacidade,
-            a entrega de e-mails e os controles de proteção para menores. Isso é intencional.
+            O cadastro está temporariamente fechado. Contas existentes continuam podendo entrar normalmente.
           </div>
           <div className={styles.actions}>
             <Link className={`${styles.primary} ${styles.full}`} href="/login">Já tenho uma conta</Link>
@@ -33,13 +48,7 @@ export default async function RegisterPage({
         </>
       ) : (
         <>
-          {error ? (
-            <div className={styles.error} role="alert">
-              {error === "password"
-                ? "Confira as senhas. Use pelo menos 10 caracteres."
-                : "Revise os dados informados."}
-            </div>
-          ) : null}
+          {errorMessage ? <div className={styles.error} role="alert">{errorMessage}</div> : null}
           <form action={registerAction} className={styles.form}>
             <label>
               Nome de exibição
@@ -58,13 +67,17 @@ export default async function RegisterPage({
             </label>
             <label>
               Senha
-              <input type="password" name="password" autoComplete="new-password" minLength={10} maxLength={128} required />
+              <input type="password" name="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required />
+              <span className={styles.muted}>Use uma senha longa e exclusiva, com pelo menos {MIN_PASSWORD_LENGTH} caracteres.</span>
             </label>
             <label>
               Confirmar senha
-              <input type="password" name="password_confirmation" autoComplete="new-password" minLength={10} maxLength={128} required />
+              <input type="password" name="password_confirmation" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required />
             </label>
-            <button className={`${styles.primary} ${styles.full}`} type="submit">Criar conta</button>
+            <div className={styles.captcha}><AuthCaptcha action="register" /></div>
+            <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Criando conta...">
+              Criar conta
+            </AuthSubmitButton>
           </form>
           <div className={styles.links}><Link href="/login">Já tenho conta</Link></div>
         </>

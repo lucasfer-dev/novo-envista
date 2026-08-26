@@ -16,6 +16,8 @@ import {
   validatePassword,
 } from "@/lib/auth/validation";
 
+const TURNSTILE_FIELD = "cf-turnstile-response";
+
 function value(formData: FormData, name: string) {
   const item = formData.get(name);
   return typeof item === "string" ? item.trim() : "";
@@ -31,6 +33,25 @@ function siteUrl() {
 
 function authErrorPath(base: string, code: string) {
   return `${base}?error=${encodeURIComponent(code)}`;
+}
+
+function captchaConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim());
+}
+
+function getCaptchaToken(formData: FormData, base: string) {
+  const token = value(formData, TURNSTILE_FIELD).slice(0, 4096);
+  if (captchaConfigured() && !token) redirect(authErrorPath(base, "captcha"));
+  return token || undefined;
+}
+
+function authFailureCode(error: { code?: string; status?: number } | null) {
+  if (!error) return "invalid";
+  const code = error.code?.toLowerCase() ?? "";
+  if (code.includes("captcha")) return "captcha";
+  if (error.status === 429 || code.includes("rate_limit") || code.includes("rate-limit")) return "rate";
+  if (error.status && error.status >= 500) return "temporary";
+  return "invalid";
 }
 
 async function getVerifiedUser() {
@@ -77,10 +98,15 @@ export async function loginAction(formData: FormData) {
   const requestedNext = safeInternalPath(formData.get("next"), "");
 
   if (!isValidEmail(email) || !password) redirect(authErrorPath("/login", "invalid"));
+  const captchaToken = getCaptchaToken(formData, "/login");
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) redirect(authErrorPath("/login", "invalid"));
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: captchaToken ? { captchaToken } : undefined,
+  });
+  if (error) redirect(authErrorPath("/login", authFailureCode(error)));
 
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -105,6 +131,7 @@ export async function registerAction(formData: FormData) {
   if (validatePassword(password) || password !== confirmation) {
     redirect(authErrorPath("/register", "password"));
   }
+  const captchaToken = getCaptchaToken(formData, "/register");
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -113,11 +140,19 @@ export async function registerAction(formData: FormData) {
     options: {
       data: { display_name: displayName, role },
       emailRedirectTo: `${siteUrl()}/auth/callback?next=/onboarding`,
+      ...(captchaToken ? { captchaToken } : {}),
     },
   });
 
-  // Mensagem genérica para não transformar cadastro em consulta de existência de conta.
-  if (error) redirect("/register?status=check-email");
+  if (error) {
+    const code = authFailureCode(error);
+    if (code === "captcha" || code === "rate" || code === "temporary") {
+      redirect(authErrorPath("/register", code));
+    }
+    if (error.code === "weak_password") redirect(authErrorPath("/register", "password"));
+    // Mantém resposta genérica para não transformar cadastro em consulta de existência de conta.
+    redirect("/register?status=check-email");
+  }
   if (data.session) redirect("/onboarding");
   redirect("/register?status=check-email");
 }
@@ -125,11 +160,20 @@ export async function registerAction(formData: FormData) {
 export async function forgotPasswordAction(formData: FormData) {
   const email = value(formData, "email").toLowerCase();
   if (!isValidEmail(email)) redirect("/forgot-password?status=sent");
+  const captchaToken = getCaptchaToken(formData, "/forgot-password");
 
   const supabase = await createClient();
-  await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl()}/auth/callback?next=/update-password`,
+    ...(captchaToken ? { captchaToken } : {}),
   });
+  if (error) {
+    const code = authFailureCode(error);
+    if (code === "captcha" || code === "rate" || code === "temporary") {
+      redirect(authErrorPath("/forgot-password", code));
+    }
+  }
+  // Resposta intencionalmente genérica para evitar enumeração de contas.
   redirect("/forgot-password?status=sent");
 }
 
@@ -147,6 +191,12 @@ export async function updatePasswordAction(formData: FormData) {
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) redirect("/update-password?error=save");
+
+  // Revoga refresh tokens existentes e encerra a sessão usada na recuperação.
+  // Se a revogação global falhar por indisponibilidade temporária, pelo menos
+  // removemos a sessão atual do navegador antes de voltar ao login.
+  const { error: signOutError } = await supabase.auth.signOut({ scope: "global" });
+  if (signOutError) await supabase.auth.signOut({ scope: "local" });
   redirect("/login?status=password-updated");
 }
 
