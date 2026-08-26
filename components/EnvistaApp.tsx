@@ -3487,17 +3487,19 @@ function SettingsPage({
             Configurações sensíveis serão validadas pelo backend Java e pelas
             políticas do Supabase.
           </p>
-          <button
-            className="danger"
-            onClick={() =>
-              setToast(
-                "Exclusão de conta exige confirmação e backend conectado.",
-              )
-            }
-          >
-            Excluir minha conta
-          </button>
-          <button className="secondary" onClick={resetDemo}>Restaurar dados do MVP</button>
+          <div className="actions">
+            <button
+              className="danger"
+              onClick={() =>
+                setToast(
+                  "Exclusão de conta exige confirmação e backend conectado.",
+                )
+              }
+            >
+              Excluir minha conta
+            </button>
+            <button className="secondary" onClick={resetDemo}>Restaurar dados do MVP</button>
+          </div>
         </section>
       </div>
     </>
