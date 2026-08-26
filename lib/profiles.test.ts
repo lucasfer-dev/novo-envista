@@ -40,8 +40,14 @@ describe("perfis navegaveis", () => {
     expect(entityRoute({ type: "participant", id: "anasouza", source: "explore" })).toBe("/app/explore/participants/anasouza");
   });
 
+  it("mantem perfis e entidades no contexto de Mensagens", () => {
+    expect(entityRoute({ type: "participant", id: "anasouza", source: "messages" })).toBe("/app/messages/participants/anasouza");
+    expect(entityRoute({ type: "team", id: "atlas", source: "messages", context: "investor" })).toBe("/investor/messages/teams/atlas");
+  });
+
   it("interpreta rotas publicas diretas e rejeita rotas invalidas", () => {
     expect(parsePublicEntityRoute("/investor/explore/projects/aqua")).toEqual({ context: "investor", source: "explore", type: "project", id: "aqua" });
+    expect(parsePublicEntityRoute("/app/messages/participants/anasouza")).toEqual({ context: "participant", source: "messages", type: "participant", id: "anasouza" });
     expect(parsePublicEntityRoute("/app/explore/projects/nao-existe")?.id).toBe("nao-existe");
     expect(parsePublicEntityRoute("/app/projects/aqua")).toBeUndefined();
   });

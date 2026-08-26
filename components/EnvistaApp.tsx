@@ -60,10 +60,10 @@ import { Competition, Course, Project, Role, Team, User } from "@/types";
 
 type ChatMessage = { from: string; text: string; time: string };
 type MessageThreads = Record<string, ChatMessage[]>;
-type SocialPost = { id: string; author: string; handle: string; body: string; likes: number; time: string; image?: string; comments?: Array<{id:string;author:string;text:string}> };
 import { storage } from "@/lib/storage";
 import { isNavItemActive } from "@/lib/navigation";
 import { entityRoute, getInvestorById, getParticipantById, parsePublicEntityRoute, profileRoute } from "@/lib/profiles";
+import { entityFollowKey, seedSocialPosts, SocialPost, toggleEntityFollow } from "@/lib/social";
 import { canFollowProject, getGreeting, normalizeSearch, toggleSocialPostLike, validateParticipantLocation } from "@/lib/mvp";
 
 const navParticipant = [
@@ -864,54 +864,54 @@ function AdminLogin({
           <input
             value={pass}
             onChange={(e) => setPass(e.target.value)}
-          type="password"
-          placeholder="••••••••"
-        />
-      </label>
-      <button
-        className="primary full"
-        onClick={enterAdmin}
-      >
-        Entrar como administrador
-      </button>
-      {error && <p className="form-error" role="alert">{error}</p>}
-      <p className="security-note">
-        Este formulário ainda é visual. O backend Java já está estruturado
-        para trocar isso por autenticação real e autorização por role no
-        Supabase.
-      </p>
+            type="password"
+            placeholder="••••••••"
+          />
+        </label>
+        <button
+          className="primary full"
+          onClick={enterAdmin}
+        >
+          Entrar como administrador
+        </button>
+        {error && <p className="form-error" role="alert">{error}</p>}
+        <p className="security-note">
+          Este formulário ainda é visual. O backend Java já está estruturado
+          para trocar isso por autenticação real e autorização por role no
+          Supabase.
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
 }
 
 function Register({
-go,
-setRole,
+  go,
+  setRole,
 }: {
-go: (p: string) => void;
-setRole: (r: Role) => void;
+  go: (p: string) => void;
+  setRole: (r: Role) => void;
 }) {
-const [step, setStep] = useState(0);
-const [r, setR] = useState<Role>("participant");
-const [name, setName] = useState("");
-const [participantCity, setParticipantCity] = useState("");
-const [participantState, setParticipantState] = useState("");
-const [validationError, setValidationError] = useState("");
-const nextStep = () => {
-if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
-  setValidationError("Preencha Cidade e Estado para continuar.");
-  return;
-}
-setValidationError("");
-setStep((current) => current + 1);
-};
-if (step === 0)
-return (
-    <div className="simple-auth">
-      <button className="brand" onClick={() => go("/")}>
-        <img src="/envista-logo.png" alt="" />
-  <b>Envista</b>
+  const [step, setStep] = useState(0);
+  const [r, setR] = useState<Role>("participant");
+  const [name, setName] = useState("");
+  const [participantCity, setParticipantCity] = useState("");
+  const [participantState, setParticipantState] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const nextStep = () => {
+    if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
+      setValidationError("Preencha Cidade e Estado para continuar.");
+      return;
+    }
+    setValidationError("");
+    setStep((current) => current + 1);
+  };
+  if (step === 0)
+    return (
+      <div className="simple-auth">
+        <button className="brand" onClick={() => go("/")}>
+          <img src="/envista-logo.png" alt="" />
+          <b>Envista</b>
         </button>
         <div className="onboard-card">
           <span className="eyebrow">CRIAR CONTA</span>
@@ -1463,6 +1463,123 @@ function IdentityAvatar({ name, href, go }: { name: string; href: string; go: (p
 function IdentityName({ name, href, go }: { name: string; href: string; go: (path: string) => void }) {
   return <button className="identity-name" onClick={() => go(href)}>{name}</button>;
 }
+
+function navigationSourceLabel(source?: "explore" | "social" | "messages") {
+  if (source === "social") return "Social";
+  if (source === "messages") return "Mensagens";
+  return "Explorar";
+}
+
+function EntityFollowButton({
+  kind,
+  id,
+  name,
+  setToast,
+}: {
+  kind: "participant" | "investor" | "team";
+  id: string;
+  name: string;
+  setToast: (message: string) => void;
+}) {
+  const key = entityFollowKey(kind, id);
+  const read = () => storage.get<string[]>("entity-following", []);
+  const [followingEntity, setFollowingEntity] = useState(() => read().includes(key));
+
+  useEffect(() => {
+    const sync = () => setFollowingEntity(read().includes(key));
+    window.addEventListener("envista-following", sync);
+    return () => window.removeEventListener("envista-following", sync);
+  }, [key]);
+
+  const toggle = () => {
+    const next = toggleEntityFollow(read(), key);
+    storage.set("entity-following", next);
+    setFollowingEntity(next.includes(key));
+    window.dispatchEvent(new Event("envista-following"));
+    setToast(next.includes(key) ? `Agora você segue ${name}.` : `Você deixou de seguir ${name}.`);
+  };
+
+  return (
+    <button className={cx("secondary", followingEntity && "selected")} onClick={toggle}>
+      <UserPlus size={16} /> {followingEntity ? "Seguindo" : "Seguir"}
+    </button>
+  );
+}
+
+function MessageEntityButton({
+  kind,
+  id,
+  go,
+  context,
+}: {
+  kind: "participant" | "investor" | "team";
+  id: string;
+  go: (path: string) => void;
+  context: "participant" | "investor";
+}) {
+  const base = context === "investor" ? "/investor" : "/app";
+  const target = encodeURIComponent(`${kind}:${id}`);
+  return (
+    <button className="primary" onClick={() => go(`${base}/messages?to=${target}`)}>
+      <MessageCircle size={16} /> Mensagem
+    </button>
+  );
+}
+
+function EntityPosts({
+  handle,
+  me,
+  setToast,
+}: {
+  handle: string;
+  me: User;
+  setToast: (message: string) => void;
+}) {
+  const [posts, setPosts] = useState<SocialPost[]>(() => storage.get<SocialPost[]>("social-posts", seedSocialPosts));
+  const [likedSocialPosts, setLikedSocialPosts] = useState<Record<string, string[]>>(() => storage.get("social-liked-posts", {}));
+  const visible = posts.filter((post) => post.handle === handle);
+  const toggleLike = (postId: string) => {
+    const currentLiked = likedSocialPosts[me.id] || [];
+    const result = toggleSocialPostLike(posts, currentLiked, postId);
+    const nextLiked = { ...likedSocialPosts, [me.id]: result.likedPostIds };
+    setPosts(result.posts);
+    setLikedSocialPosts(nextLiked);
+    storage.set("social-posts", result.posts);
+    storage.set("social-liked-posts", nextLiked);
+    setToast(result.liked ? "Publicação curtida." : "Curtida removida.");
+  };
+
+  if (!visible.length) {
+    return <div className="panel profile-feed-empty"><Activity size={20} /><b>Nenhuma publicação ainda.</b><p>As novidades públicas desta identidade aparecerão aqui.</p></div>;
+  }
+
+  return (
+    <div className="profile-feed section-block">
+      {visible.map((post) => {
+        const liked = (likedSocialPosts[me.id] || []).includes(post.id);
+        return (
+          <article className="panel social-post profile-feed-post" key={post.id}>
+            <header>
+              <Avatar name={post.author} />
+              <div><b>{post.author}</b><small>{post.handle} · {post.time}</small></div>
+            </header>
+            <p>{post.body}</p>
+            {post.image && <img className="social-post-image" src={post.image} alt={`Imagem publicada por ${post.author}`} />}
+            <footer>
+              <button className={cx(liked && "liked")} aria-pressed={liked} onClick={() => toggleLike(post.id)}>
+                <Heart size={17} fill={liked ? "currentColor" : "none"} /> {post.likes}
+              </button>
+              <span><MessageCircle size={16} /> {post.comments?.length || 0}</span>
+              <button onClick={() => { navigator.clipboard?.writeText(post.body); setToast("Publicação copiada para compartilhar."); }}>
+                <Share2 size={17} /> Compartilhar
+              </button>
+            </footer>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
 function Stage({ value }: { value: string }) {
   return <span className="stage">{value}</span>;
 }
@@ -1999,7 +2116,7 @@ function ProjectDetail({
   setMessages: (v: any) => void;
   persistProjects: (v: Project[]) => void;
   mode?: "public" | "management";
-  navigationSource?: "explore" | "social";
+  navigationSource?: "explore" | "social" | "messages";
 }) {
   const p = projects.find((x) => x.slug === slug);
   const [tab, setTab] = useState("Visão geral");
@@ -2060,7 +2177,7 @@ function ProjectDetail({
         className="back"
         onClick={() => go(mode === "public" ? `${contextBase}/${navigationSource || "explore"}` : investorMode ? "/investor/projects" : "/app/projects")}
       >
-        <ArrowLeft size={16} /> {mode === "public" ? navigationSource === "social" ? "Social" : "Explorar" : "Voltar"}
+        <ArrowLeft size={16} /> {mode === "public" ? navigationSourceLabel(navigationSource) : "Voltar"}
       </button>
       <div className="project-hero panel">
         <div>
@@ -2466,6 +2583,7 @@ function TeamDetail({
   projects,
   setToast,
   persistTeams,
+  me,
   mode = "management",
   navigationSource,
   investorMode = false,
@@ -2476,12 +2594,13 @@ function TeamDetail({
   projects: Project[];
   setToast: (s: string) => void;
   persistTeams: (v: Team[]) => void;
+  me: User;
   mode?: "public" | "management";
-  navigationSource?: "explore" | "social";
+  navigationSource?: "explore" | "social" | "messages";
   investorMode?: boolean;
 }) {
   const team = teams.find((t) => t.slug === slug);
-  const [tab, setTab] = useState("Visão geral");
+  const [tab, setTab] = useState(mode === "public" ? "Publicações" : "Visão geral");
   const [editing, setEditing] = useState(false);
   const [inviting, setInviting] = useState(false);
   const [inviteUser, setInviteUser] = useState("");
@@ -2506,7 +2625,7 @@ function TeamDetail({
   return (
     <>
       <button className="back" onClick={() => go(mode === "public" ? `${contextBase}/${navigationSource || "explore"}` : `${contextBase}/teams`)}>
-        <ArrowLeft size={16} /> {mode === "public" ? navigationSource === "social" ? "Social" : "Explorar" : "Minhas equipes"}
+        <ArrowLeft size={16} /> {mode === "public" ? navigationSourceLabel(navigationSource) : "Minhas equipes"}
       </button>
       <div className="team-hero panel">
         <div className="team-hero-main">
@@ -2532,6 +2651,12 @@ function TeamDetail({
           </div>
         </div>
         <div className="actions">
+          {mode === "public" && (
+            <>
+              {!team.members.some((member) => member.userId === me.id) && <EntityFollowButton kind="team" id={team.id} name={`Equipe ${team.name}`} setToast={setToast} />}
+              <MessageEntityButton kind="team" id={team.slug} go={go} context={context} />
+            </>
+          )}
           {mode === "management" && isMine && (
             <button
               className="secondary"
@@ -2549,11 +2674,12 @@ function TeamDetail({
         </div>
       </div>
       <Tabs
-        values={mode === "public" ? ["Visão geral", "Projetos", "Membros"] : ["Visão geral", "Projetos", "Membros", "Discussões", "Arquivos"]}
+        values={mode === "public" ? ["Publicações", "Visão geral", "Projetos", "Membros"] : ["Visão geral", "Projetos", "Membros", "Discussões", "Arquivos"]}
         value={tab}
         setValue={setTab}
       />
       <section className="panel prose">
+        {tab === "Publicações" && <EntityPosts handle={`@${team.slug}`} me={me} setToast={setToast} />}
         {tab === "Visão geral" && (
           <>
             {mode === "public" ? <><h2>Sobre a equipe</h2><p>{team.description}</p></> : <>
@@ -3100,115 +3226,119 @@ function Messages({
   setMessages,
   investorMode = false,
   go,
+  teams,
 }: {
   messages: Record<string, { from: string; text: string; time: string }[]>;
   setMessages: (v: any) => void;
   investorMode?: boolean;
   go: (path: string) => void;
+  teams: Team[];
 }) {
-  const conversations = investorMode
+  type Conversation = {
+    id: string;
+    name: string;
+    kind: "participant" | "investor" | "team";
+    entityId: string;
+    routeId: string;
+  };
+  const context = investorMode ? "investor" : "participant";
+  const baseConversations: Conversation[] = investorMode
     ? [
-        ["marina", "Equipe Atlas"],
-        ["vision", "Equipe Lumina"],
+        { id: "marina", name: "Equipe Atlas", kind: "team", entityId: "t1", routeId: "atlas" },
+        { id: "vision", name: "Equipe Lumina", kind: "team", entityId: "t4", routeId: "lumina" },
       ]
     : [
-        ["atlas", "Equipe Atlas"],
-        ["orion", "Equipe Orion"],
-        ["marina", "Marina Alves"],
+        { id: "atlas", name: "Equipe Atlas", kind: "team", entityId: "t1", routeId: "atlas" },
+        { id: "orion", name: "Equipe Orion", kind: "team", entityId: "t2", routeId: "orion" },
+        { id: "marina", name: investor.name, kind: "investor", entityId: investor.id, routeId: investor.username },
       ];
-  const [active, setActive] = useState(conversations[0][0]);
-  const activeIdentity = () => {
-    if (active === "marina" && !investorMode) return { name: investor.name, href: profileRoute("investor", investor.username) };
-    const slug = active === "vision" ? "lumina" : active;
-    const team = seedTeams.find((item) => item.slug === slug);
-    return team ? { name: `Equipe ${team.name}`, href: profileRoute("team", team.slug, investorMode ? "investor" : "participant") } : undefined;
-  };
+  const [dynamicConversation, setDynamicConversation] = useState<Conversation | null>(null);
+  const [active, setActive] = useState(baseConversations[0].id);
   const [text, setText] = useState("");
+
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("to");
+    if (!raw) return;
+    const separator = raw.indexOf(":");
+    if (separator < 0) return;
+    const kind = raw.slice(0, separator) as Conversation["kind"];
+    const id = raw.slice(separator + 1);
+    let next: Conversation | undefined;
+    if (kind === "team") {
+      const team = teams.find((item) => item.slug === id || item.id === id);
+      if (team) next = { id: `dm-team-${team.slug}`, name: `Equipe ${team.name}`, kind, entityId: team.id, routeId: team.slug };
+    } else if (kind === "participant") {
+      const person = getParticipantById(id);
+      if (person) next = { id: `dm-participant-${person.username}`, name: person.name, kind, entityId: person.id, routeId: person.username };
+    } else if (kind === "investor") {
+      const person = getInvestorById(id);
+      if (person) next = { id: `dm-investor-${person.username}`, name: person.name, kind, entityId: person.id, routeId: person.username };
+    }
+    if (!next) return;
+    const existing = baseConversations.find((conversation) => conversation.kind === next!.kind && conversation.routeId === next!.routeId);
+    if (existing) {
+      setActive(existing.id);
+      setDynamicConversation(null);
+    } else {
+      setDynamicConversation(next);
+      setActive(next.id);
+    }
+  }, [teams]);
+
+  const conversations = dynamicConversation
+    ? [dynamicConversation, ...baseConversations.filter((item) => item.id !== dynamicConversation.id)]
+    : baseConversations;
+  const activeConversation = conversations.find((item) => item.id === active) || conversations[0];
+  const profileHref = entityRoute({ type: activeConversation.kind, id: activeConversation.routeId, source: "messages", context });
+
   const send = () => {
     if (!text.trim()) return;
     setMessages({
       ...messages,
-      [active]: [
-        ...(messages[active] || []),
-        { from: "Você", text, time: "Agora" },
-      ],
+      [active]: [...(messages[active] || []), { from: "Você", text, time: "Agora" }],
     });
     setText("");
   };
+
   return (
     <>
-      <PageHead
-        title="Mensagens"
-        desc="Converse com pessoas e equipes sem promessas de segurança que ainda não existem."
-      />
+      <PageHead title="Mensagens" desc="Converse com pessoas e equipes sem promessas de segurança que ainda não existem." />
       <div className="messages-layout panel">
         <aside>
-          <label className="search-field">
-            <Search size={16} />
-            <input placeholder="Buscar conversa" />
-          </label>
-          {conversations.map(([id, name]) => (
-            <button
-              key={id}
-              className={cx(active === id && "active")}
-              onClick={() => setActive(id)}
-            >
-              <Avatar name={name} />
-              <div>
-                <b>{name}</b>
-                <small>
-                  {messages[id]?.at(-1)?.text || "Começar conversa"}
-                </small>
-              </div>
+          <label className="search-field"><Search size={16} /><input placeholder="Buscar conversa" /></label>
+          {conversations.map((conversation) => (
+            <button key={conversation.id} className={cx(active === conversation.id && "active")} onClick={() => setActive(conversation.id)}>
+              <Avatar name={conversation.name} />
+              <div><b>{conversation.name}</b><small>{messages[conversation.id]?.at(-1)?.text || "Começar conversa"}</small></div>
             </button>
           ))}
         </aside>
         <section>
           <header>
             <div>
-              {activeIdentity() ? <IdentityAvatar name={activeIdentity()!.name} href={activeIdentity()!.href} go={go} /> : <Avatar name={conversations.find((x) => x[0] === active)?.[1] || ""} />}
-              <div>
-                {activeIdentity() ? <IdentityName name={activeIdentity()!.name} href={activeIdentity()!.href} go={go} /> : <b>{conversations.find((x) => x[0] === active)?.[1]}</b>}
-                <small>Conversa Envista</small>
-              </div>
+              <IdentityAvatar name={activeConversation.name} href={profileHref} go={go} />
+              <div><IdentityName name={activeConversation.name} href={profileHref} go={go} /><small>Conversa Envista</small></div>
             </div>
-            <button className="icon-btn" aria-label="Opções da conversa" onClick={() => alert("Opções da conversa: silenciar ou arquivar (demonstração).") }>
-              <MoreHorizontal />
-            </button>
+            <div className="message-header-actions">
+              <button className="secondary message-profile-action" onClick={() => go(profileHref)}><CircleUserRound size={16} /> Ver perfil</button>
+              <button className="icon-btn" aria-label="Opções da conversa" onClick={() => alert("Opções da conversa: silenciar ou arquivar (demonstração).") }><MoreHorizontal /></button>
+            </div>
           </header>
           <div className="chat-body">
-            {(messages[active] || []).map((m, i) => (
-              <div
-                className={cx("bubble", m.from === "Você" && "mine")}
-                key={i}
-              >
-                <small>{m.from}</small>
-                <p>{m.text}</p>
-                <time>{m.time}</time>
+            {(messages[active] || []).map((message, index) => (
+              <div className={cx("bubble", message.from === "Você" && "mine")} key={index}>
+                <small>{message.from}</small><p>{message.text}</p><time>{message.time}</time>
               </div>
             ))}
           </div>
           <div className="chat-input">
-            <button className="icon-btn" aria-label="Anexar arquivo" onClick={() => alert("Anexo selecionado no modo demonstração.")}>
-              <Plus />
-            </button>
-            <input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Escreva uma mensagem..."
-            />
-            <button className="primary square" onClick={send}>
-              <Send size={17} />
-            </button>
+            <button className="icon-btn" aria-label="Anexar arquivo" onClick={() => alert("Anexo selecionado no modo demonstração.")}><Plus /></button>
+            <input value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder="Escreva uma mensagem..." />
+            <button className="primary square" onClick={send}><Send size={17} /></button>
           </div>
         </section>
       </div>
-      <p className="security-note">
-        Backend Java preparado para autenticação, autorização e persistência. A
-        integração Supabase será ligada na próxima etapa; não há alegação de
-        criptografia ponta a ponta.
-      </p>
+      <p className="security-note">Backend Java preparado para autenticação, autorização e persistência. A integração Supabase será ligada na próxima etapa; não há alegação de criptografia ponta a ponta.</p>
     </>
   );
 }
@@ -3222,6 +3352,7 @@ function Profile({
   isOwn = false,
   role,
   navigationSource,
+  me,
 }: {
   user: User;
   projects: Project[];
@@ -3230,14 +3361,14 @@ function Profile({
   go: (p: string) => void;
   isOwn?: boolean;
   role?: Role;
-  navigationSource?: "explore" | "social";
+  navigationSource?: "explore" | "social" | "messages";
+  me: User;
 }) {
   const context = role === "investor" ? "investor" : "participant";
   const profileSettings = isOwn ? storage.get(`settings-${user.role}`, {showLocation:true}) : {showLocation:true};
-  const [tab, setTab] = useState(
-    user.role === "participant" ? "Projetos" : "Sobre",
-  );
+  const [tab, setTab] = useState("Publicações");
   const [editing, setEditing] = useState(false);
+  const publicKind = user.role === "investor" ? "investor" : "participant";
   return (
     <>
       <div className="profile-head panel">
@@ -3245,129 +3376,85 @@ function Profile({
         <div className="profile-main">
           <div className="profile-title-line">
             <h1>{user.name}</h1>
-            <span className="role-status">
-              {user.role === "investor" ? "Investidor" : "Participante"}
-            </span>
+            <span className="role-status">{user.role === "investor" ? "Investidor" : "Participante"}</span>
           </div>
           <p className="profile-username">@{user.username}</p>
           {user.jobTitle && <p className="profile-position">{user.jobTitle}{user.organization ? ` · ${user.organization}` : ""}</p>}
           <p className="profile-bio">{user.bio}</p>
           <div className="profile-meta">
-            {user.school && (
-              <span>
-                <School size={14} />
-                {user.school}
-              </span>
-            )}
-            {profileSettings.showLocation !== false && (
-              <span>
-                <MapPin size={14} />
-                {user.city}, {user.state}
-              </span>
-            )}
-            {user.organization && (
-              <span>
-                <Building2 size={14} />
-                {user.organization}
-              </span>
-            )}
+            {user.school && <span><School size={14} />{user.school}</span>}
+            {profileSettings.showLocation !== false && <span><MapPin size={14} />{user.city}, {user.state}</span>}
+            {user.organization && <span><Building2 size={14} />{user.organization}</span>}
             {user.organizationType && <span>{user.organizationType}</span>}
           </div>
           {user.stages?.length ? <div className="profile-skills"><span className="profile-section-label">Estágios de interesse</span><div className="chips">{user.stages.map((stage) => <span key={stage}>{stage}</span>)}</div></div> : null}
           <div className="profile-skills">
             <span className="profile-section-label">{user.role === "investor" ? "Interesses" : "Habilidades"}</span>
-            <div className="chips">
-              {(user.skills || user.interests || []).map((x) => (
-                <span key={x}>{x}</span>
-              ))}
-            </div>
+            <div className="chips">{(user.skills || user.interests || []).map((item) => <span key={item}>{item}</span>)}</div>
           </div>
         </div>
-        {isOwn && <button className="secondary" onClick={() => setEditing(true)}>Editar perfil</button>}
+        <div className="profile-actions">
+          {isOwn ? (
+            <button className="secondary" onClick={() => setEditing(true)}>Editar perfil</button>
+          ) : (
+            <>
+              <EntityFollowButton kind={publicKind} id={user.id} name={user.name} setToast={setToast} />
+              <MessageEntityButton kind={publicKind} id={user.username} go={go} context={context} />
+            </>
+          )}
+        </div>
       </div>
       <Tabs
-        values={
-          user.role === "participant"
-            ? ["Projetos", "Equipes", ...(isOwn ? ["Conquistas"] : []), "Sobre"]
-            : ["Sobre"]
-        }
+        values={user.role === "participant" ? ["Publicações", "Projetos", "Equipes", ...(isOwn ? ["Conquistas"] : []), "Sobre"] : ["Publicações", "Sobre"]}
         value={tab}
         setValue={setTab}
       />
+      {tab === "Publicações" && <EntityPosts handle={`@${user.username}`} me={me} setToast={setToast} />}
       {tab === "Projetos" && (
         <div className="project-grid section-block">
           {projects
-            .filter((p) => p.author.type === "user" ? p.author.id === user.id : teams.some((team) => team.id === p.author.id && team.members.some((member) => member.userId === user.id)))
-            .map((p) => (
-              <ProjectCard key={p.id} p={p} go={() => go(navigationSource ? entityRoute({ type: "project", id: p.slug, source: navigationSource, context }) : entityRoute({ type: "project", id: p.slug, source: "management", context }))} />
+            .filter((project) => project.author.type === "user" ? project.author.id === user.id : teams.some((team) => team.id === project.author.id && team.members.some((member) => member.userId === user.id)))
+            .map((project) => (
+              <ProjectCard key={project.id} p={project} go={() => go(navigationSource ? entityRoute({ type: "project", id: project.slug, source: navigationSource, context }) : entityRoute({ type: "project", id: project.slug, source: "management", context }))} />
             ))}
-          {!projects.some((p) => p.author.type === "user" ? p.author.id === user.id : teams.some((team) => team.id === p.author.id && team.members.some((member) => member.userId === user.id))) && <p className="profile-empty">Nenhum projeto público ainda.</p>}
+          {!projects.some((project) => project.author.type === "user" ? project.author.id === user.id : teams.some((team) => team.id === project.author.id && team.members.some((member) => member.userId === user.id))) && <p className="profile-empty">Nenhum projeto público ainda.</p>}
         </div>
       )}
       {tab === "Equipes" && (
         <div className="team-row section-block">
-          {teams
-            .filter((t) => t.members.some((member) => member.userId === user.id))
-            .map((t) => (
-              <TeamCard key={t.id} team={t} go={() => go(navigationSource ? entityRoute({ type: "team", id: t.slug, source: navigationSource, context }) : profileRoute("team", t.slug, context))} />
-            ))}
+          {teams.filter((team) => team.members.some((member) => member.userId === user.id)).map((team) => (
+            <TeamCard key={team.id} team={team} go={() => go(navigationSource ? entityRoute({ type: "team", id: team.slug, source: navigationSource, context }) : profileRoute("team", team.slug, context))} />
+          ))}
           {!teams.some((team) => team.members.some((member) => member.userId === user.id)) && <p className="profile-empty">Nenhuma equipe pública.</p>}
         </div>
       )}
       {isOwn && tab === "Conquistas" && (
         <div className="achievement-grid section-block">
-          {[
-            ["Primeiro projeto", "Publicou seu primeiro projeto no Envista."],
-            ["Primeira competição", "Inscreveu um projeto em uma competição."],
-            ["Curso concluído", "Finalizou uma trilha de aprendizagem."],
-          ].map(([t, d]) => (
-            <div className="panel achievement" key={t}>
-              <Trophy />
-              <b>{t}</b>
-              <p>{d}</p>
-            </div>
+          {[["Primeiro projeto", "Publicou seu primeiro projeto no Envista."], ["Primeira competição", "Inscreveu um projeto em uma competição."], ["Curso concluído", "Finalizou uma trilha de aprendizagem."]].map(([title, desc]) => (
+            <div className="panel achievement" key={title}><Trophy /><b>{title}</b><p>{desc}</p></div>
           ))}
         </div>
       )}
-      {(tab === "Sobre" || user.role === "investor") && (
-        <section className="panel prose">
-          <h2>Sobre</h2>
-          <p>{user.bio}</p>
-        </section>
-      )}
+      {(tab === "Sobre" || (user.role === "investor" && tab === "Sobre")) && <section className="panel prose"><h2>Sobre</h2><p>{user.bio}</p></section>}
       {isOwn && editing && (
         <Modal title="Editar perfil" close={() => setEditing(false)}>
-          <label>
-            Nome
-            <input defaultValue={user.name} />
-          </label>
-          <label>
-            Bio
-            <textarea defaultValue={user.bio} />
-          </label>
-          <button
-            className="primary full"
-            onClick={() => {
-              setEditing(false);
-              setToast("Perfil atualizado localmente no MVP.");
-            }}
-          >
-            Salvar alterações
-          </button>
+          <label>Nome<input defaultValue={user.name} /></label>
+          <label>Bio<textarea defaultValue={user.bio} /></label>
+          <button className="primary full" onClick={() => { setEditing(false); setToast("Perfil atualizado localmente no MVP."); }}>Salvar alterações</button>
         </Modal>
       )}
     </>
   );
 }
 
-function PublicProfile({ kind, id, navigationSource, ...props }: { kind: "participant" | "investor"; id: string; navigationSource?: "explore" | "social" } & any) {
+function PublicProfile({ kind, id, navigationSource, ...props }: { kind: "participant" | "investor"; id: string; navigationSource?: "explore" | "social" | "messages" } & any) {
   const user = kind === "participant" ? getParticipantById(id) : getInvestorById(id);
   const base = props.role === "investor" ? "/investor" : "/app";
   if (!user) return <ProfileNotFound go={props.go} backTo={`${base}/${navigationSource || "explore"}`} />;
   const isOwn = props.me?.id === user.id;
   return (
     <>
-      <button className="back" onClick={() => props.go(`${base}/${navigationSource || "explore"}`)}><ArrowLeft size={16} /> {navigationSource === "social" ? "Social" : "Explorar"}</button>
+      <button className="back" onClick={() => props.go(`${base}/${navigationSource || "explore"}`)}><ArrowLeft size={16} /> {navigationSourceLabel(navigationSource)}</button>
       <Profile {...props} user={user} isOwn={isOwn} navigationSource={navigationSource} />
     </>
   );
@@ -3505,7 +3592,7 @@ function SettingsPage({
   };
   const resetDemo = () => {
     if (!confirm("Restaurar todos os dados locais do MVP? Projetos, equipes, mensagens, Social e preferências voltarão ao estado inicial.")) return;
-    ["saved","following","liked-projects","projects","teams","progress","messages","notifications","social-posts","social-following","social-liked-posts","analytics-events","admin-lessons","admin-moderation","settings-participant","settings-investor","settings-admin"].forEach((key)=>storage.remove(key));
+    ["saved","following","liked-projects","projects","teams","progress","messages","notifications","social-posts","social-following","entity-following","social-liked-posts","analytics-events","admin-lessons","admin-moderation","settings-participant","settings-investor","settings-admin"].forEach((key)=>storage.remove(key));
     setToast("Dados do MVP restaurados.");
     setTimeout(()=>location.assign(me.role === "investor" ? "/investor" : me.role === "admin" ? "/admin" : "/app"),500);
   };
@@ -3623,34 +3710,9 @@ function SocialFeed({
   const [commentPost, setCommentPost] = useState("");
   const [socialComment, setSocialComment] = useState("");
   const imageInput = useRef<HTMLInputElement>(null);
-  const [followingSocial, setFollowingSocial] = useState<string[]>(() => storage.get("social-following", []));
+  const [followingSocial, setFollowingSocial] = useState<string[]>(() => storage.get("entity-following", []));
   const [likedSocialPosts, setLikedSocialPosts] = useState<Record<string, string[]>>(() => storage.get("social-liked-posts", {}));
-  const [posts, setPosts] = useState<SocialPost[]>(() => storage.get<SocialPost[]>("social-posts", [
-    {
-      id: "s1",
-      author: "Equipe Atlas",
-      handle: "@atlas",
-      body: "Fechamos uma nova rodada de testes do Aqua. O sensor está mais estável e agora vamos validar em ambiente escolar.",
-      likes: 18,
-      time: "2h",
-    },
-    {
-      id: "s2",
-      author: "Ana Souza",
-      handle: "@anasouza",
-      body: "Fim de semana de competição e muita coisa aprendida. Documentar o que deu errado foi tão importante quanto o resultado.",
-      likes: 31,
-      time: "5h",
-    },
-    {
-      id: "s3",
-      author: "Equipe Orion",
-      handle: "@orion",
-      body: "O EduMatch ganhou um fluxo novo para organizar oportunidades educacionais por interesse.",
-      likes: 12,
-      time: "1d",
-    },
-  ]));
+  const [posts, setPosts] = useState<SocialPost[]>(() => storage.get<SocialPost[]>("social-posts", seedSocialPosts));
   const persistPosts = (next: SocialPost[]) => { setPosts(next); storage.set("social-posts", next); };
   const toggleLike = (postId: string) => {
     const currentLikedPostIds = likedSocialPosts[me.id] || [];
@@ -3680,11 +3742,12 @@ function SocialFeed({
       .toLocaleLowerCase("pt-BR")
       .includes(normalizedQuery),
   );
-  const toggleSocialFollow = (id: string, name: string) => {
-    const next = followingSocial.includes(id) ? followingSocial.filter((item) => item !== id) : [...followingSocial, id];
+  const toggleSocialFollow = (key: string, name: string) => {
+    const next = toggleEntityFollow(followingSocial, key);
     setFollowingSocial(next);
-    storage.set("social-following", next);
-    setToast(next.includes(id) ? `Agora você segue ${name}.` : `Você deixou de seguir ${name}.`);
+    storage.set("entity-following", next);
+    window.dispatchEvent(new Event("envista-following"));
+    setToast(next.includes(key) ? `Agora você segue ${name}.` : `Você deixou de seguir ${name}.`);
   };
   const chooseImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -3733,6 +3796,15 @@ function SocialFeed({
   const postProject = (post: SocialPost) => {
     const team = teams.find((item) => `@${item.slug}` === post.handle);
     return team ? projects.find((project) => team.projects.includes(project.id)) : undefined;
+  };
+  const postFollowKey = (post: SocialPost) => {
+    const handle = post.handle.replace(/^@/, "");
+    const team = teams.find((item) => item.slug === handle);
+    if (team) return entityFollowKey("team", team.id);
+    const person = people.find((item) => item.username === handle);
+    if (person) return entityFollowKey("participant", person.id);
+    if (investor.username === handle) return entityFollowKey("investor", investor.id);
+    return undefined;
   };
   return (
     <>
@@ -3791,7 +3863,7 @@ function SocialFeed({
                     {post.handle} · {post.time}
                   </small>
                 </div>
-                {!ownHandles.has(post.handle) && <button className={cx("secondary small-follow", followingSocial.includes(post.handle) && "selected")} onClick={() => toggleSocialFollow(post.handle, post.author)}>{followingSocial.includes(post.handle) ? "Seguindo" : "Seguir"}</button>}
+                {!ownHandles.has(post.handle) && postFollowKey(post) && <button className={cx("secondary small-follow", followingSocial.includes(postFollowKey(post)!) && "selected")} onClick={() => toggleSocialFollow(postFollowKey(post)!, post.author)}>{followingSocial.includes(postFollowKey(post)!) ? "Seguindo" : "Seguir"}</button>}
               </header>
               <p>{post.body}</p>
               {postProject(post) && <button className="social-project-link" onClick={() => go(entityRoute({ type: "project", id: postProject(post)!.slug, source: "social", context }))}><FolderKanban size={15} /> Ver projeto {postProject(post)!.title}</button>}
@@ -3829,14 +3901,14 @@ function SocialFeed({
                 <IdentityName name={u.name} href={entityRoute({ type: "participant", id: u.username, source: "social", context })} go={go} />
                 <small>@{u.username}</small>
               </div>
-              <button className={cx(followingSocial.includes(u.id) && "selected")} onClick={() => toggleSocialFollow(u.id, u.name)}>{followingSocial.includes(u.id) ? "Seguindo" : "Seguir"}</button>
+              <button className={cx(followingSocial.includes(entityFollowKey("participant", u.id)) && "selected")} onClick={() => toggleSocialFollow(entityFollowKey("participant", u.id), u.name)}>{followingSocial.includes(entityFollowKey("participant", u.id)) ? "Seguindo" : "Seguir"}</button>
             </div>
           ))}
           {q && visibleTeams.slice(0, 3).map((team) => (
             <div className="social-person" key={team.id}>
               <IdentityAvatar name={team.name} href={entityRoute({ type: "team", id: team.slug, source: "social", context })} go={go} />
               <div><IdentityName name={team.name} href={entityRoute({ type: "team", id: team.slug, source: "social", context })} go={go} /><small>Equipe · {team.category}</small></div>
-              <button className={cx(followingSocial.includes(team.id) && "selected")} onClick={() => toggleSocialFollow(team.id, team.name)}>{followingSocial.includes(team.id) ? "Seguindo" : "Seguir"}</button>
+              <button className={cx(followingSocial.includes(entityFollowKey("team", team.id)) && "selected")} onClick={() => toggleSocialFollow(entityFollowKey("team", team.id), team.name)}>{followingSocial.includes(entityFollowKey("team", team.id)) ? "Seguindo" : "Seguir"}</button>
             </div>
           ))}
           {q && !visiblePeople.length && !visibleTeams.length && <p className="social-no-results">Nenhuma pessoa ou equipe encontrada.</p>}
