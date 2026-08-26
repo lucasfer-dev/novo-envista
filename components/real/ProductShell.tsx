@@ -71,6 +71,9 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         <header className={styles.topbar}>
           <button className={styles.menu} aria-label="Abrir navegação" onClick={() => setOpen(true)}>☰</button>
           <span className={styles.topbarTitle}>{title}</span>
+          <form className={styles.searchForm} action={`${prefix}/search`} method="get">
+            <input className={styles.searchInput} name="q" maxLength={80} aria-label="Buscar no Envista" placeholder="Buscar projetos, equipes ou pessoas..." />
+          </form>
           <span className={styles.topbarActions}><NotificationsBell userId={user.id} prefix={prefix}/><span>@{user.username}</span></span>
         </header>
         <div className={styles.content}>{children}</div>
