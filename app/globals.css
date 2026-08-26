@@ -957,6 +957,13 @@ h3 {
   display: flex;
   gap: 14px;
   flex: 1;
+  min-width: 0;
+}
+.team-hero-main {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
 }
 .project-hero h1,
 .team-hero h1,
@@ -967,11 +974,31 @@ h3 {
   margin: 7px 0;
 }
 .project-hero .actions,
+.team-hero .actions,
 .competition-hero > button,
 .course-hero > button,
-.team-hero > button,
 .profile-head > button {
   margin-left: auto;
+}
+.project-hero .actions,
+.team-hero .actions {
+  justify-content: flex-end;
+  align-content: flex-start;
+}
+@media (max-width: 1150px) {
+  .project-hero,
+  .team-hero {
+    flex-wrap: wrap;
+  }
+  .project-hero > div:first-child,
+  .team-hero-main {
+    flex-basis: 100%;
+  }
+  .project-hero .actions,
+  .team-hero .actions {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 .detail-grid {
   display: grid;
@@ -2455,6 +2482,22 @@ h3 {
   }
 }
 @media (max-width: 650px) {
+  .project-hero .actions,
+  .team-hero .actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .project-hero .actions > *,
+  .team-hero .actions > * {
+    width: 100%;
+    min-height: 44px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .team-hero .actions > :first-child:nth-last-child(3) {
+    grid-column: 1 / -1;
+  }
   .social-post footer button,
   .small-follow,
   .comment-box button,
