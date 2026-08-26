@@ -14,7 +14,6 @@ import {
   pathAllowedForRole,
   safeInternalPath,
   validatePassword,
-  type ProductRole,
 } from "@/lib/auth/validation";
 
 function value(formData: FormData, name: string) {
@@ -288,8 +287,4 @@ export async function profileUpdateAction(formData: FormData) {
 
   if (error) redirect(`/account/profile?error=${error.code === "23505" ? "username" : "save"}`);
   redirect("/account/profile?status=saved");
-}
-
-export function roleLabel(role: ProductRole) {
-  return role === "investor" ? "Investidor" : "Participante";
 }
