@@ -3,6 +3,7 @@ import {
   homeForRole,
   isValidEmail,
   isValidUsername,
+  MIN_PASSWORD_LENGTH,
   normalizeUsername,
   pathAllowedForRole,
   safeInternalPath,
@@ -16,6 +17,7 @@ describe("safeInternalPath", () => {
     expect(safeInternalPath("//evil.example", "/login")).toBe("/login");
     expect(safeInternalPath("/app\\evil", "/login")).toBe("/login");
     expect(safeInternalPath("/app\nSet-Cookie:x", "/login")).toBe("/login");
+    expect(safeInternalPath("javascript:alert(1)", "/login")).toBe("/login");
   });
 });
 
@@ -30,9 +32,11 @@ describe("username", () => {
 describe("credenciais", () => {
   it("valida email de forma básica e senha por comprimento", () => {
     expect(isValidEmail("pessoa@example.com")).toBe(true);
-    expect(isValidEmail("invalido@" )).toBe(false);
-    expect(validatePassword("123456789")).toBeTruthy();
+    expect(isValidEmail("invalido@")).toBe(false);
+    expect(MIN_PASSWORD_LENGTH).toBe(12);
+    expect(validatePassword("12345678901")).toBeTruthy();
     expect(validatePassword("uma-senha-comprida")).toBeNull();
+    expect(validatePassword("x".repeat(129))).toBeTruthy();
   });
 });
 

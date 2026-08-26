@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
+import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
+import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { loginAction } from "@/app/auth/actions";
 import { safeInternalPath } from "@/lib/auth/validation";
 
@@ -13,17 +15,24 @@ export default async function LoginPage({
   const status = typeof params.status === "string" ? params.status : "";
   const next = safeInternalPath(params.next, "");
 
+  const errorMessage =
+    error === "session"
+      ? "Sua sessão não pôde ser validada. Entre novamente."
+      : error === "captcha"
+        ? "Conclua a verificação de segurança e tente novamente."
+        : error === "rate"
+          ? "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente."
+          : error === "temporary"
+            ? "O login está temporariamente indisponível. Tente novamente em instantes."
+            : error
+              ? "E-mail ou senha inválidos."
+              : "";
+
   return (
-    <AuthShell title="Entrar no Envista" description="Acesse sua conta com autenticação real pelo Supabase.">
-      {error ? (
-        <div className={styles.error} role="alert">
-          {error === "session"
-            ? "Sua sessão não pôde ser validada. Entre novamente."
-            : "E-mail ou senha inválidos."}
-        </div>
-      ) : null}
+    <AuthShell title="Entrar no Envista" description="Acesse sua conta com autenticação protegida pelo Supabase.">
+      {errorMessage ? <div className={styles.error} role="alert">{errorMessage}</div> : null}
       {status === "password-updated" ? (
-        <div className={styles.success}>Senha atualizada. Entre novamente.</div>
+        <div className={styles.success}>Senha atualizada e sessões anteriores encerradas. Entre novamente.</div>
       ) : null}
       {status === "confirmed" ? (
         <div className={styles.success}>E-mail confirmado. Agora você pode entrar.</div>
@@ -38,9 +47,10 @@ export default async function LoginPage({
           Senha
           <input type="password" name="password" autoComplete="current-password" maxLength={128} required />
         </label>
-        <button className={`${styles.primary} ${styles.full}`} type="submit">
+        <div className={styles.captcha}><AuthCaptcha action="login" /></div>
+        <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Entrando...">
           Entrar
-        </button>
+        </AuthSubmitButton>
       </form>
       <div className={styles.links}>
         <Link href="/forgot-password">Esqueci minha senha</Link>
