@@ -124,10 +124,10 @@ function trackEvent(name:string) {
   storage.set("analytics-events", {...events, [name]:(events[name] || 0) + 1});
 }
 
-export default function EnvistaApp() {
+export default function EnvistaApp({ authenticatedProfile }: { authenticatedProfile?: User } = {}) {
   const pathname = usePathname();
   const router = useRouter();
-  const [role, setRole] = useState<Role>("participant");
+  const [role, setRole] = useState<Role>(authenticatedProfile?.role || "participant");
   const [ready, setReady] = useState(false);
   const [saved, setSaved] = useState<string[]>([]);
   const [following, setFollowing] = useState<string[]>([]);
@@ -182,7 +182,7 @@ export default function EnvistaApp() {
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    setRole(storage.get<Role>("role", "participant"));
+    setRole(authenticatedProfile?.role || storage.get<Role>("role", "participant"));
     setSaved(storage.get<string[]>("saved", []));
     setFollowing(storage.get<string[]>("following", []));
     setLikedProjects(storage.get<string[]>("liked-projects", []));
@@ -300,14 +300,20 @@ export default function EnvistaApp() {
     }, 0);
   }
   const baseMe =
-    activeRole === "investor"
-      ? investor
-      : activeRole === "admin"
-        ? adminUser
-        : participant;
-  const accountSettings = storage.get(`settings-${activeRole}`, {name:baseMe.name,username:baseMe.username});
+    activeRole === "admin"
+      ? adminUser
+      : authenticatedProfile && authenticatedProfile.role === activeRole
+        ? authenticatedProfile
+        : activeRole === "investor"
+          ? investor
+          : participant;
+  const accountSettings = authenticatedProfile && activeRole !== "admin"
+    ? {name: baseMe.name, username: baseMe.username}
+    : storage.get(`settings-${activeRole}`, {name:baseMe.name,username:baseMe.username});
   void accountVersion;
-  const me = {...baseMe,name:accountSettings.name || baseMe.name,username:accountSettings.username || baseMe.username};
+  const me = authenticatedProfile && activeRole !== "admin"
+    ? baseMe
+    : {...baseMe,name:accountSettings.name || baseMe.name,username:accountSettings.username || baseMe.username};
   const nav =
     activeRole === "investor"
       ? navInvestor
@@ -315,8 +321,13 @@ export default function EnvistaApp() {
         ? navAdmin
         : navParticipant;
 
-  const logout = () => {
+  const logout = async () => {
     storage.remove("role");
+    if (authenticatedProfile) {
+      await fetch("/auth/signout", { method: "POST", credentials: "same-origin" });
+      window.location.assign("/login");
+      return;
+    }
     router.push("/login");
   };
 
@@ -372,7 +383,7 @@ export default function EnvistaApp() {
         {activeRole === "participant" && (
           <div className="side-section">
             <span>Configurações</span>
-            <button onClick={() => { router.push("/app/profile/lucasfer"); setMobileOpen(false); }}>
+            <button onClick={() => { router.push(`/app/profile/${me.username}`); setMobileOpen(false); }}>
               <CircleUserRound size={18} />
               Perfil
             </button>
@@ -408,7 +419,7 @@ export default function EnvistaApp() {
               aria-label="Abrir meu perfil"
               title="Abrir meu perfil"
               onClick={() => {
-                router.push(activeRole === "participant" ? "/app/profile/lucasfer" : activeRole === "investor" ? "/investor/profile" : "/admin/settings");
+                router.push(activeRole === "participant" ? `/app/profile/${me.username}` : activeRole === "investor" ? "/investor/profile" : "/admin/settings");
                 setMobileOpen(false);
               }}
             >
@@ -456,7 +467,7 @@ export default function EnvistaApp() {
               className="profile-avatar-btn"
               aria-label="Abrir meu perfil"
               title="Abrir meu perfil"
-              onClick={() => router.push(activeRole === "participant" ? "/app/profile/lucasfer" : activeRole === "investor" ? "/investor/profile" : "/admin/settings")}
+              onClick={() => router.push(activeRole === "participant" ? `/app/profile/${me.username}` : activeRole === "investor" ? "/investor/profile" : "/admin/settings")}
             >
               <Avatar name={me.name} />
             </button>
@@ -1370,7 +1381,7 @@ function RouteView(props: any) {
     if (pathname === "/investor/messages")
       return <Messages {...props} investorMode />;
     if (pathname === "/investor/profile")
-      return <Profile {...props} user={investor} isOwn />;
+      return <Profile {...props} user={props.me} isOwn />;
     if (pathname.startsWith("/investor/participants/"))
       return <PublicProfile {...props} kind="participant" id={pathname.split("/").pop()} />;
     if (pathname.startsWith("/investor/investors/"))
@@ -1424,7 +1435,7 @@ function RouteView(props: any) {
     return <CourseDetail {...props} slug={pathname.split("/").pop()} />;
   if (pathname === "/app/messages") return <Messages {...props} />;
   if (pathname.startsWith("/app/profile/"))
-    return <Profile {...props} user={participant} isOwn />;
+    return <Profile {...props} user={props.me} isOwn />;
   if (pathname.startsWith("/app/participants/"))
     return <PublicProfile {...props} kind="participant" id={pathname.split("/").pop()} />;
   if (pathname.startsWith("/app/investors/"))
@@ -3338,7 +3349,7 @@ function Messages({
           </div>
         </section>
       </div>
-      <p className="security-note">Backend Java preparado para autenticação, autorização e persistência. A integração Supabase será ligada na próxima etapa; não há alegação de criptografia ponta a ponta.</p>
+      <p className="security-note">Autenticação e perfil usam Supabase Auth + RLS. Mensagens ainda são simuladas nesta etapa e não há alegação de criptografia ponta a ponta.</p>
     </>
   );
 }
@@ -3395,7 +3406,7 @@ function Profile({
         </div>
         <div className="profile-actions">
           {isOwn ? (
-            <button className="secondary" onClick={() => setEditing(true)}>Editar perfil</button>
+            <button className="secondary" onClick={() => go("/account/profile")}>Editar perfil</button>
           ) : (
             <>
               <EntityFollowButton kind={publicKind} id={user.id} name={user.name} setToast={setToast} />
