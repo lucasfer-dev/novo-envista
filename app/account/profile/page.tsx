@@ -58,7 +58,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
         <label>Visibilidade do perfil<select name="profile_visibility" defaultValue={profile.profile_visibility} disabled={isChild}><option value="private">Privado</option>{!isChild ? <option value="platform">Visível para usuários autenticados</option> : null}</select></label>
         {isChild ? <input type="hidden" name="profile_visibility" value="private" /> : null}
         <label className={styles.check}><input type="checkbox" name="allow_messages" defaultChecked={profile.allow_messages} disabled={isChild} /><span>{isChild ? "Mensagens permanecem desativadas para esta faixa etária." : "Permitir que outros usuários autenticados iniciem uma conversa comigo."}</span></label>
-        <div className={styles.actions}><button className={styles.primary} type="submit">Salvar perfil</button><Link className={styles.secondary} href={home}>Voltar ao Envista</Link></div>
+        <div className={styles.actions}><button className={styles.primary} type="submit">Salvar perfil</button><Link className={styles.secondary} href="/account/privacy">Privacidade e meus dados</Link><Link className={styles.secondary} href={home}>Voltar ao Envista</Link></div>
       </form>
     </AuthShell>
   );
