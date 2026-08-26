@@ -1,0 +1,49 @@
+name: Supabase foundation
+
+on:
+  push:
+    branches:
+      - feat/supabase-foundation
+    paths:
+      - .github/workflows/supabase-foundation.yml
+
+permissions:
+  contents: write
+
+jobs:
+  install-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feat/supabase-foundation
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Supabase packages
+        run: npm install @supabase/supabase-js @supabase/ssr
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Diff check
+        run: git diff --check
+
+      - name: Commit dependency lock and remove helper workflow
+        run: |
+          rm -f .github/workflows/supabase-foundation.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json .github/workflows/supabase-foundation.yml
+          git diff --cached --quiet || git commit -m "chore: instala dependências do Supabase"
+          git push origin HEAD:feat/supabase-foundation
