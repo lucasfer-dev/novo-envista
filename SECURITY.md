@@ -4,7 +4,7 @@
 
 Esta política cobre o frontend Next.js, integrações Supabase, banco PostgreSQL, Storage, autenticação, rotas de servidor e automações que tratem dados do Envista.
 
-O runtime suportado a partir da integração Supabase é **Node.js 22 ou superior**.
+O runtime suportado a partir da integração Supabase é **Node.js 22 ou superior**. A baseline desta revisão usa **Next.js 16.3.3 ou superior dentro da linha compatível**, após o audit identificar vulnerabilidades altas nas dependências herdadas da versão anterior.
 
 ## Princípios obrigatórios
 
