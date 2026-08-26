@@ -14,7 +14,9 @@ export interface User {
   state?: string
   organization?: string
   jobTitle?: string
+  organizationType?: string
   interests?: string[]
+  stages?: string[]
 }
 
 export interface TeamMember { userId: string; role: string; joinedAt: string }
