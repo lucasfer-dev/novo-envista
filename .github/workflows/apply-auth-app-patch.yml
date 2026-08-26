@@ -1,0 +1,58 @@
+name: Apply auth app patch
+
+on:
+  push:
+    branches:
+      - feat/auth-onboarding-real
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feat/auth-onboarding-real
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Apply EnvistaApp patch
+        run: python .github/scripts/apply_auth_app_patch.py
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder_only
+          NEXT_PUBLIC_SITE_URL: https://example.com
+          AUTH_SIGNUP_ENABLED: "false"
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Diff check
+        run: git diff --check
+
+      - name: Commit product changes and cleanup helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/scripts/apply_auth_app_patch.py .github/workflows/apply-auth-app-patch.yml
+          git add components/EnvistaApp.tsx
+          git commit -m "feat: conecta sessão real ao app existente"
+          git push origin HEAD:feat/auth-onboarding-real
