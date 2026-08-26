@@ -1,0 +1,35 @@
+name: Apply social entity patch
+on:
+  push:
+    branches: [feat/social-real]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with: { ref: feat/social-real }
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, cache: npm }
+      - run: python .github/scripts/apply_social_entity_patch.py
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder_only
+          NEXT_PUBLIC_SITE_URL: https://example.com
+          AUTH_SIGNUP_ENABLED: "false"
+      - run: npm audit --omit=dev --audit-level=high
+      - run: git diff --check
+      - name: Commit product changes and cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/scripts/apply_social_entity_patch.py .github/workflows/apply-social-entity-patch.yml
+          git add components/real/TeamsViews.tsx components/real/ProjectsViews.tsx
+          git commit -m "feat: integra follows e feed nos detalhes"
+          git push origin HEAD:feat/social-real
