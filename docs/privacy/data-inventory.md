@@ -5,12 +5,12 @@ Este inventário deve ser atualizado junto com o schema. Nenhuma categoria nova 
 | Categoria | Exemplos | Local | Visibilidade | Finalidade inicial | Retenção inicial |
 |---|---|---|---|---|---|
 | Identidade de conta | UUID, e-mail de autenticação | Supabase Auth | privada | autenticar e recuperar conta | enquanto a conta existir + obrigações legais aplicáveis |
-| Perfil de diretório | username, nome de exibição, bio, avatar, organização | `public.profiles` | própria ou plataforma, conforme opção | identidade e descoberta na plataforma | enquanto a conta existir |
-| Localização/escola publicadas voluntariamente | `public_city`, `public_state`, `public_school` | `public.profiles` | própria ou plataforma | contexto público escolhido pelo usuário | enquanto publicado/conta existir |
+| Perfil de diretório | username, nome de exibição, bio, avatar, organização | `public.profiles` | própria ou plataforma, conforme opção e proteção etária | identidade e descoberta na plataforma | enquanto a conta existir |
+| Localização/escola publicadas voluntariamente | `public_city`, `public_state`, `public_school` | `public.profiles` | própria ou plataforma quando permitido | contexto público escolhido pelo usuário | enquanto publicado/conta existir |
 | Preferência de contato | `allow_messages` | `public.profiles` | plataforma | controlar possibilidade de contato | enquanto a conta existir |
 | Conformidade etária | faixa `child/adolescent/adult/unknown` | `public.account_compliance` | somente titular + operação confiável | aplicar proteções adequadas à idade | enquanto necessário para a conta |
 | Consentimento de responsável | status/data/referência de verificação | `public.account_compliance` | somente titular + operação confiável | comprovar fluxo aplicável a crianças | conforme obrigação e política de retenção definida antes do lançamento |
-| Aceites legais | tipo, versão, data/hora, contexto | `public.legal_acceptances` | somente titular + operação confiável | demonstrar versão aceita de Termos/Aviso | conforme necessidade jurídica e princípio da necessidade |
+| Eventos de documentos legais | tipo, versão, data/hora, contexto | `public.legal_acceptances` | somente titular + operação confiável | registrar aceite de Termos e ciência/apresentação do Aviso de Privacidade | conforme necessidade jurídica e princípio da necessidade |
 | Privilégio administrativo | vínculo de admin e concessão | `public.admin_memberships` | somente operação confiável | autorização administrativa | enquanto o privilégio existir + trilha necessária |
 | Avatar | arquivo JPEG/PNG/WebP | Storage `avatars` | condicionado ao perfil | identidade visual | enquanto usado; versões antigas devem ser removidas |
 
@@ -31,7 +31,13 @@ Se uma funcionalidade futura realmente exigir uma dessas categorias, ela deve us
 
 A fundação não persiste data de nascimento completa. O fluxo de onboarding deverá receber a informação necessária para aferição de faixa etária, calcular a categoria no lado confiável e descartar a data exata, salvo se uma necessidade jurídica/produto específica for documentada.
 
-Perfis novos nascem privados e mensagens desabilitadas. A exposição passa a ser uma escolha explícita do fluxo de onboarding, respeitando proteções adicionais para menores.
+Perfis novos nascem privados e mensagens desabilitadas. Enquanto `age_band` estiver `unknown`, o banco impede que o próprio cliente libere perfil público ou mensagens. Para `child`, a exposição de perfil só pode ser destravada após verificação de responsável e mensagens permanecem bloqueadas pela policy atual. Regras de contato para adolescentes devem ser revisadas novamente antes de Mensagens reais.
+
+## Documentos legais
+
+O browser não possui INSERT direto em `legal_acceptances`. O fluxo de Auth/onboarding deverá registrar eventos por operação confiável e somente para versões conhecidas do documento.
+
+Uma entrada de `privacy` não deve ser tratada automaticamente como consentimento LGPD. O Aviso de Privacidade informa o tratamento; a base legal precisa ser definida por finalidade. Quando consentimento for realmente a base legal de uma finalidade específica, esse consentimento deve ter fluxo e registro próprios.
 
 ## Terceiros / operadores a documentar antes do lançamento
 
