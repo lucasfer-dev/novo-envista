@@ -12,6 +12,7 @@ export const adminUser: User = {
 }
 export const investor: User = {
   id:'i1', username:'marinaalves', name:'Marina Alves', role:'investor', organization:'Horizonte Ventures', jobTitle:'Investment Associate', city:'São Paulo', state:'SP',
+  organizationType:'Venture capital', stages:['Ideação','MVP','Tração'],
   bio:'Busco equipes jovens resolvendo problemas reais com tecnologia e impacto mensurável.',
   interests:['EdTech','Sustentabilidade','IA','Impacto social']
 }
