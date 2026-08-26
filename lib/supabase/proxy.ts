@@ -1,8 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { hasSupabaseAuthCookieNames } from "@/lib/supabase/auth-cookie";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 
 export async function updateSession(request: NextRequest) {
+  // Visitantes sem cookie de sessão/PKCE não precisam instanciar Auth nem validar
+  // claims. Quem possui sessão continua passando pelo refresh normal abaixo.
+  if (!hasSupabaseAuthCookieNames(request.cookies.getAll().map(({ name }) => name))) {
+    return NextResponse.next({ request });
+  }
+
   const { url, publishableKey } = getSupabaseConfig();
   let response = NextResponse.next({ request });
 
