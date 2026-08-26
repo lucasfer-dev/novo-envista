@@ -15,7 +15,7 @@ export async function TeamsServerIndex({ expectedRole, searchParams }: { expecte
   const [{ data: memberships }, { data: invitations }] = await Promise.all([
     supabase
       .from("team_members")
-      .select("role_label,access_level,joined_at,teams(id,slug,name,description,category,city,institution,tags,visibility,owner_id)")
+      .select("role_label,access_level,joined_at,teams(id,slug,name,description,category,city,institution,tags,visibility,owner_id,logo_path)")
       .eq("user_id", userId)
       .order("joined_at", { ascending: false }),
     supabase
@@ -50,7 +50,7 @@ export async function TeamServerDetail({ expectedRole, slug, searchParams }: { e
   const query = await searchParams;
   const { data: team } = await supabase
     .from("teams")
-    .select("id,slug,name,description,category,city,institution,tags,visibility,owner_id")
+    .select("id,slug,name,description,category,city,institution,tags,visibility,owner_id,logo_path")
     .eq("slug", slug)
     .maybeSingle();
   if (!team) notFound();

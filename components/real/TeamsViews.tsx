@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TeamLogoPanel from "@/components/storage/TeamLogoPanel";
 import type { User } from "@/types";
 import {
   cancelTeamInvitationAction,
@@ -25,6 +26,7 @@ type TeamSummary = {
   tags: string[];
   visibility: "private" | "platform";
   owner_id: string;
+  logo_path: string | null;
 };
 
 type Membership = {
@@ -218,6 +220,7 @@ export function TeamDetailView({ role, user, team, members, invitations, canMana
         </div>
 
         <aside className={styles.stack}>
+          <TeamLogoPanel teamId={team.id} currentPath={team.logo_path} canManage={canManage} />
           {canManage && <section className={styles.card}>
             <h3>Convidar membro</h3>
             <p className={styles.muted}>Por privacidade, o convite usa o @username de uma conta visível na plataforma — não e-mail.</p>
