@@ -4,7 +4,7 @@ import { Team, User } from "../types";
 export type ProfileKind = "participant" | "investor" | "team";
 export type EntityKind = ProfileKind | "project";
 export type AppContext = "participant" | "investor";
-export type NavigationSource = "explore" | "social" | "management";
+export type NavigationSource = "explore" | "social" | "messages" | "management";
 
 export function getParticipantById(idOrUsername: string): User | undefined {
   return people.find((person) =>
@@ -54,9 +54,9 @@ export function parsePublicEntityRoute(pathname: string): {
   type: EntityKind;
   id: string;
 } | undefined {
-  const match = pathname.match(/^\/(app|investor)\/(explore|social)\/(participants|investors|teams|projects)\/([^/]+)$/);
+  const match = pathname.match(/^\/(app|investor)\/(explore|social|messages)\/(participants|investors|teams|projects)\/([^/]+)$/);
   if (!match) return undefined;
   const [, base, source, segment, id] = match;
   const type = segment === "participants" ? "participant" : segment === "investors" ? "investor" : segment.slice(0, -1) as EntityKind;
-  return { context: base === "investor" ? "investor" : "participant", source: source as "explore" | "social", type, id };
+  return { context: base === "investor" ? "investor" : "participant", source: source as "explore" | "social" | "messages", type, id };
 }

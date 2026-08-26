@@ -3172,3 +3172,64 @@ h3 {
 }
 .social-project-link:hover,
 .social-project-link:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+
+
+/* profile-social-actions */
+.profile-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.profile-feed {
+  display: grid;
+  gap: 12px;
+}
+.profile-feed-post {
+  margin: 0;
+}
+.profile-feed-post footer > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.profile-feed-empty {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 34px 20px;
+  text-align: center;
+}
+.profile-feed-empty p {
+  margin: 0;
+  color: var(--muted);
+}
+.message-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.message-profile-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+@media (max-width: 650px) {
+  .profile-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .profile-actions > button {
+    flex: 1 1 140px;
+  }
+  .message-profile-action {
+    padding-inline: 10px;
+  }
+  .message-profile-action svg {
+    display: none;
+  }
+}
