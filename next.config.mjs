@@ -10,6 +10,8 @@ const contentSecurityPolicy = [
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "media-src 'self' blob: https:",
+  "worker-src 'self' blob:",
+  "frame-src 'none'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -22,6 +24,10 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
+  { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+  { key: "Origin-Agent-Cluster", value: "?1" },
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
@@ -36,9 +42,22 @@ const securityHeaders = [
     : []),
 ];
 
+const sensitiveHeaders = [
+  { key: "Cache-Control", value: "private, no-store, max-age=0" },
+  { key: "Pragma", value: "no-cache" },
+];
+
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // Os uploads reais vão direto ao Supabase Storage. As Server Actions desta
+    // aplicação recebem apenas formulários pequenos, então reduzimos a área de
+    // ataque de parsing de payloads muito grandes.
+    serverActions: {
+      bodySizeLimit: "256kb",
+    },
+  },
   // Mantém o Fast Refresh isolado do build de produção. Isso evita manifests
   // incompletos quando um build é executado enquanto o servidor local está ativo.
   distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
@@ -48,6 +67,17 @@ const nextConfig = {
         source: "/(.*)",
         headers: securityHeaders,
       },
+      ...[
+        "/login",
+        "/register",
+        "/forgot-password",
+        "/update-password",
+        "/onboarding",
+        "/guardian-required",
+        "/auth/:path*",
+        "/account/:path*",
+        "/admin/:path*",
+      ].map((source) => ({ source, headers: sensitiveHeaders })),
     ];
   },
 };
