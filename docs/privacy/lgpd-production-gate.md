@@ -8,8 +8,9 @@ Este checklist é um controle de produto/engenharia e não substitui revisão ju
 - [ ] definir canal para exercício de direitos dos titulares;
 - [ ] publicar Aviso de Privacidade com linguagem clara e adequada ao público;
 - [ ] publicar Termos de Uso e versionar ambos os documentos;
-- [ ] registrar aceite da versão aplicável no fluxo de onboarding;
+- [ ] registrar aceite dos Termos e ciência/apresentação da versão do Aviso de Privacidade por fluxo confiável;
 - [ ] mapear bases legais por finalidade, sem usar consentimento como solução genérica;
+- [ ] quando consentimento for de fato a base legal, criar registro específico, livre, informado, inequívoco e revogável;
 - [ ] definir retenção e rotina de exclusão/anonimização por categoria;
 - [ ] documentar operadores/terceiros e transferências internacionais;
 - [ ] decidir e documentar a atuação do encarregado/DPO quando aplicável;
@@ -29,15 +30,16 @@ A Lei nº 15.211/2025 (Estatuto Digital da Criança e do Adolescente), vigente d
 Antes de habilitar conta real para esse público:
 
 - [ ] definir método proporcional de aferição de idade;
-- [ ] evitar guardar data de nascimento completa se uma faixa etária for suficiente;
+- [x] impedir exposição pública enquanto a faixa etária estiver `unknown` no banco;
+- [x] evitar persistir data de nascimento completa nesta fundação;
 - [ ] implementar fluxo verificável de responsável legal quando exigido;
-- [ ] perfil de menor deve nascer com privacidade elevada;
-- [ ] minimizar descoberta, localização e contato por padrão;
+- [x] perfil novo nasce com privacidade elevada e mensagens desligadas;
+- [ ] revisar localização/escola e demais campos públicos por faixa etária;
 - [ ] fornecer explicações em linguagem simples e adequada à idade;
 - [ ] revisar mecanismos sociais, mensagens e exposição pública sob a ótica do melhor interesse;
 - [ ] avaliar necessidade de Relatório de Impacto à Proteção de Dados (RIPD), especialmente por envolver menores e funcionalidades sociais.
 
-A tabela `account_compliance` foi criada justamente para que o cliente não consiga declarar sozinho faixa etária/consentimento verificado.
+A tabela `account_compliance` foi criada justamente para que o cliente não consiga declarar sozinho faixa etária/consentimento verificado. A policy atual mantém perfil privado/mensagens desligadas enquanto a idade está `unknown`; para `child`, perfil de plataforma depende de responsável verificado e mensagens continuam bloqueadas.
 
 ## Direitos dos titulares
 
