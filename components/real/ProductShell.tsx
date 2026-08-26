@@ -24,6 +24,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         [`${prefix}/explore`, "Explorar"],
         [`${prefix}/projects`, "Meus projetos"],
         [`${prefix}/teams`, "Minhas equipes"],
+        [`${prefix}/interests`, "Meus interesses"],
         [`${prefix}/saved`, "Projetos salvos"],
         [`${prefix}/following`, "Seguindo"],
         [`${prefix}/messages`, "Mensagens"],
@@ -33,6 +34,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         [`${prefix}/social`, "Social"],
         [`${prefix}/explore`, "Explorar"],
         [`${prefix}/projects`, "Meus projetos"],
+        [`${prefix}/interests`, "Interesses recebidos"],
         [`${prefix}/teams`, "Minhas equipes"],
         [`${prefix}/learn`, "Aprender"],
         [`${prefix}/messages`, "Mensagens"],
@@ -58,7 +60,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
           })}
         </nav>
         <div className={styles.bottom}>
-          <Link className={styles.profile} href="/account/profile">
+          <Link className={styles.profile} href="/account">
             <span className={styles.avatar}>{initials(user.name)}</span>
             <span className={styles.meta}><strong>{user.name}</strong><span>@{user.username}</span></span>
           </Link>
@@ -69,6 +71,9 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         <header className={styles.topbar}>
           <button className={styles.menu} aria-label="Abrir navegação" onClick={() => setOpen(true)}>☰</button>
           <span className={styles.topbarTitle}>{title}</span>
+          <form className={styles.searchForm} action={`${prefix}/search`} method="get">
+            <input className={styles.searchInput} name="q" maxLength={80} aria-label="Buscar no Envista" placeholder="Buscar projetos, equipes ou pessoas..." />
+          </form>
           <span className={styles.topbarActions}><NotificationsBell userId={user.id} prefix={prefix}/><span>@{user.username}</span></span>
         </header>
         <div className={styles.content}>{children}</div>
