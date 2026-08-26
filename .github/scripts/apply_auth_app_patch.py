@@ -109,4 +109,4 @@ role_helper = '''\nexport function roleLabel(role: ProductRole) {\n  return role
 if role_helper not in actions:
     raise SystemExit("pattern not found: role helper")
 actions = actions.replace(role_helper, "\n")
-actions_path.write_text(actions, encoding="utf-8")
+actions_path.write_text(actions.rstrip() + "\n", encoding="utf-8")
