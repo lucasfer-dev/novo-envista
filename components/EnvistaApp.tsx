@@ -63,7 +63,7 @@ type MessageThreads = Record<string, ChatMessage[]>;
 type SocialPost = { id: string; author: string; handle: string; body: string; likes: number; time: string; image?: string; comments?: Array<{id:string;author:string;text:string}> };
 import { storage } from "@/lib/storage";
 import { isNavItemActive } from "@/lib/navigation";
-import { getInvestorById, getParticipantById, profileRoute } from "@/lib/profiles";
+import { entityRoute, getInvestorById, getParticipantById, parsePublicEntityRoute, profileRoute } from "@/lib/profiles";
 import { canFollowProject, getGreeting, normalizeSearch, toggleSocialPostLike, validateParticipantLocation } from "@/lib/mvp";
 
 const navParticipant = [
@@ -864,54 +864,54 @@ function AdminLogin({
           <input
             value={pass}
             onChange={(e) => setPass(e.target.value)}
-            type="password"
-            placeholder="••••••••"
-          />
-        </label>
-        <button
-          className="primary full"
-          onClick={enterAdmin}
-        >
-          Entrar como administrador
-        </button>
-        {error && <p className="form-error" role="alert">{error}</p>}
-        <p className="security-note">
-          Este formulário ainda é visual. O backend Java já está estruturado
-          para trocar isso por autenticação real e autorização por role no
-          Supabase.
-        </p>
-      </div>
+          type="password"
+          placeholder="••••••••"
+        />
+      </label>
+      <button
+        className="primary full"
+        onClick={enterAdmin}
+      >
+        Entrar como administrador
+      </button>
+      {error && <p className="form-error" role="alert">{error}</p>}
+      <p className="security-note">
+        Este formulário ainda é visual. O backend Java já está estruturado
+        para trocar isso por autenticação real e autorização por role no
+        Supabase.
+      </p>
     </div>
-  );
+  </div>
+);
 }
 
 function Register({
-  go,
-  setRole,
+go,
+setRole,
 }: {
-  go: (p: string) => void;
-  setRole: (r: Role) => void;
+go: (p: string) => void;
+setRole: (r: Role) => void;
 }) {
-  const [step, setStep] = useState(0);
-  const [r, setR] = useState<Role>("participant");
-  const [name, setName] = useState("");
-  const [participantCity, setParticipantCity] = useState("");
-  const [participantState, setParticipantState] = useState("");
-  const [validationError, setValidationError] = useState("");
-  const nextStep = () => {
-    if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
-      setValidationError("Preencha Cidade e Estado para continuar.");
-      return;
-    }
-    setValidationError("");
-    setStep((current) => current + 1);
-  };
-  if (step === 0)
-    return (
-      <div className="simple-auth">
-        <button className="brand" onClick={() => go("/")}>
-          <img src="/envista-logo.png" alt="" />
-          <b>Envista</b>
+const [step, setStep] = useState(0);
+const [r, setR] = useState<Role>("participant");
+const [name, setName] = useState("");
+const [participantCity, setParticipantCity] = useState("");
+const [participantState, setParticipantState] = useState("");
+const [validationError, setValidationError] = useState("");
+const nextStep = () => {
+if (r === "participant" && step === 2 && !validateParticipantLocation(participantCity, participantState)) {
+  setValidationError("Preencha Cidade e Estado para continuar.");
+  return;
+}
+setValidationError("");
+setStep((current) => current + 1);
+};
+if (step === 0)
+return (
+    <div className="simple-auth">
+      <button className="brand" onClick={() => go("/")}>
+        <img src="/envista-logo.png" alt="" />
+  <b>Envista</b>
         </button>
         <div className="onboard-card">
           <span className="eyebrow">CRIAR CONTA</span>
@@ -1348,6 +1348,12 @@ function RouteView(props: any) {
     return <AdminArea {...props} />;
   }
   if (role === "investor") {
+    const publicEntity = parsePublicEntityRoute(pathname);
+    if (publicEntity?.context === "investor") {
+      if (publicEntity.type === "participant" || publicEntity.type === "investor") return <PublicProfile {...props} kind={publicEntity.type} id={publicEntity.id} navigationSource={publicEntity.source} />;
+      if (publicEntity.type === "team") return <TeamDetail {...props} slug={publicEntity.id} mode="public" navigationSource={publicEntity.source} investorMode />;
+      return <ProjectDetail {...props} slug={publicEntity.id} mode="public" navigationSource={publicEntity.source} investorMode />;
+    }
     if (pathname === "/investor") return <InvestorHome {...props} />;
     if (pathname === "/investor/social") return <SocialFeed {...props} />;
     if (pathname === "/investor/explore")
@@ -1387,6 +1393,12 @@ function RouteView(props: any) {
         />
       );
     return <InvestorHome {...props} />;
+  }
+  const publicEntity = parsePublicEntityRoute(pathname);
+  if (publicEntity?.context === "participant") {
+    if (publicEntity.type === "participant" || publicEntity.type === "investor") return <PublicProfile {...props} kind={publicEntity.type} id={publicEntity.id} navigationSource={publicEntity.source} />;
+    if (publicEntity.type === "team") return <TeamDetail {...props} slug={publicEntity.id} mode="public" navigationSource={publicEntity.source} />;
+    return <ProjectDetail {...props} slug={publicEntity.id} mode="public" navigationSource={publicEntity.source} />;
   }
   if (pathname === "/app") return <ParticipantHome {...props} />;
   if (pathname === "/app/social") return <SocialFeed {...props} />;
@@ -1615,7 +1627,7 @@ function Explore({
           .includes(q.toLowerCase())) &&
       (stage === "Todos" || p.stage === stage),
   );
-  const base = investorMode ? "/investor" : "/app";
+  const context = investorMode ? "investor" : "participant";
   return (
     <>
       <PageHead
@@ -1633,7 +1645,7 @@ function Explore({
                 <ProjectCard
                   key={p.id}
                   p={p}
-                  go={() => go(`${base}/projects/${p.slug}`)}
+                  go={() => go(entityRoute({ type: "project", id: p.slug, source: "explore", context }))}
                 />
               ))
           ) : (
@@ -1651,7 +1663,7 @@ function Explore({
             <ProjectListItem
               key={p.id}
               p={p}
-              go={() => go(`${base}/projects/${p.slug}`)}
+              go={() => go(entityRoute({ type: "project", id: p.slug, source: "explore", context }))}
             />
           ))}
         </div>
@@ -1663,7 +1675,7 @@ function Explore({
             <TeamCard
               key={t.id}
               team={t}
-              go={() => go(`${base}/teams/${t.slug}`)}
+              go={() => go(entityRoute({ type: "team", id: t.slug, source: "explore", context }))}
             />
           ))}
         </div>
@@ -1672,18 +1684,18 @@ function Explore({
         <h2>Pessoas da comunidade</h2>
         <div className="identity-grid">
           {people.slice(1, 5).map((person) => {
-            const href = profileRoute("participant", person.username, investorMode ? "investor" : "participant");
+            const href = entityRoute({ type: "participant", id: person.username, source: "explore", context });
             const team = teams.find((item) => item.members.some((member) => member.userId === person.id));
             return <div className="panel identity-card" key={person.id}>
               <IdentityAvatar name={person.name} href={href} go={go} />
               <div><IdentityName name={person.name} href={href} go={go} /><small>{person.skills?.[0] || "Participante"}</small>
-                {team && <IdentityName name={`Equipe ${team.name}`} href={profileRoute("team", team.slug, investorMode ? "investor" : "participant")} go={go} />}
+                {team && <IdentityName name={`Equipe ${team.name}`} href={entityRoute({ type: "team", id: team.slug, source: "explore", context })} go={go} />}
               </div>
             </div>;
           })}
           <div className="panel identity-card">
-            <IdentityAvatar name={investor.name} href={profileRoute("investor", investor.username, investorMode ? "investor" : "participant")} go={go} />
-            <div><IdentityName name={investor.name} href={profileRoute("investor", investor.username, investorMode ? "investor" : "participant")} go={go} /><small>{investor.jobTitle} · {investor.organization}</small></div>
+            <IdentityAvatar name={investor.name} href={entityRoute({ type: "investor", id: investor.username, source: "explore", context })} go={go} />
+            <div><IdentityName name={investor.name} href={entityRoute({ type: "investor", id: investor.username, source: "explore", context })} go={go} /><small>{investor.jobTitle} · {investor.organization}</small></div>
           </div>
         </div>
       </section>
@@ -1968,6 +1980,8 @@ function ProjectDetail({
   messages,
   setMessages,
   persistProjects,
+  mode = "management",
+  navigationSource,
 }: {
   slug: string;
   go: (p: string) => void;
@@ -1984,6 +1998,8 @@ function ProjectDetail({
   messages: any;
   setMessages: (v: any) => void;
   persistProjects: (v: Project[]) => void;
+  mode?: "public" | "management";
+  navigationSource?: "explore" | "social";
 }) {
   const p = projects.find((x) => x.slug === slug);
   const [tab, setTab] = useState("Visão geral");
@@ -1997,7 +2013,9 @@ function ProjectDetail({
   const [editDescription, setEditDescription] = useState(p?.shortDescription || "");
   const [editProblem, setEditProblem] = useState(p?.problem || "");
   const [editSolution, setEditSolution] = useState(p?.solution || "");
-  if (!p) return <NotFound go={go} />;
+  const context = investorMode ? "investor" : "participant";
+  const contextBase = investorMode ? "/investor" : "/app";
+  if (!p) return mode === "public" ? <EntityNotFound entity="Projeto" go={go} backTo={`${contextBase}/${navigationSource || "explore"}`} /> : <NotFound go={go} />;
   const team =
     p.author.type === "team"
       ? teams.find((t) => t.id === p.author.id)
@@ -2040,9 +2058,9 @@ function ProjectDetail({
     <>
       <button
         className="back"
-        onClick={() => go(investorMode ? "/investor" : "/app/projects")}
+        onClick={() => go(mode === "public" ? `${contextBase}/${navigationSource || "explore"}` : investorMode ? "/investor/projects" : "/app/projects")}
       >
-        <ArrowLeft size={16} /> Voltar
+        <ArrowLeft size={16} /> {mode === "public" ? navigationSource === "social" ? "Social" : "Explorar" : "Voltar"}
       </button>
       <div className="project-hero panel">
         <div>
@@ -2109,10 +2127,10 @@ function ProjectDetail({
               Tenho interesse
             </button>
           )}
-          {isMine && !investorMode && (
+          {mode === "management" && isMine && !investorMode && (
             <button className="secondary" onClick={() => setEditing(true)}>Editar projeto</button>
           )}
-          {isMine && !investorMode && (
+          {mode === "management" && isMine && !investorMode && (
             <button className="danger" onClick={remove}>
               Excluir projeto
             </button>
@@ -2231,9 +2249,9 @@ function ProjectDetail({
                     const u = people.find((x) => x.id === m.userId);
                     return u ? (
                       <div className="member" key={m.userId}>
-                        <IdentityAvatar name={u.name} href={profileRoute("participant", u.username, investorMode ? "investor" : "participant")} go={go} />
+                        <IdentityAvatar name={u.name} href={mode === "public" ? entityRoute({ type: "participant", id: u.username, source: navigationSource || "explore", context }) : profileRoute("participant", u.username, context)} go={go} />
                         <div>
-                          <IdentityName name={u.name} href={profileRoute("participant", u.username, investorMode ? "investor" : "participant")} go={go} />
+                          <IdentityName name={u.name} href={mode === "public" ? entityRoute({ type: "participant", id: u.username, source: navigationSource || "explore", context }) : profileRoute("participant", u.username, context)} go={go} />
                           <small>{m.role}</small>
                         </div>
                       </div>
@@ -2249,9 +2267,9 @@ function ProjectDetail({
         <aside className="panel project-side">
           <h3>Autoria</h3>
           <div className="mini-author">
-            <IdentityAvatar name={team?.name || participant.name} href={team ? profileRoute("team", team.slug, investorMode ? "investor" : "participant") : profileRoute("participant", participant.username, investorMode ? "investor" : "participant")} go={go} />
+            <IdentityAvatar name={team?.name || participant.name} href={mode === "public" ? entityRoute({ type: team ? "team" : "participant", id: team?.slug || participant.username, source: navigationSource || "explore", context }) : profileRoute(team ? "team" : "participant", team?.slug || participant.username, context)} go={go} />
             <div>
-              <IdentityName name={team?.name || participant.name} href={team ? profileRoute("team", team.slug, investorMode ? "investor" : "participant") : profileRoute("participant", participant.username, investorMode ? "investor" : "participant")} go={go} />
+              <IdentityName name={team?.name || participant.name} href={mode === "public" ? entityRoute({ type: team ? "team" : "participant", id: team?.slug || participant.username, source: navigationSource || "explore", context }) : profileRoute(team ? "team" : "participant", team?.slug || participant.username, context)} go={go} />
               <small>{team ? "Equipe" : "Projeto pessoal"}</small>
             </div>
           </div>
@@ -2448,6 +2466,9 @@ function TeamDetail({
   projects,
   setToast,
   persistTeams,
+  mode = "management",
+  navigationSource,
+  investorMode = false,
 }: {
   slug: string;
   go: (p: string) => void;
@@ -2455,6 +2476,9 @@ function TeamDetail({
   projects: Project[];
   setToast: (s: string) => void;
   persistTeams: (v: Team[]) => void;
+  mode?: "public" | "management";
+  navigationSource?: "explore" | "social";
+  investorMode?: boolean;
 }) {
   const team = teams.find((t) => t.slug === slug);
   const [tab, setTab] = useState("Visão geral");
@@ -2464,7 +2488,9 @@ function TeamDetail({
   const [inviteRole, setInviteRole] = useState("Membro");
   const [editName, setEditName] = useState(team?.name || "");
   const [editDescription, setEditDescription] = useState(team?.description || "");
-  if (!team) return <NotFound go={go} />;
+  const context = investorMode ? "investor" : "participant";
+  const contextBase = investorMode ? "/investor" : "/app";
+  if (!team) return mode === "public" ? <EntityNotFound entity="Equipe" go={go} backTo={`${contextBase}/${navigationSource || "explore"}`} /> : <NotFound go={go} />;
   const isMine = team.members.some((m) => m.userId === "u1");
   const remove = () => {
     if (!confirm(`Excluir a equipe ${team.name}?`)) return;
@@ -2479,8 +2505,8 @@ function TeamDetail({
   const removeMember = (userId:string) => {if(!confirm("Remover este membro da equipe?"))return;updateTeam({...team,members:team.members.filter((member)=>member.userId!==userId)});setToast("Membro removido.")};
   return (
     <>
-      <button className="back" onClick={() => go("/app/teams")}>
-        <ArrowLeft size={16} /> Minhas equipes
+      <button className="back" onClick={() => go(mode === "public" ? `${contextBase}/${navigationSource || "explore"}` : `${contextBase}/teams`)}>
+        <ArrowLeft size={16} /> {mode === "public" ? navigationSource === "social" ? "Social" : "Explorar" : "Minhas equipes"}
       </button>
       <div className="team-hero panel">
         <div className="team-hero-main">
@@ -2506,7 +2532,7 @@ function TeamDetail({
           </div>
         </div>
         <div className="actions">
-          {isMine && (
+          {mode === "management" && isMine && (
             <button
               className="secondary"
               onClick={() => setInviting(true)}
@@ -2514,8 +2540,8 @@ function TeamDetail({
               <UserPlus size={16} /> Convidar membro
             </button>
           )}
-          {isMine && <button className="secondary" onClick={() => setEditing(true)}>Editar equipe</button>}
-          {isMine && (
+          {mode === "management" && isMine && <button className="secondary" onClick={() => setEditing(true)}>Editar equipe</button>}
+          {mode === "management" && isMine && (
             <button className="danger" onClick={remove}>
               Excluir equipe
             </button>
@@ -2523,19 +2549,14 @@ function TeamDetail({
         </div>
       </div>
       <Tabs
-        values={[
-          "Visão geral",
-          "Projetos",
-          "Membros",
-          "Discussões",
-          "Arquivos",
-        ]}
+        values={mode === "public" ? ["Visão geral", "Projetos", "Membros"] : ["Visão geral", "Projetos", "Membros", "Discussões", "Arquivos"]}
         value={tab}
         setValue={setTab}
       />
       <section className="panel prose">
         {tab === "Visão geral" && (
           <>
+            {mode === "public" ? <><h2>Sobre a equipe</h2><p>{team.description}</p></> : <>
             <h2>Próximos objetivos</h2>
             <div className="objective">
               <CheckCircle2 />
@@ -2556,6 +2577,7 @@ function TeamDetail({
               A equipe atualizou materiais e registrou uma nova tarefa de
               validação.
             </p>
+            </>}
           </>
         )}
         {tab === "Projetos" && (
@@ -2566,7 +2588,7 @@ function TeamDetail({
                 <ProjectCard
                   key={p.id}
                   p={p}
-                  go={() => go(`/app/projects/${p.slug}`)}
+                  go={() => go(mode === "public" ? entityRoute({ type: "project", id: p.slug, source: navigationSource || "explore", context }) : entityRoute({ type: "project", id: p.slug, source: "management", context }))}
                 />
               ))}
           </div>
@@ -2577,14 +2599,14 @@ function TeamDetail({
             return (
               <div className="member-row" key={m.userId}>
                 <div className="member">
-                  <IdentityAvatar name={u.name} href={profileRoute("participant", u.username)} go={go} />
+                  <IdentityAvatar name={u.name} href={mode === "public" ? entityRoute({ type: "participant", id: u.username, source: navigationSource || "explore", context }) : profileRoute("participant", u.username, context)} go={go} />
                   <div>
-                    <IdentityName name={u.name} href={profileRoute("participant", u.username)} go={go} />
+                    <IdentityName name={u.name} href={mode === "public" ? entityRoute({ type: "participant", id: u.username, source: navigationSource || "explore", context }) : profileRoute("participant", u.username, context)} go={go} />
                     <small>@{u.username}</small>
                   </div>
                 </div>
-                {isMine ? <select aria-label={`Função de ${u.name}`} value={m.role} onChange={(event)=>changeRole(m.userId,event.target.value)}>{!["Líder de Projeto","Desenvolvedor","Designer","Pesquisa","Comunicação","IA","Eletrônica","Marketing","Membro"].includes(m.role)&&<option>{m.role}</option>}<option>Líder de Projeto</option><option>Desenvolvedor</option><option>Designer</option><option>Pesquisa</option><option>Comunicação</option><option>IA</option><option>Eletrônica</option><option>Marketing</option><option>Membro</option></select> : <span>{m.role}</span>}
-                {isMine && m.userId!=="u1" && <button className="danger small" onClick={()=>removeMember(m.userId)}>Remover</button>}
+                {mode === "management" && isMine ? <select aria-label={`Função de ${u.name}`} value={m.role} onChange={(event)=>changeRole(m.userId,event.target.value)}>{!["Líder de Projeto","Desenvolvedor","Designer","Pesquisa","Comunicação","IA","Eletrônica","Marketing","Membro"].includes(m.role)&&<option>{m.role}</option>}<option>Líder de Projeto</option><option>Desenvolvedor</option><option>Designer</option><option>Pesquisa</option><option>Comunicação</option><option>IA</option><option>Eletrônica</option><option>Marketing</option><option>Membro</option></select> : <span>{m.role}</span>}
+                {mode === "management" && isMine && m.userId!=="u1" && <button className="danger small" onClick={()=>removeMember(m.userId)}>Remover</button>}
               </div>
             );
           })}
@@ -3199,6 +3221,7 @@ function Profile({
   go,
   isOwn = false,
   role,
+  navigationSource,
 }: {
   user: User;
   projects: Project[];
@@ -3207,6 +3230,7 @@ function Profile({
   go: (p: string) => void;
   isOwn?: boolean;
   role?: Role;
+  navigationSource?: "explore" | "social";
 }) {
   const context = role === "investor" ? "investor" : "participant";
   const profileSettings = isOwn ? storage.get(`settings-${user.role}`, {showLocation:true}) : {showLocation:true};
@@ -3275,7 +3299,7 @@ function Profile({
           {projects
             .filter((p) => p.author.type === "user" ? p.author.id === user.id : teams.some((team) => team.id === p.author.id && team.members.some((member) => member.userId === user.id)))
             .map((p) => (
-              <ProjectCard key={p.id} p={p} go={() => go(`${context === "investor" ? "/investor" : "/app"}/projects/${p.slug}`)} />
+              <ProjectCard key={p.id} p={p} go={() => go(navigationSource ? entityRoute({ type: "project", id: p.slug, source: navigationSource, context }) : entityRoute({ type: "project", id: p.slug, source: "management", context }))} />
             ))}
           {!projects.some((p) => p.author.type === "user" ? p.author.id === user.id : teams.some((team) => team.id === p.author.id && team.members.some((member) => member.userId === user.id))) && <p className="profile-empty">Nenhum projeto público ainda.</p>}
         </div>
@@ -3285,7 +3309,7 @@ function Profile({
           {teams
             .filter((t) => t.members.some((member) => member.userId === user.id))
             .map((t) => (
-              <TeamCard key={t.id} team={t} go={() => go(profileRoute("team", t.slug, context))} />
+              <TeamCard key={t.id} team={t} go={() => go(navigationSource ? entityRoute({ type: "team", id: t.slug, source: navigationSource, context }) : profileRoute("team", t.slug, context))} />
             ))}
           {!teams.some((team) => team.members.some((member) => member.userId === user.id)) && <p className="profile-empty">Nenhuma equipe pública.</p>}
         </div>
@@ -3336,20 +3360,25 @@ function Profile({
   );
 }
 
-function PublicProfile({ kind, id, ...props }: { kind: "participant" | "investor"; id: string } & any) {
+function PublicProfile({ kind, id, navigationSource, ...props }: { kind: "participant" | "investor"; id: string; navigationSource?: "explore" | "social" } & any) {
   const user = kind === "participant" ? getParticipantById(id) : getInvestorById(id);
-  if (!user) return <ProfileNotFound go={props.go} />;
+  const base = props.role === "investor" ? "/investor" : "/app";
+  if (!user) return <ProfileNotFound go={props.go} backTo={`${base}/${navigationSource || "explore"}`} />;
   const isOwn = props.me?.id === user.id;
   return (
     <>
-      <button className="back" onClick={() => history.back()}><ArrowLeft size={16} /> Voltar</button>
-      <Profile {...props} user={user} isOwn={isOwn} />
+      <button className="back" onClick={() => props.go(`${base}/${navigationSource || "explore"}`)}><ArrowLeft size={16} /> {navigationSource === "social" ? "Social" : "Explorar"}</button>
+      <Profile {...props} user={user} isOwn={isOwn} navigationSource={navigationSource} />
     </>
   );
 }
 
-function ProfileNotFound({ go }: { go: (path: string) => void }) {
-  return <Empty title="Perfil não encontrado" desc="Esta identidade não existe ou não está disponível publicamente." action="Voltar para Explorar" onClick={() => go("/app/explore")} />;
+function ProfileNotFound({ go, backTo }: { go: (path: string) => void; backTo: string }) {
+  return <Empty title="Perfil não encontrado" desc="Esta identidade não existe ou não está disponível publicamente." action="Voltar" onClick={() => go(backTo)} />;
+}
+
+function EntityNotFound({ entity, go, backTo }: { entity: "Projeto" | "Equipe"; go: (path: string) => void; backTo: string }) {
+  return <Empty title={`${entity} não encontrad${entity === "Equipe" ? "a" : "o"}`} desc="Esta entidade não existe ou não está disponível publicamente." action="Voltar" onClick={() => go(backTo)} />;
 }
 
 function AdminArea({ setToast, pathname }: { setToast: (s: string) => void; pathname:string }) {
@@ -3578,12 +3607,14 @@ function SocialFeed({
   setToast,
   go,
   role,
+  projects,
 }: {
   me: User;
   teams: Team[];
   setToast: (s: string) => void;
   go: (path: string) => void;
   role: Role;
+  projects: Project[];
 }) {
   const [q, setQ] = useState("");
   const [text, setText] = useState("");
@@ -3696,8 +3727,12 @@ function SocialFeed({
     const team = teams.find((item) => item.slug === handle);
     const person = people.find((item) => item.username === handle) || (investor.username === handle ? investor : undefined);
     return team
-      ? profileRoute("team", team.slug, context)
-      : person ? profileRoute(person.role === "investor" ? "investor" : "participant", person.username, context) : undefined;
+      ? entityRoute({ type: "team", id: team.slug, source: "social", context })
+      : person ? entityRoute({ type: person.role === "investor" ? "investor" : "participant", id: person.username, source: "social", context }) : undefined;
+  };
+  const postProject = (post: SocialPost) => {
+    const team = teams.find((item) => `@${item.slug}` === post.handle);
+    return team ? projects.find((project) => team.projects.includes(project.id)) : undefined;
   };
   return (
     <>
@@ -3759,6 +3794,7 @@ function SocialFeed({
                 {!ownHandles.has(post.handle) && <button className={cx("secondary small-follow", followingSocial.includes(post.handle) && "selected")} onClick={() => toggleSocialFollow(post.handle, post.author)}>{followingSocial.includes(post.handle) ? "Seguindo" : "Seguir"}</button>}
               </header>
               <p>{post.body}</p>
+              {postProject(post) && <button className="social-project-link" onClick={() => go(entityRoute({ type: "project", id: postProject(post)!.slug, source: "social", context }))}><FolderKanban size={15} /> Ver projeto {postProject(post)!.title}</button>}
               {post.image && <img className="social-post-image" src={post.image} alt={`Imagem publicada por ${post.author}`}/>} 
               <footer>
                 <button
@@ -3788,9 +3824,9 @@ function SocialFeed({
           <h3>{q ? "Resultados relacionados" : "Pessoas e equipes"}</h3>
           {visiblePeople.slice(0, 4).map((u) => (
             <div className="social-person" key={u.id}>
-              <IdentityAvatar name={u.name} href={profileRoute("participant", u.username, context)} go={go} />
+              <IdentityAvatar name={u.name} href={entityRoute({ type: "participant", id: u.username, source: "social", context })} go={go} />
               <div>
-                <IdentityName name={u.name} href={profileRoute("participant", u.username, context)} go={go} />
+                <IdentityName name={u.name} href={entityRoute({ type: "participant", id: u.username, source: "social", context })} go={go} />
                 <small>@{u.username}</small>
               </div>
               <button className={cx(followingSocial.includes(u.id) && "selected")} onClick={() => toggleSocialFollow(u.id, u.name)}>{followingSocial.includes(u.id) ? "Seguindo" : "Seguir"}</button>
@@ -3798,8 +3834,8 @@ function SocialFeed({
           ))}
           {q && visibleTeams.slice(0, 3).map((team) => (
             <div className="social-person" key={team.id}>
-              <IdentityAvatar name={team.name} href={profileRoute("team", team.slug, context)} go={go} />
-              <div><IdentityName name={team.name} href={profileRoute("team", team.slug, context)} go={go} /><small>Equipe · {team.category}</small></div>
+              <IdentityAvatar name={team.name} href={entityRoute({ type: "team", id: team.slug, source: "social", context })} go={go} />
+              <div><IdentityName name={team.name} href={entityRoute({ type: "team", id: team.slug, source: "social", context })} go={go} /><small>Equipe · {team.category}</small></div>
               <button className={cx(followingSocial.includes(team.id) && "selected")} onClick={() => toggleSocialFollow(team.id, team.name)}>{followingSocial.includes(team.id) ? "Seguindo" : "Seguir"}</button>
             </div>
           ))}

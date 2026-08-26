@@ -2,7 +2,9 @@ import { investor, people, teams } from "../data/mock";
 import { Team, User } from "../types";
 
 export type ProfileKind = "participant" | "investor" | "team";
+export type EntityKind = ProfileKind | "project";
 export type AppContext = "participant" | "investor";
+export type NavigationSource = "explore" | "social" | "management";
 
 export function getParticipantById(idOrUsername: string): User | undefined {
   return people.find((person) =>
@@ -28,4 +30,33 @@ export function profileRoute(
   const base = context === "investor" ? "/investor" : "/app";
   if (kind === "team") return `${base}/teams/${idOrSlug}`;
   return `${base}/${kind === "participant" ? "participants" : "investors"}/${idOrSlug}`;
+}
+
+export function entityRoute({
+  type,
+  id,
+  source,
+  context = "participant",
+}: {
+  type: EntityKind;
+  id: string;
+  source: NavigationSource;
+  context?: AppContext;
+}): string {
+  const base = context === "investor" ? "/investor" : "/app";
+  const segment = type === "participant" ? "participants" : type === "investor" ? "investors" : `${type}s`;
+  return source === "management" ? `${base}/${segment}/${id}` : `${base}/${source}/${segment}/${id}`;
+}
+
+export function parsePublicEntityRoute(pathname: string): {
+  context: AppContext;
+  source: Exclude<NavigationSource, "management">;
+  type: EntityKind;
+  id: string;
+} | undefined {
+  const match = pathname.match(/^\/(app|investor)\/(explore|social)\/(participants|investors|teams|projects)\/([^/]+)$/);
+  if (!match) return undefined;
+  const [, base, source, segment, id] = match;
+  const type = segment === "participants" ? "participant" : segment === "investors" ? "investor" : segment.slice(0, -1) as EntityKind;
+  return { context: base === "investor" ? "investor" : "participant", source: source as "explore" | "social", type, id };
 }
