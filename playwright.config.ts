@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const externalBaseUrl = process.env.E2E_BASE_URL?.trim().replace(/\/$/, "");
+const localBaseUrl = "http://127.0.0.1:3000";
+const baseURL = externalBaseUrl || localBaseUrl;
+
 export default defineConfig({
   testDir: "./e2e",
   timeout: 30_000,
@@ -8,7 +12,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
@@ -16,17 +20,19 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
-  webServer: {
-    command: "npm run dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-    env: {
-      ...process.env,
-      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://example.supabase.co",
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_e2e_placeholder_only",
-      NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3000",
-      AUTH_SIGNUP_ENABLED: "false",
-    },
-  },
+  webServer: externalBaseUrl
+    ? undefined
+    : {
+        command: "npm run dev",
+        url: localBaseUrl,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+        env: {
+          ...process.env,
+          NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://example.supabase.co",
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_e2e_placeholder_only",
+          NEXT_PUBLIC_SITE_URL: localBaseUrl,
+          AUTH_SIGNUP_ENABLED: "false",
+        },
+      },
 });
