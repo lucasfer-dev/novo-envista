@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const externalBaseUrl = process.env.E2E_BASE_URL?.trim().replace(/\/$/, "");
-const localBaseUrl = "http://127.0.0.1:3000";
+const localBaseUrl = "http://localhost:3000";
 const baseURL = externalBaseUrl || localBaseUrl;
 
 export default defineConfig({
