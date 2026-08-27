@@ -12,7 +12,15 @@ export async function createPostAction(formData:FormData){
  const {supabase,userId,role}=await requireProductUser(); const fallback=role==="investor"?"/investor/social":"/app/social"; const returnTo=back(formData,fallback); const body=text(formData,"body",5000); if(!body)redirect(`${returnTo}?error=post`);
  const author=text(formData,"author",80); const personal=!author||author==="personal"; let authorTeamId:string|null=null;
  if(!personal){const {data:membership}=await supabase.from("team_members").select("team_id").eq("team_id",author).eq("user_id",userId).maybeSingle();if(!membership)redirect(`${returnTo}?error=author`);authorTeamId=author;}
- const {error}=await supabase.from("posts").insert({author_user_id:personal?userId:null,author_team_id:authorTeamId,created_by:userId,body,visibility:formData.get("visibility")==="private"?"private":"platform"}); if(error)redirect(`${returnTo}?error=post`); revalidatePath(returnTo);redirect(`${returnTo}?status=posted`);
+ let projectId=text(formData,"project_id",80)||null;
+ if(projectId){
+   const {data:project}=await supabase.from("projects").select("id,owner_user_id,owner_team_id").eq("id",projectId).maybeSingle();
+   if(!project)redirect(`${returnTo}?error=project`);
+   let canAttach=project.owner_user_id===userId;
+   if(!canAttach&&project.owner_team_id){const {data:projectMembership}=await supabase.from("team_members").select("team_id").eq("team_id",project.owner_team_id).eq("user_id",userId).maybeSingle();canAttach=Boolean(projectMembership);}
+   if(!canAttach)redirect(`${returnTo}?error=project`);
+ }
+ const {error}=await supabase.from("posts").insert({author_user_id:personal?userId:null,author_team_id:authorTeamId,project_id:projectId,created_by:userId,body,visibility:formData.get("visibility")==="private"?"private":"platform"}); if(error)redirect(`${returnTo}?error=post`); revalidatePath(returnTo);redirect(`${returnTo}?status=posted`);
 }
 
 export async function deletePostAction(formData:FormData){const {supabase,role}=await requireProductUser();const fallback=role==="investor"?"/investor/social":"/app/social";const returnTo=back(formData,fallback);const postId=text(formData,"post_id",80);if(postId)await supabase.from("posts").delete().eq("id",postId);revalidatePath(returnTo);redirect(returnTo);}
