@@ -19,7 +19,7 @@ export default function FirstSteps({ steps }: { steps: Step[] }) {
         {steps.map((step) => (
           <Link className={styles.item} href={step.href} key={step.label}>
             <div>
-              <strong>{step.done ? "✓ " : "○ "}{step.label}</strong>
+              <strong>{step.label}</strong>
               <p>{step.description}</p>
             </div>
             <span className={step.done ? styles.pill : styles.muted}>{step.done ? "Concluído" : "Fazer agora"}</span>
