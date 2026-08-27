@@ -85,16 +85,18 @@ function Avatar({ name }: { name: string }) {
 export default function LegacySocialShell({
   user,
   role,
+  pathname: activePath,
   children,
 }: {
   user: User;
   role: ProductRole;
+  pathname?: string;
   children: ReactNode;
 }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifyOpen, setNotifyOpen] = useState(false);
-  const pathname = role === "investor" ? "/investor/social" : "/app/social";
+  const pathname = activePath ?? (role === "investor" ? "/investor/social" : "/app/social");
   const nav = role === "investor" ? investorNav : participantNav;
   const mobileNav = role === "investor" ? investorMobileNav : participantMobileNav;
   const home = role === "investor" ? "/investor" : "/app";
