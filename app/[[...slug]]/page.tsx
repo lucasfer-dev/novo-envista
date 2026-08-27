@@ -81,7 +81,7 @@ export default async function Page({
     );
   }
 
-  const sourcedProject = pathname.match(/^\/(app|investor)\/(social|explore|messages)\/projects\/([^/]+)$/);
+  const sourcedProject = pathname.match(/^\/(app|investor)\/social\/projects\/([^/]+)$/);
   if (sourcedProject) {
     const expectedRole = roleFromBase(sourcedProject[1]);
     const appBase = expectedRole === "investor" ? "/investor" : "/app";
@@ -89,8 +89,8 @@ export default async function Page({
       <LegacyProjectDetailPage
         expectedRole={expectedRole}
         pathname={pathname}
-        slug={sourcedProject[3]}
-        backHref={`${appBase}/${sourcedProject[2]}`}
+        slug={sourcedProject[2]}
+        backHref={`${appBase}/social`}
         publicView
         searchParams={searchParams}
       />
@@ -115,7 +115,7 @@ export default async function Page({
     );
   }
 
-  const sourcedTeam = pathname.match(/^\/(app|investor)\/(social|explore|messages)\/teams\/([^/]+)$/);
+  const sourcedTeam = pathname.match(/^\/(app|investor)\/social\/teams\/([^/]+)$/);
   if (sourcedTeam) {
     const expectedRole = roleFromBase(sourcedTeam[1]);
     const appBase = expectedRole === "investor" ? "/investor" : "/app";
@@ -123,8 +123,8 @@ export default async function Page({
       <LegacyTeamDetailPage
         expectedRole={expectedRole}
         pathname={pathname}
-        slug={sourcedTeam[3]}
-        backHref={`${appBase}/${sourcedTeam[2]}`}
+        slug={sourcedTeam[2]}
+        backHref={`${appBase}/social`}
         publicView
         searchParams={searchParams}
       />
