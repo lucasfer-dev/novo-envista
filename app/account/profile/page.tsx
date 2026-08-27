@@ -12,22 +12,15 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   const userId = claimsData?.claims?.sub;
   if (claimsError || !userId) redirect("/login?error=session");
 
-  const [profileResult, complianceResult, completionResult] = await Promise.all([
+  const [{ data: profile }, { data: compliance }, { data: completion }] = await Promise.all([
     supabase
       .from("profiles")
       .select("username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type,profile_visibility,allow_messages")
       .eq("id", userId)
-      .maybeSingle(),
-    supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
+      .single(),
+    supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).single(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
-
-  const { data: profile } = profileResult;
-  const { data: compliance } = complianceResult;
-  const { data: completion } = completionResult;
-  if (profileResult.error || complianceResult.error || completionResult.error) {
-    redirect("/auth/error?reason=profile-load");
-  }
 
   if (!profile || !compliance || !completion) redirect("/onboarding");
   if (compliance.age_band === "child" && !compliance.guardian_consent_verified_at) redirect("/guardian-required");
@@ -39,7 +32,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   const home = homeForRole(parseProductRole(profile.role));
 
   return (
-    <AuthShell wide title="Meu perfil" description="Atualize seus dados e escolha o que fica visível para outros usuários.">
+    <AuthShell wide title="Meu perfil" description="Esses dados já são persistidos no Supabase. Você controla o que aparece para outras pessoas.">
       {saved ? <div className={styles.success}>Perfil atualizado.</div> : null}
       {error ? <div className={styles.error}>{error === "username" ? "Esse nome de usuário já está em uso." : "Não foi possível salvar as alterações."}</div> : null}
       <AvatarUploader userId={userId} currentPath={profile.avatar_path} />

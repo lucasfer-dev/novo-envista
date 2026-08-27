@@ -10,8 +10,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "security:scan": "node scripts/security-scan.mjs",
-    "test:e2e": "playwright test"
+    "security:scan": "node scripts/security-scan.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
@@ -26,7 +25,6 @@
     "typescript": "^5.7.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
     "vitest": "^4.1.11"
   }
 }
