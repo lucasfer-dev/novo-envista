@@ -5,6 +5,10 @@ import type { User } from "@/types";
 
 export type ProductRole = "participant" | "investor";
 
+function cleanProfileText(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 export async function requireProductUser(expectedRole?: ProductRole) {
   const supabase = await createClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
@@ -39,18 +43,21 @@ export async function requireProductUser(expectedRole?: ProductRole) {
   const role = parsedRole as ProductRole;
   if (expectedRole && role !== expectedRole) redirect(homeForRole(role));
 
+  const username = cleanProfileText(profile.username) || "usuario";
+  const name = cleanProfileText(profile.display_name) || username || "Usuário";
+
   const appUser: User = {
     id: profile.id,
-    username: profile.username,
-    name: profile.display_name,
+    username,
+    name,
     role,
-    avatar: profile.avatar_path || undefined,
-    bio: profile.bio || undefined,
-    school: profile.public_school || undefined,
-    city: profile.public_city || undefined,
-    state: profile.public_state || undefined,
-    organization: profile.organization || undefined,
-    organizationType: profile.organization_type || undefined,
+    avatar: cleanProfileText(profile.avatar_path) || undefined,
+    bio: cleanProfileText(profile.bio) || undefined,
+    school: cleanProfileText(profile.public_school) || undefined,
+    city: cleanProfileText(profile.public_city) || undefined,
+    state: cleanProfileText(profile.public_state) || undefined,
+    organization: cleanProfileText(profile.organization) || undefined,
+    organizationType: cleanProfileText(profile.organization_type) || undefined,
   };
 
   return { supabase, userId, role, profile, compliance, appUser };
