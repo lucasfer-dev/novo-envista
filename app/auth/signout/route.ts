@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const DEMO_COOKIE = "envista_demo";
+
 function sameOrigin(request: NextRequest) {
   const fetchSite = request.headers.get("sec-fetch-site");
   if (fetchSite === "cross-site") return false;
@@ -15,6 +17,17 @@ function sameOrigin(request: NextRequest) {
   }
 }
 
+function clearDemoCookie(response: NextResponse) {
+  response.cookies.set(DEMO_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
+  return response;
+}
+
 export async function POST(request: NextRequest) {
   if (!sameOrigin(request)) {
     return NextResponse.json(
@@ -23,11 +36,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (request.cookies.get(DEMO_COOKIE)?.value) {
+    return clearDemoCookie(NextResponse.redirect(new URL("/login", request.url), { status: 303 }));
+  }
+
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  return clearDemoCookie(NextResponse.redirect(new URL("/login", request.url), { status: 303 }));
 }
 
 export async function GET(request: NextRequest) {
-  return NextResponse.redirect(new URL("/login", request.url), { status: 303 });
+  return clearDemoCookie(NextResponse.redirect(new URL("/login", request.url), { status: 303 }));
 }
