@@ -8,3 +8,12 @@ node_modules/
 backend/target/
 *.log
 .DS_Store
+
+# Local test and audit artifacts
+playwright-report/
+test-results/
+audit-*.png
+
+# Tool-generated local instruction files
+AGENTS.md
+CLAUDE.md
