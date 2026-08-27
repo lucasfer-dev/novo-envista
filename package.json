@@ -15,14 +15,14 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.109.0",
-    "@types/node": "^22.10.2",
+    "@types/node": "^26.2.0",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
-    "lucide-react": "^0.468.0",
+    "lucide-react": "^1.33.0",
     "next": "^16.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "typescript": "^5.7.2"
+    "typescript": "^7.0.2"
   },
   "devDependencies": {
     "vitest": "^4.1.11"
