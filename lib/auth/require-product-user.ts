@@ -11,23 +11,31 @@ export async function requireProductUser(expectedRole?: ProductRole) {
   const userId = claimsData?.claims?.sub;
   if (claimsError || !userId) redirect("/login");
 
-  const [{ data: profile }, { data: compliance }, { data: completion }] = await Promise.all([
+  const [profileResult, complianceResult, completionResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("id,username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type")
       .eq("id", userId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from("account_compliance")
       .select("age_band,guardian_consent_verified_at")
       .eq("user_id", userId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from("onboarding_completions")
       .select("user_id")
       .eq("user_id", userId)
       .maybeSingle(),
   ]);
+
+  if (profileResult.error || complianceResult.error || completionResult.error) {
+    redirect("/auth/error?reason=profile-query");
+  }
+
+  const profile = profileResult.data;
+  const compliance = complianceResult.data;
+  const completion = completionResult.data;
 
   if (!profile || !compliance || !completion) redirect("/onboarding");
   if (compliance.age_band === "child" && !compliance.guardian_consent_verified_at) {
@@ -41,8 +49,8 @@ export async function requireProductUser(expectedRole?: ProductRole) {
 
   const appUser: User = {
     id: profile.id,
-    username: profile.username,
-    name: profile.display_name,
+    username: profile.username || "usuario",
+    name: profile.display_name || profile.username || "Usuário",
     role,
     avatar: profile.avatar_path || undefined,
     bio: profile.bio || undefined,
