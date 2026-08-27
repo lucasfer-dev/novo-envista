@@ -2,8 +2,19 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
+import {
+  LegacyNewProjectPage,
+  LegacyProjectDetailPage,
+  LegacyProjectsIndexPage,
+} from "@/components/projects/LegacyProjectsServerPage";
+import {
+  LegacyNewTeamPage,
+  LegacyTeamDetailPage,
+  LegacyTeamsIndexPage,
+} from "@/components/teams/LegacyTeamsServerPage";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
+import type { ProductRole } from "@/lib/auth/require-product-user";
 import type { User } from "@/types";
 
 const DEMO_COOKIE = "envista_demo";
@@ -21,6 +32,10 @@ const demoParticipant: User = {
 
 function isProtectedProductPath(pathname: string) {
   return pathname === "/app" || pathname.startsWith("/app/") || pathname === "/investor" || pathname.startsWith("/investor/");
+}
+
+function roleFromBase(value: string): ProductRole {
+  return value === "investor" ? "investor" : "participant";
 }
 
 export default async function Page({
@@ -46,6 +61,74 @@ export default async function Page({
   }
   if (pathname === "/investor/social") {
     return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;
+  }
+
+  const directProject = pathname.match(/^\/(app|investor)\/projects(?:\/([^/]+))?$/);
+  if (directProject) {
+    const expectedRole = roleFromBase(directProject[1]);
+    const item = directProject[2];
+    const projectBase = expectedRole === "investor" ? "/investor/projects" : "/app/projects";
+    if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
+    if (item === "new") return <LegacyNewProjectPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
+    return (
+      <LegacyProjectDetailPage
+        expectedRole={expectedRole}
+        pathname={pathname}
+        slug={item}
+        backHref={projectBase}
+        searchParams={searchParams}
+      />
+    );
+  }
+
+  const sourcedProject = pathname.match(/^\/(app|investor)\/(social|explore|messages)\/projects\/([^/]+)$/);
+  if (sourcedProject) {
+    const expectedRole = roleFromBase(sourcedProject[1]);
+    const appBase = expectedRole === "investor" ? "/investor" : "/app";
+    return (
+      <LegacyProjectDetailPage
+        expectedRole={expectedRole}
+        pathname={pathname}
+        slug={sourcedProject[3]}
+        backHref={`${appBase}/${sourcedProject[2]}`}
+        publicView
+        searchParams={searchParams}
+      />
+    );
+  }
+
+  const directTeam = pathname.match(/^\/(app|investor)\/teams(?:\/([^/]+))?$/);
+  if (directTeam) {
+    const expectedRole = roleFromBase(directTeam[1]);
+    const item = directTeam[2];
+    const teamBase = expectedRole === "investor" ? "/investor/teams" : "/app/teams";
+    if (!item) return <LegacyTeamsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
+    if (item === "new") return <LegacyNewTeamPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
+    return (
+      <LegacyTeamDetailPage
+        expectedRole={expectedRole}
+        pathname={pathname}
+        slug={item}
+        backHref={teamBase}
+        searchParams={searchParams}
+      />
+    );
+  }
+
+  const sourcedTeam = pathname.match(/^\/(app|investor)\/(social|explore|messages)\/teams\/([^/]+)$/);
+  if (sourcedTeam) {
+    const expectedRole = roleFromBase(sourcedTeam[1]);
+    const appBase = expectedRole === "investor" ? "/investor" : "/app";
+    return (
+      <LegacyTeamDetailPage
+        expectedRole={expectedRole}
+        pathname={pathname}
+        slug={sourcedTeam[3]}
+        backHref={`${appBase}/${sourcedTeam[2]}`}
+        publicView
+        searchParams={searchParams}
+      />
+    );
   }
 
   const supabase = await createClient();
