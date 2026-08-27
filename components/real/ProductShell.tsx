@@ -9,14 +9,26 @@ import styles from "./ProductShell.module.css";
 
 type Props = { user: User; children: React.ReactNode; title?: string };
 
-function initials(name: string) {
-  return name.split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+function safeText(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function initials(name: unknown) {
+  return safeText(name, "Envista")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
 }
 
 export default function ProductShell({ user, children, title = "Envista" }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const prefix: "/app" | "/investor" = user.role === "investor" ? "/investor" : "/app";
+  const displayName = safeText(user.name, "Usuário");
+  const username = safeText(user.username, "usuario");
   const nav = user.role === "investor"
     ? [
         [prefix, "Início"],
@@ -61,8 +73,8 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         </nav>
         <div className={styles.bottom}>
           <Link className={styles.profile} href="/account">
-            <span className={styles.avatar}>{initials(user.name)}</span>
-            <span className={styles.meta}><strong>{user.name}</strong><span>@{user.username}</span></span>
+            <span className={styles.avatar}>{initials(displayName)}</span>
+            <span className={styles.meta}><strong>{displayName}</strong><span>@{username}</span></span>
           </Link>
           <button className={styles.logout} onClick={logout}>Sair</button>
         </div>
@@ -74,7 +86,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
           <form className={styles.searchForm} action={`${prefix}/search`} method="get">
             <input className={styles.searchInput} name="q" maxLength={80} aria-label="Buscar no Envista" placeholder="Buscar projetos, equipes ou pessoas..." />
           </form>
-          <span className={styles.topbarActions}><NotificationsBell userId={user.id} prefix={prefix}/><span>@{user.username}</span></span>
+          <span className={styles.topbarActions}><NotificationsBell userId={user.id} prefix={prefix}/><span>@{username}</span></span>
         </header>
         <div className={styles.content}>{children}</div>
       </main>
