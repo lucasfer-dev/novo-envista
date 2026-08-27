@@ -61,11 +61,40 @@ export default function NotificationsBell({ userId, prefix }: { userId: string; 
     <Link
       href={`${prefix}/notifications`}
       aria-label={count ? `${count} notificações não lidas` : "Notificações"}
-      style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 38, height: 38, borderRadius: 10, border: "1px solid #e4e7ec", textDecoration: "none", color: "#344054" }}
+      style={{
+        position: "relative",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 36,
+        height: 36,
+        borderRadius: 8,
+        border: "1px solid rgba(255,255,255,.08)",
+        background: "#182535",
+        textDecoration: "none",
+        color: "#cbd6e0",
+      }}
     >
-      <Bell aria-hidden="true" size={18} strokeWidth={1.9} />
+      <Bell aria-hidden="true" size={17} strokeWidth={1.9} />
       {count > 0 ? (
-        <span style={{ position: "absolute", top: -6, right: -6, minWidth: 20, height: 20, padding: "0 5px", borderRadius: 999, display: "grid", placeItems: "center", background: "#d92d20", color: "white", fontSize: 11, fontWeight: 800 }}>
+        <span
+          style={{
+            position: "absolute",
+            top: -5,
+            right: -5,
+            minWidth: 18,
+            height: 18,
+            padding: "0 4px",
+            borderRadius: 999,
+            display: "grid",
+            placeItems: "center",
+            background: "#ff647c",
+            border: "2px solid #111a26",
+            color: "white",
+            fontSize: 10,
+            fontWeight: 800,
+          }}
+        >
           {count > 99 ? "99+" : count}
         </span>
       ) : null}
