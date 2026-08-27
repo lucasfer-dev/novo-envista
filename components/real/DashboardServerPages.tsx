@@ -40,44 +40,44 @@ export async function ParticipantDashboardServerPage() {
     <ProductShell user={appUser} title="Início">
       <div className={styles.page}>
         <section className={styles.hero}>
-          <div><h1>Olá, {firstName(appUser.name)}.</h1><p>Acompanhe seus projetos, equipes, aprendizado e o que precisa da sua atenção no Envista.</p></div>
+          <div><h1>Olá, {firstName(appUser.name)}.</h1><p>Veja seus projetos, equipes e atividades recentes.</p></div>
           <div className={styles.actions}><Link className={styles.primary} href="/app/projects/new">Criar projeto</Link><Link className={styles.secondary} href="/app/teams/new">Criar equipe</Link></div>
         </section>
 
         <FirstSteps steps={[
-          { label: "Complete seu perfil", description: "Adicione bio e contexto de escola ou cidade para dar mais confiança ao seu perfil.", href: "/account/profile", done: profileReady },
-          { label: "Entre ou crie uma equipe", description: "Colabore com outras pessoas e publique projetos em conjunto.", href: "/app/teams", done: teams.length > 0 },
-          { label: "Publique seu primeiro projeto", description: "Transforme uma ideia ou trabalho em um portfólio vivo.", href: "/app/projects/new", done: projects.length > 0 },
-          { label: "Comece uma trilha", description: "Matricule-se em um curso e acompanhe seu progresso.", href: "/app/learn", done: courses.length > 0 },
+          { label: "Complete seu perfil", description: "Adicione uma bio e informe sua escola ou cidade.", href: "/account/profile", done: profileReady },
+          { label: "Entre ou crie uma equipe", description: "Entre em uma equipe ou crie uma nova.", href: "/app/teams", done: teams.length > 0 },
+          { label: "Publique seu primeiro projeto", description: "Adicione um projeto ao seu portfólio.", href: "/app/projects/new", done: projects.length > 0 },
+          { label: "Comece uma trilha", description: "Escolha um curso e acompanhe seu progresso.", href: "/app/learn", done: courses.length > 0 },
         ]} />
 
         <section className={styles.metrics}>
-          <div className={styles.metric}><strong>{projects.length}</strong><span>Projetos ativos no seu contexto</span></div>
-          <div className={styles.metric}><strong>{teams.length}</strong><span>Equipes das quais você participa</span></div>
-          <div className={styles.metric}><strong>{unread}</strong><span>Notificações recentes não lidas</span></div>
+          <div className={styles.metric}><strong>{projects.length}</strong><span>Projetos</span></div>
+          <div className={styles.metric}><strong>{teams.length}</strong><span>Equipes</span></div>
+          <div className={styles.metric}><strong>{unread}</strong><span>Notificações não lidas</span></div>
         </section>
 
         <div className={styles.grid}>
           <section className={styles.card}>
             <div className={styles.sectionHead}><h2>Seus projetos</h2><Link href="/app/projects">Ver todos</Link></div>
-            {projects.length ? <div className={styles.stack}>{projects.map((project: any) => <Link key={project.id} className={styles.item} href={`/app/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || "Continue estruturando e publicando os avanços deste projeto."}</p></div><span className={styles.pill}>{project.stage || "Em desenvolvimento"}</span></Link>)}</div> : <div className={styles.empty}>Você ainda não tem projetos. Crie o primeiro ou participe de uma equipe com projeto ativo.</div>}
+            {projects.length ? <div className={styles.stack}>{projects.map((project: any) => <Link key={project.id} className={styles.item} href={`/app/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || "Sem descrição adicionada."}</p></div><span className={styles.pill}>{project.stage || "Em desenvolvimento"}</span></Link>)}</div> : <div className={styles.empty}>Nenhum projeto ainda.</div>}
           </section>
 
           <section className={styles.card}>
             <div className={styles.sectionHead}><h2>Agora</h2><Link href="/app/notifications">Notificações</Link></div>
-            {(notifications ?? []).length ? <div className={styles.stack}>{(notifications ?? []).slice(0, 5).map((item: any) => <Link key={item.id} className={styles.item} href={item.href || "/app/notifications"}><div><strong>{item.title}</strong><p>{item.body || "Nova atividade no Envista."}</p></div>{!item.read_at ? <span className={styles.pill}>Nova</span> : null}</Link>)}</div> : <div className={styles.empty}>Nenhuma novidade por enquanto.</div>}
+            {(notifications ?? []).length ? <div className={styles.stack}>{(notifications ?? []).slice(0, 5).map((item: any) => <Link key={item.id} className={styles.item} href={item.href || "/app/notifications"}><div><strong>{item.title}</strong><p>{item.body || "Nova atividade."}</p></div>{!item.read_at ? <span className={styles.pill}>Nova</span> : null}</Link>)}</div> : <div className={styles.empty}>Nenhuma novidade por enquanto.</div>}
           </section>
         </div>
 
         <div className={styles.grid}>
           <section className={styles.card}>
             <div className={styles.sectionHead}><h2>Equipes</h2><Link href="/app/teams">Abrir equipes</Link></div>
-            {teams.length ? <div className={styles.stack}>{teams.slice(0, 5).map((team: any) => <Link key={team.id} className={styles.item} href={`/app/teams/${team.slug}`}><strong>{team.name}</strong><span className={styles.muted}>Abrir</span></Link>)}</div> : <div className={styles.empty}>Entre em uma equipe para colaborar com outras pessoas.</div>}
+            {teams.length ? <div className={styles.stack}>{teams.slice(0, 5).map((team: any) => <Link key={team.id} className={styles.item} href={`/app/teams/${team.slug}`}><strong>{team.name}</strong><span className={styles.muted}>Abrir</span></Link>)}</div> : <div className={styles.empty}>Nenhuma equipe ainda.</div>}
           </section>
           <section className={styles.card}>
             <div className={styles.sectionHead}><h2>Aprendizado</h2><Link href="/app/learn">Continuar aprendendo</Link></div>
-            <p className={styles.muted}>{completedLessons ?? 0} aulas concluídas no total.</p>
-            {courses.length ? <div className={styles.stack}>{courses.map((course: any) => <Link key={course.id} className={styles.item} href={`/app/learn/${course.slug}`}><strong>{course.title}</strong><span className={styles.muted}>Continuar</span></Link>)}</div> : <div className={styles.empty}>Escolha uma trilha para começar.</div>}
+            <p className={styles.muted}>{completedLessons ?? 0} aulas concluídas.</p>
+            {courses.length ? <div className={styles.stack}>{courses.map((course: any) => <Link key={course.id} className={styles.item} href={`/app/learn/${course.slug}`}><strong>{course.title}</strong><span className={styles.muted}>Continuar</span></Link>)}</div> : <div className={styles.empty}>Nenhum curso iniciado.</div>}
           </section>
         </div>
       </div>
@@ -115,35 +115,35 @@ export async function InvestorDashboardServerPage() {
     <ProductShell user={appUser} title="Início">
       <div className={styles.page}>
         <section className={styles.hero}>
-          <div><h1>Olá, {firstName(appUser.name)}.</h1><p>Descubra projetos, acompanhe equipes e mantenha perto as oportunidades que fazem sentido para você.</p></div>
+          <div><h1>Olá, {firstName(appUser.name)}.</h1><p>Veja projetos, salvos e atividades recentes.</p></div>
           <div className={styles.actions}><Link className={styles.primary} href="/investor/explore">Explorar projetos</Link><Link className={styles.secondary} href="/investor/saved">Projetos salvos</Link></div>
         </section>
 
         <FirstSteps steps={[
-          { label: "Complete seu perfil", description: "Adicione bio e organização para contextualizar seu perfil de investidor.", href: "/account/profile", done: profileReady },
-          { label: "Salve um projeto", description: "Monte uma lista privada de projetos para revisar depois.", href: "/investor/explore", done: savedIds.length > 0 },
-          { label: "Acompanhe um projeto", description: "Siga um projeto para receber novas atualizações.", href: "/investor/explore", done: followedIds.length > 0 },
-          { label: "Demonstre interesse", description: "Envie uma manifestação de interesse ao responsável por um projeto.", href: "/investor/explore", done: (interests ?? 0) > 0 },
+          { label: "Complete seu perfil", description: "Adicione uma bio e sua organização.", href: "/account/profile", done: profileReady },
+          { label: "Salve um projeto", description: "Guarde projetos para revisar depois.", href: "/investor/explore", done: savedIds.length > 0 },
+          { label: "Acompanhe um projeto", description: "Siga projetos para acompanhar atualizações.", href: "/investor/explore", done: followedIds.length > 0 },
+          { label: "Demonstre interesse", description: "Envie interesse ao responsável pelo projeto.", href: "/investor/explore", done: (interests ?? 0) > 0 },
         ]} />
 
         <section className={styles.metrics}>
           <div className={styles.metric}><strong>{savedIds.length}</strong><span>Projetos salvos</span></div>
           <div className={styles.metric}><strong>{followedIds.length}</strong><span>Projetos acompanhados</span></div>
-          <div className={styles.metric}><strong>{unread}</strong><span>Notificações recentes não lidas</span></div>
+          <div className={styles.metric}><strong>{unread}</strong><span>Notificações não lidas</span></div>
         </section>
         <div className={styles.grid}>
           <section className={styles.card}>
             <div className={styles.sectionHead}><h2>Projetos para descobrir</h2><Link href="/investor/explore">Explorar</Link></div>
-            {(recommendations ?? []).length ? <div className={styles.stack}>{(recommendations ?? []).slice(0, 6).map((project: any) => <Link key={project.id} className={styles.item} href={`/investor/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || project.category || "Projeto publicado no Envista."}</p></div><span className={styles.pill}>{project.stage || "Projeto"}</span></Link>)}</div> : <div className={styles.empty}>Ainda não há projetos públicos para recomendar.</div>}
+            {(recommendations ?? []).length ? <div className={styles.stack}>{(recommendations ?? []).slice(0, 6).map((project: any) => <Link key={project.id} className={styles.item} href={`/investor/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || project.category || "Sem descrição adicionada."}</p></div><span className={styles.pill}>{project.stage || "Projeto"}</span></Link>)}</div> : <div className={styles.empty}>Nenhum projeto público disponível agora.</div>}
           </section>
           <section className={styles.card}>
             <div className={styles.sectionHead}><h2>Atualizações</h2><Link href="/investor/notifications">Notificações</Link></div>
-            {(notifications ?? []).length ? <div className={styles.stack}>{(notifications ?? []).slice(0, 5).map((item: any) => <Link key={item.id} className={styles.item} href={item.href || "/investor/notifications"}><div><strong>{item.title}</strong><p>{item.body || "Nova atividade no Envista."}</p></div>{!item.read_at ? <span className={styles.pill}>Nova</span> : null}</Link>)}</div> : <div className={styles.empty}>Nenhuma atualização por enquanto.</div>}
+            {(notifications ?? []).length ? <div className={styles.stack}>{(notifications ?? []).slice(0, 5).map((item: any) => <Link key={item.id} className={styles.item} href={item.href || "/investor/notifications"}><div><strong>{item.title}</strong><p>{item.body || "Nova atividade."}</p></div>{!item.read_at ? <span className={styles.pill}>Nova</span> : null}</Link>)}</div> : <div className={styles.empty}>Nenhuma atualização por enquanto.</div>}
           </section>
         </div>
         <section className={styles.card}>
           <div className={styles.sectionHead}><h2>Salvos recentemente</h2><Link href="/investor/saved">Ver salvos</Link></div>
-          {savedProjects.length ? <div className={styles.stack}>{savedProjects.map((project: any) => <Link key={project.id} className={styles.item} href={`/investor/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || "Projeto salvo para consultar depois."}</p></div><span className={styles.muted}>Abrir</span></Link>)}</div> : <div className={styles.empty}>Salve projetos que você quer revisar depois.</div>}
+          {savedProjects.length ? <div className={styles.stack}>{savedProjects.map((project: any) => <Link key={project.id} className={styles.item} href={`/investor/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || "Sem descrição adicionada."}</p></div><span className={styles.muted}>Abrir</span></Link>)}</div> : <div className={styles.empty}>Nenhum projeto salvo ainda.</div>}
         </section>
       </div>
     </ProductShell>
@@ -160,5 +160,5 @@ export async function InvestorProjectCollectionServerPage({ mode }: { mode: "sav
   const title = mode === "saved" ? "Projetos salvos" : "Projetos acompanhados";
   const empty = mode === "saved" ? "Você ainda não salvou nenhum projeto." : "Você ainda não está acompanhando nenhum projeto.";
 
-  return <ProductShell user={appUser} title={title}><div className={styles.page}><section className={styles.hero}><div><h1>{title}</h1><p>{mode === "saved" ? "Sua lista privada para revisar projetos depois." : "Projetos que você segue para acompanhar novas atualizações."}</p></div><Link className={styles.primary} href="/investor/explore">Explorar</Link></section><section className={styles.card}>{projects.length ? <div className={styles.stack}>{projects.map((project: any) => <Link key={project.id} className={styles.item} href={`/investor/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || project.category || "Projeto publicado no Envista."}</p></div><span className={styles.pill}>{project.stage || "Projeto"}</span></Link>)}</div> : <div className={styles.empty}>{empty}</div>}</section></div></ProductShell>;
+  return <ProductShell user={appUser} title={title}><div className={styles.page}><section className={styles.hero}><div><h1>{title}</h1><p>{mode === "saved" ? "Projetos que você guardou para revisar depois." : "Projetos que você segue."}</p></div><Link className={styles.primary} href="/investor/explore">Explorar</Link></section><section className={styles.card}>{projects.length ? <div className={styles.stack}>{projects.map((project: any) => <Link key={project.id} className={styles.item} href={`/investor/projects/${project.slug}`}><div><strong>{project.title}</strong><p>{project.short_description || project.category || "Sem descrição adicionada."}</p></div><span className={styles.pill}>{project.stage || "Projeto"}</span></Link>)}</div> : <div className={styles.empty}>{empty}</div>}</section></div></ProductShell>;
 }

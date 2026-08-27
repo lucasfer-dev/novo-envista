@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NotificationsBell from "@/components/real/NotificationsBell";
 import type { User } from "@/types";
 import styles from "./ProductShell.module.css";
@@ -28,6 +28,8 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
   const pathname = usePathname() || "";
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
   const prefix: "/app" | "/investor" = user.role === "investor" ? "/investor" : "/app";
   const displayName = safeText(user.name, "Usuário");
   const username = safeText(user.username, "usuario");
@@ -60,14 +62,42 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
 
   useEffect(() => {
     if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", closeOnEscape);
+
+    const sidebar = sidebarRef.current;
+    const previousOverflow = document.body.style.overflow;
+    const focusableSelector = "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])";
+    const focusable = () => Array.from(sidebar?.querySelectorAll<HTMLElement>(focusableSelector) ?? []);
+
     document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => focusable()[0]?.focus());
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", closeOnEscape);
-      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      menuButtonRef.current?.focus();
     };
   }, [open]);
 
@@ -85,11 +115,16 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
   return (
     <div className={styles.shell}>
       {open && <button className={styles.backdrop} aria-label="Fechar navegação" onClick={() => setOpen(false)} />}
-      <aside id="product-navigation" className={styles.sidebar} data-open={open}>
-        <Link className={styles.brand} href={prefix} onClick={() => setOpen(false)}>
-          <img src="/envista-logo.png" alt="" />
-          <span>Envista</span>
-        </Link>
+      <aside ref={sidebarRef} id="product-navigation" className={styles.sidebar} data-open={open}>
+        <div className={styles.sidebarHeader}>
+          <Link className={styles.brand} href={prefix} onClick={() => setOpen(false)}>
+            <img src="/envista-logo.png" alt="" />
+            <span>Envista</span>
+          </Link>
+          <button className={styles.sidebarClose} type="button" aria-label="Fechar navegação" onClick={() => setOpen(false)}>
+            <X aria-hidden="true" />
+          </button>
+        </div>
         <nav className={styles.nav} aria-label="Navegação principal">
           {nav.map(([href, label]) => {
             const active = href === prefix ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
@@ -106,7 +141,9 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
       </aside>
       <main className={styles.main}>
         <header className={styles.topbar}>
-          <button className={styles.menu} aria-label={open ? "Fechar navegação" : "Abrir navegação"} aria-expanded={open} aria-controls="product-navigation" onClick={() => setOpen((value) => !value)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
+          <button ref={menuButtonRef} className={styles.menu} aria-label="Abrir navegação" aria-expanded={open} aria-controls="product-navigation" onClick={() => setOpen(true)}>
+            <Menu aria-hidden="true" />
+          </button>
           <span className={styles.topbarTitle}>{title}</span>
           <form className={styles.searchForm} action={`${prefix}/search`} method="get">
             <input className={styles.searchInput} name="q" maxLength={80} aria-label="Buscar no Envista" placeholder="Buscar projetos, equipes ou pessoas..." />
