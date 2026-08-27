@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
+import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 import type { User } from "@/types";
@@ -22,7 +23,13 @@ function isProtectedProductPath(pathname: string) {
   return pathname === "/app" || pathname.startsWith("/app/") || pathname === "/investor" || pathname.startsWith("/investor/");
 }
 
-export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug?: string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { slug = [] } = await params;
   const pathname = slug.length ? `/${slug.join("/")}` : "/";
 
@@ -32,6 +39,13 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
   if (cookieStore.get(DEMO_COOKIE)?.value === "participant") {
     if (pathname.startsWith("/investor")) redirect("/app");
     return <EnvistaApp authenticatedProfile={demoParticipant} />;
+  }
+
+  if (pathname === "/app/social") {
+    return <LegacySocialServerPage expectedRole="participant" searchParams={searchParams} />;
+  }
+  if (pathname === "/investor/social") {
+    return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;
   }
 
   const supabase = await createClient();
