@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
 import {
   homeForRole,
@@ -21,14 +22,6 @@ const TURNSTILE_FIELD = "cf-turnstile-response";
 function value(formData: FormData, name: string) {
   const item = formData.get(name);
   return typeof item === "string" ? item.trim() : "";
-}
-
-function siteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
-  if (explicit) return explicit;
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) return `https://${vercel}`;
-  return "http://localhost:3000";
 }
 
 function authErrorPath(base: string, code: string) {
@@ -139,7 +132,7 @@ export async function registerAction(formData: FormData) {
     password,
     options: {
       data: { display_name: displayName, role },
-      emailRedirectTo: `${siteUrl()}/auth/callback?next=/onboarding`,
+      emailRedirectTo: `${resolveSiteUrl()}/auth/callback?next=/onboarding`,
       ...(captchaToken ? { captchaToken } : {}),
     },
   });
@@ -164,7 +157,7 @@ export async function forgotPasswordAction(formData: FormData) {
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl()}/auth/callback?next=/update-password`,
+    redirectTo: `${resolveSiteUrl()}/auth/callback?next=/update-password`,
     ...(captchaToken ? { captchaToken } : {}),
   });
   if (error) {
