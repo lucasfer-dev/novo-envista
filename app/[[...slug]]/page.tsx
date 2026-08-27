@@ -1,8 +1,22 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 import type { User } from "@/types";
+
+const DEMO_COOKIE = "envista_demo";
+
+const demoParticipant: User = {
+  id: "demo-participant",
+  username: "demo",
+  name: "Conta Demo",
+  role: "participant",
+  bio: "Ambiente demonstrativo do Envista.",
+  school: "Envista Demo",
+  city: "Rio de Janeiro",
+  state: "RJ",
+};
 
 function isProtectedProductPath(pathname: string) {
   return pathname === "/app" || pathname.startsWith("/app/") || pathname === "/investor" || pathname.startsWith("/investor/");
@@ -13,6 +27,12 @@ export default async function Page({ params }: { params: Promise<{ slug?: string
   const pathname = slug.length ? `/${slug.join("/")}` : "/";
 
   if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
+
+  const cookieStore = await cookies();
+  if (cookieStore.get(DEMO_COOKIE)?.value === "participant") {
+    if (pathname.startsWith("/investor")) redirect("/app");
+    return <EnvistaApp authenticatedProfile={demoParticipant} />;
+  }
 
   const supabase = await createClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();

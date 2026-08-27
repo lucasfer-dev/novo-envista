@@ -14,7 +14,7 @@ function initials(name: string) {
 }
 
 export default function ProductShell({ user, children, title = "Envista" }: Props) {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const [open, setOpen] = useState(false);
   const prefix: "/app" | "/investor" = user.role === "investor" ? "/investor" : "/app";
   const nav = user.role === "investor"

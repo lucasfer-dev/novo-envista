@@ -52,6 +52,13 @@ export default async function LoginPage({
           Entrar
         </AuthSubmitButton>
       </form>
+      <div className={styles.divider} />
+      <form action="/auth/demo" method="post">
+        <button type="submit" className={`${styles.secondary} ${styles.full}`}>
+          Entrar como demo
+        </button>
+      </form>
+      <p className={styles.muted}>A demo abre o produto com dados locais de apresentação e não acessa dados reais da sua conta.</p>
       <div className={styles.links}>
         <Link href="/forgot-password">Esqueci minha senha</Link>
         <Link href="/register">Criar conta</Link>
