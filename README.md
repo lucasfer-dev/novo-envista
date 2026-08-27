@@ -1,46 +1,67 @@
-# Envista Platform
+# Envista
 
-Base do produto Envista com frontend Next.js/React e backend Java/Spring Boot.
+Plataforma web para participantes, equipes, projetos, aprendizado e conexão com investidores.
 
-## O que mudou nesta versão
-- `Projetos` → `Meus Projetos`; `Equipes` → `Minhas equipes`.
-- exclusão de projeto/equipe para conteúdos próprios;
-- curtidas em projetos e `Seguir` no lugar de `Acompanhar`;
-- não permite salvar/seguir o próprio projeto na tela de detalhe;
-- status Participante/Investidor visível no perfil e navegação;
-- Configurações;
-- onboarding participante com cidade/estado obrigatórios;
-- onboarding investidor com tipo de organização e cargo opcional;
-- área de investidor com Explorar, Projetos, Equipes e Competições;
-- nova área Social com posts por indivíduo ou equipe e seguir pessoas;
-- acesso e painel administrativo para aulas, métricas e moderação;
-- atalho `Ctrl K` removido (busca continua acessível pelo botão);
-- backend Java 21 + Spring Boot criado em `/backend`;
-- migrations iniciais PostgreSQL/Flyway e estrutura pronta para Supabase Auth/Postgres/Storage.
+## Stack
 
-## Frontend
+- Next.js 16
+- React 19
+- TypeScript
+- Supabase Auth/Postgres
+- Playwright e Vitest para testes
+
+O repositório também mantém um serviço Java/Spring Boot em `backend/`.
+
+## Desenvolvimento
+
+Requisitos:
+
+- Node.js 22+
+- npm
+
+Instale as dependências e inicie o frontend:
+
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
+A aplicação fica disponível em `http://localhost:3000`.
+
+## Variáveis de ambiente
+
+Crie `.env.local` a partir de `.env.example` e configure as variáveis do ambiente utilizado.
+
+Credenciais privilegiadas, como `service_role`, senhas de banco e chaves secretas, não devem ser adicionadas ao repositório nem expostas em variáveis `NEXT_PUBLIC_*`.
+
+## Testes
+
+```bash
+npm test
+npm run test:e2e
+npm run security:scan
+```
+
+## Build
+
+```bash
+npm run build
+```
+
 ## Backend Java
+
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-## Supabase
-A próxima etapa é preencher as credenciais reais e aplicar as migrations ao projeto Supabase. O frontend nunca deve receber `SUPABASE_SERVICE_ROLE_KEY`.
+## Estrutura principal
 
-Consulte `.env.example` e `backend/README.md`.
+- `app/` — rotas e páginas Next.js
+- `components/` — componentes compartilhados e telas do produto
+- `lib/` — autenticação, integrações e utilitários
+- `e2e/` — testes Playwright
+- `backend/` — serviço Java/Spring Boot
+- `supabase/` — migrations e configuração relacionada ao banco
 
-
-## Build
-
-```bash
-npm install
-npm run build
-```
-
-O frontend usa TypeScript em modo `strict`. O tipo das threads de mensagens foi explicitado para evitar `implicit any` durante o build de produção.
+Consulte `SECURITY.md` para as práticas de segurança do projeto.
