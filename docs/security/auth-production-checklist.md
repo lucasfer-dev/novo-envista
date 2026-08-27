@@ -8,7 +8,6 @@ Este documento complementa o hardening do código. Alguns controles de Auth vive
 - cadastro sem enumeração de contas existentes;
 - recuperação de senha sem revelar se o e-mail existe;
 - confirmação SSR por `token_hash` em `/auth/confirm`, mantendo `/auth/callback` como fallback PKCE;
-- resolução segura da URL base usada em e-mails: produção na Vercel nunca aceita `localhost` como destino;
 - senha mínima de 12 caracteres no aplicativo;
 - revogação global de refresh tokens após troca de senha, com encerramento local como fallback;
 - Cloudflare Turnstile opcional em login, cadastro e recuperação;
@@ -32,14 +31,9 @@ O endpoint aceita `token_hash`, `type` e um `next` interno validado. Para cadast
 
 ## URLs
 
-- **Site URL** no Supabase Auth: `https://novo-envista.vercel.app` enquanto esse for o domínio oficial.
-- Na **Redirect URLs allowlist**, incluir `https://novo-envista.vercel.app/auth/callback` para confirmação e recuperação via PKCE.
-- Para desenvolvimento local, manter `http://localhost:3000/auth/callback` apenas quando realmente necessário.
-- Se previews da Vercel precisarem disparar e-mails de Auth, adicionar um padrão restrito que cubra apenas os previews do projeto/equipe; não usar curingas amplos em produção sem necessidade.
-- Na Vercel Production, `NEXT_PUBLIC_SITE_URL` deve ser `https://novo-envista.vercel.app`.
-- O resolvedor em `lib/auth/site-url.ts` ignora explicitamente qualquer URL local quando `VERCEL_ENV=production`, usando `VERCEL_PROJECT_PRODUCTION_URL`/`VERCEL_URL` como fallback seguro.
-
-Se o Supabase estiver com **Site URL = `http://localhost:3000`** ou se o callback público não estiver na allowlist, o Auth pode substituir um `redirectTo` não permitido pelo Site URL. Por isso a configuração hospedada do Supabase precisa ser corrigida além do código.
+- Site URL de produção: `https://novo-envista.vercel.app` enquanto esse for o domínio oficial.
+- Manter apenas redirects realmente necessários na allowlist do Supabase Auth.
+- Não usar curingas amplos em produção sem necessidade.
 
 ## E-mail
 
@@ -70,5 +64,4 @@ Os limites no proxy são uma camada best-effort por instância/serverless. Confi
 - Security CI/secret scan verde;
 - Supabase Security Advisor sem findings críticos;
 - testar manualmente login válido/inválido, cadastro, confirmação, reset e logout;
-- confirmar nos logs do Supabase que pedidos de `/signup` e `/recover` originados de produção não usam `localhost`;
 - após habilitar Turnstile, testar token ausente, inválido, expirado e válido.
