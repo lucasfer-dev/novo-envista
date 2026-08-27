@@ -50,7 +50,7 @@ export default async function LegacySocialServerPage({
       .from("posts")
       .select("id,body,visibility,created_at,created_by,author_user_id,author_team_id,project_id,author_user:profiles!posts_author_user_id_fkey(id,username,display_name,role),author_team:teams!posts_author_team_id_fkey(id,slug,name),project:projects!posts_project_id_fkey(id,slug,title)")
       .order("created_at", { ascending: false })
-      .limit(100),
+      .limit(140),
     supabase
       .from("projects")
       .select("id,slug,title,short_description,stage,visibility,owner_user_id,owner_team_id,created_at,updated_at,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name,role),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
@@ -62,13 +62,13 @@ export default async function LegacySocialServerPage({
       .eq("profile_visibility", "platform")
       .neq("id", userId)
       .order("display_name")
-      .limit(24),
+      .limit(30),
     supabase
       .from("teams")
       .select("id,slug,name,description,category")
       .eq("visibility", "platform")
       .order("updated_at", { ascending: false })
-      .limit(24),
+      .limit(30),
   ]);
 
   const follows = followsResult.data ?? [];
@@ -86,16 +86,15 @@ export default async function LegacySocialServerPage({
       .map((item: any) => item.team_id),
   );
 
-  const filteredPosts = allPosts.filter((post: any) => {
-    const own = post.author_user_id === userId || post.created_by === userId || (post.author_team_id && memberTeams.has(post.author_team_id));
-    const followed =
-      (post.author_user_id && followedProfiles.has(post.author_user_id)) ||
-      (post.author_team_id && followedTeams.has(post.author_team_id)) ||
-      (post.project_id && followedProjects.has(post.project_id));
-    return own || followed;
+  const visiblePosts = allPosts.filter((post: any) => {
+    const own =
+      post.author_user_id === userId ||
+      post.created_by === userId ||
+      Boolean(post.author_team_id && memberTeams.has(post.author_team_id));
+    return post.visibility === "platform" || own;
   });
 
-  const postIds = filteredPosts.map((post: any) => post.id);
+  const postIds = visiblePosts.map((post: any) => post.id);
   let likes: any[] = [];
   let comments: any[] = [];
   if (postIds.length) {
@@ -111,7 +110,7 @@ export default async function LegacySocialServerPage({
     comments = commentsResult.data ?? [];
   }
 
-  const postItems: SocialPostFeedItem[] = filteredPosts.map((post: any) => {
+  const postItems: SocialPostFeedItem[] = visiblePosts.map((post: any) => {
     const authorUser = one<any>(post.author_user);
     const authorTeam = one<any>(post.author_team);
     const project = one<any>(post.project);
@@ -132,6 +131,15 @@ export default async function LegacySocialServerPage({
     const authorHandle = authorTeam?.slug ? `@${authorTeam.slug}` : authorUser?.username ? `@${authorUser.username}` : "@envista";
     const authorType = authorTeam ? "team" : authorUser?.role === "investor" ? "investor" : "participant";
     const authorId = authorTeam?.slug || authorUser?.username || "";
+    const own =
+      post.author_user_id === userId ||
+      post.created_by === userId ||
+      Boolean(post.author_team_id && memberTeams.has(post.author_team_id));
+    const followed =
+      own ||
+      Boolean(post.author_user_id && followedProfiles.has(post.author_user_id)) ||
+      Boolean(post.author_team_id && followedTeams.has(post.author_team_id)) ||
+      Boolean(post.project_id && followedProjects.has(post.project_id));
 
     return {
       kind: "post",
@@ -141,9 +149,11 @@ export default async function LegacySocialServerPage({
       createdAt: post.created_at,
       authorLabel,
       authorHandle,
+      authorKind: authorType,
       authorHref: authorId
         ? entityRoute({ type: authorType, id: authorId, source: "social", context })
         : path,
+      followed,
       canDelete:
         post.author_user_id === userId ||
         post.created_by === userId ||
@@ -161,22 +171,27 @@ export default async function LegacySocialServerPage({
     };
   });
 
-  const relatedProjects = allProjects.filter((project: any) => {
-    if (project.visibility !== "platform" && project.owner_user_id !== userId && !memberTeams.has(project.owner_team_id)) return false;
-    return (
+  const visibleProjects = allProjects.filter((project: any) => {
+    const own =
       project.owner_user_id === userId ||
-      (project.owner_team_id && memberTeams.has(project.owner_team_id)) ||
-      (project.owner_user_id && followedProfiles.has(project.owner_user_id)) ||
-      (project.owner_team_id && followedTeams.has(project.owner_team_id)) ||
-      followedProjects.has(project.id)
-    );
+      Boolean(project.owner_team_id && memberTeams.has(project.owner_team_id));
+    return project.visibility === "platform" || own;
   });
 
-  const projectUpdateItems: SocialProjectUpdateFeedItem[] = relatedProjects.map((project: any) => {
+  const projectUpdateItems: SocialProjectUpdateFeedItem[] = visibleProjects.map((project: any) => {
     const ownerUser = one<any>(project.owner_user);
     const ownerTeam = one<any>(project.owner_team);
     const createdAt = asTime(project.created_at);
     const updatedAt = asTime(project.updated_at);
+    const own =
+      project.owner_user_id === userId ||
+      Boolean(project.owner_team_id && memberTeams.has(project.owner_team_id));
+    const followed =
+      own ||
+      Boolean(project.owner_user_id && followedProfiles.has(project.owner_user_id)) ||
+      Boolean(project.owner_team_id && followedTeams.has(project.owner_team_id)) ||
+      followedProjects.has(project.id);
+
     return {
       kind: "project-update",
       id: `project-update:${project.id}:${project.updated_at}`,
@@ -186,13 +201,15 @@ export default async function LegacySocialServerPage({
       stage: project.stage,
       href: entityRoute({ type: "project", id: project.slug, source: "social", context }),
       ownerLabel: ownerTeam?.name || ownerUser?.display_name || ownerUser?.username || "Projeto Envista",
+      ownerKind: ownerTeam ? "team" : ownerUser?.role === "investor" ? "investor" : "participant",
+      followed,
       isNew: Math.abs(updatedAt - createdAt) < 90_000,
     };
   });
 
   const items: SocialFeedItem[] = [...postItems, ...projectUpdateItems]
     .sort((a, b) => asTime(b.createdAt) - asTime(a.createdAt))
-    .slice(0, 60);
+    .slice(0, 180);
 
   const teamOptions = memberships
     .map((membership: any) => one<any>(membership.teams))
@@ -205,7 +222,7 @@ export default async function LegacySocialServerPage({
         project.owner_user_id === userId || (project.owner_team_id && memberTeams.has(project.owner_team_id)),
     )
     .map((project: any) => ({ id: project.id, title: project.title, slug: project.slug }))
-    .slice(0, 30);
+    .slice(0, 40);
 
   const suggestions: SocialSuggestion[] = [];
   for (const profile of profilesResult.data ?? []) {
@@ -218,7 +235,7 @@ export default async function LegacySocialServerPage({
       subtitle: `@${(profile as any).username || "usuario"} · ${profileRole === "investor" ? "Investidor" : "Participante"}`,
       href: entityRoute({ type: profileRole, id: (profile as any).username, source: "social", context }),
     });
-    if (suggestions.length >= 4) break;
+    if (suggestions.length >= 5) break;
   }
 
   for (const team of teamsResult.data ?? []) {
@@ -230,7 +247,7 @@ export default async function LegacySocialServerPage({
       subtitle: `Equipe${(team as any).category ? ` · ${(team as any).category}` : ""}`,
       href: entityRoute({ type: "team", id: (team as any).slug, source: "social", context }),
     });
-    if (suggestions.length >= 7) break;
+    if (suggestions.length >= 8) break;
   }
 
   for (const project of allProjects) {
@@ -242,7 +259,7 @@ export default async function LegacySocialServerPage({
       subtitle: `Projeto · ${(project as any).stage}`,
       href: entityRoute({ type: "project", id: (project as any).slug, source: "social", context }),
     });
-    if (suggestions.length >= 10) break;
+    if (suggestions.length >= 12) break;
   }
 
   return (
