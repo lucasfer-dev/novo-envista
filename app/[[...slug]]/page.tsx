@@ -7,6 +7,8 @@ import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationE
 import {
   CompetitionDetailServerPage,
   CompetitionsServerPage,
+  DemoCompetitionDetailServerPage,
+  DemoCompetitionsServerPage,
 } from "@/components/competitions/CompetitionsServerPage";
 import {
   LegacyNewProjectPage,
@@ -72,6 +74,12 @@ export default async function Page({
           demoUser={demoParticipant}
         />
       );
+    }
+    const demoCompetition = pathname.match(/^\/app\/competitions(?:\/([^/]+))?$/);
+    if (demoCompetition) {
+      const item = demoCompetition[1];
+      if (!item) return <DemoCompetitionsServerPage user={demoParticipant} />;
+      return <DemoCompetitionDetailServerPage user={demoParticipant} slug={item} />;
     }
     return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoParticipant} /></>;
   }
