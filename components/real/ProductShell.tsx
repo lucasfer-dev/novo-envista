@@ -24,6 +24,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         [`${prefix}/explore`, "Explorar"],
         [`${prefix}/projects`, "Meus projetos"],
         [`${prefix}/teams`, "Minhas equipes"],
+        [`${prefix}/competitions`, "Competições"],
         [`${prefix}/saved`, "Projetos salvos"],
         [`${prefix}/following`, "Seguindo"],
         [`${prefix}/messages`, "Mensagens"],
@@ -34,6 +35,7 @@ export default function ProductShell({ user, children, title = "Envista" }: Prop
         [`${prefix}/explore`, "Explorar"],
         [`${prefix}/projects`, "Meus projetos"],
         [`${prefix}/teams`, "Minhas equipes"],
+        [`${prefix}/competitions`, "Competições"],
         [`${prefix}/learn`, "Aprender"],
         [`${prefix}/messages`, "Mensagens"],
       ];
