@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { isNavItemActive } from "@/lib/navigation";
+import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationEnhancer";
 import type { User } from "@/types";
 import type { ProductRole } from "@/lib/auth/require-product-user";
 
@@ -115,6 +116,7 @@ export default function LegacySocialShell({
 
   return (
     <div className="app-shell">
+      <TaxonomyNavigationEnhancer />
       {mobileOpen && (
         <button
           className="sidebar-backdrop"
