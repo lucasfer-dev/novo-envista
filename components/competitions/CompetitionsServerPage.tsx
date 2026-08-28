@@ -2,13 +2,16 @@ import ProductShell from "@/components/real/ProductShell";
 import { CompetitionDetailClient, CompetitionsBrowser } from "@/components/competitions/CompetitionsClient";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import type { CompetitionRecommendationContext } from "@/lib/competitions/recommendations";
+import type { User } from "@/types";
+
+const emptyRecommendationContext: CompetitionRecommendationContext = { teams: [], projects: [] };
 
 async function loadRecommendationContext(
   supabase: Awaited<ReturnType<typeof requireProductUser>>["supabase"],
   userId: string,
   role: ProductRole,
 ): Promise<CompetitionRecommendationContext> {
-  if (role !== "participant") return { teams: [], projects: [] };
+  if (role !== "participant") return emptyRecommendationContext;
 
   const { data: memberships } = await supabase
     .from("team_members")
@@ -78,6 +81,22 @@ export async function CompetitionDetailServerPage({ expectedRole, slug }: { expe
   return (
     <ProductShell user={appUser} title="Competições">
       <CompetitionDetailClient basePath={basePath} slug={slug} recommendationContext={recommendationContext} />
+    </ProductShell>
+  );
+}
+
+export function DemoCompetitionsServerPage({ user }: { user: User }) {
+  return (
+    <ProductShell user={user} title="Competições">
+      <CompetitionsBrowser basePath="/app/competitions" recommendationContext={emptyRecommendationContext} />
+    </ProductShell>
+  );
+}
+
+export function DemoCompetitionDetailServerPage({ user, slug }: { user: User; slug: string }) {
+  return (
+    <ProductShell user={user} title="Competições">
+      <CompetitionDetailClient basePath="/app/competitions" slug={slug} recommendationContext={emptyRecommendationContext} />
     </ProductShell>
   );
 }
