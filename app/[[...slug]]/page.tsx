@@ -26,6 +26,7 @@ import type { ProductRole } from "@/lib/auth/require-product-user";
 import type { User } from "@/types";
 
 const DEMO_COOKIE = "envista_demo";
+const LEGACY_COMPETITION_SLUGS = new Set(["envista-challenge-2026", "obt", "jovens-inovadores"]);
 
 const demoParticipant: User = {
   id: "demo-participant",
@@ -79,6 +80,7 @@ export default async function Page({
     if (demoCompetition) {
       const item = demoCompetition[1];
       if (!item) return <DemoCompetitionsServerPage user={demoParticipant} />;
+      if (LEGACY_COMPETITION_SLUGS.has(item)) redirect("/app/competitions");
       return <DemoCompetitionDetailServerPage user={demoParticipant} slug={item} />;
     }
     return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoParticipant} /></>;
@@ -101,7 +103,9 @@ export default async function Page({
   if (directCompetition) {
     const expectedRole = roleFromBase(directCompetition[1]);
     const item = directCompetition[2];
+    const competitionBase = expectedRole === "investor" ? "/investor/competitions" : "/app/competitions";
     if (!item) return <CompetitionsServerPage expectedRole={expectedRole} />;
+    if (LEGACY_COMPETITION_SLUGS.has(item)) redirect(competitionBase);
     return <CompetitionDetailServerPage expectedRole={expectedRole} slug={item} />;
   }
 
