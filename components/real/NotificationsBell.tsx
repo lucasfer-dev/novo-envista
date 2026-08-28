@@ -1,22 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { Bell } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function BellLink({ count, prefix }: { count: number; prefix: "/app" | "/investor" }) {
+type Props = { userId: string; prefix: "/app" | "/investor"; dark?: boolean };
+
+function BellLink({ count, prefix, dark = false }: { count: number; prefix: "/app" | "/investor"; dark?: boolean }) {
   return (
     <Link
       href={`${prefix}/notifications`}
       prefetch={false}
       aria-label={count ? `${count} notificações não lidas` : "Notificações"}
-      style={{position:"relative",display:"inline-flex",alignItems:"center",justifyContent:"center",width:38,height:38,borderRadius:10,border:"1px solid #e4e7ec",textDecoration:"none",color:"#344054"}}
+      style={{
+        position:"relative",
+        display:"inline-flex",
+        alignItems:"center",
+        justifyContent:"center",
+        width:36,
+        height:36,
+        borderRadius:8,
+        border:dark ? "1px solid rgba(255,255,255,.08)" : "1px solid #e4e7ec",
+        background:dark ? "transparent" : "#fff",
+        textDecoration:"none",
+        color:dark ? "#98a6b8" : "#344054",
+      }}
     >
-      <span aria-hidden="true">🔔</span>
+      <Bell size={17} strokeWidth={1.9} aria-hidden="true" />
       {count > 0 ? (
-        <span style={{position:"absolute",top:-6,right:-6,minWidth:20,height:20,padding:"0 5px",borderRadius:999,display:"grid",placeItems:"center",background:"#d92d20",color:"white",fontSize:11,fontWeight:800}}>
+        <span style={{position:"absolute",top:-5,right:-5,minWidth:18,height:18,padding:"0 4px",borderRadius:999,display:"grid",placeItems:"center",background:"#ff647c",color:"white",fontSize:10,fontWeight:800}}>
           {count > 99 ? "99+" : count}
         </span>
       ) : null}
@@ -24,7 +39,7 @@ function BellLink({ count, prefix }: { count: number; prefix: "/app" | "/investo
   );
 }
 
-function LiveNotificationsBell({ userId, prefix }: { userId: string; prefix: "/app" | "/investor" }) {
+function LiveNotificationsBell({ userId, prefix, dark = false }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const [count, setCount] = useState(0);
 
@@ -61,10 +76,10 @@ function LiveNotificationsBell({ userId, prefix }: { userId: string; prefix: "/a
     };
   }, [refresh, supabase, userId]);
 
-  return <BellLink count={count} prefix={prefix} />;
+  return <BellLink count={count} prefix={prefix} dark={dark} />;
 }
 
-export default function NotificationsBell({ userId, prefix }: { userId: string; prefix: "/app" | "/investor" }) {
-  if (!UUID_RE.test(userId)) return <BellLink count={0} prefix={prefix} />;
-  return <LiveNotificationsBell userId={userId} prefix={prefix} />;
+export default function NotificationsBell({ userId, prefix, dark = false }: Props) {
+  if (!UUID_RE.test(userId)) return <BellLink count={0} prefix={prefix} dark={dark} />;
+  return <LiveNotificationsBell userId={userId} prefix={prefix} dark={dark} />;
 }
