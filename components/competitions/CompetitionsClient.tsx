@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { LiveCompetition, LiveCompetitionsResponse, CompetitionStatus } from "@/lib/competitions/types";
+import {
+  hasRecommendationContext,
+  recommendCompetition,
+  type CompetitionMatch,
+  type CompetitionRecommendationContext,
+} from "@/lib/competitions/recommendations";
 import styles from "./Competitions.module.css";
 
 type Tab = "OPEN" | "UPCOMING" | "CLOSED" | "ALL";
@@ -29,7 +35,23 @@ function statusClass(status: CompetitionStatus) {
   return styles.unknown;
 }
 
-export function CompetitionsBrowser({ basePath }: { basePath: "/app/competitions" | "/investor/competitions" }) {
+function MatchBadge({ match }: { match: CompetitionMatch }) {
+  const project = match.kind === "project";
+  return (
+    <div className={project ? styles.projectMatch : styles.teamMatch}>
+      <strong>{project ? `Boa oportunidade para ${match.entityName}` : `Compatível com equipe ${match.entityName}`}</strong>
+      <span>{match.reasons.join(" + ")}</span>
+    </div>
+  );
+}
+
+export function CompetitionsBrowser({
+  basePath,
+  recommendationContext,
+}: {
+  basePath: "/app/competitions" | "/investor/competitions";
+  recommendationContext: CompetitionRecommendationContext;
+}) {
   const [data, setData] = useState<LiveCompetitionsResponse | null>(null);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Tab>("OPEN");
@@ -37,6 +59,7 @@ export function CompetitionsBrowser({ basePath }: { basePath: "/app/competitions
   const [age, setAge] = useState("");
   const [state, setState] = useState("ALL");
   const [modality, setModality] = useState("ALL");
+  const [recommendedOnly, setRecommendedOnly] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -51,32 +74,51 @@ export function CompetitionsBrowser({ basePath }: { basePath: "/app/competitions
   }, []);
 
   const items = data?.items || [];
+  const hasContext = hasRecommendationContext(recommendationContext);
   const states = useMemo(() => Array.from(new Set(items.map((item) => item.state).filter(Boolean))).sort(), [items]);
   const modalities = useMemo(() => Array.from(new Set(items.flatMap((item) => item.modalities))).sort(), [items]);
   const counts = useMemo(() => ({ OPEN: items.filter((item) => item.status === "OPEN").length, UPCOMING: items.filter((item) => item.status === "UPCOMING").length, CLOSED: items.filter((item) => item.status === "CLOSED").length, ALL: items.length }), [items]);
 
+  const ranked = useMemo(() => items.map((item) => ({ item, recommendation: recommendCompetition(item, recommendationContext) })), [items, recommendationContext]);
+
   const filtered = useMemo(() => {
     const needle = q.trim().toLocaleLowerCase("pt-BR");
     const ageNumber = Number(age);
-    return items.filter((item) => {
-      if (tab !== "ALL" && item.status !== tab) return false;
-      if (state !== "ALL" && item.state !== state) return false;
-      if (modality !== "ALL" && !item.modalities.includes(modality)) return false;
-      if (needle && ![item.name, item.organizer, item.city, item.state, item.level, ...item.modalities].join(" ").toLocaleLowerCase("pt-BR").includes(needle)) return false;
-      if (age && Number.isFinite(ageNumber)) {
-        if (item.minAge == null && item.maxAge == null) return false;
-        if (item.minAge != null && ageNumber < item.minAge) return false;
-        if (item.maxAge != null && ageNumber > item.maxAge) return false;
-      }
-      return true;
-    });
-  }, [items, tab, q, age, state, modality]);
+    return ranked
+      .filter(({ item, recommendation }) => {
+        if (tab !== "ALL" && item.status !== tab) return false;
+        if (state !== "ALL" && item.state !== state) return false;
+        if (modality !== "ALL" && !item.modalities.includes(modality)) return false;
+        if (recommendedOnly && recommendation.score === 0) return false;
+        if (needle && ![item.name, item.organizer, item.city, item.state, item.level, ...item.modalities].join(" ").toLocaleLowerCase("pt-BR").includes(needle)) return false;
+        if (age && Number.isFinite(ageNumber)) {
+          if (item.minAge == null && item.maxAge == null) return false;
+          if (item.minAge != null && ageNumber < item.minAge) return false;
+          if (item.maxAge != null && ageNumber > item.maxAge) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (hasContext && a.recommendation.score !== b.recommendation.score) return b.recommendation.score - a.recommendation.score;
+        const aDate = a.item.registrationEnd || a.item.eventDate || "9999-12-31";
+        const bDate = b.item.registrationEnd || b.item.eventDate || "9999-12-31";
+        return aDate.localeCompare(bDate);
+      });
+  }, [ranked, tab, q, age, state, modality, recommendedOnly, hasContext]);
 
   return <div className={styles.page}>
     <div className={styles.head}>
-      <div><h1>Competições</h1><p>Oportunidades encontradas automaticamente em fontes oficiais, com status de inscrição, faixa etária, modalidade, local e etapas.</p></div>
+      <div>
+        <h1>Competições</h1>
+        <p>Oportunidades encontradas automaticamente em fontes oficiais. Quando há dados suficientes do seu perfil, projetos e equipes, o Envista destaca as mais compatíveis.</p>
+      </div>
       <span className={styles.live}>{data ? `Atualizado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))}` : "Atualizando fontes oficiais…"}</span>
     </div>
+
+    {hasContext && <div className={styles.recommendationIntro}>
+      <div><strong>Recomendações personalizadas</strong><span>Comparação por área, tags e localização dos seus projetos e equipes. Não usa IA.</span></div>
+      <label><input type="checkbox" checked={recommendedOnly} onChange={(event) => setRecommendedOnly(event.target.checked)} /> Só recomendadas para mim</label>
+    </div>}
 
     <div className={styles.tabs}>
       {(["OPEN", "UPCOMING", "CLOSED", "ALL"] as Tab[]).map((value) => <button key={value} data-active={tab === value} onClick={() => setTab(value)}>{labels[value]} <b>{counts[value]}</b></button>)}
@@ -91,12 +133,16 @@ export function CompetitionsBrowser({ basePath }: { basePath: "/app/competitions
 
     {!data && !error && <div className={styles.loading}>Buscando competições e conferindo os períodos de inscrição…</div>}
     {error && <div className={styles.error}>{error}</div>}
-    {data && !filtered.length && <div className={styles.empty}>Nenhuma competição encontrada com esses filtros.</div>}
+    {data && !filtered.length && <div className={styles.empty}>{recommendedOnly ? "Nenhuma competição compatível foi encontrada com esses filtros." : "Nenhuma competição encontrada com esses filtros."}</div>}
 
     <div className={styles.grid}>
-      {filtered.map((item) => <Link className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
+      {filtered.map(({ item, recommendation }) => <Link className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
         <div className={styles.banner}><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
         <div className={styles.body}>
+          {(recommendation.project || recommendation.team) && <div className={styles.matchStack}>
+            {recommendation.project && <MatchBadge match={recommendation.project} />}
+            {recommendation.team && <MatchBadge match={recommendation.team} />}
+          </div>}
           <h3>{item.name}</h3><p>{item.organizer}</p>
           <div className={styles.meta}><span>📍 {[item.city, item.state].filter(Boolean).join(" — ") || item.country}</span><span>👥 {ageLabel(item)}</span><span>📅 Inscrição: {fmt(item.registrationStart)} → {fmt(item.registrationEnd)}</span>{item.eventDate && <span>🏁 Evento: {fmt(item.eventDate)}</span>}</div>
           <div className={styles.chips}>{item.modalities.slice(0, 4).map((value) => <span key={value}>{value}</span>)}</div>
@@ -106,7 +152,15 @@ export function CompetitionsBrowser({ basePath }: { basePath: "/app/competitions
   </div>;
 }
 
-export function CompetitionDetailClient({ basePath, slug }: { basePath: "/app/competitions" | "/investor/competitions"; slug: string }) {
+export function CompetitionDetailClient({
+  basePath,
+  slug,
+  recommendationContext,
+}: {
+  basePath: "/app/competitions" | "/investor/competitions";
+  slug: string;
+  recommendationContext: CompetitionRecommendationContext;
+}) {
   const [item, setItem] = useState<LiveCompetition | null>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -117,8 +171,17 @@ export function CompetitionDetailClient({ basePath, slug }: { basePath: "/app/co
   if (!loaded) return <div className={styles.loading}>Carregando detalhes da competição…</div>;
   if (!item) return <div className={styles.page}><Link className={styles.back} href={basePath}>← Competições</Link><div className={styles.empty}>Competição não encontrada ou removida da fonte oficial.</div></div>;
 
+  const recommendation = recommendCompetition(item, recommendationContext);
+
   return <div className={styles.page}>
     <Link className={styles.back} href={basePath}>← Competições</Link>
+    {(recommendation.project || recommendation.team) && <section className={styles.recommendationPanel}>
+      <div><strong>Por que esta oportunidade combina com você</strong><span>O Envista comparou os dados desta competição com seus projetos e equipes.</span></div>
+      <div className={styles.matchStack}>
+        {recommendation.project && <MatchBadge match={recommendation.project} />}
+        {recommendation.team && <MatchBadge match={recommendation.team} />}
+      </div>
+    </section>}
     <div className={styles.detail}>
       <section className={styles.panel}>
         <span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span>
