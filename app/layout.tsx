@@ -1,5 +1,6 @@
 import './globals.css'
 import './team-role-select.css'
+import './scrollbar.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
