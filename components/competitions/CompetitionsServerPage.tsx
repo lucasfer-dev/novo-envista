@@ -68,7 +68,7 @@ export async function CompetitionsServerPage({ expectedRole }: { expectedRole: P
   const basePath = expectedRole === "investor" ? "/investor/competitions" : "/app/competitions";
   const recommendationContext = await loadRecommendationContext(supabase, userId, role);
   return (
-    <ProductShell user={appUser} title="Competições">
+    <ProductShell user={appUser} title="Competições" variant="legacyDark">
       <CompetitionsBrowser basePath={basePath} recommendationContext={recommendationContext} />
     </ProductShell>
   );
@@ -79,7 +79,7 @@ export async function CompetitionDetailServerPage({ expectedRole, slug }: { expe
   const basePath = expectedRole === "investor" ? "/investor/competitions" : "/app/competitions";
   const recommendationContext = await loadRecommendationContext(supabase, userId, role);
   return (
-    <ProductShell user={appUser} title="Competições">
+    <ProductShell user={appUser} title="Competições" variant="legacyDark">
       <CompetitionDetailClient basePath={basePath} slug={slug} recommendationContext={recommendationContext} />
     </ProductShell>
   );
@@ -87,7 +87,7 @@ export async function CompetitionDetailServerPage({ expectedRole, slug }: { expe
 
 export function DemoCompetitionsServerPage({ user }: { user: User }) {
   return (
-    <ProductShell user={user} title="Competições">
+    <ProductShell user={user} title="Competições" variant="legacyDark">
       <CompetitionsBrowser basePath="/app/competitions" recommendationContext={emptyRecommendationContext} />
     </ProductShell>
   );
@@ -95,7 +95,7 @@ export function DemoCompetitionsServerPage({ user }: { user: User }) {
 
 export function DemoCompetitionDetailServerPage({ user, slug }: { user: User; slug: string }) {
   return (
-    <ProductShell user={user} title="Competições">
+    <ProductShell user={user} title="Competições" variant="legacyDark">
       <CompetitionDetailClient basePath="/app/competitions" slug={slug} recommendationContext={emptyRecommendationContext} />
     </ProductShell>
   );
