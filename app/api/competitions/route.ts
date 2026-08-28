@@ -1,44 +1,63 @@
-import { NextResponse } from "next/server";
-import type { LiveCompetition, LiveCompetitionsResponse } from "@/lib/competitions/types";
+import { NextRequest, NextResponse } from "next/server";
+import { scanOfficialCompetitions } from "@/lib/competitions/live-scan";
+import type { LiveCompetitionsResponse } from "@/lib/competitions/types";
 
-const ROBOCOMP_URL = "https://robocomp-finder.vercel.app/api/open-competitions";
+const ROBOCOMP_FALLBACK = "https://robocomp-finder.vercel.app/api/open-competitions";
 
-function slugFromId(id: string) {
-  return Buffer.from(id, "utf8").toString("base64url");
+async function fallbackToRoboComp(): Promise<LiveCompetitionsResponse | null> {
+  try {
+    const response = await fetch(ROBOCOMP_FALLBACK, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!response.ok) return null;
+    return (await response.json()) as LiveCompetitionsResponse;
+  } catch {
+    return null;
+  }
 }
 
-export async function GET() {
-  try {
-    const response = await fetch(ROBOCOMP_URL, {
-      headers: { Accept: "application/json" },
-      next: { revalidate: 900 },
-    });
+export async function GET(request: NextRequest) {
+  const fresh = request.nextUrl.searchParams.get("fresh") === "1";
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { items: [], checkedAt: new Date().toISOString(), sourcesChecked: 0, errors: [`RoboComp HTTP ${response.status}`], mode: "robocomp-proxy" },
-        { status: 502 },
-      );
+  try {
+    const result = await scanOfficialCompetitions({ fresh });
+
+    if (result.items.length > 0) {
+      return NextResponse.json(result, {
+        headers: {
+          "Cache-Control": fresh ? "no-store" : "public, s-maxage=900, stale-while-revalidate=1800",
+        },
+      });
     }
 
-    const source = (await response.json()) as Omit<LiveCompetitionsResponse, "items"> & { items?: Omit<LiveCompetition, "slug">[] };
-    const items = (source.items || []).map((item) => ({ ...item, slug: slugFromId(item.id) }));
+    const fallback = await fallbackToRoboComp();
+    if (fallback?.items?.length) {
+      return NextResponse.json({
+        ...fallback,
+        errors: [...result.errors, ...(fallback.errors || []), "Scanner nativo sem resultados; usando fallback do RoboComp."],
+        mode: "envista-scan-fallback-robocomp",
+      } satisfies LiveCompetitionsResponse);
+    }
 
-    return NextResponse.json({
-      items,
-      checkedAt: source.checkedAt || new Date().toISOString(),
-      sourcesChecked: source.sourcesChecked || 0,
-      errors: source.errors || [],
-      mode: source.mode || "robocomp-proxy",
-    } satisfies LiveCompetitionsResponse);
+    return NextResponse.json(result, { status: 502 });
   } catch (error) {
+    const fallback = await fallbackToRoboComp();
+    if (fallback?.items?.length) {
+      return NextResponse.json({
+        ...fallback,
+        errors: [error instanceof Error ? error.message : "Falha no scanner nativo", ...(fallback.errors || [])],
+        mode: "envista-scan-fallback-robocomp",
+      } satisfies LiveCompetitionsResponse);
+    }
+
     return NextResponse.json(
       {
         items: [],
         checkedAt: new Date().toISOString(),
         sourcesChecked: 0,
-        errors: [error instanceof Error ? error.message : "Falha ao consultar o RoboComp"],
-        mode: "robocomp-proxy",
+        errors: [error instanceof Error ? error.message : "Falha ao consultar as fontes oficiais"],
+        mode: "envista-live-official-scan-error",
       } satisfies LiveCompetitionsResponse,
       { status: 502 },
     );
