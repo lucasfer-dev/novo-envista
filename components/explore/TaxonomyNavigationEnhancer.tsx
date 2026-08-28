@@ -54,10 +54,25 @@ export default function TaxonomyNavigationEnhancer() {
       router.push(href);
     };
 
+    const isLegacyCompetitionsButton = (element: Element | null) => {
+      const button = element?.closest<HTMLElement>(".app-shell button");
+      if (!button) return null;
+      return clean(button.textContent) === "Competições" ? button : null;
+    };
+
     const onClick = (event: MouseEvent) => {
-      const target = event.target instanceof Element
-        ? event.target.closest<HTMLElement>("[data-envista-taxonomy-link='true']")
-        : null;
+      const origin = event.target instanceof Element ? event.target : null;
+      const competitionButton = isLegacyCompetitionsButton(origin);
+      if (competitionButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        // Competições usa uma árvore de página server-rendered diferente do EnvistaApp legado.
+        // Uma navegação completa evita que chunks/RSC de um deploy anterior sejam reaproveitados.
+        window.location.assign(`${base}/competitions`);
+        return;
+      }
+
+      const target = origin?.closest<HTMLElement>("[data-envista-taxonomy-link='true']") ?? null;
       if (target) activate(target, event);
     };
 
