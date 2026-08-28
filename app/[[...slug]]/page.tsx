@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
+import LegacyExploreServerPage from "@/components/explore/LegacyExploreServerPage";
+import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationEnhancer";
 import {
   CompetitionDetailServerPage,
   CompetitionsServerPage,
@@ -42,6 +44,10 @@ function roleFromBase(value: string): ProductRole {
   return value === "investor" ? "investor" : "participant";
 }
 
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default async function Page({
   params,
   searchParams,
@@ -57,7 +63,17 @@ export default async function Page({
   const cookieStore = await cookies();
   if (cookieStore.get(DEMO_COOKIE)?.value === "participant") {
     if (pathname.startsWith("/investor")) redirect("/app");
-    return <EnvistaApp authenticatedProfile={demoParticipant} />;
+    if (pathname === "/app/explore") {
+      return (
+        <LegacyExploreServerPage
+          expectedRole="participant"
+          pathname={pathname}
+          searchParams={searchParams}
+          demoUser={demoParticipant}
+        />
+      );
+    }
+    return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoParticipant} /></>;
   }
 
   if (pathname === "/app/social") {
@@ -65,6 +81,12 @@ export default async function Page({
   }
   if (pathname === "/investor/social") {
     return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;
+  }
+  if (pathname === "/app/explore") {
+    return <LegacyExploreServerPage expectedRole="participant" pathname={pathname} searchParams={searchParams} />;
+  }
+  if (pathname === "/investor/explore") {
+    return <LegacyExploreServerPage expectedRole="investor" pathname={pathname} searchParams={searchParams} />;
   }
 
   const directCompetition = pathname.match(/^\/(app|investor)\/competitions(?:\/([^/]+))?$/);
@@ -80,6 +102,8 @@ export default async function Page({
     const expectedRole = roleFromBase(directProject[1]);
     const item = directProject[2];
     const projectBase = expectedRole === "investor" ? "/investor/projects" : "/app/projects";
+    const exploreBase = expectedRole === "investor" ? "/investor/explore" : "/app/explore";
+    const fromExplore = first((await searchParams).from) === "explore";
     if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewProjectPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     return (
@@ -87,7 +111,8 @@ export default async function Page({
         expectedRole={expectedRole}
         pathname={pathname}
         slug={item}
-        backHref={projectBase}
+        backHref={fromExplore ? exploreBase : projectBase}
+        publicView={fromExplore}
         searchParams={searchParams}
       />
     );
@@ -114,6 +139,8 @@ export default async function Page({
     const expectedRole = roleFromBase(directTeam[1]);
     const item = directTeam[2];
     const teamBase = expectedRole === "investor" ? "/investor/teams" : "/app/teams";
+    const exploreBase = expectedRole === "investor" ? "/investor/explore" : "/app/explore";
+    const fromExplore = first((await searchParams).from) === "explore";
     if (!item) return <LegacyTeamsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewTeamPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     return (
@@ -121,7 +148,8 @@ export default async function Page({
         expectedRole={expectedRole}
         pathname={pathname}
         slug={item}
-        backHref={teamBase}
+        backHref={fromExplore ? exploreBase : teamBase}
+        publicView={fromExplore}
         searchParams={searchParams}
       />
     );
@@ -194,5 +222,5 @@ export default async function Page({
     organizationType: profile.organization_type || undefined,
   };
 
-  return <EnvistaApp authenticatedProfile={authenticatedProfile} />;
+  return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={authenticatedProfile} /></>;
 }
