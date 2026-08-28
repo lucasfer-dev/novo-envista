@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { LiveCompetition, LiveCompetitionsResponse, CompetitionStatus } from "@/lib/competitions/types";
 import {
   hasRecommendationContext,
@@ -14,7 +14,7 @@ import styles from "./Competitions.module.css";
 type Tab = "OPEN" | "UPCOMING" | "CLOSED" | "ALL";
 
 const labels: Record<Tab, string> = { OPEN: "Abertas", UPCOMING: "Em breve", CLOSED: "Encerradas", ALL: "Todas" };
-const statusLabels: Record<CompetitionStatus, string> = { OPEN: "Inscrições abertas", UPCOMING: "Em breve", CLOSED: "Encerrada", UNKNOWN: "Não confirmado" };
+const statusLabels: Record<CompetitionStatus, string> = { OPEN: "Inscrições abertas", UPCOMING: "Em breve", CLOSED: "Encerrada", UNKNOWN: "A confirmar" };
 
 function fmt(value: string | null) {
   if (!value) return "Não informado";
@@ -54,6 +54,7 @@ export function CompetitionsBrowser({
 }) {
   const [data, setData] = useState<LiveCompetitionsResponse | null>(null);
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState<Tab>("OPEN");
   const [q, setQ] = useState("");
   const [age, setAge] = useState("");
@@ -61,17 +62,27 @@ export function CompetitionsBrowser({
   const [modality, setModality] = useState("ALL");
   const [recommendedOnly, setRecommendedOnly] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-    fetch("/api/competitions", { credentials: "same-origin" })
-      .then(async (response) => {
-        const json = (await response.json()) as LiveCompetitionsResponse;
-        if (!response.ok) throw new Error(json.errors?.[0] || "Não foi possível atualizar as competições.");
-        if (active) setData(json);
-      })
-      .catch((err: unknown) => active && setError(err instanceof Error ? err.message : "Falha ao carregar competições."));
-    return () => { active = false; };
+  const loadCompetitions = useCallback(async (fresh = false) => {
+    setError("");
+    if (fresh) setRefreshing(true);
+    try {
+      const response = await fetch(`/api/competitions${fresh ? "?fresh=1" : ""}`, {
+        credentials: "same-origin",
+        cache: fresh ? "no-store" : "default",
+      });
+      const json = (await response.json()) as LiveCompetitionsResponse;
+      if (!response.ok) throw new Error(json.errors?.[0] || "Não foi possível atualizar as competições.");
+      setData(json);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Falha ao carregar competições.");
+    } finally {
+      if (fresh) setRefreshing(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void loadCompetitions(false);
+  }, [loadCompetitions]);
 
   const items = data?.items || [];
   const hasContext = hasRecommendationContext(recommendationContext);
@@ -90,7 +101,7 @@ export function CompetitionsBrowser({
         if (state !== "ALL" && item.state !== state) return false;
         if (modality !== "ALL" && !item.modalities.includes(modality)) return false;
         if (recommendedOnly && recommendation.score === 0) return false;
-        if (needle && ![item.name, item.organizer, item.city, item.state, item.level, ...item.modalities].join(" ").toLocaleLowerCase("pt-BR").includes(needle)) return false;
+        if (needle && ![item.name, item.organizer, item.city, item.state, item.level, item.eligibility, ...item.modalities].join(" ").toLocaleLowerCase("pt-BR").includes(needle)) return false;
         if (age && Number.isFinite(ageNumber)) {
           if (item.minAge == null && item.maxAge == null) return false;
           if (item.minAge != null && ageNumber < item.minAge) return false;
@@ -110,10 +121,20 @@ export function CompetitionsBrowser({
     <div className={styles.head}>
       <div>
         <h1>Competições</h1>
-        <p>Oportunidades encontradas automaticamente em fontes oficiais. Quando há dados suficientes do seu perfil, projetos e equipes, o Envista destaca as mais compatíveis.</p>
+        <p>O Envista consulta páginas oficiais de competições e verifica inscrições, datas e modalidades. Os resultados abaixo não são exemplos nem dados mock.</p>
       </div>
-      <span className={styles.live}>{data ? `Atualizado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))}` : "Atualizando fontes oficiais…"}</span>
+      <div className={styles.liveActions}>
+        <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))}` : "Consultando fontes oficiais…"}</span>
+        <button className={styles.refreshButton} type="button" disabled={refreshing} onClick={() => void loadCompetitions(true)}>{refreshing ? "Buscando…" : "↻ Buscar agora"}</button>
+      </div>
     </div>
+
+    {data && <div className={styles.scanInfo}>
+      <span><b>{data.sourcesChecked}</b> fontes oficiais consultadas</span>
+      <span><b>{data.items.length}</b> competições/etapas encontradas</span>
+      <span><b>{counts.OPEN}</b> com inscrição aberta</span>
+      {data.errors.length > 0 && <span className={styles.scanWarning}>{data.errors.length} fonte{data.errors.length === 1 ? "" : "s"} com falha nesta consulta</span>}
+    </div>}
 
     {hasContext && <div className={styles.recommendationIntro}>
       <div><strong>Recomendações personalizadas</strong><span>Comparação por área, tags e localização dos seus projetos e equipes. Não usa IA.</span></div>
@@ -131,8 +152,8 @@ export function CompetitionsBrowser({
       <select aria-label="Filtrar por modalidade" value={modality} onChange={(event) => setModality(event.target.value)}><option value="ALL">Todas as modalidades</option>{modalities.map((value) => <option key={value}>{value}</option>)}</select>
     </div>
 
-    {!data && !error && <div className={styles.loading}>Buscando competições e conferindo os períodos de inscrição…</div>}
-    {error && <div className={styles.error}>{error}</div>}
+    {!data && !error && <div className={styles.loading}>Buscando competições diretamente nas fontes oficiais…</div>}
+    {error && <div className={styles.error}><b>Não foi possível concluir a busca agora.</b><span>{error}</span><button className={styles.refreshButton} type="button" onClick={() => void loadCompetitions(true)}>Tentar novamente</button></div>}
     {data && !filtered.length && <div className={styles.empty}>{recommendedOnly ? "Nenhuma competição compatível foi encontrada com esses filtros." : "Nenhuma competição encontrada com esses filtros."}</div>}
 
     <div className={styles.grid}>
@@ -146,6 +167,7 @@ export function CompetitionsBrowser({
           <h3>{item.name}</h3><p>{item.organizer}</p>
           <div className={styles.meta}><span>📍 {[item.city, item.state].filter(Boolean).join(" — ") || item.country}</span><span>👥 {ageLabel(item)}</span><span>📅 Inscrição: {fmt(item.registrationStart)} → {fmt(item.registrationEnd)}</span>{item.eventDate && <span>🏁 Evento: {fmt(item.eventDate)}</span>}</div>
           <div className={styles.chips}>{item.modalities.slice(0, 4).map((value) => <span key={value}>{value}</span>)}</div>
+          <small className={styles.verifiedSource}>Fonte: {item.sourceName} · {item.confidence}% de confiança</small>
         </div>
       </Link>)}
     </div>
@@ -201,8 +223,8 @@ export function CompetitionDetailClient({
           <div className={styles.fact}><small>Evento</small><b>{fmt(item.eventDate)}</b></div>
           <div className={styles.fact}><small>Idade</small><b>{item.minAge != null || item.maxAge != null ? ageLabel(item) : "Por categoria/regulamento"}</b></div>
         </div>
-        <h2>Fonte oficial</h2><p>Confira o regulamento e os dados finais diretamente com a organização antes de enviar uma inscrição.</p>
-        <a className={styles.official} href={item.officialUrl} target="_blank" rel="noreferrer">Ver site oficial ↗</a>
+        <h2>Fonte oficial</h2><p>Os dados vieram da página oficial indicada abaixo. Confira o regulamento final antes de enviar uma inscrição.</p>
+        <a className={styles.official} href={item.officialUrl} target="_blank" rel="noreferrer">Abrir fonte oficial ↗</a>
       </aside>
     </div>
   </div>;
