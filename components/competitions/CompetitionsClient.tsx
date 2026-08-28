@@ -157,7 +157,7 @@ export function CompetitionsBrowser({
     {data && !filtered.length && <div className={styles.empty}>{recommendedOnly ? "Nenhuma competição compatível foi encontrada com esses filtros." : "Nenhuma competição encontrada com esses filtros."}</div>}
 
     <div className={styles.grid}>
-      {filtered.map(({ item, recommendation }) => <Link className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
+      {filtered.map(({ item, recommendation }) => <Link prefetch={false} className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
         <div className={styles.banner}><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
         <div className={styles.body}>
           {(recommendation.project || recommendation.team) && <div className={styles.matchStack}>
@@ -191,12 +191,12 @@ export function CompetitionDetailClient({
   }, [slug]);
 
   if (!loaded) return <div className={styles.loading}>Carregando detalhes da competição…</div>;
-  if (!item) return <div className={styles.page}><Link className={styles.back} href={basePath}>← Competições</Link><div className={styles.empty}>Competição não encontrada ou removida da fonte oficial.</div></div>;
+  if (!item) return <div className={styles.page}><Link prefetch={false} className={styles.back} href={basePath}>← Competições</Link><div className={styles.empty}>Competição não encontrada ou removida da fonte oficial.</div></div>;
 
   const recommendation = recommendCompetition(item, recommendationContext);
 
   return <div className={styles.page}>
-    <Link className={styles.back} href={basePath}>← Competições</Link>
+    <Link prefetch={false} className={styles.back} href={basePath}>← Competições</Link>
     {(recommendation.project || recommendation.team) && <section className={styles.recommendationPanel}>
       <div><strong>Por que esta oportunidade combina com você</strong><span>O Envista comparou os dados desta competição com seus projetos e equipes.</span></div>
       <div className={styles.matchStack}>
