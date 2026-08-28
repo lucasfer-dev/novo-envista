@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import {
+  CompetitionDetailServerPage,
+  CompetitionsServerPage,
+} from "@/components/competitions/CompetitionsServerPage";
+import {
   LegacyNewProjectPage,
   LegacyProjectDetailPage,
   LegacyProjectsIndexPage,
@@ -61,6 +65,14 @@ export default async function Page({
   }
   if (pathname === "/investor/social") {
     return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;
+  }
+
+  const directCompetition = pathname.match(/^\/(app|investor)\/competitions(?:\/([^/]+))?$/);
+  if (directCompetition) {
+    const expectedRole = roleFromBase(directCompetition[1]);
+    const item = directCompetition[2];
+    if (!item) return <CompetitionsServerPage expectedRole={expectedRole} />;
+    return <CompetitionDetailServerPage expectedRole={expectedRole} slug={item} />;
   }
 
   const directProject = pathname.match(/^\/(app|investor)\/projects(?:\/([^/]+))?$/);
