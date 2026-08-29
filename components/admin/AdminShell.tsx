@@ -21,7 +21,8 @@ export default function AdminShell({ profile, title, children }: Props) {
 
   return (
     <div className={styles.shell}>
-      <aside className={styles.side}>
+      <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
+      <aside className={styles.side} aria-label="Navegação administrativa">
         <Link className={styles.brand} href="/admin">
           <img src="/envista-logo.png" alt="" />
           <span>Envista Admin</span>
@@ -36,7 +37,7 @@ export default function AdminShell({ profile, title, children }: Props) {
           <span>@{profile.username}</span>
         </div>
       </aside>
-      <main className={styles.main}>
+      <main className={styles.main} id="main-content" tabIndex={-1}>
         <header className={styles.top}>
           <strong>{title}</strong>
           <span className={styles.badge}>Admin verificado</span>

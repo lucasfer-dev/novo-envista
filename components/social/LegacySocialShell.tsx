@@ -115,6 +115,7 @@ export default function LegacySocialShell({
 
   return (
     <div className="app-shell">
+      <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       <TaxonomyNavigationEnhancer />
       {mobileOpen && (
         <button
@@ -133,12 +134,12 @@ export default function LegacySocialShell({
           <X size={20} />
         </button>
 
-        <button className="brand" onClick={() => go(home)}>
+        <button className="brand" onClick={() => go(home)} aria-label="Ir para o início do Envista">
           <img src="/envista-logo.png" alt="" />
           <b>Envista</b>
         </button>
 
-        <nav>
+        <nav aria-label="Seções do produto">
           {nav.map(([href, Icon, label]) => (
             <button
               key={href}
@@ -146,7 +147,7 @@ export default function LegacySocialShell({
               className={cx(isNavItemActive(pathname, href) && "active")}
               aria-current={isNavItemActive(pathname, href) ? "page" : undefined}
             >
-              <Icon size={18} />
+              <Icon size={18} aria-hidden="true" />
               <span>{label}</span>
             </button>
           ))}
@@ -156,13 +157,13 @@ export default function LegacySocialShell({
           <div className="side-section">
             <span>Configurações</span>
             <button onClick={() => go(profile)}>
-              <CircleUserRound size={18} /> Perfil
+              <CircleUserRound size={18} aria-hidden="true" /> Perfil
             </button>
             <button onClick={() => go("/account/profile")}>
-              <Settings size={18} /> Preferências
+              <Settings size={18} aria-hidden="true" /> Preferências
             </button>
             <button onClick={() => go("/app/notifications")}>
-              <Bell size={18} /> Notificações
+              <Bell size={18} aria-hidden="true" /> Notificações
             </button>
           </div>
         )}
@@ -170,7 +171,7 @@ export default function LegacySocialShell({
         <div className="side-bottom">
           {role === "investor" && (
             <button onClick={() => go(settings)}>
-              <Settings size={18} /> Configurações
+              <Settings size={18} aria-hidden="true" /> Configurações
             </button>
           )}
           <div className="user-card">
@@ -182,13 +183,13 @@ export default function LegacySocialShell({
               <small>@{user.username} · {role === "investor" ? "Investidor" : "Participante"}</small>
             </div>
             <button aria-label="Sair" onClick={logout}>
-              <LogOut size={17} />
+              <LogOut size={17} aria-hidden="true" />
             </button>
           </div>
         </div>
       </aside>
 
-      <main className="main">
+      <main className="main" id="main-content" tabIndex={-1}>
         <header className="topbar">
           <button
             className="mobile-menu"
@@ -197,11 +198,11 @@ export default function LegacySocialShell({
             aria-controls="app-navigation"
             onClick={() => setMobileOpen(true)}
           >
-            <Menu />
+            <Menu aria-hidden="true" />
           </button>
 
           <button className="global-search" onClick={() => go(`${home}/explore`)}>
-            <Search size={17} />
+            <Search size={17} aria-hidden="true" />
             <span>Buscar no Envista</span>
           </button>
 
@@ -216,7 +217,7 @@ export default function LegacySocialShell({
         <div className="page-wrap">{children}</div>
       </main>
 
-      <nav className="bottom-nav">
+      <nav className="bottom-nav" aria-label="Navegação móvel">
         {mobileNav.map(([href, Icon, label]) => (
           <button
             key={href}
@@ -224,7 +225,7 @@ export default function LegacySocialShell({
             className={cx(isNavItemActive(pathname, href) && "active")}
             aria-current={isNavItemActive(pathname, href) ? "page" : undefined}
           >
-            <Icon size={19} />
+            <Icon size={19} aria-hidden="true" />
             <span>{label}</span>
           </button>
         ))}
@@ -235,7 +236,7 @@ export default function LegacySocialShell({
           aria-expanded={mobileOpen}
           aria-controls="app-navigation"
         >
-          <MoreHorizontal size={19} />
+          <MoreHorizontal size={19} aria-hidden="true" />
           <span>Mais</span>
         </button>
       </nav>

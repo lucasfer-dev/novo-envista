@@ -67,8 +67,9 @@ export default function ProductShell({ user, children, title = "Envista", varian
 
   return (
     <div className={`${styles.shell} ${dark ? styles.legacyDark : ""}`}>
+      <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       {open && <button className={styles.backdrop} aria-label="Fechar navegação" onClick={() => setOpen(false)} />}
-      <aside className={styles.sidebar} data-open={open}>
+      <aside id="product-navigation" className={styles.sidebar} data-open={open} aria-label="Navegação do produto">
         <Link className={styles.brand} href={prefix} prefetch={false} onClick={() => setOpen(false)}>
           <img src="/envista-logo.png" alt="" />
           <span>Envista</span>
@@ -77,8 +78,8 @@ export default function ProductShell({ user, children, title = "Envista", varian
           {nav.map(([href, label, Icon]) => {
             const active = href === prefix ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
             return (
-              <Link key={href} href={href} prefetch={false} data-active={active} onClick={() => setOpen(false)}>
-                {dark ? <Icon size={18} strokeWidth={1.9} /> : null}
+              <Link key={href} href={href} prefetch={false} data-active={active} aria-current={active ? "page" : undefined} onClick={() => setOpen(false)}>
+                {dark ? <Icon size={18} strokeWidth={1.9} aria-hidden="true" /> : null}
                 <span>{label}</span>
               </Link>
             );
@@ -92,9 +93,15 @@ export default function ProductShell({ user, children, title = "Envista", varian
           <button className={styles.logout} onClick={logout}>Sair</button>
         </div>
       </aside>
-      <main className={styles.main}>
+      <main className={styles.main} id="main-content" tabIndex={-1}>
         <header className={styles.topbar}>
-          <button className={styles.menu} aria-label="Abrir navegação" onClick={() => setOpen(true)}>☰</button>
+          <button
+            className={styles.menu}
+            aria-label="Abrir navegação"
+            aria-expanded={open}
+            aria-controls="product-navigation"
+            onClick={() => setOpen(true)}
+          >☰</button>
           <span className={styles.topbarTitle}>{title}</span>
           <span className={styles.topbarActions}>
             <NotificationsBell userId={user.id} prefix={prefix} dark={dark} />
