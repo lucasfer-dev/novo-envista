@@ -10,8 +10,10 @@ type Props = {
 export default function AdminShell({ profile, title, children }: Props) {
   const nav = [
     ["/admin", "Visão geral"],
+    ["/admin/analytics", "Analytics"],
     ["/admin/users", "Usuários"],
     ["/admin/teams", "Equipes"],
+    ["/admin/projects", "Projetos"],
     ["/admin/courses", "Cursos"],
     ["/admin/moderation", "Moderação"],
     ["/admin/privacy", "Privacidade"],
