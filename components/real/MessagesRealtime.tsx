@@ -13,13 +13,19 @@ type Props = {
   initialMessages: Message[];
   canSend: boolean;
   returnTo: string;
+  live?: boolean;
 };
 
-export default function MessagesRealtime({ conversationId, currentUserId, initialMessages, canSend, returnTo }: Props) {
+export default function MessagesRealtime({ conversationId, currentUserId, initialMessages, canSend, returnTo, live = true }: Props) {
   const [messages, setMessages] = useState(initialMessages);
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
+
+  useEffect(() => {
+    if (!live) return;
     const markRead = () => supabase.from("message_read_state").upsert(
       { conversation_id: conversationId, user_id: currentUserId, last_read_at: new Date().toISOString() },
       { onConflict: "conversation_id,user_id" },
@@ -38,11 +44,11 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
       )
       .subscribe();
     return () => { void supabase.removeChannel(channel); };
-  }, [conversationId, currentUserId, supabase]);
+  }, [conversationId, currentUserId, live, supabase]);
 
   return (
     <>
-      <div className={styles.messages} aria-live="polite">
+      <div className={styles.messages} aria-live={live ? "polite" : "off"}>
         {messages.length === 0 ? <div className={styles.empty}>Nenhuma mensagem ainda.</div> : messages.map((message) => {
           const mine = message.sender_id === currentUserId;
           return (
@@ -71,7 +77,7 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
           );
         })}
       </div>
-      {canSend ? (
+      {!live ? <div className={styles.privacy}>Você está vendo uma página antiga do histórico. Volte às mensagens mais recentes para responder e receber novas mensagens em tempo real.</div> : canSend ? (
         <form className={styles.composer} action={sendMessageAction}>
           <input type="hidden" name="conversation_id" value={conversationId}/>
           <input type="hidden" name="return_to" value={returnTo}/>
