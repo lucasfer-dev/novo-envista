@@ -14,31 +14,38 @@ function returnPath(formData: FormData) {
   return safeInternalPath(formData.get("return_to"), "/investor");
 }
 
+function withQuery(path: string, query: string) {
+  return `${path}${path.includes("?") ? "&" : "?"}${query}`;
+}
+
 export async function toggleProjectSaveAction(formData: FormData) {
   const { supabase, userId } = await requireProductUser("investor");
   const projectId = text(formData, "project_id", 80);
   const returnTo = returnPath(formData);
-  if (!projectId) redirect(returnTo);
+  if (!projectId) redirect(withQuery(returnTo, "error=save"));
 
-  const { data: existing } = await supabase
+  const { data: existing, error: lookupError } = await supabase
     .from("project_saves")
     .select("project_id")
     .eq("user_id", userId)
     .eq("project_id", projectId)
     .maybeSingle();
+  if (lookupError) redirect(withQuery(returnTo, "error=save"));
 
   if (existing) {
-    await supabase
+    const { error } = await supabase
       .from("project_saves")
       .delete()
       .eq("user_id", userId)
       .eq("project_id", projectId);
+    if (error) redirect(withQuery(returnTo, "error=save"));
   } else {
-    const { error } = await supabase.from("project_saves").insert({
-      user_id: userId,
-      project_id: projectId,
-    });
-    if (error) redirect(`${returnTo}${returnTo.includes("?") ? "&" : "?"}error=save`);
+    const { data: saved, error } = await supabase
+      .from("project_saves")
+      .insert({ user_id: userId, project_id: projectId })
+      .select("project_id")
+      .single();
+    if ((error && error.code !== "23505") || (!saved && !error)) redirect(withQuery(returnTo, "error=save"));
   }
 
   revalidatePath("/investor");
@@ -52,9 +59,9 @@ export async function sendProjectInterestAction(formData: FormData) {
   const projectId = text(formData, "project_id", 80);
   const message = text(formData, "message", 1200);
   const returnTo = returnPath(formData);
-  if (!projectId) redirect(returnTo);
+  if (!projectId) redirect(withQuery(returnTo, "error=interest"));
 
-  const { error } = await supabase.from("project_interests").upsert(
+  const { data: interest, error } = await supabase.from("project_interests").upsert(
     {
       investor_id: userId,
       project_id: projectId,
@@ -63,9 +70,10 @@ export async function sendProjectInterestAction(formData: FormData) {
       updated_at: new Date().toISOString(),
     },
     { onConflict: "investor_id,project_id" },
-  );
+  ).select("project_id").single();
 
-  if (error) redirect(`${returnTo}${returnTo.includes("?") ? "&" : "?"}error=interest`);
+  if (error || !interest) redirect(withQuery(returnTo, "error=interest"));
+  revalidatePath("/investor");
   revalidatePath(returnTo.split("?")[0]);
-  redirect(`${returnTo}${returnTo.includes("?") ? "&" : "?"}status=interest`);
+  redirect(withQuery(returnTo, "status=interest"));
 }
