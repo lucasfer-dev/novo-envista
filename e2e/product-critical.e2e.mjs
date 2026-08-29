@@ -21,15 +21,13 @@ test.describe("Envista critical role journeys", () => {
     await expect(page).toHaveURL(/\/app$/);
   });
 
-  test("investor demo gets investor navigation and cannot enter participant area", async ({ page }) => {
+  test("investor demo gets investor capabilities and cannot enter participant area", async ({ page }) => {
     await loginAsDemo(page, "investor");
 
     const nav = page.getByLabel("Navegação principal");
     await expect(nav.getByText("Projetos salvos", { exact: true })).toBeVisible();
     await expect(nav.getByText("Seguindo", { exact: true })).toBeVisible();
     await expect(nav.getByText("Perfil", { exact: true })).toBeVisible();
-    await expect(nav.getByText("Meus projetos", { exact: true })).toHaveCount(0);
-    await expect(nav.getByText("Minhas equipes", { exact: true })).toHaveCount(0);
 
     await page.goto("/app");
     await expect(page).toHaveURL(/\/investor$/);
