@@ -9,6 +9,10 @@ import { requireProductUser, type ProductRole } from "@/lib/auth/require-product
 import { entityRoute } from "@/lib/profiles";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+type FeedMode = "for-you" | "following";
+type FeedRef = { kind: "post" | "project-update"; id: string; activity_at: string; followed: boolean };
+
+const PAGE_SIZE = 12;
 
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -24,6 +28,33 @@ function asTime(value: string | null | undefined) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function pageNumber(value: string | string[] | undefined) {
+  const parsed = Number.parseInt(first(value) ?? "1", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 10000) : 1;
+}
+
+function socialHref(path: string, mode: FeedMode, query: string, page: number) {
+  const params = new URLSearchParams();
+  if (mode === "following") params.set("mode", "following");
+  if (query) params.set("q", query);
+  if (page > 1) params.set("page", String(page));
+  const search = params.toString();
+  return search ? `${path}?${search}` : path;
+}
+
+function feedPayload(data: unknown): { refs: FeedRef[]; total: number } {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return { refs: [], total: 0 };
+  const payload = data as { refs?: unknown; total?: unknown };
+  const refs = Array.isArray(payload.refs)
+    ? payload.refs.filter((item): item is FeedRef => {
+        if (!item || typeof item !== "object") return false;
+        const ref = item as Partial<FeedRef>;
+        return (ref.kind === "post" || ref.kind === "project-update") && typeof ref.id === "string";
+      })
+    : [];
+  return { refs, total: Number(payload.total ?? 0) || 0 };
+}
+
 export default async function LegacySocialServerPage({
   expectedRole,
   searchParams,
@@ -35,50 +66,50 @@ export default async function LegacySocialServerPage({
   const query = await searchParams;
   const context = expectedRole === "investor" ? "investor" : "participant";
   const path = expectedRole === "investor" ? "/investor/social" : "/app/social";
+  const feedMode: FeedMode = first(query.mode) === "following" ? "following" : "for-you";
+  const searchQuery = (first(query.q) ?? "").trim().slice(0, 120);
+  const page = pageNumber(query.page);
+  const returnTo = socialHref(path, feedMode, searchQuery, page);
 
-  const [followsResult, membershipsResult, postsResult, projectsResult, profilesResult, teamsResult] = await Promise.all([
-    supabase
-      .from("follows")
-      .select("target_profile_id,target_team_id,target_project_id,created_at")
-      .eq("follower_id", userId)
-      .order("created_at", { ascending: false }),
+  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult] = await Promise.all([
+    supabase.rpc("get_social_feed_refs", {
+      feed_mode: feedMode,
+      search_query: searchQuery,
+      result_offset: (page - 1) * PAGE_SIZE,
+      result_limit: PAGE_SIZE,
+    }),
+    supabase.from("follows").select("follower_id", { count: "exact", head: true }).eq("follower_id", userId),
     supabase
       .from("team_members")
       .select("team_id,access_level,teams(id,slug,name)")
       .eq("user_id", userId),
-    supabase
-      .from("posts")
-      .select("id,body,visibility,created_at,created_by,author_user_id,author_team_id,project_id,author_user:profiles!posts_author_user_id_fkey(id,username,display_name,role),author_team:teams!posts_author_team_id_fkey(id,slug,name),project:projects!posts_project_id_fkey(id,slug,title)")
-      .order("created_at", { ascending: false })
-      .limit(140),
-    supabase
-      .from("projects")
-      .select("id,slug,title,short_description,stage,visibility,owner_user_id,owner_team_id,created_at,updated_at,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name,role),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
-      .order("updated_at", { ascending: false })
-      .limit(100),
     supabase
       .from("profiles")
       .select("id,username,display_name,role,bio")
       .eq("profile_visibility", "platform")
       .neq("id", userId)
       .order("display_name")
-      .limit(30),
+      .limit(24),
     supabase
       .from("teams")
       .select("id,slug,name,description,category")
       .eq("visibility", "platform")
       .order("updated_at", { ascending: false })
-      .limit(30),
+      .limit(24),
+    supabase
+      .from("projects")
+      .select("id,slug,title,stage")
+      .eq("visibility", "platform")
+      .order("updated_at", { ascending: false })
+      .limit(24),
   ]);
 
-  const follows = followsResult.data ?? [];
+  const feed = feedPayload(feedResult.data);
+  const refs = feed.refs;
+  const pageCount = Math.max(1, Math.ceil(feed.total / PAGE_SIZE));
+  const postIds = refs.filter((ref) => ref.kind === "post").map((ref) => ref.id);
+  const projectIds = refs.filter((ref) => ref.kind === "project-update").map((ref) => ref.id);
   const memberships = membershipsResult.data ?? [];
-  const allPosts = postsResult.data ?? [];
-  const allProjects = projectsResult.data ?? [];
-
-  const followedProfiles = new Set(follows.map((item: any) => item.target_profile_id).filter(Boolean));
-  const followedTeams = new Set(follows.map((item: any) => item.target_team_id).filter(Boolean));
-  const followedProjects = new Set(follows.map((item: any) => item.target_project_id).filter(Boolean));
   const memberTeams = new Set(memberships.map((item: any) => item.team_id));
   const managerTeams = new Set(
     memberships
@@ -86,37 +117,44 @@ export default async function LegacySocialServerPage({
       .map((item: any) => item.team_id),
   );
 
-  const visiblePosts = allPosts.filter((post: any) => {
-    const own =
-      post.author_user_id === userId ||
-      post.created_by === userId ||
-      Boolean(post.author_team_id && memberTeams.has(post.author_team_id));
-    return post.visibility === "platform" || own;
-  });
+  const empty = Promise.resolve({ data: [] as any[], error: null });
+  const [postsResult, projectsResult, likesResult, commentsResult] = await Promise.all([
+    postIds.length
+      ? supabase
+          .from("posts")
+          .select("id,body,visibility,created_at,created_by,author_user_id,author_team_id,project_id,author_user:profiles!posts_author_user_id_fkey(id,username,display_name,role),author_team:teams!posts_author_team_id_fkey(id,slug,name),project:projects!posts_project_id_fkey(id,slug,title)")
+          .in("id", postIds)
+      : empty,
+    projectIds.length
+      ? supabase
+          .from("projects")
+          .select("id,slug,title,short_description,stage,visibility,owner_user_id,owner_team_id,created_at,updated_at,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name,role),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+          .in("id", projectIds)
+      : empty,
+    postIds.length
+      ? supabase.from("post_likes").select("post_id,user_id").in("post_id", postIds)
+      : empty,
+    postIds.length
+      ? supabase
+          .from("post_comments")
+          .select("id,post_id,user_id,body,created_at,author:profiles!post_comments_user_id_fkey(username,display_name)")
+          .in("post_id", postIds)
+          .order("created_at", { ascending: true })
+      : empty,
+  ]);
 
-  const postIds = visiblePosts.map((post: any) => post.id);
-  let likes: any[] = [];
-  let comments: any[] = [];
-  if (postIds.length) {
-    const [likesResult, commentsResult] = await Promise.all([
-      supabase.from("post_likes").select("post_id,user_id").in("post_id", postIds),
-      supabase
-        .from("post_comments")
-        .select("id,post_id,user_id,body,created_at,author:profiles!post_comments_user_id_fkey(username,display_name)")
-        .in("post_id", postIds)
-        .order("created_at", { ascending: true }),
-    ]);
-    likes = likesResult.data ?? [];
-    comments = commentsResult.data ?? [];
-  }
+  const refsByKey = new Map(refs.map((ref) => [`${ref.kind}:${ref.id}`, ref]));
+  const likes = likesResult.data ?? [];
+  const comments = commentsResult.data ?? [];
 
-  const postItems: SocialPostFeedItem[] = visiblePosts.map((post: any) => {
-    const authorUser = one<any>(post.author_user);
-    const authorTeam = one<any>(post.author_team);
-    const project = one<any>(post.project);
-    const postLikes = likes.filter((like: any) => like.post_id === post.id);
+  const postItemMap = new Map<string, SocialPostFeedItem>();
+  for (const post of postsResult.data ?? []) {
+    const authorUser = one<any>((post as any).author_user);
+    const authorTeam = one<any>((post as any).author_team);
+    const project = one<any>((post as any).project);
+    const postLikes = likes.filter((like: any) => like.post_id === (post as any).id);
     const postComments = comments
-      .filter((comment: any) => comment.post_id === post.id)
+      .filter((comment: any) => comment.post_id === (post as any).id)
       .map((comment: any) => {
         const author = one<any>(comment.author);
         return {
@@ -131,33 +169,25 @@ export default async function LegacySocialServerPage({
     const authorHandle = authorTeam?.slug ? `@${authorTeam.slug}` : authorUser?.username ? `@${authorUser.username}` : "@envista";
     const authorType = authorTeam ? "team" : authorUser?.role === "investor" ? "investor" : "participant";
     const authorId = authorTeam?.slug || authorUser?.username || "";
-    const own =
-      post.author_user_id === userId ||
-      post.created_by === userId ||
-      Boolean(post.author_team_id && memberTeams.has(post.author_team_id));
-    const followed =
-      own ||
-      Boolean(post.author_user_id && followedProfiles.has(post.author_user_id)) ||
-      Boolean(post.author_team_id && followedTeams.has(post.author_team_id)) ||
-      Boolean(post.project_id && followedProjects.has(post.project_id));
+    const ref = refsByKey.get(`post:${(post as any).id}`);
 
-    return {
+    postItemMap.set((post as any).id, {
       kind: "post",
-      id: post.id,
-      body: post.body,
-      visibility: post.visibility === "private" ? "private" : "platform",
-      createdAt: post.created_at,
+      id: (post as any).id,
+      body: (post as any).body,
+      visibility: (post as any).visibility === "private" ? "private" : "platform",
+      createdAt: (post as any).created_at,
       authorLabel,
       authorHandle,
       authorKind: authorType,
       authorHref: authorId
         ? entityRoute({ type: authorType, id: authorId, source: "social", context })
         : path,
-      followed,
+      followed: Boolean(ref?.followed),
       canDelete:
-        post.author_user_id === userId ||
-        post.created_by === userId ||
-        Boolean(post.author_team_id && managerTeams.has(post.author_team_id)),
+        (post as any).author_user_id === userId ||
+        (post as any).created_by === userId ||
+        Boolean((post as any).author_team_id && managerTeams.has((post as any).author_team_id)),
       liked: postLikes.some((like: any) => like.user_id === userId),
       likeCount: postLikes.length,
       comments: postComments,
@@ -168,64 +198,87 @@ export default async function LegacySocialServerPage({
             href: entityRoute({ type: "project", id: project.slug, source: "social", context }),
           }
         : null,
-    };
-  });
+    });
+  }
 
-  const visibleProjects = allProjects.filter((project: any) => {
-    const own =
-      project.owner_user_id === userId ||
-      Boolean(project.owner_team_id && memberTeams.has(project.owner_team_id));
-    return project.visibility === "platform" || own;
-  });
+  const projectItemMap = new Map<string, SocialProjectUpdateFeedItem>();
+  for (const project of projectsResult.data ?? []) {
+    const row = project as any;
+    const ownerUser = one<any>(row.owner_user);
+    const ownerTeam = one<any>(row.owner_team);
+    const createdAt = asTime(row.created_at);
+    const updatedAt = asTime(row.updated_at);
+    const ref = refsByKey.get(`project-update:${row.id}`);
 
-  const projectUpdateItems: SocialProjectUpdateFeedItem[] = visibleProjects.map((project: any) => {
-    const ownerUser = one<any>(project.owner_user);
-    const ownerTeam = one<any>(project.owner_team);
-    const createdAt = asTime(project.created_at);
-    const updatedAt = asTime(project.updated_at);
-    const own =
-      project.owner_user_id === userId ||
-      Boolean(project.owner_team_id && memberTeams.has(project.owner_team_id));
-    const followed =
-      own ||
-      Boolean(project.owner_user_id && followedProfiles.has(project.owner_user_id)) ||
-      Boolean(project.owner_team_id && followedTeams.has(project.owner_team_id)) ||
-      followedProjects.has(project.id);
-
-    return {
+    projectItemMap.set(row.id, {
       kind: "project-update",
-      id: `project-update:${project.id}:${project.updated_at}`,
-      createdAt: project.updated_at || project.created_at,
-      title: project.title,
-      description: project.short_description || "O projeto recebeu uma nova atualização.",
-      stage: project.stage,
-      href: entityRoute({ type: "project", id: project.slug, source: "social", context }),
+      id: `project-update:${row.id}:${row.updated_at}`,
+      createdAt: row.updated_at || row.created_at,
+      title: row.title,
+      description: row.short_description || "O projeto recebeu uma nova atualização.",
+      stage: row.stage,
+      href: entityRoute({ type: "project", id: row.slug, source: "social", context }),
       ownerLabel: ownerTeam?.name || ownerUser?.display_name || ownerUser?.username || "Projeto Envista",
       ownerKind: ownerTeam ? "team" : ownerUser?.role === "investor" ? "investor" : "participant",
-      followed,
+      followed: Boolean(ref?.followed),
       isNew: Math.abs(updatedAt - createdAt) < 90_000,
-    };
-  });
+    });
+  }
 
-  const items: SocialFeedItem[] = [...postItems, ...projectUpdateItems]
-    .sort((a, b) => asTime(b.createdAt) - asTime(a.createdAt))
-    .slice(0, 180);
+  const items: SocialFeedItem[] = refs
+    .map((ref) => ref.kind === "post" ? postItemMap.get(ref.id) : projectItemMap.get(ref.id))
+    .filter((item): item is SocialFeedItem => Boolean(item));
 
-  const teamOptions = memberships
-    .map((membership: any) => one<any>(membership.teams))
-    .filter(Boolean)
-    .map((team: any) => ({ id: team.id, name: team.name }));
+  const teamOptions = expectedRole === "participant"
+    ? memberships
+        .map((membership: any) => one<any>(membership.teams))
+        .filter(Boolean)
+        .map((team: any) => ({ id: team.id, name: team.name }))
+    : [];
 
-  const projectOptions = allProjects
-    .filter(
-      (project: any) =>
-        project.owner_user_id === userId || (project.owner_team_id && memberTeams.has(project.owner_team_id)),
-    )
-    .map((project: any) => ({ id: project.id, title: project.title, slug: project.slug }))
-    .slice(0, 40);
+  let projectOptions: Array<{ id: string; title: string; slug: string }> = [];
+  if (expectedRole === "participant") {
+    let ownedQuery = supabase
+      .from("projects")
+      .select("id,title,slug")
+      .order("updated_at", { ascending: false })
+      .limit(50);
+
+    if (memberTeams.size) {
+      ownedQuery = ownedQuery.or(`owner_user_id.eq.${userId},owner_team_id.in.(${Array.from(memberTeams).join(",")})`);
+    } else {
+      ownedQuery = ownedQuery.eq("owner_user_id", userId);
+    }
+
+    const ownedProjects = await ownedQuery;
+    projectOptions = (ownedProjects.data ?? []).map((project: any) => ({ id: project.id, title: project.title, slug: project.slug }));
+  }
+
+  const profileCandidates = profilesResult.data ?? [];
+  const teamCandidates = teamsResult.data ?? [];
+  const projectCandidates = suggestionProjectsResult.data ?? [];
+  const profileIds = profileCandidates.map((profile: any) => profile.id);
+  const teamIds = teamCandidates.map((team: any) => team.id);
+  const suggestionProjectIds = projectCandidates.map((project: any) => project.id);
+
+  const [followedProfilesResult, followedTeamsResult, followedProjectsResult] = await Promise.all([
+    profileIds.length
+      ? supabase.from("follows").select("target_profile_id").eq("follower_id", userId).in("target_profile_id", profileIds)
+      : empty,
+    teamIds.length
+      ? supabase.from("follows").select("target_team_id").eq("follower_id", userId).in("target_team_id", teamIds)
+      : empty,
+    suggestionProjectIds.length
+      ? supabase.from("follows").select("target_project_id").eq("follower_id", userId).in("target_project_id", suggestionProjectIds)
+      : empty,
+  ]);
+
+  const followedProfiles = new Set((followedProfilesResult.data ?? []).map((item: any) => item.target_profile_id));
+  const followedTeams = new Set((followedTeamsResult.data ?? []).map((item: any) => item.target_team_id));
+  const followedProjects = new Set((followedProjectsResult.data ?? []).map((item: any) => item.target_project_id));
 
   const suggestions: SocialSuggestion[] = [];
-  for (const profile of profilesResult.data ?? []) {
+  for (const profile of profileCandidates) {
     if (followedProfiles.has((profile as any).id)) continue;
     const profileRole = (profile as any).role === "investor" ? "investor" : "participant";
     suggestions.push({
@@ -238,7 +291,7 @@ export default async function LegacySocialServerPage({
     if (suggestions.length >= 5) break;
   }
 
-  for (const team of teamsResult.data ?? []) {
+  for (const team of teamCandidates) {
     if (followedTeams.has((team as any).id)) continue;
     suggestions.push({
       targetType: "team",
@@ -250,8 +303,8 @@ export default async function LegacySocialServerPage({
     if (suggestions.length >= 8) break;
   }
 
-  for (const project of allProjects) {
-    if ((project as any).visibility !== "platform" || followedProjects.has((project as any).id)) continue;
+  for (const project of projectCandidates) {
+    if (followedProjects.has((project as any).id)) continue;
     suggestions.push({
       targetType: "project",
       targetId: (project as any).id,
@@ -268,13 +321,19 @@ export default async function LegacySocialServerPage({
         userId={userId}
         userName={appUser.name}
         path={path}
+        returnTo={returnTo}
         teams={teamOptions}
         projects={projectOptions}
         items={items}
         suggestions={suggestions}
-        followingCount={follows.length}
+        followingCount={followingCountResult.count ?? 0}
+        feedMode={feedMode}
+        initialQuery={searchQuery}
+        page={page}
+        pageCount={pageCount}
+        totalItems={feed.total}
         status={first(query.status)}
-        error={first(query.error)}
+        error={feedResult.error ? "feed" : first(query.error)}
       />
     </LegacySocialShell>
   );

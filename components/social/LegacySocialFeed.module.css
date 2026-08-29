@@ -517,28 +517,40 @@
   margin: 0 auto;
 }
 
-.loadMore,
-.feedEnd {
-  min-height: 58px;
-  display: flex;
+.feedPagination {
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  gap: 10px;
   color: #718296;
   font-size: 12px;
 }
 
-.loadMore span {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  border-top-color: var(--green);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.feedPagination > :first-child {
+  justify-self: start;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.feedPagination > :last-child {
+  justify-self: end;
+}
+
+.paginationButton {
+  min-height: 34px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: #162331;
+  color: #cbd6e0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.paginationButton:hover {
+  border-color: rgba(0, 191, 166, 0.32);
+  color: #fff;
 }
 
 .sideColumn {
@@ -727,10 +739,14 @@
   .postActions button span {
     font-size: 11px;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .loadMore span {
-    animation: none;
+  .feedPagination {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feedPagination > span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
   }
 }
