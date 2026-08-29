@@ -50,34 +50,41 @@ export default async function OnboardingPage({
   const params = await searchParams;
   const errorCode = typeof params.error === "string" ? params.error : "";
   const ageLocked = compliance.age_band !== "unknown";
+  const participant = profile.role === "participant";
 
   return (
     <AuthShell
       wide
       title="Complete seu perfil"
-      description="Seu perfil começa privado e sem mensagens. Primeiro configuramos identidade, faixa etária mínima e ciência dos documentos internos."
+      description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Campos públicos opcionais podem ser alterados depois.`}
     >
+      <div className={styles.notice} role="status">
+        <strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.
+      </div>
       <div className={styles.notice}>
         Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.
       </div>
-      {errorCode ? <div className={styles.error}>{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
+      {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
       <form action={onboardingAction} className={styles.form}>
         <div className={styles.grid2}>
           <label>
             Nome de exibição
-            <input name="display_name" defaultValue={profile.display_name} maxLength={100} required />
+            <input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} required />
           </label>
           <label>
             Nome de usuário
             <input
               name="username"
+              autoComplete="username"
               defaultValue={profile.username.startsWith("user_") ? "" : profile.username}
               placeholder="seu_usuario"
               minLength={3}
               maxLength={32}
               pattern="[a-zA-Z0-9][a-zA-Z0-9._-]{2,31}"
+              aria-describedby="username-help"
               required
             />
+            <span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span>
           </label>
         </div>
 
@@ -101,18 +108,18 @@ export default async function OnboardingPage({
 
         <label>
           Bio <span className={styles.muted}>(opcional)</span>
-          <textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} />
+          <textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} placeholder="Conte um pouco sobre seus interesses ou o que você está construindo." />
         </label>
 
-        {profile.role === "participant" ? (
+        {participant ? (
           <div className={styles.grid2}>
-            <label>Escola/instituição <input name="public_school" defaultValue={profile.public_school || ""} maxLength={160} /></label>
-            <label>Cidade <input name="public_city" defaultValue={profile.public_city || ""} maxLength={100} /></label>
-            <label>Estado <input name="public_state" defaultValue={profile.public_state || ""} maxLength={100} /></label>
+            <label>Escola/instituição <input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} /></label>
+            <label>Cidade <input name="public_city" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} /></label>
+            <label>Estado <input name="public_state" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} /></label>
           </div>
         ) : (
           <div className={styles.grid2}>
-            <label>Organização <input name="organization" defaultValue={profile.organization || ""} maxLength={160} /></label>
+            <label>Organização <input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} /></label>
             <label>Tipo de organização <input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label>
           </div>
         )}
@@ -131,7 +138,8 @@ export default async function OnboardingPage({
             <span>Li o <a href="/privacy" target="_blank" rel="noreferrer">Aviso de Privacidade interno</a>. Esta ciência não é tratada automaticamente como consentimento para toda finalidade.</span>
           </label>
         </div>
-        <button className={`${styles.primary} ${styles.full}`} type="submit">Concluir configuração</button>
+        <button className={`${styles.primary} ${styles.full}`} type="submit">Salvar e entrar no Envista</button>
+        <span className={styles.muted}>Depois disso, a página inicial mostra os próximos passos de acordo com o seu perfil.</span>
       </form>
     </AuthShell>
   );

@@ -73,6 +73,29 @@ function TeamCard({ team, role }: { team: TeamCardRow; role: ProductRole }) {
   );
 }
 
+function FirstRunChecklist({
+  title,
+  steps,
+}: {
+  title: string;
+  steps: Array<{ done: boolean; label: string; description: string; href: string; Icon: typeof FolderKanban }>;
+}) {
+  const done = steps.filter((step) => step.done).length;
+  if (done === steps.length) return null;
+
+  return (
+    <section className="panel activity section-block" aria-labelledby="first-run-title">
+      <div className="panel-title"><span id="first-run-title">{title}</span><small>{done}/{steps.length} concluídos</small></div>
+      {steps.map(({ done: complete, label, description, href, Icon }) => (
+        <Link className="activity-item" href={href} key={label}>
+          <i aria-hidden="true">{complete ? "✓" : <Icon />}</i>
+          <div><b>{label}</b><small>{complete ? "Concluído" : description}</small></div>
+        </Link>
+      ))}
+    </section>
+  );
+}
+
 export async function RealHomeServerPage({ expectedRole, pathname }: { expectedRole: ProductRole; pathname: string }) {
   const { supabase, userId, appUser } = await requireProductUser(expectedRole);
   const base = root(expectedRole);
@@ -110,9 +133,16 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       courseProgress = lessonIds.length ? Math.round(lessonIds.filter((id: string) => done.has(id)).length / lessonIds.length * 100) : 0;
     }
 
+    const firstSteps = [
+      { done: projects.size > 0, label: "Crie seu primeiro projeto", description: "Registre algo que você está construindo.", href: "/app/projects/new", Icon: FolderKanban },
+      { done: teams.length > 0, label: "Entre ou crie uma equipe", description: "Organize pessoas em torno de um projeto.", href: "/app/teams", Icon: Users },
+      { done: Boolean(course), label: "Comece um curso", description: "Escolha uma trilha e salve seu progresso.", href: "/app/learn", Icon: GraduationCap },
+    ];
+
     return (
       <LegacySocialShell user={appUser} role="participant" pathname={pathname}>
         <div className="page-head"><div><h1>Olá, {appUser.name.split(" ")[0]}.</h1><p>Continue construindo a partir do que está salvo na sua conta.</p></div></div>
+        <FirstRunChecklist title="Primeiros passos" steps={firstSteps} />
         <div className="home-grid">
           <section className="panel continue-card">
             <div className="panel-title"><span>Continuar aprendendo</span><GraduationCap size={18} /></div>
@@ -126,17 +156,17 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
 
         <section className="section-block">
           <div className="section-row"><div><h2>Meus projetos</h2><p>Projetos pessoais e das suas equipes.</p></div><Link className="text-btn" href="/app/projects">Ver todos</Link></div>
-          {[...projects.values()].length ? <div className="project-grid">{[...projects.values()].slice(0, 6).map((project) => <ProjectCard key={project.id} project={project} role="participant" />)}</div> : <div className="panel" style={{ padding: 18 }}><p>Você ainda não tem projetos. <Link href="/app/projects/new">Criar primeiro projeto</Link></p></div>}
+          {[...projects.values()].length ? <div className="project-grid">{[...projects.values()].slice(0, 6).map((project) => <ProjectCard key={project.id} project={project} role="participant" />)}</div> : <div className="empty"><div><FolderKanban /></div><h3>Seu primeiro projeto começa aqui</h3><p>Crie um projeto para organizar a ideia, montar uma equipe e compartilhar evolução.</p><Link className="secondary" href="/app/projects/new">Criar projeto</Link></div>}
         </section>
 
         <section className="section-block">
           <div className="section-row"><div><h2>Minhas equipes</h2><p>Equipes das quais você realmente faz parte.</p></div><Link className="text-btn" href="/app/teams">Gerenciar equipes</Link></div>
-          {teams.length ? <div className="team-row">{teams.slice(0, 6).map((team) => <TeamCard key={team.id} team={team} role="participant" />)}</div> : <div className="panel" style={{ padding: 18 }}><p>Você ainda não participa de nenhuma equipe.</p></div>}
+          {teams.length ? <div className="team-row">{teams.slice(0, 6).map((team) => <TeamCard key={team.id} team={team} role="participant" />)}</div> : <div className="empty"><div><Users /></div><h3>Você ainda não está em uma equipe</h3><p>Crie uma equipe para colaborar ou explore o ecossistema para conhecer outros projetos.</p><div className="actions"><Link className="secondary" href="/app/teams/new">Criar equipe</Link><Link className="secondary" href="/app/explore">Explorar</Link></div></div>}
         </section>
 
         <section className="panel activity">
           <div className="panel-title"><span>Atividade recente</span></div>
-          {(notificationsResult.data ?? []).length ? (notificationsResult.data ?? []).map((notification: any) => <Link className="activity-item" href={notification.href || "/app/notifications"} key={notification.id}><i><MessageCircle /></i><div><b>{notification.title}</b><small>{notification.body || new Date(notification.created_at).toLocaleString("pt-BR")}</small></div></Link>) : <p>Nenhuma notificação recente.</p>}
+          {(notificationsResult.data ?? []).length ? (notificationsResult.data ?? []).map((notification: any) => <Link className="activity-item" href={notification.href || "/app/notifications"} key={notification.id}><i><MessageCircle /></i><div><b>{notification.title}</b><small>{notification.body || new Date(notification.created_at).toLocaleString("pt-BR")}</small></div></Link>) : <div><p>Nenhuma notificação recente.</p><Link className="secondary" href="/app/explore">Explorar o Envista</Link></div>}
         </section>
       </LegacySocialShell>
     );
@@ -150,6 +180,11 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
     supabase.from("project_interests").select("id").eq("investor_id", userId).eq("status", "active"),
   ]);
   const savedIds = new Set((savesResult.data ?? []).map((item: any) => item.project_id));
+  const firstSteps = [
+    { done: savedIds.size > 0, label: "Salve um projeto", description: "Monte uma lista privada para revisar depois.", href: "/investor/explore", Icon: Bookmark },
+    { done: (followsResult.data?.length ?? 0) > 0, label: "Acompanhe alguém", description: "Siga projetos, equipes ou pessoas relevantes.", href: "/investor/explore", Icon: Eye },
+    { done: (interestsResult.data?.length ?? 0) > 0, label: "Demonstre interesse", description: "Abra um projeto e registre interesse quando fizer sentido.", href: "/investor/explore", Icon: FolderKanban },
+  ];
 
   return (
     <LegacySocialShell user={appUser} role="investor" pathname={pathname}>
@@ -159,13 +194,14 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
         <div className="panel"><b>{followsResult.data?.length ?? 0}</b><span>acompanhamentos</span></div>
         <div className="panel"><b>{interestsResult.data?.length ?? 0}</b><span>interesses enviados</span></div>
       </div>
+      <FirstRunChecklist title="Comece por aqui" steps={firstSteps} />
       <section className="section-block">
         <div className="section-row"><div><h2>Projetos recentes</h2><p>Conteúdo público salvo no Supabase.</p></div><Link className="text-btn" href="/investor/explore">Explorar tudo</Link></div>
-        {(projectsResult.data ?? []).length ? <div className="project-grid">{(projectsResult.data ?? []).map((project: any) => <ProjectCard key={project.id} project={project} role="investor" action={<><form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value="/investor" /><button className="secondary" type="submit"><Bookmark size={15} /> {savedIds.has(project.id) ? "Salvo" : "Salvar"}</button></form><FollowEntityButton targetType="project" targetId={project.id} returnTo="/investor" /></>} />)}</div> : <div className="panel" style={{ padding: 18 }}><p>Ainda não há projetos públicos. Assim que participantes publicarem, eles aparecerão aqui.</p></div>}
+        {(projectsResult.data ?? []).length ? <div className="project-grid">{(projectsResult.data ?? []).map((project: any) => <ProjectCard key={project.id} project={project} role="investor" action={<><form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value="/investor" /><button className="secondary" type="submit"><Bookmark size={15} /> {savedIds.has(project.id) ? "Salvo" : "Salvar"}</button></form><FollowEntityButton targetType="project" targetId={project.id} returnTo="/investor" /></>} />)}</div> : <div className="empty"><div><FolderKanban /></div><h3>Nenhum projeto público ainda</h3><p>Quando projetos forem publicados, eles aparecerão aqui.</p><Link className="secondary" href="/investor/explore">Abrir descoberta</Link></div>}
       </section>
       <section className="section-block">
         <div className="section-row"><div><h2>Equipes em destaque</h2><p>Equipes públicas reais.</p></div></div>
-        {(teamsResult.data ?? []).length ? <div className="team-row">{(teamsResult.data ?? []).map((team: any) => <TeamCard key={team.id} team={team} role="investor" />)}</div> : <div className="panel" style={{ padding: 18 }}><p>Ainda não há equipes públicas.</p></div>}
+        {(teamsResult.data ?? []).length ? <div className="team-row">{(teamsResult.data ?? []).map((team: any) => <TeamCard key={team.id} team={team} role="investor" />)}</div> : <div className="empty"><div><Users /></div><h3>Nenhuma equipe pública ainda</h3><p>Use a descoberta para acompanhar novos perfis e projetos enquanto o ecossistema cresce.</p><Link className="secondary" href="/investor/explore">Explorar</Link></div>}
       </section>
     </LegacySocialShell>
   );
