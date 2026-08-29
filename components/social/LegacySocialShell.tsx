@@ -43,8 +43,6 @@ const investorNav = [
   ["/investor", Home, "Início"],
   ["/investor/social", Activity, "Social"],
   ["/investor/explore", Compass, "Explorar"],
-  ["/investor/projects", FolderKanban, "Meus projetos"],
-  ["/investor/teams", Users, "Minhas equipes"],
   ["/investor/competitions", Trophy, "Competições"],
   ["/investor/saved", Bookmark, "Projetos salvos"],
   ["/investor/following", Eye, "Seguindo"],
