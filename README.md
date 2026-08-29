@@ -2,17 +2,29 @@
 
 Plataforma web para participantes, equipes, projetos, aprendizado e conexão com investidores.
 
-## Stack
+## Arquitetura em produção
+
+O produto publicado hoje é uma aplicação **Next.js 16 + React 19 + TypeScript** conectada diretamente ao **Supabase Auth, PostgreSQL e Storage**. As regras de autorização de dados são reforçadas por RLS, funções e triggers versionadas em `supabase/migrations/`.
+
+O diretório `backend/` contém um protótipo histórico em Java/Spring Boot. Ele **não faz parte do deploy atual, não atende as rotas de produção e não é a fonte de verdade das regras do produto**. Foi mantido apenas como referência para uma possível separação futura de serviços.
+
+A experiência de demonstração usa dados locais e é deliberadamente isolada das rotas autenticadas reais.
+
+Consulte `docs/ARCHITECTURE.md` para os limites entre produção, demo e protótipos.
+
+## Stack ativa
 
 - Next.js 16
 - React 19
 - TypeScript
-- Supabase Auth/Postgres
-- Java 21 e Spring Boot no serviço `backend/`
+- Supabase Auth
+- PostgreSQL + Row Level Security
+- Supabase Storage
+- Vercel
 
 ## Desenvolvimento
 
-Instale as dependências e inicie o frontend:
+Instale as dependências e inicie a aplicação:
 
 ```bash
 npm install
@@ -34,26 +46,24 @@ npm test
 npm run security:scan
 ```
 
+Pull requests também passam pelo build de produção e pelos fluxos críticos em navegador real.
+
 ## Build
 
 ```bash
 npm run build
 ```
 
-## Backend Java
-
-```bash
-cd backend
-mvn spring-boot:run
-```
-
 ## Estrutura principal
 
 - `app/` — rotas e páginas Next.js
-- `components/` — componentes e interface do produto
-- `lib/` — autenticação, integrações e utilitários
-- `data/` — dados usados pela experiência do produto
-- `backend/` — serviço Java/Spring Boot
-- `supabase/` — migrations e configuração do banco
+- `components/real/` — superfícies persistidas do produto
+- `components/demo/` — isolamento da experiência demonstrativa local
+- `components/` — componentes compartilhados e shell visual histórico ainda em migração
+- `lib/` — autenticação, regras de servidor, integrações e utilitários
+- `supabase/` — migrations e configuração autoritativa de dados/RLS
+- `data/` — fixtures usadas pela experiência demonstrativa
+- `backend/` — protótipo Java/Spring Boot não utilizado em produção
+- `docs/` — decisões operacionais, privacidade, segurança e arquitetura
 
 Consulte `SECURITY.md` para as práticas de segurança do projeto.

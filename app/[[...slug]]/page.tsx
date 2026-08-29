@@ -1,14 +1,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
+import { DemoProductPage, parseDemoRole } from "@/components/demo/DemoProductPage";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import LegacyExploreServerPage from "@/components/explore/LegacyExploreServerPage";
-import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationEnhancer";
 import {
   CompetitionDetailServerPage,
   CompetitionsServerPage,
-  DemoCompetitionDetailServerPage,
-  DemoCompetitionsServerPage,
 } from "@/components/competitions/CompetitionsServerPage";
 import {
   LegacyNewProjectPage,
@@ -39,36 +37,9 @@ import {
 import { NotificationsServerPage } from "@/components/real/NotificationsServerPages";
 import { homeForRole } from "@/lib/auth/validation";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
-import type { User } from "@/types";
 
 const DEMO_COOKIE = "envista_demo";
 const LEGACY_COMPETITION_SLUGS = new Set(["envista-challenge-2026", "obt", "jovens-inovadores"]);
-
-const demoParticipant: User = {
-  id: "demo-participant",
-  username: "demo",
-  name: "Conta Demo",
-  role: "participant",
-  bio: "Ambiente demonstrativo do Envista.",
-  school: "Envista Demo",
-  city: "Rio de Janeiro",
-  state: "RJ",
-};
-
-const demoInvestor: User = {
-  id: "demo-investor",
-  username: "investidor-demo",
-  name: "Investidor Demo",
-  role: "investor",
-  bio: "Ambiente demonstrativo do perfil investidor no Envista.",
-  city: "Rio de Janeiro",
-  state: "RJ",
-  organization: "Envista Ventures",
-  jobTitle: "Analista de Inovação",
-  organizationType: "Investidor",
-  interests: ["Tecnologia", "Educação", "IA", "Impacto social"],
-  stages: ["Protótipo", "MVP", "Projeto ativo"],
-};
 
 function isProtectedProductPath(pathname: string) {
   return pathname === "/app" || pathname.startsWith("/app/") || pathname === "/investor" || pathname.startsWith("/investor/");
@@ -92,41 +63,15 @@ export default async function Page({
   const { slug = [] } = await params;
   const pathname = slug.length ? `/${slug.join("/")}` : "/";
 
+  // Área pública/landing ainda usa a shell visual histórica. Ela não acessa dados
+  // autenticados e fica separada dos caminhos reais abaixo.
   if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
 
   const cookieStore = await cookies();
-  const demoRole = cookieStore.get(DEMO_COOKIE)?.value;
+  const demoRole = parseDemoRole(cookieStore.get(DEMO_COOKIE)?.value);
 
-  // A demo continua intencionalmente local. Contas reais nunca passam por este bloco.
-  if (demoRole === "participant") {
-    if (pathname.startsWith("/investor")) redirect("/app");
-    if (pathname === "/app/explore") {
-      return <LegacyExploreServerPage expectedRole="participant" pathname={pathname} searchParams={searchParams} demoUser={demoParticipant} />;
-    }
-    const demoCompetition = pathname.match(/^\/app\/competitions(?:\/([^/]+))?$/);
-    if (demoCompetition) {
-      const item = demoCompetition[1];
-      if (!item) return <DemoCompetitionsServerPage user={demoParticipant} />;
-      if (LEGACY_COMPETITION_SLUGS.has(item)) redirect("/app/competitions");
-      return <DemoCompetitionDetailServerPage user={demoParticipant} slug={item} />;
-    }
-    return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoParticipant} /></>;
-  }
-
-  if (demoRole === "investor") {
-    if (pathname.startsWith("/app")) redirect("/investor");
-    if (pathname === "/investor/explore") {
-      return <LegacyExploreServerPage expectedRole="investor" pathname={pathname} searchParams={searchParams} demoUser={demoInvestor} />;
-    }
-    const demoCompetition = pathname.match(/^\/investor\/competitions(?:\/([^/]+))?$/);
-    if (demoCompetition) {
-      const item = demoCompetition[1];
-      if (!item) return <DemoCompetitionsServerPage user={demoInvestor} />;
-      if (LEGACY_COMPETITION_SLUGS.has(item)) redirect("/investor/competitions");
-      return <DemoCompetitionDetailServerPage user={demoInvestor} slug={item} />;
-    }
-    return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoInvestor} /></>;
-  }
+  // A demo usa dados locais de apresentação e nunca cai nos handlers Supabase reais.
+  if (demoRole) return <DemoProductPage role={demoRole} pathname={pathname} searchParams={searchParams} />;
 
   // Homes reais.
   if (pathname === "/app") return <RealHomeServerPage expectedRole="participant" pathname={pathname} />;
@@ -232,7 +177,7 @@ export default async function Page({
     return <LegacyTeamDetailPage expectedRole={expectedRole} pathname={pathname} slug={sourcedTeam[3]} backHref={`${appBase}/${sourcedTeam[2]}`} publicView searchParams={searchParams} />;
   }
 
-  // Não existe mais fallback mock para contas autenticadas.
+  // Não existe fallback mock para contas autenticadas.
   const { role } = await requireProductUser();
   redirect(homeForRole(role));
 }
