@@ -54,6 +54,14 @@ Pull requests também passam pelo build de produção e pelos fluxos críticos e
 npm run build
 ```
 
+## Operação e release
+
+Antes de uma abertura pública ou mudança importante, use os runbooks em `docs/operations/`:
+
+- `RELEASE.md` — gates, smoke tests, go/no-go e rollback;
+- `BACKUP_RECOVERY.md` — backup, restauração de banco e cuidados com Storage;
+- `INCIDENT_RESPONSE.md` — triagem e resposta a incidentes.
+
 ## Estrutura principal
 
 - `app/` — rotas e páginas Next.js
