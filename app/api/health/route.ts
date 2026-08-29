@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logServerEvent, requestIdFromHeaders } from "@/lib/observability/logger";
+import { getSupabaseConfig } from "@/lib/supabase/config";
 
 export const dynamic = "force-dynamic";
 
@@ -7,10 +8,14 @@ export async function GET(request: NextRequest) {
   const requestId = requestIdFromHeaders(request.headers);
   const release = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) || process.env.npm_package_version || "unknown";
   const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown";
-  const supabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.startsWith("https://") &&
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-  );
+
+  let supabaseConfigured = false;
+  try {
+    getSupabaseConfig();
+    supabaseConfigured = true;
+  } catch {
+    supabaseConfigured = false;
+  }
 
   logServerEvent("info", "health_check", {
     requestId,
@@ -21,7 +26,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     {
-      status: "ok",
+      status: supabaseConfigured ? "ok" : "degraded",
       service: "envista-web",
       release,
       environment,
@@ -32,6 +37,7 @@ export async function GET(request: NextRequest) {
       requestId,
     },
     {
+      status: supabaseConfigured ? 200 : 503,
       headers: {
         "Cache-Control": "no-store",
         "X-Request-ID": requestId,
