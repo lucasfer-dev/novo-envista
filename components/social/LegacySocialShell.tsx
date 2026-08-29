@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { isNavItemActive } from "@/lib/navigation";
 import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationEnhancer";
+import NotificationsBell from "@/components/real/NotificationsBell";
 import type { User } from "@/types";
 import type { ProductRole } from "@/lib/auth/require-product-user";
 
@@ -96,11 +97,11 @@ export default function LegacySocialShell({
 }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [notifyOpen, setNotifyOpen] = useState(false);
   const pathname = activePath ?? (role === "investor" ? "/investor/social" : "/app/social");
   const nav = role === "investor" ? investorNav : participantNav;
   const mobileNav = role === "investor" ? investorMobileNav : participantMobileNav;
-  const home = role === "investor" ? "/investor" : "/app";
+  const prefix: "/app" | "/investor" = role === "investor" ? "/investor" : "/app";
+  const home = prefix;
   const profile = role === "investor" ? "/investor/profile" : `/app/profile/${user.username}`;
   const settings = role === "investor" ? "/investor/settings" : "/app/settings";
 
@@ -159,10 +160,10 @@ export default function LegacySocialShell({
             <button onClick={() => go(profile)}>
               <CircleUserRound size={18} /> Perfil
             </button>
-            <button onClick={() => go("/app/settings#preferences")}>
+            <button onClick={() => go("/account/profile")}>
               <Settings size={18} /> Preferências
             </button>
-            <button onClick={() => go("/app/settings#notifications")}>
+            <button onClick={() => go("/app/notifications")}>
               <Bell size={18} /> Notificações
             </button>
           </div>
@@ -201,26 +202,17 @@ export default function LegacySocialShell({
             <Menu />
           </button>
 
-          <button className="global-search" onClick={() => go(`${home}/explore`.replace("/app/explore", "/app/explore").replace("/investor/explore", "/investor/explore"))}>
+          <button className="global-search" onClick={() => go(`${home}/explore`)}>
             <Search size={17} />
             <span>Buscar no Envista</span>
           </button>
 
           <div className="top-actions">
-            <button className="icon-btn" aria-label="Notificações" onClick={() => setNotifyOpen((open) => !open)}>
-              <Bell size={19} />
-            </button>
+            <NotificationsBell userId={user.id} prefix={prefix} dark />
             <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}>
               <Avatar name={user.name} />
             </button>
           </div>
-
-          {notifyOpen && (
-            <div className="popover notifications">
-              <div className="popover-head"><b>Notificações</b></div>
-              <div className="notification">Novos posts e atualizações dos seus acompanhamentos aparecem no Social.</div>
-            </div>
-          )}
         </header>
 
         <div className="page-wrap">{children}</div>
