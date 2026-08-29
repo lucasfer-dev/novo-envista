@@ -86,17 +86,19 @@ export async function CompetitionDetailServerPage({ expectedRole, slug }: { expe
 }
 
 export function DemoCompetitionsServerPage({ user }: { user: User }) {
+  const basePath = user.role === "investor" ? "/investor/competitions" : "/app/competitions";
   return (
     <ProductShell user={user} title="Competições" variant="legacyDark">
-      <CompetitionsBrowser basePath="/app/competitions" recommendationContext={emptyRecommendationContext} />
+      <CompetitionsBrowser basePath={basePath} recommendationContext={emptyRecommendationContext} />
     </ProductShell>
   );
 }
 
 export function DemoCompetitionDetailServerPage({ user, slug }: { user: User; slug: string }) {
+  const basePath = user.role === "investor" ? "/investor/competitions" : "/app/competitions";
   return (
     <ProductShell user={user} title="Competições" variant="legacyDark">
-      <CompetitionDetailClient basePath="/app/competitions" slug={slug} recommendationContext={emptyRecommendationContext} />
+      <CompetitionDetailClient basePath={basePath} slug={slug} recommendationContext={emptyRecommendationContext} />
     </ProductShell>
   );
 }
