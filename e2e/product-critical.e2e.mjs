@@ -7,6 +7,11 @@ async function loginAsDemo(page, role) {
   await expect(page).toHaveURL(role === "investor" ? /\/investor$/ : /\/app$/);
 }
 
+async function expectNoHorizontalOverflow(page) {
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+}
+
 test.describe("Envista critical role journeys", () => {
   test("participant demo gets participant navigation and cannot enter investor area", async ({ page }) => {
     await loginAsDemo(page, "participant");
@@ -50,5 +55,16 @@ test.describe("Envista critical role journeys", () => {
     await nav.getByText("Competições", { exact: true }).click();
     await expect(page).toHaveURL(/\/investor\/competitions$/);
     await expect(page.getByRole("heading", { name: /Competições/i })).toBeVisible();
+  });
+
+  test("participant and investor home shells do not overflow a narrow mobile viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    await loginAsDemo(page, "participant");
+    await expectNoHorizontalOverflow(page);
+
+    await page.context().clearCookies();
+    await loginAsDemo(page, "investor");
+    await expectNoHorizontalOverflow(page);
   });
 });
