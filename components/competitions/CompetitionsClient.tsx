@@ -15,6 +15,7 @@ type Tab = "OPEN" | "UPCOMING" | "CLOSED" | "ALL";
 
 const labels: Record<Tab, string> = { OPEN: "Abertas", UPCOMING: "Em breve", CLOSED: "Encerradas", ALL: "Todas" };
 const statusLabels: Record<CompetitionStatus, string> = { OPEN: "Inscrições abertas", UPCOMING: "Em breve", CLOSED: "Encerrada", UNKNOWN: "A confirmar" };
+const PAGE_SIZE = 9;
 
 function fmt(value: string | null) {
   if (!value) return "Não informado";
@@ -61,6 +62,7 @@ export function CompetitionsBrowser({
   const [state, setState] = useState("ALL");
   const [modality, setModality] = useState("ALL");
   const [recommendedOnly, setRecommendedOnly] = useState(false);
+  const [page, setPage] = useState(1);
 
   const loadCompetitions = useCallback(async (fresh = false) => {
     setError("");
@@ -83,6 +85,10 @@ export function CompetitionsBrowser({
   useEffect(() => {
     void loadCompetitions(false);
   }, [loadCompetitions]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [tab, q, age, state, modality, recommendedOnly]);
 
   const items = data?.items || [];
   const hasContext = hasRecommendationContext(recommendationContext);
@@ -116,6 +122,16 @@ export function CompetitionsBrowser({
         return aDate.localeCompare(bDate);
       });
   }, [ranked, tab, q, age, state, modality, recommendedOnly, hasContext]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const paginated = useMemo(
+    () => filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filtered, safePage],
+  );
+  const pageNumbers = useMemo(() => Array.from({ length: totalPages }, (_, index) => index + 1), [totalPages]);
+  const firstResult = filtered.length ? (safePage - 1) * PAGE_SIZE + 1 : 0;
+  const lastResult = Math.min(safePage * PAGE_SIZE, filtered.length);
 
   return <div className={styles.page}>
     <div className={styles.head}>
@@ -157,7 +173,7 @@ export function CompetitionsBrowser({
     {data && !filtered.length && <div className={styles.empty}>{recommendedOnly ? "Nenhuma competição compatível foi encontrada com esses filtros." : "Nenhuma competição encontrada com esses filtros."}</div>}
 
     <div className={styles.grid}>
-      {filtered.map(({ item, recommendation }) => <Link prefetch={false} className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
+      {paginated.map(({ item, recommendation }) => <Link prefetch={false} className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
         <div className={styles.banner}><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
         <div className={styles.body}>
           {(recommendation.project || recommendation.team) && <div className={styles.matchStack}>
@@ -171,6 +187,17 @@ export function CompetitionsBrowser({
         </div>
       </Link>)}
     </div>
+
+    {data && filtered.length > 0 && <div className={styles.paginationWrap}>
+      <span className={styles.paginationInfo}>Mostrando {firstResult}–{lastResult} de {filtered.length}</span>
+      {totalPages > 1 && <nav className={styles.pagination} aria-label="Paginação de competições">
+        <button type="button" disabled={safePage === 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>← Anterior</button>
+        <div className={styles.pageNumbers}>
+          {pageNumbers.map((number) => <button key={number} type="button" data-active={safePage === number} aria-current={safePage === number ? "page" : undefined} onClick={() => setPage(number)}>{number}</button>)}
+        </div>
+        <button type="button" disabled={safePage === totalPages} onClick={() => setPage((current) => Math.min(totalPages, current + 1))}>Próxima →</button>
+      </nav>}
+    </div>}
   </div>;
 }
 
