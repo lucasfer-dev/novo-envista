@@ -22,7 +22,7 @@ describe("admin list pagination", () => {
   it("requests exact counts for pageable collections", () => {
     for (const file of files) {
       const source = readFileSync(file, "utf8");
-      expect(source).toContain('count:"exact"') || expect(source).toContain('count: "exact"');
+      expect(source).toMatch(/count:\s*"exact"/);
     }
   });
 
