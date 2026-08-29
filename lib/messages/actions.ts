@@ -24,7 +24,7 @@ export async function startConversationAction(formData: FormData) {
   const username = text(formData, "username", 50).replace(/^@/, "");
   if (!username) redirect(`${base}?error=user`);
 
-  const { data: target } = await supabase
+  const { data: target, error: targetError } = await supabase
     .from("profiles")
     .select("id,username,allow_messages,profile_visibility")
     .eq("username", username)
@@ -32,22 +32,25 @@ export async function startConversationAction(formData: FormData) {
     .eq("allow_messages", true)
     .maybeSingle();
 
-  if (!target || target.id === userId) redirect(`${base}?error=unavailable`);
+  if (targetError || !target || target.id === userId) redirect(`${base}?error=unavailable`);
 
   const [userA, userB] = canonicalPair(userId, target.id);
-  const { data: blocked } = await supabase
+  const { data: blocked, error: blockLookupError } = await supabase
     .from("user_blocks")
     .select("blocker_id,blocked_id")
     .or(`and(blocker_id.eq.${userA},blocked_id.eq.${userB}),and(blocker_id.eq.${userB},blocked_id.eq.${userA})`)
     .limit(1);
+  if (blockLookupError) redirect(`${base}?error=create`);
   if (blocked?.length) redirect(`${base}?error=blocked`);
 
-  let { data: conversation } = await supabase
+  const existing = await supabase
     .from("direct_conversations")
     .select("id")
     .eq("user_a", userA)
     .eq("user_b", userB)
     .maybeSingle();
+  if (existing.error) redirect(`${base}?error=create`);
+  let conversation = existing.data;
 
   if (!conversation) {
     const inserted = await supabase
@@ -63,7 +66,10 @@ export async function startConversationAction(formData: FormData) {
         .eq("user_a", userA)
         .eq("user_b", userB)
         .maybeSingle();
+      if (retry.error) redirect(`${base}?error=create`);
       conversation = retry.data;
+    } else if (inserted.error) {
+      redirect(`${base}?error=create`);
     }
   }
 
@@ -79,13 +85,13 @@ export async function sendMessageAction(formData: FormData) {
   const returnTo = safeInternalPath(formData.get("return_to"), conversationId ? `${base}/${conversationId}` : base);
   if (!conversationId || !body) redirect(`${returnTo}?error=message`);
 
-  const { error } = await supabase.from("direct_messages").insert({
+  const { data: message, error } = await supabase.from("direct_messages").insert({
     conversation_id: conversationId,
     sender_id: userId,
     body,
-  });
-  if (error) redirect(`${returnTo}?error=send`);
-  revalidatePath(returnTo);
+  }).select("id").single();
+  if (error || !message) redirect(`${returnTo}?error=send`);
+  revalidatePath(returnTo.split("?")[0]);
   redirect(returnTo);
 }
 
@@ -93,8 +99,13 @@ export async function blockUserAction(formData: FormData) {
   const { supabase, userId, role } = await requireProductUser();
   const base = root(role);
   const blockedId = text(formData, "blocked_id", 80);
-  if (!blockedId || blockedId === userId) redirect(base);
-  await supabase.from("user_blocks").upsert({ blocker_id: userId, blocked_id: blockedId }, { onConflict: "blocker_id,blocked_id" });
+  if (!blockedId || blockedId === userId) redirect(`${base}?error=block`);
+  const { data: block, error } = await supabase
+    .from("user_blocks")
+    .upsert({ blocker_id: userId, blocked_id: blockedId }, { onConflict: "blocker_id,blocked_id" })
+    .select("blocker_id")
+    .single();
+  if (error || !block) redirect(`${base}?error=block`);
   revalidatePath(base);
   redirect(`${base}?status=blocked`);
 }
@@ -103,7 +114,9 @@ export async function unblockUserAction(formData: FormData) {
   const { supabase, userId, role } = await requireProductUser();
   const base = root(role);
   const blockedId = text(formData, "blocked_id", 80);
-  if (blockedId) await supabase.from("user_blocks").delete().eq("blocker_id", userId).eq("blocked_id", blockedId);
+  if (!blockedId) redirect(`${base}?error=unblock`);
+  const { error } = await supabase.from("user_blocks").delete().eq("blocker_id", userId).eq("blocked_id", blockedId);
+  if (error) redirect(`${base}?error=unblock`);
   revalidatePath(base);
   redirect(`${base}?status=unblocked`);
 }
@@ -117,8 +130,13 @@ export async function reportMessageAction(formData: FormData) {
   const details = text(formData, "details", 1000);
   const returnTo = conversationId ? `${base}/${conversationId}` : base;
   if (!messageId || !reason) redirect(`${returnTo}?error=report`);
-  const { error } = await supabase.from("message_reports").insert({ reporter_id: userId, message_id: messageId, reason, details });
+  const { data: report, error } = await supabase
+    .from("message_reports")
+    .insert({ reporter_id: userId, message_id: messageId, reason, details })
+    .select("id")
+    .single();
   if (error && error.code !== "23505") redirect(`${returnTo}?error=report`);
+  if (!report && !error) redirect(`${returnTo}?error=report`);
   revalidatePath(returnTo);
   redirect(`${returnTo}?status=reported`);
 }
