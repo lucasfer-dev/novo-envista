@@ -40,7 +40,7 @@ export async function createTeamAction(formData: FormData) {
   const slugBase = slugify(name) || "equipe";
   const slug = `${slugBase}-${randomUUID().slice(0, 8)}`.slice(0, 80);
 
-  const { error } = await supabase.from("teams").insert({
+  const { data: created, error } = await supabase.from("teams").insert({
     slug,
     name,
     description,
@@ -50,8 +50,8 @@ export async function createTeamAction(formData: FormData) {
     tags,
     visibility,
     owner_id: userId,
-  });
-  if (error) redirect(`${TEAMS_BASE}/new?error=create`);
+  }).select("id").single();
+  if (error || !created) redirect(`${TEAMS_BASE}/new?error=create`);
   revalidatePath(TEAMS_BASE);
   redirect(`${TEAMS_BASE}/${slug}?status=created`);
 }
@@ -63,7 +63,7 @@ export async function updateTeamAction(formData: FormData) {
   const name = text(formData, "name", 120);
   if (!teamId || !slug || name.length < 2) redirect(`${TEAMS_BASE}/${slug || ""}?error=invalid`);
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("teams")
     .update({
       name,
@@ -74,8 +74,10 @@ export async function updateTeamAction(formData: FormData) {
       tags: parseTags(text(formData, "tags", 500)),
       visibility: formData.get("visibility") === "private" ? "private" : "platform",
     })
-    .eq("id", teamId);
-  if (error) redirect(`${TEAMS_BASE}/${slug}?error=save`);
+    .eq("id", teamId)
+    .select("id")
+    .maybeSingle();
+  if (error || !updated) redirect(`${TEAMS_BASE}/${slug}?error=save`);
   revalidatePath(`${TEAMS_BASE}/${slug}`);
   redirect(`${TEAMS_BASE}/${slug}?status=saved`);
 }
@@ -97,14 +99,14 @@ export async function inviteTeamMemberAction(formData: FormData) {
     .maybeSingle();
   if (!invitee || invitee.id === userId) redirect(`${TEAMS_BASE}/${slug}?error=member-not-found`);
 
-  const { error } = await supabase.from("team_invitations").insert({
+  const { data: invitation, error } = await supabase.from("team_invitations").insert({
     team_id: teamId,
     invitee_id: invitee.id,
     invited_by: userId,
     role_label: roleLabel,
     access_level: accessLevel,
-  });
-  if (error) redirect(`${TEAMS_BASE}/${slug}?error=invite`);
+  }).select("id").single();
+  if (error || !invitation) redirect(`${TEAMS_BASE}/${slug}?error=invite`);
   revalidatePath(`${TEAMS_BASE}/${slug}`);
   redirect(`${TEAMS_BASE}/${slug}?status=invited`);
 }
@@ -113,8 +115,14 @@ export async function respondTeamInvitationAction(formData: FormData) {
   const { supabase } = await requireProductUser("participant");
   const invitationId = text(formData, "invitation_id", 80);
   const response = formData.get("response") === "accepted" ? "accepted" : "declined";
-  if (!invitationId) redirect(TEAMS_BASE);
-  await supabase.from("team_invitations").update({ status: response }).eq("id", invitationId);
+  if (!invitationId) redirect(`${TEAMS_BASE}?error=invite-response`);
+  const { data: invitation, error } = await supabase
+    .from("team_invitations")
+    .update({ status: response })
+    .eq("id", invitationId)
+    .select("id")
+    .maybeSingle();
+  if (error || !invitation) redirect(`${TEAMS_BASE}?error=invite-response`);
   revalidatePath(TEAMS_BASE);
   redirect(`${TEAMS_BASE}?status=${response}`);
 }
@@ -123,7 +131,14 @@ export async function cancelTeamInvitationAction(formData: FormData) {
   const { supabase } = await requireProductUser("participant");
   const invitationId = text(formData, "invitation_id", 80);
   const slug = text(formData, "slug", 80);
-  if (invitationId) await supabase.from("team_invitations").update({ status: "cancelled" }).eq("id", invitationId);
+  if (!invitationId || !slug) redirect(`${TEAMS_BASE}?error=invite-cancel`);
+  const { data: invitation, error } = await supabase
+    .from("team_invitations")
+    .update({ status: "cancelled" })
+    .eq("id", invitationId)
+    .select("id")
+    .maybeSingle();
+  if (error || !invitation) redirect(`${TEAMS_BASE}/${slug}?error=invite-cancel`);
   revalidatePath(`${TEAMS_BASE}/${slug}`);
   redirect(`${TEAMS_BASE}/${slug}?status=invite-cancelled`);
 }
@@ -133,7 +148,15 @@ export async function removeTeamMemberAction(formData: FormData) {
   const teamId = text(formData, "team_id", 80);
   const memberId = text(formData, "member_id", 80);
   const slug = text(formData, "slug", 80);
-  if (teamId && memberId) await supabase.from("team_members").delete().eq("team_id", teamId).eq("user_id", memberId);
+  if (!teamId || !memberId || !slug) redirect(`${TEAMS_BASE}?error=member-remove`);
+  const { data: removed, error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("team_id", teamId)
+    .eq("user_id", memberId)
+    .select("user_id")
+    .maybeSingle();
+  if (error || !removed) redirect(`${TEAMS_BASE}/${slug}?error=member-remove`);
   revalidatePath(`${TEAMS_BASE}/${slug}`);
   redirect(`${TEAMS_BASE}/${slug}?status=member-removed`);
 }
@@ -141,7 +164,15 @@ export async function removeTeamMemberAction(formData: FormData) {
 export async function leaveTeamAction(formData: FormData) {
   const { supabase, userId } = await requireProductUser("participant");
   const teamId = text(formData, "team_id", 80);
-  if (teamId) await supabase.from("team_members").delete().eq("team_id", teamId).eq("user_id", userId);
+  if (!teamId) redirect(`${TEAMS_BASE}?error=leave`);
+  const { data: membership, error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("team_id", teamId)
+    .eq("user_id", userId)
+    .select("user_id")
+    .maybeSingle();
+  if (error || !membership) redirect(`${TEAMS_BASE}?error=leave`);
   revalidatePath(TEAMS_BASE);
   redirect(`${TEAMS_BASE}?status=left`);
 }
@@ -149,7 +180,9 @@ export async function leaveTeamAction(formData: FormData) {
 export async function deleteTeamAction(formData: FormData) {
   const { supabase } = await requireProductUser("participant");
   const teamId = text(formData, "team_id", 80);
-  if (teamId) await supabase.from("teams").delete().eq("id", teamId);
+  if (!teamId) redirect(`${TEAMS_BASE}?error=delete`);
+  const { data: deleted, error } = await supabase.from("teams").delete().eq("id", teamId).select("id").maybeSingle();
+  if (error || !deleted) redirect(`${TEAMS_BASE}?error=delete`);
   revalidatePath(TEAMS_BASE);
   redirect(`${TEAMS_BASE}?status=deleted`);
 }
