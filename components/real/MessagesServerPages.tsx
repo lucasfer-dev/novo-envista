@@ -17,7 +17,7 @@ export async function MessagesServerPage({expectedRole,searchParams}:{expectedRo
   if(rows.length){const result=await supabase.from("direct_messages").select("conversation_id,body,created_at").in("conversation_id",rows.map((row:any)=>row.id)).order("created_at",{ascending:false}).limit(250);messages=result.data??[];}
   const profileMap=new Map(profiles.map((profile:any)=>[profile.id,profile]));
   const threads=rows.map((row:any)=>{const targetId=row.user_a===userId?row.user_b:row.user_a;const profile=profileMap.get(targetId);const last=messages.find((message:any)=>message.conversation_id===row.id);return {id:row.id,targetId,targetName:profile?.display_name??"Conta privada",targetUsername:profile?.username??null,lastBody:last?.body??null,lastAt:last?.created_at??null};});
-  return <ProductShell user={appUser} title="Mensagens"><MessagesIndexView role={expectedRole} threads={threads} status={first(query.status)} error={first(query.error)}/></ProductShell>;
+  return <ProductShell user={appUser} title="Mensagens" variant="legacyDark"><MessagesIndexView role={expectedRole} threads={threads} status={first(query.status)} error={first(query.error)}/></ProductShell>;
 }
 
 export async function ConversationServerPage({expectedRole,conversationId,searchParams}:{expectedRole:ProductRole;conversationId:string;searchParams:Search}){
@@ -34,5 +34,5 @@ export async function ConversationServerPage({expectedRole,conversationId,search
   const blockedMe=(blocks??[]).some((block:any)=>block.blocker_id===targetId&&block.blocked_id===userId);
   const canSend=!blockedByMe&&!blockedMe&&Boolean(profile?.allow_messages)&&profile?.profile_visibility==="platform";
   const target={id:targetId,display_name:profile?.display_name??"Conta privada",username:profile?.username??null};
-  return <ProductShell user={appUser} title="Mensagens"><ConversationView role={expectedRole} currentUserId={userId} conversationId={conversationId} target={target} messages={(messages??[]) as never[]} blockedByMe={blockedByMe} blockedMe={blockedMe} canSend={canSend} status={first(query.status)} error={first(query.error)}/></ProductShell>;
+  return <ProductShell user={appUser} title="Mensagens" variant="legacyDark"><ConversationView role={expectedRole} currentUserId={userId} conversationId={conversationId} target={target} messages={(messages??[]) as never[]} blockedByMe={blockedByMe} blockedMe={blockedMe} canSend={canSend} status={first(query.status)} error={first(query.error)}/></ProductShell>;
 }
