@@ -53,6 +53,7 @@ export async function InvestorPublicProjectServerPage({
   const ownerLabel = ownerTeam?.name ? `Equipe ${ownerTeam.name}` : ownerUser?.display_name || ownerUser?.username || "Projeto Envista";
   const status = first(query.status);
   const error = first(query.error);
+  const returnTo = pathname.startsWith("/investor/projects/") ? `${pathname}?from=explore` : pathname;
 
   return (
     <LegacySocialShell user={appUser} role="investor" pathname={pathname}>
@@ -74,10 +75,10 @@ export async function InvestorPublicProjectServerPage({
         <div className="actions">
           <form action={toggleProjectSaveAction}>
             <input type="hidden" name="project_id" value={project.id} />
-            <input type="hidden" name="return_to" value={pathname} />
+            <input type="hidden" name="return_to" value={returnTo} />
             <button className="secondary" type="submit"><Bookmark size={16} /> {saved ? "Salvo" : "Salvar projeto"}</button>
           </form>
-          <FollowEntityButton targetType="project" targetId={project.id} returnTo={pathname} />
+          <FollowEntityButton targetType="project" targetId={project.id} returnTo={returnTo} />
         </div>
       </div>
 
@@ -108,7 +109,7 @@ export async function InvestorPublicProjectServerPage({
           <p>Esse contato é salvo no Envista e fica vinculado à sua conta de investidor e a este projeto.</p>
           <form className="form-page" style={{ padding: 0 }} action={sendProjectInterestAction}>
             <input type="hidden" name="project_id" value={project.id} />
-            <input type="hidden" name="return_to" value={pathname} />
+            <input type="hidden" name="return_to" value={returnTo} />
             <label>Mensagem<textarea name="message" maxLength={2000} defaultValue={interest?.message || `Olá! Gostaria de conhecer melhor o projeto ${project.title} e entender os próximos passos.`} /></label>
             <button className="primary" type="submit">{interest?.status === "active" ? "Atualizar interesse" : "Tenho interesse"}</button>
           </form>
