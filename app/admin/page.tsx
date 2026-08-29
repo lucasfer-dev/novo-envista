@@ -5,7 +5,7 @@ import { requireAdminUser } from "@/lib/admin/require-admin";
 
 export default async function AdminDashboard() {
   const { supabase, profile } = await requireAdminUser();
-  const [users, participants, investors, teams, projects, courses, reports, privacy, audit] = await Promise.all([
+  const [users, participants, investors, teams, projects, courses, messageReports, contentReports, privacy, audit] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "participant"),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "investor"),
@@ -13,6 +13,7 @@ export default async function AdminDashboard() {
     supabase.from("projects").select("id", { count: "exact", head: true }),
     supabase.from("courses").select("id", { count: "exact", head: true }),
     supabase.from("message_reports").select("id", { count: "exact", head: true }).in("status", ["open", "reviewing"]),
+    supabase.from("content_reports").select("id", { count: "exact", head: true }).in("status", ["open", "reviewing"]),
     supabase.from("privacy_requests").select("id", { count: "exact", head: true }).in("status", ["open", "in_review"]),
     supabase.from("admin_audit_log").select("id,action,target_type,target_id,created_at").order("created_at", { ascending: false }).limit(10),
   ]);
@@ -22,9 +23,9 @@ export default async function AdminDashboard() {
     ["Participantes", participants.count ?? 0, "/admin/users?role=participant"],
     ["Investidores", investors.count ?? 0, "/admin/users?role=investor"],
     ["Equipes", teams.count ?? 0, "/admin/teams"],
-    ["Projetos", projects.count ?? 0, "/admin/users"],
+    ["Projetos", projects.count ?? 0, "/admin/projects"],
     ["Cursos", courses.count ?? 0, "/admin/courses"],
-    ["Denúncias pendentes", reports.count ?? 0, "/admin/moderation"],
+    ["Denúncias pendentes", (messageReports.count ?? 0) + (contentReports.count ?? 0), "/admin/moderation"],
     ["Pedidos de privacidade", privacy.count ?? 0, "/admin/privacy"],
   ] as const;
 
@@ -35,6 +36,7 @@ export default async function AdminDashboard() {
           <h1>Administração</h1>
           <p className={styles.muted}>Painel operacional privado do Envista. O acesso depende de associação administrativa válida no banco.</p>
         </div>
+        <Link className={styles.secondary} href="/admin/analytics">Abrir analytics</Link>
       </div>
 
       <div className={styles.metrics}>
