@@ -1,14 +1,16 @@
+import Link from "next/link";
 import { deleteNotificationAction, markAllNotificationsReadAction, openNotificationAction } from "@/lib/notifications/actions";
 import styles from "./Notifications.module.css";
 
 type Notification = { id:string; kind:string; title:string; body:string; href:string; read_at:string|null; created_at:string };
+function href(basePath:string,page:number){return page<=1?basePath:`${basePath}?page=${page}`;}
 
-export function NotificationsView({notifications,status}:{notifications:Notification[];status?:string}){
- const unread=notifications.filter(item=>!item.read_at).length;
+export function NotificationsView({notifications,status,unreadTotal,page,pageCount,total,basePath}:{notifications:Notification[];status?:string;unreadTotal:number;page:number;pageCount:number;total:number;basePath:string}){
+ const totalLabel=total===1?"1 notificação":`${total} notificações`;
  return <>
   <div className={styles.head}>
-    <div><h1>Notificações</h1><p className={styles.muted}>{unread?`${unread} não lida${unread===1?"":"s"}.`:"Tudo em dia."}</p></div>
-    {unread>0?<form action={markAllNotificationsReadAction}><button className={styles.secondary}>Marcar todas como lidas</button></form>:null}
+    <div><h1>Notificações</h1><p className={styles.muted}>{unreadTotal?`${unreadTotal} não lida${unreadTotal===1?"":"s"}.`:`${totalLabel} · tudo em dia.`}</p></div>
+    {unreadTotal>0?<form action={markAllNotificationsReadAction}><button className={styles.secondary}>Marcar todas como lidas</button></form>:null}
   </div>
   {status==="read"?<div className={styles.notice}>Todas as notificações foram marcadas como lidas.</div>:null}
   <div className={styles.list}>
@@ -20,5 +22,10 @@ export function NotificationsView({notifications,status}:{notifications:Notifica
       </div>
     </article>)}
   </div>
+  {pageCount>1?<nav aria-label="Paginação de notificações" className={styles.actions} style={{justifyContent:"space-between",marginTop:18}}>
+    {page>1?<Link className={styles.secondary} href={href(basePath,page-1)}>← Anterior</Link>:<span/>}
+    <span className={styles.muted}>Página {page} de {pageCount}</span>
+    {page<pageCount?<Link className={styles.secondary} href={href(basePath,page+1)}>Próxima →</Link>:<span/>}
+  </nav>:null}
  </>;
 }

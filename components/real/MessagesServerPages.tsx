@@ -4,7 +4,13 @@ import { ConversationView, MessagesIndexView } from "@/components/real/MessagesV
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
 type Search = Promise<Record<string, string | string[] | undefined>>;
+const MESSAGE_PAGE_SIZE = 100;
 function first(value: string | string[] | undefined) { return Array.isArray(value) ? value[0] : value; }
+function cursor(value: string | undefined) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
 
 export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
   const { supabase, appUser } = await requireProductUser(expectedRole);
@@ -49,16 +55,29 @@ export async function MessagesServerPage({ expectedRole, searchParams }: { expec
 export async function ConversationServerPage({ expectedRole, conversationId, searchParams }: { expectedRole: ProductRole; conversationId: string; searchParams: Search }) {
   const { supabase, userId, appUser } = await requireProductUser(expectedRole);
   const query = await searchParams;
+  const before = cursor(first(query.before));
   const { data: conversation } = await supabase.from("direct_conversations").select("id,user_a,user_b").eq("id", conversationId).maybeSingle();
   if (!conversation) notFound();
 
   const targetId = conversation.user_a === userId ? conversation.user_b : conversation.user_a;
-  const [{ data: profile }, { data: messages }, { data: blocks }] = await Promise.all([
+  let messageQuery = supabase
+    .from("direct_messages")
+    .select("id,sender_id,body,created_at")
+    .eq("conversation_id", conversationId)
+    .order("created_at", { ascending: false })
+    .limit(MESSAGE_PAGE_SIZE + 1);
+  if (before) messageQuery = messageQuery.lt("created_at", before);
+
+  const [{ data: profile }, { data: messageRows }, { data: blocks }] = await Promise.all([
     supabase.from("profiles").select("id,username,display_name,allow_messages,profile_visibility").eq("id", targetId).maybeSingle(),
-    supabase.from("direct_messages").select("id,sender_id,body,created_at").eq("conversation_id", conversationId).order("created_at", { ascending: true }).limit(200),
+    messageQuery,
     supabase.from("user_blocks").select("blocker_id,blocked_id").or(`and(blocker_id.eq.${conversation.user_a},blocked_id.eq.${conversation.user_b}),and(blocker_id.eq.${conversation.user_b},blocked_id.eq.${conversation.user_a})`),
   ]);
 
+  const rawMessages = messageRows ?? [];
+  const hasOlder = rawMessages.length > MESSAGE_PAGE_SIZE;
+  const messages = rawMessages.slice(0, MESSAGE_PAGE_SIZE).reverse();
+  const olderCursor = hasOlder && messages.length ? messages[0].created_at : null;
   const blockedByMe = (blocks ?? []).some((block: any) => block.blocker_id === userId && block.blocked_id === targetId);
   const blockedMe = (blocks ?? []).some((block: any) => block.blocker_id === targetId && block.blocked_id === userId);
   const canSend = !blockedByMe && !blockedMe && Boolean(profile?.allow_messages) && profile?.profile_visibility === "platform";
@@ -71,10 +90,13 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
         currentUserId={userId}
         conversationId={conversationId}
         target={target}
-        messages={(messages ?? []) as never[]}
+        messages={messages as never[]}
         blockedByMe={blockedByMe}
         blockedMe={blockedMe}
         canSend={canSend}
+        historyMode={Boolean(before)}
+        hasOlder={hasOlder}
+        olderCursor={olderCursor}
         status={first(query.status)}
         error={first(query.error)}
       />
