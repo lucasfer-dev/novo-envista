@@ -35,7 +35,7 @@ export async function createProjectAction(formData: FormData) {
   }
 
   const slug = `${slugify(title) || "projeto"}-${randomUUID().slice(0, 8)}`.slice(0, 90);
-  const { error } = await supabase.from("projects").insert({
+  const { data: created, error } = await supabase.from("projects").insert({
     slug,
     title,
     short_description: text(formData, "short_description", 320),
@@ -50,8 +50,8 @@ export async function createProjectAction(formData: FormData) {
     owner_user_id: ownerUserId,
     owner_team_id: ownerTeamId,
     created_by: userId,
-  });
-  if (error) redirect(`${PROJECTS_BASE}/new?error=create`);
+  }).select("id").single();
+  if (error || !created) redirect(`${PROJECTS_BASE}/new?error=create`);
   revalidatePath(PROJECTS_BASE);
   redirect(`${PROJECTS_BASE}/${slug}?status=created`);
 }
@@ -62,7 +62,7 @@ export async function updateProjectAction(formData: FormData) {
   const slug = text(formData, "slug", 90);
   const title = text(formData, "title", 140);
   if (!id || !slug || title.length < 2) redirect(`${PROJECTS_BASE}/${slug}?error=invalid`);
-  const { error } = await supabase.from("projects").update({
+  const { data: updated, error } = await supabase.from("projects").update({
     title,
     short_description: text(formData, "short_description", 320),
     problem: text(formData, "problem", 4000),
@@ -73,8 +73,8 @@ export async function updateProjectAction(formData: FormData) {
     tags: tags(text(formData, "tags", 700)),
     readme: text(formData, "readme", 20000),
     visibility: formData.get("visibility") === "private" ? "private" : "platform",
-  }).eq("id", id);
-  if (error) redirect(`${PROJECTS_BASE}/${slug}?error=save`);
+  }).eq("id", id).select("id").maybeSingle();
+  if (error || !updated) redirect(`${PROJECTS_BASE}/${slug}?error=save`);
   revalidatePath(`${PROJECTS_BASE}/${slug}`);
   revalidatePath(PROJECTS_BASE);
   redirect(`${PROJECTS_BASE}/${slug}?status=saved`);
@@ -83,7 +83,9 @@ export async function updateProjectAction(formData: FormData) {
 export async function deleteProjectAction(formData: FormData) {
   const { supabase } = await requireProductUser("participant");
   const id = text(formData, "project_id", 80);
-  if (id) await supabase.from("projects").delete().eq("id", id);
+  if (!id) redirect(`${PROJECTS_BASE}?error=delete`);
+  const { data: deleted, error } = await supabase.from("projects").delete().eq("id", id).select("id").maybeSingle();
+  if (error || !deleted) redirect(`${PROJECTS_BASE}?error=delete`);
   revalidatePath(PROJECTS_BASE);
   redirect(`${PROJECTS_BASE}?status=deleted`);
 }
