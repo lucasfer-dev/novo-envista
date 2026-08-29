@@ -50,7 +50,7 @@ export async function toggleProjectSaveAction(formData: FormData) {
 export async function sendProjectInterestAction(formData: FormData) {
   const { supabase, userId } = await requireProductUser("investor");
   const projectId = text(formData, "project_id", 80);
-  const message = text(formData, "message", 2000);
+  const message = text(formData, "message", 1200);
   const returnTo = returnPath(formData);
   if (!projectId) redirect(returnTo);
 
