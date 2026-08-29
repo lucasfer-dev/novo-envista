@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowRight,
@@ -72,7 +73,6 @@ export type SocialSuggestion = {
 };
 
 type FeedMode = "for-you" | "following";
-const FEED_BATCH = 12;
 
 function initials(name: string) {
   return name
@@ -106,91 +106,83 @@ function normalize(value: string) {
     .trim();
 }
 
-function itemText(item: SocialFeedItem) {
-  if (item.kind === "post") {
-    return `${item.authorLabel} ${item.authorHandle} ${item.body} ${item.project?.title ?? ""}`;
-  }
-  return `${item.ownerLabel} ${item.title} ${item.description} ${item.stage}`;
-}
-
 function kindLabel(kind: SocialAuthorKind) {
   if (kind === "team") return "Equipe";
   if (kind === "investor") return "Investidor";
   return "Participante";
 }
 
+function feedHref(path: string, mode: FeedMode, query: string, page: number) {
+  const params = new URLSearchParams();
+  if (mode === "following") params.set("mode", "following");
+  const cleanQuery = query.trim();
+  if (cleanQuery) params.set("q", cleanQuery);
+  if (page > 1) params.set("page", String(page));
+  const search = params.toString();
+  return search ? `${path}?${search}` : path;
+}
+
 export default function LegacySocialFeed({
   userId,
   userName,
   path,
+  returnTo,
   teams,
   projects,
   items,
   suggestions,
   followingCount,
+  feedMode,
+  initialQuery,
+  page,
+  pageCount,
+  totalItems,
   status,
   error,
 }: {
   userId: string;
   userName: string;
   path: string;
+  returnTo: string;
   teams: SocialTeamOption[];
   projects: SocialProjectOption[];
   items: SocialFeedItem[];
   suggestions: SocialSuggestion[];
   followingCount: number;
+  feedMode: FeedMode;
+  initialQuery: string;
+  page: number;
+  pageCount: number;
+  totalItems: number;
   status?: string;
   error?: string;
 }) {
-  const [query, setQuery] = useState("");
-  const [feedMode, setFeedMode] = useState<FeedMode>("for-you");
-  const [visibleCount, setVisibleCount] = useState(FEED_BATCH);
+  const router = useRouter();
+  const [query, setQuery] = useState(initialQuery);
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const normalized = normalize(query);
 
-  const filteredItems = useMemo(
-    () =>
-      items.filter((item) => {
-        if (feedMode === "following" && !item.followed) return false;
-        return !normalized || normalize(itemText(item)).includes(normalized);
-      }),
-    [feedMode, items, normalized],
-  );
-
-  const visibleItems = useMemo(
-    () => filteredItems.slice(0, visibleCount),
-    [filteredItems, visibleCount],
-  );
-
-  const visibleSuggestions = useMemo(
-    () =>
-      suggestions.filter(
-        (suggestion) =>
-          !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
-      ),
-    [suggestions, normalized],
-  );
-
-  const hasMore = visibleCount < filteredItems.length;
-
   useEffect(() => {
-    setVisibleCount(FEED_BATCH);
-  }, [feedMode, normalized]);
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
-  useEffect(() => {
-    const node = loadMoreRef.current;
-    if (!node || !hasMore || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0]?.isIntersecting) return;
-        setVisibleCount((current) => Math.min(current + FEED_BATCH, filteredItems.length));
-      },
-      { rootMargin: "320px 0px" },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [filteredItems.length, hasMore, visibleCount]);
+  const visibleSuggestions = suggestions.filter(
+    (suggestion) => !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
+  );
+
+  const changeMode = (mode: FeedMode) => {
+    router.push(feedHref(path, mode, query, 1), { scroll: false });
+  };
+
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    router.push(feedHref(path, feedMode, query, 1), { scroll: false });
+  };
+
+  const clearSearch = () => {
+    setQuery("");
+    router.push(feedHref(path, feedMode, "", 1), { scroll: false });
+  };
 
   const sharePost = async (post: SocialPostFeedItem) => {
     const text = `${post.authorLabel}: ${post.body}`;
@@ -274,7 +266,7 @@ export default function LegacySocialFeed({
                 role="tab"
                 aria-selected={feedMode === "for-you"}
                 className={feedMode === "for-you" ? styles.activeTab : ""}
-                onClick={() => setFeedMode("for-you")}
+                onClick={() => changeMode("for-you")}
               >
                 Para você
               </button>
@@ -283,30 +275,31 @@ export default function LegacySocialFeed({
                 role="tab"
                 aria-selected={feedMode === "following"}
                 className={feedMode === "following" ? styles.activeTab : ""}
-                onClick={() => setFeedMode("following")}
+                onClick={() => changeMode("following")}
               >
                 Seguindo
               </button>
             </div>
 
-            <label className={styles.feedSearch}>
+            <form className={styles.feedSearch} onSubmit={submitSearch}>
               <Search size={16} />
               <input
                 aria-label="Pesquisar no feed"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Buscar no feed"
+                maxLength={120}
               />
               {query && (
-                <button type="button" aria-label="Limpar pesquisa" onClick={() => setQuery("")}>
+                <button type="button" aria-label="Limpar pesquisa" onClick={clearSearch}>
                   <X size={15} />
                 </button>
               )}
-            </label>
+            </form>
           </div>
 
           <div className={styles.timeline}>
-            {visibleItems.map((item) => {
+            {items.map((item) => {
               if (item.kind === "project-update") {
                 return (
                   <article className={styles.timelineUpdate} key={item.id}>
@@ -355,7 +348,7 @@ export default function LegacySocialFeed({
                       {item.canDelete && (
                         <form action={deletePostAction}>
                           <input type="hidden" name="post_id" value={item.id} />
-                          <input type="hidden" name="return_to" value={path} />
+                          <input type="hidden" name="return_to" value={returnTo} />
                           <button className={styles.deleteButton} type="submit">Excluir</button>
                         </form>
                       )}
@@ -377,7 +370,7 @@ export default function LegacySocialFeed({
                   <div className={styles.postActions}>
                     <form action={togglePostLikeAction}>
                       <input type="hidden" name="post_id" value={item.id} />
-                      <input type="hidden" name="return_to" value={path} />
+                      <input type="hidden" name="return_to" value={returnTo} />
                       <button className={item.liked ? styles.liked : ""} aria-pressed={item.liked} type="submit">
                         <Heart size={18} fill={item.liked ? "currentColor" : "none"} />
                         <span>{item.likeCount || "Curtir"}</span>
@@ -407,7 +400,7 @@ export default function LegacySocialFeed({
                             {comment.userId === userId && (
                               <form action={deletePostCommentAction}>
                                 <input type="hidden" name="comment_id" value={comment.id} />
-                                <input type="hidden" name="return_to" value={path} />
+                                <input type="hidden" name="return_to" value={returnTo} />
                                 <button className={styles.commentDelete} type="submit">Excluir</button>
                               </form>
                             )}
@@ -416,7 +409,7 @@ export default function LegacySocialFeed({
                       ))}
                       <form className={styles.commentComposer} action={addPostCommentAction}>
                         <input type="hidden" name="post_id" value={item.id} />
-                        <input type="hidden" name="return_to" value={path} />
+                        <input type="hidden" name="return_to" value={returnTo} />
                         <input required name="body" maxLength={2000} placeholder="Escreva um comentário..." />
                         <button className="primary square" aria-label="Enviar comentário" type="submit"><Send size={16} /></button>
                       </form>
@@ -426,12 +419,12 @@ export default function LegacySocialFeed({
               );
             })}
 
-            {!filteredItems.length && (
+            {!items.length && (
               <div className={styles.emptyFeed}>
                 <Activity size={23} />
-                <h3>{query ? "Nada encontrado" : feedMode === "following" ? "Você ainda não segue ninguém" : "Ainda não há publicações"}</h3>
+                <h3>{initialQuery ? "Nada encontrado" : feedMode === "following" ? "Você ainda não segue ninguém" : "Ainda não há publicações"}</h3>
                 <p>
-                  {query
+                  {initialQuery
                     ? "Tente outro termo ou limpe a pesquisa."
                     : feedMode === "following"
                       ? "Siga participantes, investidores, equipes e projetos para montar sua timeline."
@@ -441,13 +434,16 @@ export default function LegacySocialFeed({
             )}
           </div>
 
-          {hasMore && (
-            <div ref={loadMoreRef} className={styles.loadMore} aria-live="polite">
-              <span /> Carregando mais publicações...
-            </div>
-          )}
-          {!hasMore && filteredItems.length > FEED_BATCH && (
-            <div className={styles.feedEnd}>Você chegou ao fim das publicações carregadas.</div>
+          {pageCount > 1 && (
+            <nav className={styles.feedPagination} aria-label="Paginação do feed">
+              {page > 1 ? (
+                <Link className={styles.paginationButton} href={feedHref(path, feedMode, initialQuery, page - 1)}>← Anterior</Link>
+              ) : <span />}
+              <span>Página {Math.min(page, pageCount)} de {pageCount} · {totalItems} itens</span>
+              {page < pageCount ? (
+                <Link className={styles.paginationButton} href={feedHref(path, feedMode, initialQuery, page + 1)}>Próxima →</Link>
+              ) : <span />}
+            </nav>
           )}
         </section>
 
@@ -466,7 +462,7 @@ export default function LegacySocialFeed({
                   <form action={toggleFollowAction}>
                     <input type="hidden" name="target_type" value={suggestion.targetType} />
                     <input type="hidden" name="target_id" value={suggestion.targetId} />
-                    <input type="hidden" name="return_to" value={path} />
+                    <input type="hidden" name="return_to" value={returnTo} />
                     <button className={styles.followButton} type="submit"><UserPlus size={13} /> Seguir</button>
                   </form>
                 </div>
