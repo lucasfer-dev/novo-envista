@@ -26,6 +26,7 @@ import {
   RealHomeServerPage,
 } from "@/components/real/LegacyDashboardServerPages";
 import { LegacyPublicProfileServerPage } from "@/components/real/LegacyProfileServerPage";
+import { InvestorPublicProjectServerPage } from "@/components/investor/InvestorProjectServerPage";
 import {
   CourseServerPage,
   LearnServerPage,
@@ -196,6 +197,9 @@ export default async function Page({
     const fromExplore = first((await searchParams).from) === "explore";
     if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewProjectPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
+    if (expectedRole === "investor" && fromExplore) {
+      return <InvestorPublicProjectServerPage pathname={pathname} slug={item} backHref={exploreBase} searchParams={searchParams} />;
+    }
     return <LegacyProjectDetailPage expectedRole={expectedRole} pathname={pathname} slug={item} backHref={fromExplore ? exploreBase : projectBase} publicView={fromExplore} searchParams={searchParams} />;
   }
 
@@ -203,6 +207,9 @@ export default async function Page({
   if (sourcedProject) {
     const expectedRole = roleFromBase(sourcedProject[1]);
     const appBase = expectedRole === "investor" ? "/investor" : "/app";
+    if (expectedRole === "investor") {
+      return <InvestorPublicProjectServerPage pathname={pathname} slug={sourcedProject[3]} backHref={`${appBase}/${sourcedProject[2]}`} searchParams={searchParams} />;
+    }
     return <LegacyProjectDetailPage expectedRole={expectedRole} pathname={pathname} slug={sourcedProject[3]} backHref={`${appBase}/${sourcedProject[2]}`} publicView searchParams={searchParams} />;
   }
 
