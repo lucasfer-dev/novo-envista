@@ -39,6 +39,21 @@ const demoParticipant: User = {
   state: "RJ",
 };
 
+const demoInvestor: User = {
+  id: "demo-investor",
+  username: "investidor-demo",
+  name: "Investidor Demo",
+  role: "investor",
+  bio: "Ambiente demonstrativo do perfil investidor no Envista.",
+  city: "Rio de Janeiro",
+  state: "RJ",
+  organization: "Envista Ventures",
+  jobTitle: "Analista de Inovação",
+  organizationType: "Investidor",
+  interests: ["Tecnologia", "Educação", "IA", "Impacto social"],
+  stages: ["Protótipo", "MVP", "Projeto ativo"],
+};
+
 function isProtectedProductPath(pathname: string) {
   return pathname === "/app" || pathname.startsWith("/app/") || pathname === "/investor" || pathname.startsWith("/investor/");
 }
@@ -64,7 +79,9 @@ export default async function Page({
   if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
 
   const cookieStore = await cookies();
-  if (cookieStore.get(DEMO_COOKIE)?.value === "participant") {
+  const demoRole = cookieStore.get(DEMO_COOKIE)?.value;
+
+  if (demoRole === "participant") {
     if (pathname.startsWith("/investor")) redirect("/app");
     if (pathname === "/app/explore") {
       return (
@@ -84,6 +101,28 @@ export default async function Page({
       return <DemoCompetitionDetailServerPage user={demoParticipant} slug={item} />;
     }
     return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoParticipant} /></>;
+  }
+
+  if (demoRole === "investor") {
+    if (pathname.startsWith("/app")) redirect("/investor");
+    if (pathname === "/investor/explore") {
+      return (
+        <LegacyExploreServerPage
+          expectedRole="investor"
+          pathname={pathname}
+          searchParams={searchParams}
+          demoUser={demoInvestor}
+        />
+      );
+    }
+    const demoCompetition = pathname.match(/^\/investor\/competitions(?:\/([^/]+))?$/);
+    if (demoCompetition) {
+      const item = demoCompetition[1];
+      if (!item) return <DemoCompetitionsServerPage user={demoInvestor} />;
+      if (LEGACY_COMPETITION_SLUGS.has(item)) redirect("/investor/competitions");
+      return <DemoCompetitionDetailServerPage user={demoInvestor} slug={item} />;
+    }
+    return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoInvestor} /></>;
   }
 
   if (pathname === "/app/social") {
