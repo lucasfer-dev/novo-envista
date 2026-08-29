@@ -110,7 +110,7 @@ export async function InvestorPublicProjectServerPage({
           <form className="form-page" style={{ padding: 0 }} action={sendProjectInterestAction}>
             <input type="hidden" name="project_id" value={project.id} />
             <input type="hidden" name="return_to" value={returnTo} />
-            <label>Mensagem<textarea name="message" maxLength={2000} defaultValue={interest?.message || `Olá! Gostaria de conhecer melhor o projeto ${project.title} e entender os próximos passos.`} /></label>
+            <label>Mensagem<textarea name="message" maxLength={1200} defaultValue={interest?.message || `Olá! Gostaria de conhecer melhor o projeto ${project.title} e entender os próximos passos.`} /></label>
             <button className="primary" type="submit">{interest?.status === "active" ? "Atualizar interesse" : "Tenho interesse"}</button>
           </form>
         </aside>
