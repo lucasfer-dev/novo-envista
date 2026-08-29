@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Building2, MapPin, MessageCircle, School } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
+import ReportContentForm from "@/components/moderation/ReportContentForm";
 import { startConversationAction } from "@/lib/messages/actions";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
@@ -60,23 +61,23 @@ export async function LegacyPublicProfileServerPage({
           </div>
         </div>
         <div className="profile-actions">
-          {own ? <Link className="secondary" href="/account/profile">Editar perfil</Link> : <><FollowEntityButton targetType="profile" targetId={profile.id} returnTo={pathname} />{profile.allow_messages ? <form action={startConversationAction}><input type="hidden" name="username" value={profile.username} /><button className="primary" type="submit"><MessageCircle size={16} /> Mensagem</button></form> : null}</>}
+          {own ? <Link className="secondary" href="/account/profile">Editar perfil</Link> : <><FollowEntityButton targetType="profile" targetId={profile.id} returnTo={pathname} />{profile.allow_messages ? <form action={startConversationAction}><input type="hidden" name="username" value={profile.username} /><button className="primary" type="submit"><MessageCircle size={16} /> Mensagem</button></form> : null}<ReportContentForm targetType="profile" targetId={profile.id} returnTo={pathname} /></>}
         </div>
       </div>
 
       <section className="section-block">
         <div className="section-row"><div><h2>Projetos</h2><p>Projetos públicos vinculados a este perfil.</p></div></div>
-        {(projects ?? []).length ? <div className="project-grid">{(projects ?? []).map((project: any) => <article className="project-card" key={project.id}><div className="project-cover"><span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span><span className="stage">{project.stage}</span></div><div className="card-body"><div className="card-meta"><span>{project.category || "Projeto"}</span><span>{project.location || "Envista"}</span></div><h3><Link href={`${base}/projects/${project.slug}?from=explore`}>{project.title}</Link></h3><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips compact">{(project.tags || []).slice(0, 3).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhum projeto público ainda.</p></div>}
+        {(projects ?? []).length ? <div className="project-grid">{(projects ?? []).map((project: any) => <article className="project-card" key={project.id}><div className="project-cover"><span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span><span className="stage">{project.stage}</span></div><div className="card-body"><div className="card-meta"><span>{project.category || "Projeto"}</span><span>{project.location || "Envista"}</span></div><h3><Link href={`${base}/projects/${project.slug}?from=explore`}>{project.title}</Link></h3><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips compact">{(project.tags || []).slice(0, 3).map((tag: string) => <span key={tag}>{tag}</span>)}</div>{!own ? <ReportContentForm targetType="project" targetId={project.id} returnTo={pathname} /> : null}</div></article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhum projeto público ainda.</p></div>}
       </section>
 
       <section className="section-block">
         <div className="section-row"><div><h2>Equipes</h2><p>Equipes públicas das quais esta pessoa participa.</p></div></div>
-        {teams.length ? <div className="team-row">{teams.map((team: any) => <article className="team-card" key={team.id}><span className="avatar">{initials(team.name)}</span><h3><Link href={`${base}/teams/${team.slug}?from=explore`}>{team.name}</Link></h3><p>{team.description || "Equipe Envista."}</p><div className="chips compact">{(team.tags || []).slice(0, 3).map((tag: string) => <span key={tag}>{tag}</span>)}</div><small>{team.city || team.category || "Envista"}</small></article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhuma equipe pública.</p></div>}
+        {teams.length ? <div className="team-row">{teams.map((team: any) => <article className="team-card" key={team.id}><span className="avatar">{initials(team.name)}</span><h3><Link href={`${base}/teams/${team.slug}?from=explore`}>{team.name}</Link></h3><p>{team.description || "Equipe Envista."}</p><div className="chips compact">{(team.tags || []).slice(0, 3).map((tag: string) => <span key={tag}>{tag}</span>)}</div><small>{team.city || team.category || "Envista"}</small>{!own ? <ReportContentForm targetType="team" targetId={team.id} returnTo={pathname} /> : null}</article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhuma equipe pública.</p></div>}
       </section>
 
       <section className="section-block">
         <div className="section-row"><div><h2>Publicações</h2><p>Atualizações públicas deste perfil.</p></div></div>
-        {(posts ?? []).length ? <div className="profile-feed">{(posts ?? []).map((post: any) => <article className="panel social-post profile-feed-post" key={post.id}><header><span className="avatar">{initials(profile.display_name)}</span><div><b>{profile.display_name}</b><small>@{profile.username} · {new Date(post.created_at).toLocaleDateString("pt-BR")}</small></div></header><p>{post.body}</p></article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhuma publicação pública ainda.</p></div>}
+        {(posts ?? []).length ? <div className="profile-feed">{(posts ?? []).map((post: any) => <article className="panel social-post profile-feed-post" key={post.id}><header><span className="avatar">{initials(profile.display_name)}</span><div><b>{profile.display_name}</b><small>@{profile.username} · {new Date(post.created_at).toLocaleDateString("pt-BR")}</small></div></header><p>{post.body}</p>{!own ? <ReportContentForm targetType="post" targetId={post.id} returnTo={pathname} /> : null}</article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhuma publicação pública ainda.</p></div>}
       </section>
     </LegacySocialShell>
   );
