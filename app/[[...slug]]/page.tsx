@@ -20,9 +20,24 @@ import {
   LegacyTeamDetailPage,
   LegacyTeamsIndexPage,
 } from "@/components/teams/LegacyTeamsServerPage";
-import { createClient } from "@/lib/supabase/server";
-import { homeForRole, parseProductRole } from "@/lib/auth/validation";
-import type { ProductRole } from "@/lib/auth/require-product-user";
+import {
+  FollowingServerPage,
+  InvestorSavedServerPage,
+  RealHomeServerPage,
+} from "@/components/real/LegacyDashboardServerPages";
+import { LegacyPublicProfileServerPage } from "@/components/real/LegacyProfileServerPage";
+import {
+  CourseServerPage,
+  LearnServerPage,
+  LessonServerPage,
+} from "@/components/real/CoursesServerPages";
+import {
+  ConversationServerPage,
+  MessagesServerPage,
+} from "@/components/real/MessagesServerPages";
+import { NotificationsServerPage } from "@/components/real/NotificationsServerPages";
+import { homeForRole } from "@/lib/auth/validation";
+import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import type { User } from "@/types";
 
 const DEMO_COOKIE = "envista_demo";
@@ -81,17 +96,11 @@ export default async function Page({
   const cookieStore = await cookies();
   const demoRole = cookieStore.get(DEMO_COOKIE)?.value;
 
+  // A demo continua intencionalmente local. Contas reais nunca passam por este bloco.
   if (demoRole === "participant") {
     if (pathname.startsWith("/investor")) redirect("/app");
     if (pathname === "/app/explore") {
-      return (
-        <LegacyExploreServerPage
-          expectedRole="participant"
-          pathname={pathname}
-          searchParams={searchParams}
-          demoUser={demoParticipant}
-        />
-      );
+      return <LegacyExploreServerPage expectedRole="participant" pathname={pathname} searchParams={searchParams} demoUser={demoParticipant} />;
     }
     const demoCompetition = pathname.match(/^\/app\/competitions(?:\/([^/]+))?$/);
     if (demoCompetition) {
@@ -106,14 +115,7 @@ export default async function Page({
   if (demoRole === "investor") {
     if (pathname.startsWith("/app")) redirect("/investor");
     if (pathname === "/investor/explore") {
-      return (
-        <LegacyExploreServerPage
-          expectedRole="investor"
-          pathname={pathname}
-          searchParams={searchParams}
-          demoUser={demoInvestor}
-        />
-      );
+      return <LegacyExploreServerPage expectedRole="investor" pathname={pathname} searchParams={searchParams} demoUser={demoInvestor} />;
     }
     const demoCompetition = pathname.match(/^\/investor\/competitions(?:\/([^/]+))?$/);
     if (demoCompetition) {
@@ -125,17 +127,54 @@ export default async function Page({
     return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={demoInvestor} /></>;
   }
 
-  if (pathname === "/app/social") {
-    return <LegacySocialServerPage expectedRole="participant" searchParams={searchParams} />;
+  // Homes reais.
+  if (pathname === "/app") return <RealHomeServerPage expectedRole="participant" pathname={pathname} />;
+  if (pathname === "/investor") return <RealHomeServerPage expectedRole="investor" pathname={pathname} />;
+
+  // Social e descoberta reais.
+  if (pathname === "/app/social") return <LegacySocialServerPage expectedRole="participant" searchParams={searchParams} />;
+  if (pathname === "/investor/social") return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;
+  if (pathname === "/app/explore") return <LegacyExploreServerPage expectedRole="participant" pathname={pathname} searchParams={searchParams} />;
+  if (pathname === "/investor/explore") return <LegacyExploreServerPage expectedRole="investor" pathname={pathname} searchParams={searchParams} />;
+
+  // Aprendizado real: cursos, matrículas e progresso no Supabase.
+  if (pathname === "/app/learn") return <LearnServerPage />;
+  const lessonRoute = pathname.match(/^\/app\/learn\/([^/]+)\/lesson\/([^/]+)$/);
+  if (lessonRoute) return <LessonServerPage slug={lessonRoute[1]} lessonId={lessonRoute[2]} searchParams={searchParams} />;
+  const courseRoute = pathname.match(/^\/app\/learn\/([^/]+)$/);
+  if (courseRoute) return <CourseServerPage slug={courseRoute[1]} searchParams={searchParams} />;
+
+  // Mensagens reais para ambos os papéis.
+  const messagesRoute = pathname.match(/^\/(app|investor)\/messages(?:\/([^/]+))?$/);
+  if (messagesRoute) {
+    const expectedRole = roleFromBase(messagesRoute[1]);
+    const conversationId = messagesRoute[2];
+    if (!conversationId) return <MessagesServerPage expectedRole={expectedRole} searchParams={searchParams} />;
+    return <ConversationServerPage expectedRole={expectedRole} conversationId={conversationId} searchParams={searchParams} />;
   }
-  if (pathname === "/investor/social") {
-    return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;
+
+  // Notificações reais.
+  if (pathname === "/app/notifications") return <NotificationsServerPage expectedRole="participant" searchParams={searchParams} />;
+  if (pathname === "/investor/notifications") return <NotificationsServerPage expectedRole="investor" searchParams={searchParams} />;
+
+  // Coleções reais do investidor.
+  if (pathname === "/investor/saved") return <InvestorSavedServerPage pathname={pathname} searchParams={searchParams} />;
+  if (pathname === "/investor/following") return <FollowingServerPage expectedRole="investor" pathname={pathname} />;
+
+  // Perfil e configurações próprios agora apontam para o editor persistido no Supabase.
+  if (pathname === "/investor/profile" || pathname === "/investor/settings" || pathname === "/app/settings") redirect("/account/profile");
+  if (pathname.startsWith("/app/profile/")) redirect("/account/profile");
+
+  // Perfis públicos reais, independentemente da origem da navegação.
+  const sourcedProfile = pathname.match(/^\/(app|investor)\/(explore|social|messages)\/(participants|investors)\/([^/]+)$/);
+  if (sourcedProfile) {
+    const expectedRole = roleFromBase(sourcedProfile[1]);
+    return <LegacyPublicProfileServerPage expectedRole={expectedRole} username={sourcedProfile[4]} pathname={pathname} />;
   }
-  if (pathname === "/app/explore") {
-    return <LegacyExploreServerPage expectedRole="participant" pathname={pathname} searchParams={searchParams} />;
-  }
-  if (pathname === "/investor/explore") {
-    return <LegacyExploreServerPage expectedRole="investor" pathname={pathname} searchParams={searchParams} />;
+  const directProfile = pathname.match(/^\/(app|investor)\/(participants|investors)\/([^/]+)$/);
+  if (directProfile) {
+    const expectedRole = roleFromBase(directProfile[1]);
+    return <LegacyPublicProfileServerPage expectedRole={expectedRole} username={directProfile[3]} pathname={pathname} />;
   }
 
   const directCompetition = pathname.match(/^\/(app|investor)\/competitions(?:\/([^/]+))?$/);
@@ -157,32 +196,14 @@ export default async function Page({
     const fromExplore = first((await searchParams).from) === "explore";
     if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewProjectPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
-    return (
-      <LegacyProjectDetailPage
-        expectedRole={expectedRole}
-        pathname={pathname}
-        slug={item}
-        backHref={fromExplore ? exploreBase : projectBase}
-        publicView={fromExplore}
-        searchParams={searchParams}
-      />
-    );
+    return <LegacyProjectDetailPage expectedRole={expectedRole} pathname={pathname} slug={item} backHref={fromExplore ? exploreBase : projectBase} publicView={fromExplore} searchParams={searchParams} />;
   }
 
-  const sourcedProject = pathname.match(/^\/(app|investor)\/social\/projects\/([^/]+)$/);
+  const sourcedProject = pathname.match(/^\/(app|investor)\/(social|explore|messages)\/projects\/([^/]+)$/);
   if (sourcedProject) {
     const expectedRole = roleFromBase(sourcedProject[1]);
     const appBase = expectedRole === "investor" ? "/investor" : "/app";
-    return (
-      <LegacyProjectDetailPage
-        expectedRole={expectedRole}
-        pathname={pathname}
-        slug={sourcedProject[2]}
-        backHref={`${appBase}/social`}
-        publicView
-        searchParams={searchParams}
-      />
-    );
+    return <LegacyProjectDetailPage expectedRole={expectedRole} pathname={pathname} slug={sourcedProject[3]} backHref={`${appBase}/${sourcedProject[2]}`} publicView searchParams={searchParams} />;
   }
 
   const directTeam = pathname.match(/^\/(app|investor)\/teams(?:\/([^/]+))?$/);
@@ -194,84 +215,17 @@ export default async function Page({
     const fromExplore = first((await searchParams).from) === "explore";
     if (!item) return <LegacyTeamsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewTeamPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
-    return (
-      <LegacyTeamDetailPage
-        expectedRole={expectedRole}
-        pathname={pathname}
-        slug={item}
-        backHref={fromExplore ? exploreBase : teamBase}
-        publicView={fromExplore}
-        searchParams={searchParams}
-      />
-    );
+    return <LegacyTeamDetailPage expectedRole={expectedRole} pathname={pathname} slug={item} backHref={fromExplore ? exploreBase : teamBase} publicView={fromExplore} searchParams={searchParams} />;
   }
 
-  const sourcedTeam = pathname.match(/^\/(app|investor)\/social\/teams\/([^/]+)$/);
+  const sourcedTeam = pathname.match(/^\/(app|investor)\/(social|explore|messages)\/teams\/([^/]+)$/);
   if (sourcedTeam) {
     const expectedRole = roleFromBase(sourcedTeam[1]);
     const appBase = expectedRole === "investor" ? "/investor" : "/app";
-    return (
-      <LegacyTeamDetailPage
-        expectedRole={expectedRole}
-        pathname={pathname}
-        slug={sourcedTeam[2]}
-        backHref={`${appBase}/social`}
-        publicView
-        searchParams={searchParams}
-      />
-    );
+    return <LegacyTeamDetailPage expectedRole={expectedRole} pathname={pathname} slug={sourcedTeam[3]} backHref={`${appBase}/${sourcedTeam[2]}`} publicView searchParams={searchParams} />;
   }
 
-  const supabase = await createClient();
-  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
-  const userId = claimsData?.claims?.sub;
-  if (claimsError || !userId) redirect(`/login?next=${encodeURIComponent(pathname)}`);
-
-  const [profileResult, complianceResult, completionResult] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("id,username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type")
-      .eq("id", userId)
-      .maybeSingle(),
-    supabase
-      .from("account_compliance")
-      .select("age_band,guardian_consent_verified_at")
-      .eq("user_id", userId)
-      .maybeSingle(),
-    supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
-  ]);
-
-  if (profileResult.error || complianceResult.error || completionResult.error) {
-    redirect("/auth/error?reason=profile-query");
-  }
-
-  const profile = profileResult.data;
-  const compliance = complianceResult.data;
-  const completion = completionResult.data;
-
-  if (!profile || !compliance || !completion) redirect("/onboarding");
-  if (compliance.age_band === "child" && !compliance.guardian_consent_verified_at) {
-    redirect("/guardian-required");
-  }
-
-  const role = parseProductRole(profile.role);
-  if ((pathname.startsWith("/investor") && role !== "investor") || (pathname.startsWith("/app") && role !== "participant")) {
-    redirect(homeForRole(role));
-  }
-
-  const authenticatedProfile: User = {
-    id: profile.id,
-    username: profile.username || "usuario",
-    name: profile.display_name || profile.username || "Usuário",
-    role,
-    avatar: profile.avatar_path || undefined,
-    bio: profile.bio || undefined,
-    school: profile.public_school || undefined,
-    city: profile.public_city || undefined,
-    state: profile.public_state || undefined,
-    organization: profile.organization || undefined,
-    organizationType: profile.organization_type || undefined,
-  };
-
-  return <><TaxonomyNavigationEnhancer /><EnvistaApp authenticatedProfile={authenticatedProfile} /></>;
+  // Não existe mais fallback mock para contas autenticadas.
+  const { role } = await requireProductUser();
+  redirect(homeForRole(role));
 }
