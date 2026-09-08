@@ -27,6 +27,20 @@ jobs:
       - name: Scan tracked files for secrets
         run: npm run security:scan
 
+      - name: Regenerate secure dependency lock for auth hotfix branch
+        if: github.head_ref == 'fix/auth-email-production-links'
+        run: npm install next@16.3.4 --save --package-lock-only
+
+      - name: Upload regenerated dependency metadata
+        if: github.head_ref == 'fix/auth-email-production-links'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-hotfix
+          path: |
+            package.json
+            package-lock.json
+          if-no-files-found: error
+
       - name: Install
         run: npm ci
 
