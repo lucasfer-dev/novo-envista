@@ -2,6 +2,11 @@ type SiteUrlEnv = Record<string, string | undefined>;
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
+// Alias estável do projeto enquanto o domínio próprio não é comprado/configurado.
+// NEXT_PUBLIC_SITE_URL continua tendo prioridade, então a migração futura para um
+// domínio como useenvista.com não exige alteração de código.
+export const ENVISTA_PRODUCTION_FALLBACK_URL = "https://envista-novo.vercel.app";
+
 function normalizeUrl(value?: string) {
   const raw = value?.trim();
   if (!raw) return null;
@@ -25,31 +30,50 @@ function isLocalUrl(value: string) {
   }
 }
 
+function firstPublicUrl(...values: Array<string | null>) {
+  return values.find((item): item is string => Boolean(item && !isLocalUrl(item))) ?? null;
+}
+
 /**
  * Resolve a URL base usada em links enviados por e-mail.
  *
- * Regra importante: um deploy da Vercel nunca deve gerar e-mail apontando para
- * localhost, mesmo que NEXT_PUBLIC_SITE_URL tenha sido configurada incorretamente.
+ * Regras importantes:
+ * - produção/preview na Vercel nunca pode gerar link para localhost;
+ * - NEXT_PUBLIC_SITE_URL ganha prioridade quando um domínio oficial existir;
+ * - o alias estável envista-novo.vercel.app é o último fallback de ambiente Vercel;
+ * - localhost permanece permitido somente no desenvolvimento local.
  */
 export function resolveSiteUrl(env: SiteUrlEnv = process.env) {
   const explicit = normalizeUrl(env.NEXT_PUBLIC_SITE_URL);
-  const deploymentUrl = normalizeUrl(env.VERCEL_URL);
+  const deploymentUrl = normalizeUrl(env.VERCEL_URL) ?? normalizeUrl(env.NEXT_PUBLIC_VERCEL_URL);
   const productionUrl = normalizeUrl(env.VERCEL_PROJECT_PRODUCTION_URL);
+  const fallbackProductionUrl = normalizeUrl(ENVISTA_PRODUCTION_FALLBACK_URL)!;
   const vercelEnvironment = env.VERCEL_ENV ?? env.VERCEL_TARGET_ENV;
-  const onVercel = env.VERCEL === "1" || Boolean(vercelEnvironment);
+  const onVercel =
+    env.VERCEL === "1" ||
+    Boolean(vercelEnvironment) ||
+    Boolean(deploymentUrl) ||
+    Boolean(productionUrl);
 
   if (vercelEnvironment === "production") {
-    if (explicit && !isLocalUrl(explicit)) return explicit;
-    if (productionUrl && !isLocalUrl(productionUrl)) return productionUrl;
-    if (deploymentUrl && !isLocalUrl(deploymentUrl)) return deploymentUrl;
-
-    throw new Error("Não foi possível resolver uma URL pública para os e-mails de autenticação.");
+    return (
+      firstPublicUrl(explicit, productionUrl, deploymentUrl, fallbackProductionUrl) ??
+      fallbackProductionUrl
+    );
   }
 
-  if (vercelEnvironment === "preview" || onVercel) {
-    if (deploymentUrl && !isLocalUrl(deploymentUrl)) return deploymentUrl;
-    if (explicit && !isLocalUrl(explicit)) return explicit;
-    if (productionUrl && !isLocalUrl(productionUrl)) return productionUrl;
+  if (vercelEnvironment === "preview") {
+    return (
+      firstPublicUrl(deploymentUrl, explicit, productionUrl, fallbackProductionUrl) ??
+      fallbackProductionUrl
+    );
+  }
+
+  if (onVercel) {
+    return (
+      firstPublicUrl(deploymentUrl, explicit, productionUrl, fallbackProductionUrl) ??
+      fallbackProductionUrl
+    );
   }
 
   if (explicit) return explicit;
