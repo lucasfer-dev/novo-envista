@@ -3,6 +3,10 @@ import { readFileSync } from "node:fs";
 
 const migration = readFileSync("supabase/migrations/20260829053000_rpc_security_hardening.sql", "utf8");
 const analyticsMigration = readFileSync("supabase/migrations/20260829050000_admin_product_metrics.sql", "utf8");
+const analyticsHardeningMigration = readFileSync(
+  "supabase/migrations/20260908233000_admin_metrics_security_invoker.sql",
+  "utf8",
+);
 
 describe("rpc security hardening", () => {
   it("runs the message inbox aggregate with caller RLS", () => {
@@ -17,9 +21,17 @@ describe("rpc security hardening", () => {
     expect(migration).toContain("revoke all on function private.team_invitation_transition() from public, anon, authenticated");
   });
 
-  it("keeps the admin metrics definer explicitly authorization-gated", () => {
+  it("keeps the admin metrics authorization gate and removes SECURITY DEFINER exposure", () => {
     expect(analyticsMigration).toContain("admin_required");
     expect(analyticsMigration).toContain("admin_memberships");
     expect(analyticsMigration).not.toContain("message.body");
+
+    expect(analyticsHardeningMigration).toContain(
+      "alter function public.admin_product_metrics() security invoker",
+    );
+    expect(analyticsHardeningMigration).toContain("course_enrollments_select_admin");
+    expect(analyticsHardeningMigration).toContain("lesson_progress_select_admin");
+    expect(analyticsHardeningMigration).toContain("project_interests_select_admin");
+    expect(analyticsHardeningMigration).toContain("project_saves_select_admin");
   });
 });
