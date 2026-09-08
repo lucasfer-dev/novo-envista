@@ -1,70 +1,55 @@
 import { test, expect } from "@playwright/test";
 
-async function loginAsDemo(page, role) {
-  await page.goto("/login");
-  const label = role === "investor" ? "Entrar como investidor demo" : "Entrar como participante demo";
-  await page.getByRole("button", { name: label }).click();
-  await expect(page).toHaveURL(role === "investor" ? /\/investor$/ : /\/app$/);
-}
-
 async function expectNoHorizontalOverflow(page) {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
-test.describe("Envista critical role journeys", () => {
-  test("participant demo gets participant navigation and cannot enter investor area", async ({ page }) => {
-    await loginAsDemo(page, "participant");
+test.describe("Envista critical public auth journeys", () => {
+  test("login exposes only real authentication entry points", async ({ page }) => {
+    await page.goto("/login");
 
-    const nav = page.getByLabel("Navegação principal");
-    await expect(nav.getByText("Meus projetos", { exact: true })).toBeVisible();
-    await expect(nav.getByText("Minhas equipes", { exact: true })).toBeVisible();
-    await expect(nav.getByText("Aprender", { exact: true })).toBeVisible();
-    await expect(nav.getByText("Projetos salvos", { exact: true })).toHaveCount(0);
-
-    await page.goto("/investor");
-    await expect(page).toHaveURL(/\/app$/);
+    await expect(page.getByRole("heading", { name: "Entrar no Envista" })).toBeVisible();
+    await expect(page.getByLabel("E-mail")).toBeVisible();
+    await expect(page.getByLabel("Senha")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Entrar", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: /demo/i })).toHaveCount(0);
+    await expect(page.getByText(/participante demo/i)).toHaveCount(0);
+    await expect(page.getByText(/investidor demo/i)).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Esqueci minha senha" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Criar conta" })).toBeVisible();
   });
 
-  test("investor demo gets investor capabilities and cannot enter participant area", async ({ page }) => {
-    await loginAsDemo(page, "investor");
-
-    const nav = page.getByLabel("Navegação principal");
-    await expect(nav.getByText("Projetos salvos", { exact: true })).toBeVisible();
-    await expect(nav.getByText("Seguindo", { exact: true })).toBeVisible();
-    await expect(nav.getByText("Perfil", { exact: true })).toBeVisible();
-
+  test("participant area requires a real authenticated session", async ({ page }) => {
     await page.goto("/app");
-    await expect(page).toHaveURL(/\/investor$/);
+    await expect(page).toHaveURL(/\/login$/);
   });
 
-  test("participant demo keeps competition navigation inside participant context", async ({ page }) => {
-    await loginAsDemo(page, "participant");
-    await page.getByLabel("Navegação principal").getByText("Competições", { exact: true }).click();
-    await expect(page).toHaveURL(/\/app\/competitions$/);
-    await expect(page.getByRole("heading", { name: /Competições/i })).toBeVisible();
+  test("investor area requires a real authenticated session", async ({ page }) => {
+    await page.goto("/investor");
+    await expect(page).toHaveURL(/\/login$/);
   });
 
-  test("investor demo keeps discovery and competition navigation inside investor context", async ({ page }) => {
-    await loginAsDemo(page, "investor");
-    const nav = page.getByLabel("Navegação principal");
+  test("password recovery and registration remain reachable", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("link", { name: "Esqueci minha senha" }).click();
+    await expect(page).toHaveURL(/\/forgot-password$/);
 
-    await nav.getByText("Explorar", { exact: true }).click();
-    await expect(page).toHaveURL(/\/investor\/explore/);
-
-    await nav.getByText("Competições", { exact: true }).click();
-    await expect(page).toHaveURL(/\/investor\/competitions$/);
-    await expect(page.getByRole("heading", { name: /Competições/i })).toBeVisible();
+    await page.goto("/login");
+    await page.getByRole("link", { name: "Criar conta" }).click();
+    await expect(page).toHaveURL(/\/register$/);
   });
 
-  test("participant and investor home shells do not overflow a narrow mobile viewport", async ({ page }) => {
+  test("auth screens do not overflow a narrow mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
-    await loginAsDemo(page, "participant");
+    await page.goto("/login");
     await expectNoHorizontalOverflow(page);
 
-    await page.context().clearCookies();
-    await loginAsDemo(page, "investor");
+    await page.goto("/forgot-password");
+    await expectNoHorizontalOverflow(page);
+
+    await page.goto("/register");
     await expectNoHorizontalOverflow(page);
   });
 });
