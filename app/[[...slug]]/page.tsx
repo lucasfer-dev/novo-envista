@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
-import { DemoProductPage, parseDemoRole } from "@/components/demo/DemoProductPage";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import LegacyExploreServerPage from "@/components/explore/LegacyExploreServerPage";
 import {
@@ -38,7 +36,6 @@ import { NotificationsServerPage } from "@/components/real/NotificationsServerPa
 import { homeForRole } from "@/lib/auth/validation";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
-const DEMO_COOKIE = "envista_demo";
 const LEGACY_COMPETITION_SLUGS = new Set(["envista-challenge-2026", "obt", "jovens-inovadores"]);
 
 function isProtectedProductPath(pathname: string) {
@@ -66,12 +63,6 @@ export default async function Page({
   // Área pública/landing ainda usa a shell visual histórica. Ela não acessa dados
   // autenticados e fica separada dos caminhos reais abaixo.
   if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
-
-  const cookieStore = await cookies();
-  const demoRole = parseDemoRole(cookieStore.get(DEMO_COOKIE)?.value);
-
-  // A demo usa dados locais de apresentação e nunca cai nos handlers Supabase reais.
-  if (demoRole) return <DemoProductPage role={demoRole} pathname={pathname} searchParams={searchParams} />;
 
   // Homes reais.
   if (pathname === "/app") return <RealHomeServerPage expectedRole="participant" pathname={pathname} />;
