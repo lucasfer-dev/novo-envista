@@ -11,10 +11,12 @@ Já implementado na camada técnica:
 - [x] RLS e menor privilégio nas tabelas públicas;
 - [x] perfil novo privado e mensagens desabilitadas por padrão;
 - [x] exportação de dados e fila de solicitações de privacidade;
-- [x] Security Advisor sem findings conhecidos na última auditoria;
+- [x] Security Advisor sem findings de DDL/RLS de severidade de segurança conhecidos na última auditoria; permanece pendente a proteção nativa contra senhas vazadas no Supabase Auth;
 - [x] Security CI com testes, build, dependency audit e secret scan;
+- [x] Browser E2E para login real, rotas protegidas, recuperação/cadastro e responsividade das telas de autenticação;
 - [x] rate limiting de aplicação e quotas atômicas no banco para superfícies de abuso;
-- [x] headers de segurança, limitação de payload e validação de origem para requisições inseguras.
+- [x] headers de segurança, limitação de payload e validação de origem para requisições inseguras;
+- [x] acesso completo de demonstração removido das rotas autenticadas; a URL histórica `/auth/demo` é aposentada e redireciona ao login real.
 
 ## Bloqueadores antes de lançamento público amplo
 
@@ -29,10 +31,11 @@ Já implementado na camada técnica:
 - [ ] documentar operadores/terceiros e transferências internacionais;
 - [ ] decidir e documentar a atuação do encarregado/DPO quando aplicável;
 - [ ] concluir fluxo seguro de exclusão de conta e processo operacional de atendimento de direitos;
+- [ ] habilitar a proteção nativa contra senhas vazadas no Supabase Auth quando disponível no plano/configuração do projeto;
 - [ ] revisar/configurar limites nativos do Supabase Auth e CAPTCHA/Bot protection conforme risco real;
-- [ ] configurar SMTP próprio, templates e URLs de e-mail para produção;
+- [ ] configurar SMTP próprio, templates e URLs de e-mail para produção após existir um domínio/remetente verificado;
 - [ ] revisar logs para impedir vazamento de dados pessoais, tokens ou conteúdo privado;
-- [ ] executar dependency/security CI sem vulnerabilidade alta/crítica não tratada antes de cada release relevante;
+- [x] executar dependency/security CI sem vulnerabilidade alta/crítica não tratada antes de cada release relevante;
 - [ ] avaliar e documentar a necessidade/obrigação concreta de Relatório de Impacto à Proteção de Dados (RIPD) e relatórios de risco aplicáveis.
 
 ## Crianças e adolescentes — requisito de primeira classe

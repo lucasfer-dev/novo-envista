@@ -52,6 +52,7 @@ const securityHeaders = [
 const sensitiveHeaders = [
   { key: "Cache-Control", value: "private, no-store, max-age=0" },
   { key: "Pragma", value: "no-cache" },
+  { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
 ];
 
 const nextConfig = {
@@ -84,6 +85,8 @@ const nextConfig = {
         "/auth/:path*",
         "/account/:path*",
         "/admin/:path*",
+        "/app/:path*",
+        "/investor/:path*",
       ].map((source) => ({ source, headers: sensitiveHeaders })),
     ];
   },

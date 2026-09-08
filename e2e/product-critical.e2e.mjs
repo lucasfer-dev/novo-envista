@@ -20,6 +20,12 @@ test.describe("Envista critical public auth journeys", () => {
     await expect(page.getByRole("link", { name: "Criar conta" })).toBeVisible();
   });
 
+  test("retired demo URL returns to the real login", async ({ page }) => {
+    await page.goto("/auth/demo");
+    await expect(page).toHaveURL(/\/login$/);
+    await expect(page.getByRole("heading", { name: "Entrar no Envista" })).toBeVisible();
+  });
+
   test("participant area requires a real authenticated session", async ({ page }) => {
     await page.goto("/app");
     await expect(page).toHaveURL(/\/login$/);
