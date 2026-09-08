@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveSiteUrl } from "./site-url";
+import { ENVISTA_PRODUCTION_FALLBACK_URL, resolveSiteUrl } from "./site-url";
 
 describe("resolveSiteUrl", () => {
   it("usa a URL pública explícita em produção", () => {
@@ -42,13 +42,13 @@ describe("resolveSiteUrl", () => {
     );
   });
 
-  it("falha fechado em produção se não houver URL pública", () => {
-    expect(() =>
+  it("usa o alias público estável em produção quando as variáveis da Vercel estão incompletas", () => {
+    expect(
       resolveSiteUrl({
         VERCEL: "1",
         VERCEL_ENV: "production",
         NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
       }),
-    ).toThrow(/URL pública/);
+    ).toBe(ENVISTA_PRODUCTION_FALLBACK_URL);
   });
 });
