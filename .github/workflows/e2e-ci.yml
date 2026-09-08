@@ -29,11 +29,20 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Pin browser test runner in dependency metadata
+        run: npm install --save-dev --save-exact --package-lock-only @playwright/test@1.62.1
+
+      - name: Export regenerated dependency metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-dependency-metadata
+          path: |
+            package.json
+            package-lock.json
+          if-no-files-found: error
+
       - name: Install application dependencies
         run: npm ci
-
-      - name: Install pinned browser test runner
-        run: npm install --no-save --package-lock=false @playwright/test@1.62.1
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
