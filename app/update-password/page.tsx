@@ -12,7 +12,9 @@ export default async function UpdatePasswordPage({
 }) {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims?.sub) redirect("/login?error=session");
+  if (error || !data?.claims?.sub) {
+    redirect("/auth/error?reason=recovery-session&flow=recovery");
+  }
   const params = await searchParams;
 
   return (
