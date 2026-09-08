@@ -8,9 +8,9 @@ O produto publicado hoje é uma aplicação **Next.js 16 + React 19 + TypeScript
 
 O diretório `backend/` contém um protótipo histórico em Java/Spring Boot. Ele **não faz parte do deploy atual, não atende as rotas de produção e não é a fonte de verdade das regras do produto**. Foi mantido apenas como referência para uma possível separação futura de serviços.
 
-A experiência de demonstração usa dados locais e é deliberadamente isolada das rotas autenticadas reais.
+O login público não oferece mais contas demo completas: participante e investidor entram apenas por autenticação real do Supabase.
 
-Consulte `docs/ARCHITECTURE.md` para os limites entre produção, demo e protótipos.
+Consulte `docs/ARCHITECTURE.md` para os limites entre produção, superfícies históricas e protótipos.
 
 ## Stack ativa
 
@@ -66,11 +66,10 @@ Antes de uma abertura pública ou mudança importante, use os runbooks em `docs/
 
 - `app/` — rotas e páginas Next.js
 - `components/real/` — superfícies persistidas do produto
-- `components/demo/` — isolamento da experiência demonstrativa local
 - `components/` — componentes compartilhados e shell visual histórico ainda em migração
 - `lib/` — autenticação, regras de servidor, integrações e utilitários
 - `supabase/` — migrations e configuração autoritativa de dados/RLS
-- `data/` — fixtures usadas pela experiência demonstrativa
+- `data/` — fixtures ainda usadas por superfícies públicas/históricas em migração
 - `backend/` — protótipo Java/Spring Boot não utilizado em produção
 - `docs/` — decisões operacionais, privacidade, segurança e arquitetura
 
