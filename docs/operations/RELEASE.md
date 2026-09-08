@@ -24,6 +24,8 @@ Antes de abrir para usuários reais:
 - Confirmação de e-mail, SMTP e rate limits de Auth revisados para o volume esperado.
 - CAPTCHA deve ser considerado/ativado para signup, login e recuperação antes de campanha pública com risco de bot/spam.
 - Site URL e redirect URLs apontam apenas para origens esperadas.
+- Cadastro e recuperação foram testados com uma caixa de e-mail real e nenhum link aponta para `localhost` em produção.
+- A configuração e os templates de Auth seguem `AUTH_EMAILS.md`.
 
 Referências:
 
