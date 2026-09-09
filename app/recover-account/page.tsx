@@ -10,19 +10,22 @@ export default async function RecoverAccountPage({
 }) {
   const params = await searchParams;
   const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim() : "";
+  const code = typeof params.code === "string" ? params.code.trim() : "";
+  const hasCredential = Boolean(tokenHash || code);
 
   return (
     <AuthShell
       title="Redefinição de senha"
       description="Recebemos uma solicitação para redefinir a senha da sua conta Envista."
     >
-      {tokenHash ? (
+      {hasCredential ? (
         <>
           <div className={styles.notice}>
             Sua senha ainda não foi alterada. Clique em continuar para validar este link e abrir a página segura onde você poderá criar uma nova senha.
           </div>
           <form action={beginRecoveryAction} className={styles.form}>
-            <input type="hidden" name="token_hash" value={tokenHash} />
+            {tokenHash ? <input type="hidden" name="token_hash" value={tokenHash} /> : null}
+            {code ? <input type="hidden" name="code" value={code} /> : null}
             <AuthSubmitButton
               className={`${styles.primary} ${styles.full}`}
               pendingText="Validando..."
