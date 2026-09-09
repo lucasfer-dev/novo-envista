@@ -64,11 +64,15 @@ test.describe("Envista critical public auth journeys", () => {
 
   test("custom email pages fail safely when credentials are missing", async ({ page }) => {
     await page.goto("/confirm-email");
-    await expect(page.getByRole("alert")).toContainText("link de confirmação está incompleto");
+    await expect(
+      page.getByRole("alert").filter({ hasText: "link de confirmação está incompleto" }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toHaveCount(0);
 
     await page.goto("/recover-account");
-    await expect(page.getByRole("alert")).toContainText("link de recuperação está incompleto");
+    await expect(
+      page.getByRole("alert").filter({ hasText: "link de recuperação está incompleto" }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toHaveCount(0);
   });
 
