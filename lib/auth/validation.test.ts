@@ -33,8 +33,9 @@ describe("credenciais", () => {
   it("valida email de forma básica e senha por comprimento", () => {
     expect(isValidEmail("pessoa@example.com")).toBe(true);
     expect(isValidEmail("invalido@")).toBe(false);
-    expect(MIN_PASSWORD_LENGTH).toBe(12);
-    expect(validatePassword("12345678901")).toBeTruthy();
+    expect(MIN_PASSWORD_LENGTH).toBe(8);
+    expect(validatePassword("1234567")).toBeTruthy();
+    expect(validatePassword("12345678")).toBeNull();
     expect(validatePassword("uma-senha-comprida")).toBeNull();
     expect(validatePassword("x".repeat(129))).toBeTruthy();
   });
