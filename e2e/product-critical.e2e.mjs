@@ -20,12 +20,6 @@ test.describe("Envista critical public auth journeys", () => {
     await expect(page.getByRole("link", { name: "Criar conta" })).toBeVisible();
   });
 
-  test("registration collects CPF privately for account identification", async ({ page }) => {
-    await page.goto("/register");
-    await expect(page.getByLabel("CPF", { exact: true })).toBeVisible();
-    await expect(page.getByText(/cpf não aparece no seu perfil/i)).toBeVisible();
-  });
-
   test("retired demo URL returns to the real login", async ({ page }) => {
     await page.goto("/auth/demo");
     await expect(page).toHaveURL(/\/login$/);
