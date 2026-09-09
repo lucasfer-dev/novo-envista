@@ -132,7 +132,7 @@ export async function registerAction(formData: FormData) {
     password,
     options: {
       data: { display_name: displayName, role },
-      emailRedirectTo: `${resolveSiteUrl()}/auth/callback?next=/onboarding`,
+      emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
   });
@@ -157,7 +157,7 @@ export async function forgotPasswordAction(formData: FormData) {
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${resolveSiteUrl()}/auth/callback?next=/update-password`,
+    redirectTo: `${resolveSiteUrl()}/recover-account`,
     ...(captchaToken ? { captchaToken } : {}),
   });
   if (error) {
