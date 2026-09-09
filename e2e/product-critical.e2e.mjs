@@ -10,7 +10,7 @@ test.describe("Envista critical public auth journeys", () => {
     await page.goto("/login");
 
     await expect(page.getByRole("heading", { name: "Entrar no Envista" })).toBeVisible();
-    await expect(page.getByLabel("E-mail")).toBeVisible();
+    await expect(page.getByLabel("E-mail ou CPF")).toBeVisible();
     await expect(page.getByLabel("Senha")).toBeVisible();
     await expect(page.getByRole("button", { name: "Entrar", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: /demo/i })).toHaveCount(0);

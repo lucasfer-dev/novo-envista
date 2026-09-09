@@ -25,7 +25,7 @@ export default async function LoginPage({
           : error === "temporary"
             ? "O login está temporariamente indisponível. Tente novamente em instantes."
             : error
-              ? "E-mail ou senha inválidos."
+              ? "E-mail, CPF ou senha inválidos."
               : "";
 
   return (
@@ -40,8 +40,15 @@ export default async function LoginPage({
       <form action={loginAction} className={styles.form}>
         <input type="hidden" name="next" value={next} />
         <label>
-          E-mail
-          <input type="email" name="email" autoComplete="email" maxLength={254} required />
+          E-mail ou CPF
+          <input
+            type="text"
+            name="identifier"
+            autoComplete="username"
+            maxLength={254}
+            placeholder="voce@email.com ou 000.000.000-00"
+            required
+          />
         </label>
         <label>
           Senha

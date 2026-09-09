@@ -36,6 +36,27 @@ export function isValidEmail(value: unknown) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
+export function normalizeCpf(value: unknown) {
+  if (typeof value !== "string") return "";
+  return value.replace(/\D/g, "");
+}
+
+export function isValidCpf(value: unknown) {
+  const cpf = normalizeCpf(value);
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+  const checkDigit = (length: number) => {
+    let sum = 0;
+    for (let index = 0; index < length; index += 1) {
+      sum += Number(cpf[index]) * (length + 1 - index);
+    }
+    const digit = 11 - (sum % 11);
+    return digit >= 10 ? 0 : digit;
+  };
+
+  return checkDigit(9) === Number(cpf[9]) && checkDigit(10) === Number(cpf[10]);
+}
+
 export function validatePassword(value: unknown) {
   if (typeof value !== "string") return "A senha é obrigatória.";
   if (value.length < MIN_PASSWORD_LENGTH) return `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;

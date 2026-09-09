@@ -18,15 +18,17 @@ export default async function RegisterPage({
   const errorMessage =
     error === "password"
       ? `Confira as senhas. Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`
-      : error === "captcha"
-        ? "Conclua a verificação de segurança e tente novamente."
-        : error === "rate"
-          ? "Muitas tentativas de cadastro em pouco tempo. Aguarde alguns minutos."
-          : error === "temporary"
-            ? "O cadastro está temporariamente indisponível. Tente novamente em instantes."
-            : error
-              ? "Revise os dados informados."
-              : "";
+      : error === "cpf"
+        ? "Informe um CPF válido."
+        : error === "captcha"
+          ? "Conclua a verificação de segurança e tente novamente."
+          : error === "rate"
+            ? "Muitas tentativas de cadastro em pouco tempo. Aguarde alguns minutos."
+            : error === "temporary"
+              ? "O cadastro está temporariamente indisponível. Tente novamente em instantes."
+              : error
+                ? "Revise os dados informados."
+                : "";
 
   return (
     <AuthShell title="Criar conta" description="Cadastro protegido pelo Supabase Auth, RLS e controles antiabuso do Envista.">
@@ -64,6 +66,19 @@ export default async function RegisterPage({
             <label>
               E-mail
               <input type="email" name="email" autoComplete="email" maxLength={254} required />
+            </label>
+            <label>
+              CPF
+              <input
+                type="text"
+                name="cpf"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={14}
+                placeholder="000.000.000-00"
+                required
+              />
+              <span className={styles.muted}>Usado apenas para identificar sua conta. O CPF não aparece no seu perfil.</span>
             </label>
             <label>
               Senha
