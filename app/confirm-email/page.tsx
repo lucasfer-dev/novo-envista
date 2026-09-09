@@ -10,19 +10,22 @@ export default async function ConfirmEmailPage({
 }) {
   const params = await searchParams;
   const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim() : "";
+  const code = typeof params.code === "string" ? params.code.trim() : "";
+  const hasCredential = Boolean(tokenHash || code);
 
   return (
     <AuthShell
       title="Confirme seu e-mail"
       description="Falta só uma etapa para ativar sua conta e continuar no Envista."
     >
-      {tokenHash ? (
+      {hasCredential ? (
         <>
           <div className={styles.notice}>
-            Por segurança, sua conta só será confirmada quando você clicar no botão abaixo. Abrir este link, por si só, não confirma o e-mail.
+            Por segurança, sua conta só será confirmada quando você clicar no botão abaixo. Abrir esta página, por si só, não conclui a sessão no Envista.
           </div>
           <form action={confirmEmailAction} className={styles.form}>
-            <input type="hidden" name="token_hash" value={tokenHash} />
+            {tokenHash ? <input type="hidden" name="token_hash" value={tokenHash} /> : null}
+            {code ? <input type="hidden" name="code" value={code} /> : null}
             <AuthSubmitButton
               className={`${styles.primary} ${styles.full}`}
               pendingText="Confirmando..."
