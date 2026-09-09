@@ -79,6 +79,8 @@ const nextConfig = {
         "/login",
         "/register",
         "/forgot-password",
+        "/confirm-email",
+        "/recover-account",
         "/update-password",
         "/onboarding",
         "/guardian-required",
