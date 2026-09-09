@@ -6,8 +6,12 @@ import {
 } from "../lib/auth/site-url";
 
 const actions = readFileSync("app/auth/actions.ts", "utf8");
+const emailActions = readFileSync("app/auth/email-actions.ts", "utf8");
+const confirmPage = readFileSync("app/confirm-email/page.tsx", "utf8");
+const recoveryPage = readFileSync("app/recover-account/page.tsx", "utf8");
 const callback = readFileSync("app/auth/callback/route.ts", "utf8");
 const confirm = readFileSync("app/auth/confirm/route.ts", "utf8");
+const runbook = readFileSync("docs/operations/AUTH_EMAILS.md", "utf8");
 
 describe("auth email links", () => {
   it("never emits localhost from a Vercel production environment", () => {
@@ -44,12 +48,30 @@ describe("auth email links", () => {
     expect(resolveSiteUrl({})).toBe("http://localhost:3000");
   });
 
-  it("uses explicit destinations for signup and password recovery", () => {
-    expect(actions).toContain("/auth/callback?next=/onboarding");
-    expect(actions).toContain("/auth/callback?next=/update-password");
+  it("routes new signup and recovery emails to Envista-owned pages", () => {
+    expect(actions).toContain("/confirm-email");
+    expect(actions).toContain("/recover-account");
+    expect(actions).not.toContain("/auth/callback?next=/onboarding");
+    expect(actions).not.toContain("/auth/callback?next=/update-password");
   });
 
-  it("supports PKCE and token-hash callbacks", () => {
+  it("consumes email tokens only after an explicit Envista action", () => {
+    expect(confirmPage).toContain("confirmEmailAction");
+    expect(confirmPage).toContain("Confirmar meu e-mail");
+    expect(recoveryPage).toContain("beginRecoveryAction");
+    expect(recoveryPage).toContain("Continuar para criar nova senha");
+    expect(emailActions).toContain('type: "email"');
+    expect(emailActions).toContain('type: "recovery"');
+    expect(emailActions).toContain("verifyOtp");
+  });
+
+  it("documents token-hash templates that point directly at Envista", () => {
+    expect(runbook).toContain("{{ .RedirectTo }}?token_hash={{ .TokenHash }}");
+    expect(runbook).toContain("/confirm-email");
+    expect(runbook).toContain("/recover-account");
+  });
+
+  it("keeps legacy PKCE and token-hash callbacks as compatibility fallbacks", () => {
     expect(callback).toContain("exchangeCodeForSession");
     expect(callback).toContain("verifyOtp");
     expect(callback).toContain("token_hash");
