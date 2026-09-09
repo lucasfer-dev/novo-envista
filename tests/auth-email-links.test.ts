@@ -60,14 +60,13 @@ describe("auth email links", () => {
     expect(confirmPage).toContain("Confirmar meu e-mail");
     expect(recoveryPage).toContain("beginRecoveryAction");
     expect(recoveryPage).toContain("Continuar para criar nova senha");
-    expect(emailActions).toContain('type: "email"');
-    expect(emailActions).toContain('type: "recovery"');
+    expect(emailActions).toContain('flow === "recovery" ? "recovery" : "email"');
     expect(emailActions).toContain("verifyOtp");
   });
 
   it("accepts PKCE codes on the new pages while old emails age out", () => {
-    expect(confirmPage).toContain('params.code');
-    expect(recoveryPage).toContain('params.code');
+    expect(confirmPage).toContain("params.code");
+    expect(recoveryPage).toContain("params.code");
     expect(emailActions).toContain("exchangeCodeForSession");
     expect(runbook).toContain("Compatibilidade com e-mails antigos");
   });
