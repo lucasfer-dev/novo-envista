@@ -65,6 +65,13 @@ describe("auth email links", () => {
     expect(emailActions).toContain("verifyOtp");
   });
 
+  it("accepts PKCE codes on the new pages while old emails age out", () => {
+    expect(confirmPage).toContain('params.code');
+    expect(recoveryPage).toContain('params.code');
+    expect(emailActions).toContain("exchangeCodeForSession");
+    expect(runbook).toContain("Compatibilidade com e-mails antigos");
+  });
+
   it("documents token-hash templates that point directly at Envista", () => {
     expect(runbook).toContain("{{ .RedirectTo }}?token_hash={{ .TokenHash }}");
     expect(runbook).toContain("/confirm-email");
