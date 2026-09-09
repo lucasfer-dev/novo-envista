@@ -113,14 +113,14 @@ export default async function OnboardingPage({
 
         {participant ? (
           <div className={styles.grid2}>
-            <label>Escola/instituição <input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} /></label>
-            <label>Cidade <input name="public_city" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} /></label>
-            <label>Estado <input name="public_state" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} /></label>
+            <label>Escola/instituição <span className={styles.muted}>(opcional)</span> <input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} /></label>
+            <label>Cidade <span className={styles.muted}>(opcional)</span> <input name="public_city" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} /></label>
+            <label>Estado <span className={styles.muted}>(opcional)</span> <input name="public_state" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} /></label>
           </div>
         ) : (
           <div className={styles.grid2}>
-            <label>Organização <input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} /></label>
-            <label>Tipo de organização <input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label>
+            <label>Organização <span className={styles.muted}>(opcional)</span> <input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} /></label>
+            <label>Tipo de organização <span className={styles.muted}>(opcional)</span> <input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label>
           </div>
         )}
 
