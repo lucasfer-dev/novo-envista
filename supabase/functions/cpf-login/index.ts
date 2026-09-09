@@ -32,12 +32,6 @@ function isValidCpf(value: unknown) {
   return checkDigit(9) === Number(cpf[9]) && checkDigit(10) === Number(cpf[10]);
 }
 
-async function sha256Hex(value: string) {
-  const bytes = new TextEncoder().encode(value);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 function authError(error: { code?: string; status?: number } | null) {
   const code = error?.code?.toLowerCase() ?? "";
   if (code.includes("captcha")) return json({ error: "captcha" }, 400);
@@ -71,12 +65,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const cpfHash = await sha256Hex(cpf);
-    const { data: mapping, error: mappingError } = await ctx.supabaseAdmin
-      .from("account_private_identifiers")
-      .select("user_id")
-      .eq("cpf_hash", cpfHash)
-      .maybeSingle();
+    const { data: userId, error: mappingError } = await ctx.supabaseAdmin.rpc("resolve_cpf_login", {
+      cpf_value: cpf,
+    });
 
     if (mappingError) return json({ error: "temporary" }, 503);
 
@@ -85,8 +76,8 @@ Deno.serve(async (req) => {
     // behavior stays in the authentication layer and account existence is not
     // exposed by a short-circuit response.
     let email = CPF_LOGIN_SINK_EMAIL;
-    if (mapping?.user_id) {
-      const { data: userData } = await ctx.supabaseAdmin.auth.admin.getUserById(mapping.user_id);
+    if (typeof userId === "string" && userId) {
+      const { data: userData } = await ctx.supabaseAdmin.auth.admin.getUserById(userId);
       if (userData.user?.email) email = userData.user.email;
     }
 

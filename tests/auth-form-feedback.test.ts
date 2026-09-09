@@ -8,6 +8,8 @@ const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
 const actions = readFileSync("app/auth/actions.ts", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
+const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
+const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
   it("does not require twelve-character passwords", () => {
@@ -41,5 +43,15 @@ describe("auth form feedback", () => {
     expect(migration).toContain("revoke all on table public.account_private_identifiers from public, anon, authenticated");
     expect(migration).toContain("alter table public.account_private_identifiers enable row level security");
     expect(onboarding).not.toContain('name="cpf"');
+  });
+
+  it("protects deterministic CPF lookup with a Vault-managed HMAC key", () => {
+    expect(hmacMigration).toContain("vault.create_secret");
+    expect(hmacMigration).toContain("extensions.hmac");
+    expect(hmacMigration).toContain("envista_cpf_hmac_key");
+    expect(hmacMigration).toContain("revoke all on function public.resolve_cpf_login(text) from public, anon, authenticated");
+    expect(hmacMigration).toContain("grant execute on function public.resolve_cpf_login(text) to service_role");
+    expect(cpfLoginFunction).toContain('rpc("resolve_cpf_login"');
+    expect(cpfLoginFunction).not.toContain("sha256Hex");
   });
 });
