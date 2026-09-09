@@ -10,7 +10,7 @@ test.describe("Envista critical public auth journeys", () => {
     await page.goto("/login");
 
     await expect(page.getByRole("heading", { name: "Entrar no Envista" })).toBeVisible();
-    await expect(page.getByLabel("E-mail")).toBeVisible();
+    await expect(page.getByLabel("E-mail ou CPF")).toBeVisible();
     await expect(page.getByLabel("Senha")).toBeVisible();
     await expect(page.getByRole("button", { name: "Entrar", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: /demo/i })).toHaveCount(0);
@@ -18,6 +18,12 @@ test.describe("Envista critical public auth journeys", () => {
     await expect(page.getByText(/investidor demo/i)).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Esqueci minha senha" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Criar conta" })).toBeVisible();
+  });
+
+  test("registration collects CPF privately for account identification", async ({ page }) => {
+    await page.goto("/register");
+    await expect(page.getByLabel("CPF", { exact: true })).toBeVisible();
+    await expect(page.getByText(/cpf não aparece no seu perfil/i)).toBeVisible();
   });
 
   test("retired demo URL returns to the real login", async ({ page }) => {
