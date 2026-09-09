@@ -2,13 +2,16 @@
 
 import { redirect } from "next/navigation";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
+import { getSupabaseConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import {
   homeForRole,
   INTERNAL_PRIVACY_VERSION,
   INTERNAL_TERMS_VERSION,
+  isValidCpf,
   isValidEmail,
   isValidUsername,
+  normalizeCpf,
   normalizeUsername,
   parseAgeBand,
   parseProductRole,
@@ -18,6 +21,11 @@ import {
 } from "@/lib/auth/validation";
 
 const TURNSTILE_FIELD = "cf-turnstile-response";
+
+type CpfLoginError = "invalid" | "captcha" | "rate" | "temporary";
+type CpfLoginResult =
+  | { ok: true; accessToken: string; refreshToken: string }
+  | { ok: false; error: CpfLoginError };
 
 function value(formData: FormData, name: string) {
   const item = formData.get(name);
@@ -45,6 +53,49 @@ function authFailureCode(error: { code?: string; status?: number } | null) {
   if (error.status === 429 || code.includes("rate_limit") || code.includes("rate-limit")) return "rate";
   if (error.status && error.status >= 500) return "temporary";
   return "invalid";
+}
+
+async function signInWithCpf(cpf: string, password: string, captchaToken?: string): Promise<CpfLoginResult> {
+  const { url, publishableKey } = getSupabaseConfig();
+
+  try {
+    const response = await fetch(`${url}/functions/v1/cpf-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: publishableKey,
+      },
+      body: JSON.stringify({ cpf, password, ...(captchaToken ? { captchaToken } : {}) }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(12_000),
+    });
+
+    let payload: Record<string, unknown> = {};
+    try {
+      payload = (await response.json()) as Record<string, unknown>;
+    } catch {
+      payload = {};
+    }
+
+    if (
+      response.ok &&
+      typeof payload.access_token === "string" &&
+      typeof payload.refresh_token === "string"
+    ) {
+      return {
+        ok: true,
+        accessToken: payload.access_token,
+        refreshToken: payload.refresh_token,
+      };
+    }
+
+    if (payload.error === "captcha") return { ok: false, error: "captcha" };
+    if (payload.error === "rate" || response.status === 429) return { ok: false, error: "rate" };
+    if (payload.error === "temporary" || response.status >= 500) return { ok: false, error: "temporary" };
+    return { ok: false, error: "invalid" };
+  } catch {
+    return { ok: false, error: "temporary" };
+  }
 }
 
 async function getVerifiedUser() {
@@ -86,20 +137,35 @@ async function destinationForSignedInUser(
 }
 
 export async function loginAction(formData: FormData) {
-  const email = value(formData, "email").toLowerCase();
+  const identifier = value(formData, "identifier");
+  const email = identifier.toLowerCase();
+  const cpf = normalizeCpf(identifier);
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const requestedNext = safeInternalPath(formData.get("next"), "");
+  const isEmailLogin = isValidEmail(email);
+  const isCpfLogin = isValidCpf(cpf);
 
-  if (!isValidEmail(email) || !password) redirect(authErrorPath("/login", "invalid"));
+  if ((!isEmailLogin && !isCpfLogin) || !password) redirect(authErrorPath("/login", "invalid"));
   const captchaToken = getCaptchaToken(formData, "/login");
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-    options: captchaToken ? { captchaToken } : undefined,
-  });
-  if (error) redirect(authErrorPath("/login", authFailureCode(error)));
+  if (isEmailLogin) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: captchaToken ? { captchaToken } : undefined,
+    });
+    if (error) redirect(authErrorPath("/login", authFailureCode(error)));
+  } else {
+    const result = await signInWithCpf(cpf, password, captchaToken);
+    if (!result.ok) redirect(authErrorPath("/login", result.error));
+
+    const { error } = await supabase.auth.setSession({
+      access_token: result.accessToken,
+      refresh_token: result.refreshToken,
+    });
+    if (error) redirect(authErrorPath("/login", "session"));
+  }
 
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -113,6 +179,7 @@ export async function registerAction(formData: FormData) {
 
   const displayName = value(formData, "display_name").slice(0, 100);
   const email = value(formData, "email").toLowerCase();
+  const cpf = normalizeCpf(formData.get("cpf"));
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const confirmation =
     typeof formData.get("password_confirmation") === "string"
@@ -121,6 +188,7 @@ export async function registerAction(formData: FormData) {
   const role = parseProductRole(formData.get("role"));
 
   if (!displayName || !isValidEmail(email)) redirect(authErrorPath("/register", "invalid"));
+  if (!isValidCpf(cpf)) redirect(authErrorPath("/register", "cpf"));
   if (validatePassword(password) || password !== confirmation) {
     redirect(authErrorPath("/register", "password"));
   }
@@ -131,7 +199,7 @@ export async function registerAction(formData: FormData) {
     email,
     password,
     options: {
-      data: { display_name: displayName, role },
+      data: { display_name: displayName, role, cpf },
       emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
@@ -143,7 +211,7 @@ export async function registerAction(formData: FormData) {
       redirect(authErrorPath("/register", code));
     }
     if (error.code === "weak_password") redirect(authErrorPath("/register", "password"));
-    // Mantém resposta genérica para não transformar cadastro em consulta de existência de conta.
+    // Mantém resposta genérica para não transformar cadastro em consulta de existência de e-mail ou CPF.
     redirect("/register?status=check-email");
   }
   if (data.session) redirect("/onboarding");
