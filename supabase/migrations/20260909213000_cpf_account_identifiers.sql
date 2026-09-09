@@ -115,7 +115,7 @@ begin
   );
 
   -- Do not allow CPF to land in user_metadata/JWT/session payloads.
-  new.raw_user_meta_data := pg_catalog.coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf';
+  new.raw_user_meta_data := coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf';
   return new;
 end;
 $$;
