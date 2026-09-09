@@ -46,6 +46,36 @@ test.describe("Envista critical public auth journeys", () => {
     await expect(page).toHaveURL(/\/register$/);
   });
 
+  test("email confirmation opens inside Envista before consuming the token", async ({ page }) => {
+    await page.goto("/confirm-email?token_hash=render-only-token");
+
+    await expect(page.getByRole("heading", { name: "Confirme seu e-mail" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toBeVisible();
+    await expect(page).toHaveURL(/\/confirm-email\?token_hash=render-only-token$/);
+  });
+
+  test("password recovery opens inside Envista before changing the password", async ({ page }) => {
+    await page.goto("/recover-account?token_hash=render-only-token");
+
+    await expect(page.getByRole("heading", { name: "Redefinição de senha" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toBeVisible();
+    await expect(page).toHaveURL(/\/recover-account\?token_hash=render-only-token$/);
+  });
+
+  test("custom email pages fail safely when credentials are missing", async ({ page }) => {
+    await page.goto("/confirm-email");
+    await expect(
+      page.getByRole("alert").filter({ hasText: "link de confirmação está incompleto" }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toHaveCount(0);
+
+    await page.goto("/recover-account");
+    await expect(
+      page.getByRole("alert").filter({ hasText: "link de recuperação está incompleto" }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toHaveCount(0);
+  });
+
   test("auth screens do not overflow a narrow mobile viewport", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
@@ -53,6 +83,12 @@ test.describe("Envista critical public auth journeys", () => {
     await expectNoHorizontalOverflow(page);
 
     await page.goto("/forgot-password");
+    await expectNoHorizontalOverflow(page);
+
+    await page.goto("/confirm-email?token_hash=render-only-token");
+    await expectNoHorizontalOverflow(page);
+
+    await page.goto("/recover-account?token_hash=render-only-token");
     await expectNoHorizontalOverflow(page);
 
     await page.goto("/register");

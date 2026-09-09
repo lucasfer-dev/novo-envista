@@ -13,6 +13,8 @@ describe("beta production hardening", () => {
   it("keeps auth and authenticated surfaces out of search indexes", () => {
     expect(nextConfig).toContain('X-Robots-Tag');
     expect(nextConfig).toContain('noindex, nofollow, noarchive');
+    expect(nextConfig).toContain('"/confirm-email"');
+    expect(nextConfig).toContain('"/recover-account"');
     expect(nextConfig).toContain('"/auth/:path*"');
     expect(nextConfig).toContain('"/account/:path*"');
     expect(nextConfig).toContain('"/admin/:path*"');
