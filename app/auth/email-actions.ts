@@ -30,7 +30,7 @@ async function establishSession(
       })
     : await supabase.auth.exchangeCodeForSession(code);
 
-  if (error) redirect(authError(flow, flow === "recovery" ? "confirmation" : "confirmation"));
+  if (error) redirect(authError(flow, "confirmation"));
 
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   if (claimsError || !claimsData?.claims?.sub) {
