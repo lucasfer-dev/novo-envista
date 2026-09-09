@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   homeForRole,
+  isValidCpf,
   isValidEmail,
   isValidUsername,
   MIN_PASSWORD_LENGTH,
+  normalizeCpf,
   normalizeUsername,
   pathAllowedForRole,
   safeInternalPath,
@@ -38,6 +40,15 @@ describe("credenciais", () => {
     expect(validatePassword("12345678")).toBeNull();
     expect(validatePassword("uma-senha-comprida")).toBeNull();
     expect(validatePassword("x".repeat(129))).toBeTruthy();
+  });
+
+  it("normaliza e valida CPF pelos dígitos verificadores", () => {
+    expect(normalizeCpf("529.982.247-25")).toBe("52998224725");
+    expect(isValidCpf("529.982.247-25")).toBe(true);
+    expect(isValidCpf("52998224725")).toBe(true);
+    expect(isValidCpf("111.111.111-11")).toBe(false);
+    expect(isValidCpf("529.982.247-24")).toBe(false);
+    expect(isValidCpf("123")).toBe(false);
   });
 });
 
