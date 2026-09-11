@@ -64,6 +64,13 @@ describe("auth email links", () => {
     expect(emailActions).toContain("verifyOtp");
   });
 
+  it("shows a dedicated success screen after email verification", () => {
+    expect(emailActions).toContain('/confirm-email?status=confirmed');
+    expect(confirmPage).toContain('params.status === "confirmed"');
+    expect(confirmPage).toContain("E-mail confirmado");
+    expect(confirmPage).toContain("Continuar no Envista");
+  });
+
   it("accepts PKCE codes on the new pages while old emails age out", () => {
     expect(confirmPage).toContain("params.code");
     expect(recoveryPage).toContain("params.code");
