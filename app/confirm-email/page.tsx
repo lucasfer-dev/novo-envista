@@ -11,7 +11,26 @@ export default async function ConfirmEmailPage({
   const params = await searchParams;
   const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim() : "";
   const code = typeof params.code === "string" ? params.code.trim() : "";
+  const confirmed = params.status === "confirmed";
   const hasCredential = Boolean(tokenHash || code);
+
+  if (confirmed) {
+    return (
+      <AuthShell
+        title="E-mail confirmado"
+        description="Seu endereço de e-mail foi validado com sucesso. Sua conta Envista agora pode continuar para a próxima etapa."
+      >
+        <div className={styles.success} role="status">
+          Tudo certo. Seu e-mail está confirmado e sua sessão foi validada com segurança.
+        </div>
+        <div className={styles.actions}>
+          <Link className={`${styles.primary} ${styles.full}`} href="/onboarding">
+            Continuar no Envista
+          </Link>
+        </div>
+      </AuthShell>
+    );
+  }
 
   return (
     <AuthShell
