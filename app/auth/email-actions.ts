@@ -49,7 +49,7 @@ export async function confirmEmailAction(formData: FormData) {
   if (!tokenHash && !code) redirect(authError("confirmation", "missing-credentials"));
 
   await establishSession("confirmation", tokenHash, code);
-  redirect("/onboarding");
+  redirect("/confirm-email?status=confirmed");
 }
 
 /**
