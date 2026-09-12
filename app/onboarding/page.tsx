@@ -9,7 +9,7 @@ const errors: Record<string, string> = {
   username: "Esse nome de usuário já está em uso.",
   profile: "Não foi possível salvar o perfil.",
   age: "Não foi possível registrar a faixa etária.",
-  "age-locked": "A faixa etária já foi declarada e não pode ser trocada por este formulário.",
+  "age-locked": "A faixa etária já foi verificada e não pode ser trocada por este formulário.",
   legal: "Não foi possível registrar os documentos apresentados.",
   completion: "O perfil foi salvo, mas a configuração ainda não pôde ser concluída. Tente novamente.",
 };
@@ -18,7 +18,7 @@ function ageLabel(age: string) {
   if (age === "child") return "Menos de 12 anos";
   if (age === "adolescent") return "12 a 17 anos";
   if (age === "adult") return "18 anos ou mais";
-  return "Ainda não declarada";
+  return "Ainda não verificada";
 }
 
 export default async function OnboardingPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -47,7 +47,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   return (
     <AuthShell wide title="Complete seu perfil" description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Campos públicos opcionais podem ser alterados depois.`}>
       <div className={styles.notice} role="status"><strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.</div>
-      <div className={styles.notice}>Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.</div>
+      <div className={styles.notice}>No cadastro, a data de nascimento é usada para conferir a identidade e calcular a faixa etária. A data completa não é exibida no perfil nem é mantida como campo de perfil; o Envista conserva a faixa etária necessária para aplicar proteções adequadas.</div>
       {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
       <form action={onboardingAction} className={styles.form}>
         <div className={styles.grid2}>
