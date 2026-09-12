@@ -2,9 +2,8 @@ type SiteUrlEnv = Record<string, string | undefined>;
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
-// Alias estável do projeto enquanto o domínio próprio não é comprado/configurado.
-// NEXT_PUBLIC_SITE_URL continua tendo prioridade, então a migração futura para um
-// domínio como useenvista.com não exige alteração de código.
+// Alias estável de rollback. NEXT_PUBLIC_SITE_URL continua tendo prioridade,
+// portanto produção deve apontar explicitamente para https://useenvista.com.br.
 export const ENVISTA_PRODUCTION_FALLBACK_URL = "https://envista-novo.vercel.app";
 
 function normalizeUrl(value?: string) {
@@ -39,8 +38,8 @@ function firstPublicUrl(...values: Array<string | null>) {
  *
  * Regras importantes:
  * - produção/preview na Vercel nunca pode gerar link para localhost;
- * - NEXT_PUBLIC_SITE_URL ganha prioridade quando um domínio oficial existir;
- * - o alias estável envista-novo.vercel.app é o último fallback de ambiente Vercel;
+ * - NEXT_PUBLIC_SITE_URL ganha prioridade e deve ser o domínio oficial;
+ * - o alias estável envista-novo.vercel.app é fallback de rollback;
  * - localhost permanece permitido somente no desenvolvimento local.
  */
 export function resolveSiteUrl(env: SiteUrlEnv = process.env) {
@@ -56,24 +55,15 @@ export function resolveSiteUrl(env: SiteUrlEnv = process.env) {
     Boolean(productionUrl);
 
   if (vercelEnvironment === "production") {
-    return (
-      firstPublicUrl(explicit, productionUrl, deploymentUrl, fallbackProductionUrl) ??
-      fallbackProductionUrl
-    );
+    return firstPublicUrl(explicit, productionUrl, deploymentUrl, fallbackProductionUrl) ?? fallbackProductionUrl;
   }
 
   if (vercelEnvironment === "preview") {
-    return (
-      firstPublicUrl(deploymentUrl, explicit, productionUrl, fallbackProductionUrl) ??
-      fallbackProductionUrl
-    );
+    return firstPublicUrl(deploymentUrl, explicit, productionUrl, fallbackProductionUrl) ?? fallbackProductionUrl;
   }
 
   if (onVercel) {
-    return (
-      firstPublicUrl(deploymentUrl, explicit, productionUrl, fallbackProductionUrl) ??
-      fallbackProductionUrl
-    );
+    return firstPublicUrl(deploymentUrl, explicit, productionUrl, fallbackProductionUrl) ?? fallbackProductionUrl;
   }
 
   if (explicit) return explicit;
