@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { registerProductAction } from "@/app/auth/register-product-action";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
+
+export const metadata: Metadata = {
+  title: "Criar conta",
+  description: "Crie sua conta no Envista e transforme aprendizado, projetos e conexões em oportunidades.",
+};
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
@@ -34,27 +40,95 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
                       : "";
 
   return (
-    <AuthShell title="Criar conta" description="Crie sua conta para aprender, construir projetos, formar equipes ou descobrir iniciativas no Envista.">
+    <AuthShell
+      wide
+      title="Criar conta"
+      description="Configure sua conta, valide sua identidade e comece sua jornada no Envista."
+    >
       {!enabled || status === "closed" ? (
-        <><div className={styles.notice}>O cadastro está temporariamente fechado. Contas existentes continuam podendo entrar normalmente.</div><div className={styles.actions}><Link className={`${styles.primary} ${styles.full}`} href="/login">Já tenho uma conta</Link></div></>
+        <>
+          <div className={styles.notice}>O cadastro está temporariamente fechado. Contas existentes continuam podendo entrar normalmente.</div>
+          <div className={styles.actions}><Link className={`${styles.primary} ${styles.full}`} href="/login">Já tenho uma conta</Link></div>
+        </>
       ) : status === "check-email" ? (
-        <><div className={styles.success}>Confira seu e-mail para concluir a criação da conta.</div><Link className={`${styles.primary} ${styles.full}`} href="/login">Voltar ao login</Link></>
+        <>
+          <div className={styles.success}>Confira seu e-mail para concluir a criação da conta.</div>
+          <div className={styles.actions}><Link className={`${styles.primary} ${styles.full}`} href="/login">Voltar ao login</Link></div>
+        </>
       ) : (
         <>
           {errorMessage ? <div className={styles.error} role="alert">{errorMessage}</div> : null}
           <form action={registerProductAction} className={styles.form}>
-            <label>Nome de exibição<input name="display_name" autoComplete="name" maxLength={100} required /></label>
-            <label>Tipo de conta<select name="role" defaultValue="participant" required><option value="participant">Participante / aluno</option><option value="investor">Investidor</option></select><span className={styles.muted}>Contas de investidor precisam de verificação antes de iniciar contatos com projetos.</span></label>
-            <label>E-mail<input type="email" name="email" autoComplete="email" maxLength={254} required /></label>
-            <label>CPF<input type="text" name="cpf" inputMode="numeric" autoComplete="off" maxLength={14} placeholder="000.000.000-00" required /><span className={styles.muted}>Obrigatório para verificar a identidade e também disponível como alternativa ao e-mail no login. O CPF não aparece no seu perfil.</span></label>
-            <label>Data de nascimento<input type="date" name="birth_date" autoComplete="bday" required /><span className={styles.muted}>Usada para conferir a correspondência com o CPF e definir as proteções adequadas à idade. A data completa não aparece no perfil.</span></label>
-            <div className={styles.notice}>Antes de criar a conta, CPF e data de nascimento são conferidos com a base da Receita Federal por meio da API oficial Consulta CPF do Serpro.</div>
-            <label>Senha<input type="password" name="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required /><span className={styles.muted}>Use uma senha longa e exclusiva, com pelo menos {MIN_PASSWORD_LENGTH} caracteres.</span></label>
-            <label>Confirmar senha<input type="password" name="password_confirmation" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required /></label>
-            <div className={styles.captcha}><AuthCaptcha action="register" /></div>
-            <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Verificando e criando conta...">Criar conta</AuthSubmitButton>
+            <section className={styles.formSection}>
+              <div className={styles.sectionHeading}>
+                <span className={styles.sectionIndex}>01</span>
+                <span className={styles.sectionCopy}>
+                  <strong>Sua conta</strong>
+                  <small>Como você vai entrar e aparecer dentro do Envista.</small>
+                </span>
+              </div>
+              <div className={styles.grid2}>
+                <label>Nome de exibição<input name="display_name" autoComplete="name" maxLength={100} required /></label>
+                <label>
+                  Tipo de conta
+                  <select name="role" defaultValue="participant" required>
+                    <option value="participant">Participante / aluno</option>
+                    <option value="investor">Investidor</option>
+                  </select>
+                  <span className={styles.muted}>Investidores passam por uma etapa adicional de verificação antes de iniciar contatos.</span>
+                </label>
+              </div>
+              <label>E-mail<input type="email" name="email" autoComplete="email" maxLength={254} required /></label>
+            </section>
+
+            <section className={styles.formSection}>
+              <div className={styles.sectionHeading}>
+                <span className={styles.sectionIndex}>02</span>
+                <span className={styles.sectionCopy}>
+                  <strong>Verificação de identidade</strong>
+                  <small>Confirma que CPF e data de nascimento pertencem ao mesmo cadastro.</small>
+                </span>
+              </div>
+              <div className={styles.grid2}>
+                <label>
+                  CPF
+                  <input type="text" name="cpf" inputMode="numeric" autoComplete="off" maxLength={14} placeholder="000.000.000-00" required />
+                  <span className={styles.muted}>O CPF não aparece no seu perfil e também pode ser usado para entrar.</span>
+                </label>
+                <label>
+                  Data de nascimento
+                  <input type="date" name="birth_date" autoComplete="bday" required />
+                  <span className={styles.muted}>Usada para conferir o CPF e aplicar as proteções adequadas à idade.</span>
+                </label>
+              </div>
+              <div className={styles.notice}>Os dados são conferidos com a base da Receita Federal por meio da Consulta CPF oficial do Serpro antes da criação da conta.</div>
+            </section>
+
+            <section className={styles.formSection}>
+              <div className={styles.sectionHeading}>
+                <span className={styles.sectionIndex}>03</span>
+                <span className={styles.sectionCopy}>
+                  <strong>Segurança</strong>
+                  <small>Crie uma senha longa e exclusiva para proteger sua conta.</small>
+                </span>
+              </div>
+              <div className={styles.grid2}>
+                <label>
+                  Senha
+                  <input type="password" name="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required />
+                  <span className={styles.muted}>Pelo menos {MIN_PASSWORD_LENGTH} caracteres.</span>
+                </label>
+                <label>Confirmar senha<input type="password" name="password_confirmation" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required /></label>
+              </div>
+              <div className={styles.captcha}><AuthCaptcha action="register" /></div>
+              <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Verificando e criando conta...">Criar conta</AuthSubmitButton>
+            </section>
           </form>
-          <div className={styles.links}><Link href="/login">Já tenho conta</Link></div>
+
+          <div className={styles.authFooter}>
+            <span className={styles.footerPrompt}>Já faz parte do Envista?</span>
+            <Link className={`${styles.secondary} ${styles.full}`} href="/login">Entrar</Link>
+          </div>
         </>
       )}
     </AuthShell>
