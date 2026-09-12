@@ -15,6 +15,17 @@ type WindowMetrics = {
   message_reports?: number;
 };
 
+type ActivationFunnel = {
+  onboarding_completed: number;
+  project_created: number;
+  team_created: number;
+  course_started: number;
+  course_completed: number;
+  investor_verification_requested: number;
+  investor_interest_created: number;
+  message_started: number;
+};
+
 type ProductMetrics = {
   generated_at: string;
   totals: WindowMetrics & {
@@ -23,6 +34,7 @@ type ProductMetrics = {
     open_content_reports: number;
     open_message_reports: number;
   };
+  activation_funnel: ActivationFunnel;
   last_30_days: WindowMetrics;
   last_7_days: WindowMetrics;
 };
@@ -51,6 +63,7 @@ export default async function AdminAnalyticsPage() {
   }
 
   const totalReports = metrics.totals.open_content_reports + metrics.totals.open_message_reports;
+  const funnel = metrics.activation_funnel;
   const overview = [
     metric("Usuários", metrics.totals.users, `${metrics.totals.participants} participantes · ${metrics.totals.investors} investidores`),
     metric("Projetos", metrics.totals.projects, `${pct(metrics.totals.projects, metrics.totals.participants)} por participante cadastrado`),
@@ -73,12 +86,23 @@ export default async function AdminAnalyticsPage() {
     ["Aulas concluídas", metrics.last_7_days.lesson_completions, metrics.last_30_days.lesson_completions],
   ] as const;
 
+  const funnelRows = [
+    ["Concluíram onboarding", funnel.onboarding_completed, pct(funnel.onboarding_completed, metrics.totals.users)],
+    ["Criaram projeto", funnel.project_created, pct(funnel.project_created, funnel.onboarding_completed)],
+    ["Criaram equipe", funnel.team_created, pct(funnel.team_created, funnel.onboarding_completed)],
+    ["Iniciaram curso", funnel.course_started, pct(funnel.course_started, funnel.onboarding_completed)],
+    ["Concluíram curso", funnel.course_completed, pct(funnel.course_completed, funnel.course_started)],
+    ["Pediram verificação de investidor", funnel.investor_verification_requested, pct(funnel.investor_verification_requested, metrics.totals.investors)],
+    ["Demonstraram interesse", funnel.investor_interest_created, pct(funnel.investor_interest_created, metrics.totals.investors)],
+    ["Iniciaram conversa", funnel.message_started, pct(funnel.message_started, funnel.onboarding_completed)],
+  ] as const;
+
   return (
     <AdminShell profile={profile} title="Analytics">
       <div className={styles.head}>
         <div>
           <h1>Analytics operacional</h1>
-          <p className={styles.muted}>Métricas agregadas do produto, sem rastreamento individual de cliques ou conteúdo privado.</p>
+          <p className={styles.muted}>Métricas agregadas do produto, sem fingerprint, IP, conteúdo privado ou rastreamento de cliques.</p>
         </div>
         <span className={styles.pill}>Atualizado {new Date(metrics.generated_at).toLocaleString("pt-BR")}</span>
       </div>
@@ -113,6 +137,17 @@ export default async function AdminAnalyticsPage() {
           </div>
         </section>
       </div>
+
+      <section className={styles.card} style={{ marginTop: 18 }}>
+        <h2>Funil de ativação</h2>
+        <p className={styles.muted}>Usuários únicos derivados de ações realmente persistidas no banco. A porcentagem usa como base a etapa relevante anterior.</p>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead><tr><th>Marco</th><th>Usuários únicos</th><th>Conversão</th></tr></thead>
+            <tbody>{funnelRows.map(([label, count, conversion]) => <tr key={label}><td>{label}</td><td>{count}</td><td>{conversion}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
 
       <section className={styles.card} style={{ marginTop: 18 }}>
         <h2>Movimento recente</h2>
