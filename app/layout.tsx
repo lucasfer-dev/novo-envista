@@ -2,7 +2,7 @@ import './globals.css'
 import './team-role-select.css'
 import './scrollbar.css'
 import './accessibility.css'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://useenvista.com.br'),
@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   },
   description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades no Envista.',
   applicationName: 'Envista',
+  icons: {
+    icon: [{ url: '/envista-logo.png', type: 'image/png', sizes: '150x150' }],
+    shortcut: '/envista-logo.png',
+    apple: '/envista-logo.png',
+  },
   openGraph: {
     title: 'Envista — ideias que continuam',
     description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades.',
@@ -25,6 +30,11 @@ export const metadata: Metadata = {
     title: 'Envista — ideias que continuam',
     description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades.',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#111a26',
+  colorScheme: 'dark',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

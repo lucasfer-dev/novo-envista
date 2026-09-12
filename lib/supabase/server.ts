@@ -11,14 +11,14 @@ export async function createClient() {
       getAll() {
         return cookieStore.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet, _cacheHeaders) {
         try {
           cookiesToSet.forEach(({ name, value, options }) =>
             cookieStore.set(name, value, options),
           );
         } catch {
-          // Server Components não podem gravar cookies diretamente.
-          // A renovação de sessão será tratada pelo fluxo de Auth.
+          // Server Components não podem gravar cookies/headers diretamente.
+          // O Proxy trata a renovação da sessão e os headers de cache.
         }
       },
     },
