@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isValidCpf, isValidEmail, normalizeCpf, parseProductRole, validatePassword } from "@/lib/auth/validation";
 import { parseBirthDate } from "@/lib/identity/birth-date";
 import { verifyCpfWithSerpro } from "@/lib/identity/serpro-cpf";
+import { createIdentityVerificationTicket } from "@/lib/identity/verification-ticket";
 
 const TURNSTILE_FIELD = "cf-turnstile-response";
 
@@ -55,13 +56,15 @@ export async function registerProductAction(formData: FormData) {
     redirect(errorPath("verification-unavailable"));
   }
 
+  const verificationId = await createIdentityVerificationTicket(cpf, email, identity.ageBand);
+  if (!verificationId) redirect(errorPath("verification-unavailable"));
+
   const supabase = await createClient();
   const metadata: Record<string, string> = {
     display_name: displayName,
     role,
     cpf,
-    verified_age_band: identity.ageBand,
-    identity_provider: "serpro_cpf_v3",
+    verification_id: verificationId,
   };
 
   const { data, error } = await supabase.auth.signUp({
