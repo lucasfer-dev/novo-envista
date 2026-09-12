@@ -1,42 +1,15 @@
 import Link from "next/link";
 import styles from "./AdminShell.module.css";
 
-type Props = {
-  profile: { username: string; display_name: string };
-  title: string;
-  children: React.ReactNode;
-};
+type Props = { profile: { username: string; display_name: string }; title: string; children: React.ReactNode };
 
 export default function AdminShell({ profile, title, children }: Props) {
   const nav = [
-    ["/admin", "Visão geral"],
-    ["/admin/analytics", "Analytics"],
-    ["/admin/users", "Usuários"],
-    ["/admin/investors", "Investidores"],
-    ["/admin/teams", "Equipes"],
-    ["/admin/projects", "Projetos"],
-    ["/admin/courses", "Cursos"],
-    ["/admin/moderation", "Moderação"],
-    ["/admin/privacy", "Privacidade"],
+    ["/admin", "Visão geral"], ["/admin/analytics", "Analytics"], ["/admin/users", "Usuários"], ["/admin/investors", "Investidores"], ["/admin/teams", "Equipes"], ["/admin/projects", "Projetos"], ["/admin/courses", "Cursos"], ["/admin/moderation", "Moderação"], ["/admin/feedback", "Feedback e suporte"], ["/admin/privacy", "Privacidade"],
   ] as const;
-
-  return (
-    <div className={styles.shell}>
-      <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
-      <aside className={styles.side} aria-label="Navegação administrativa">
-        <Link className={styles.brand} href="/admin">
-          <img src="/envista-logo.png" alt="" />
-          <span>Envista Admin</span>
-        </Link>
-        <nav className={styles.nav} aria-label="Administração">
-          {nav.map(([href, label]) => <Link href={href} key={href}>{label}</Link>)}
-        </nav>
-        <div className={styles.meta}><strong>{profile.display_name}</strong><span>@{profile.username}</span></div>
-      </aside>
-      <main className={styles.main} id="main-content" tabIndex={-1}>
-        <header className={styles.top}><strong>{title}</strong><span className={styles.badge}>Admin verificado</span></header>
-        <div className={styles.content}>{children}</div>
-      </main>
-    </div>
-  );
+  return <div className={styles.shell}>
+    <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
+    <aside className={styles.side} aria-label="Navegação administrativa"><Link className={styles.brand} href="/admin"><img src="/envista-logo.png" alt=""/><span>Envista Admin</span></Link><nav className={styles.nav} aria-label="Administração">{nav.map(([href,label])=><Link href={href} key={href}>{label}</Link>)}</nav><div className={styles.meta}><strong>{profile.display_name}</strong><span>@{profile.username}</span></div></aside>
+    <main className={styles.main} id="main-content" tabIndex={-1}><header className={styles.top}><strong>{title}</strong><span className={styles.badge}>Admin verificado</span></header><div className={styles.content}>{children}</div></main>
+  </div>;
 }
