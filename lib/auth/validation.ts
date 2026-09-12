@@ -1,8 +1,8 @@
 export type ProductRole = "participant" | "investor";
 export type DeclaredAgeBand = "child" | "adolescent" | "adult";
 
-export const INTERNAL_TERMS_VERSION = "internal-2026-08-26-v2";
-export const INTERNAL_PRIVACY_VERSION = "internal-2026-08-26-v2";
+export const INTERNAL_TERMS_VERSION = "2026-09-11-v1";
+export const INTERNAL_PRIVACY_VERSION = "2026-09-11-v1";
 export const MIN_PASSWORD_LENGTH = 12;
 
 export function safeInternalPath(value: unknown, fallback = "/") {
