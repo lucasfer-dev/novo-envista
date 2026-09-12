@@ -10,8 +10,8 @@ const errors: Record<string, string> = {
   profile: "Não foi possível salvar o perfil.",
   age: "Não foi possível registrar a faixa etária.",
   "age-locked": "A faixa etária já foi declarada e não pode ser trocada por este formulário.",
-  legal: "Não foi possível registrar os eventos jurídicos da versão atual.",
-  completion: "O perfil foi salvo, mas o onboarding ainda não pôde ser concluído. Tente novamente.",
+  legal: "Não foi possível registrar os documentos apresentados.",
+  completion: "O perfil foi salvo, mas a configuração ainda não pôde ser concluída. Tente novamente.",
 };
 
 function ageLabel(age: string) {
@@ -21,22 +21,14 @@ function ageLabel(age: string) {
   return "Ainda não declarada";
 }
 
-export default async function OnboardingPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+export default async function OnboardingPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const supabase = await createClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
   if (claimsError || !userId) redirect("/login?error=session");
 
   const [{ data: profile }, { data: compliance }, { data: completion }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("username,display_name,role,bio,public_city,public_state,public_school,organization,organization_type")
-      .eq("id", userId)
-      .single(),
+    supabase.from("profiles").select("username,display_name,role,bio,public_city,public_state,public_school,organization,organization_type").eq("id", userId).single(),
     supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).single(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
@@ -53,93 +45,33 @@ export default async function OnboardingPage({
   const participant = profile.role === "participant";
 
   return (
-    <AuthShell
-      wide
-      title="Complete seu perfil"
-      description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Campos públicos opcionais podem ser alterados depois.`}
-    >
-      <div className={styles.notice} role="status">
-        <strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.
-      </div>
-      <div className={styles.notice}>
-        Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.
-      </div>
+    <AuthShell wide title="Complete seu perfil" description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Campos públicos opcionais podem ser alterados depois.`}>
+      <div className={styles.notice} role="status"><strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.</div>
+      <div className={styles.notice}>Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.</div>
       {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
       <form action={onboardingAction} className={styles.form}>
         <div className={styles.grid2}>
-          <label>
-            Nome de exibição
-            <input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} required />
-          </label>
-          <label>
-            Nome de usuário
-            <input
-              name="username"
-              autoComplete="username"
-              defaultValue={profile.username.startsWith("user_") ? "" : profile.username}
-              placeholder="seu_usuario"
-              minLength={3}
-              maxLength={32}
-              pattern="[a-zA-Z0-9][a-zA-Z0-9._-]{2,31}"
-              aria-describedby="username-help"
-              required
-            />
-            <span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span>
-          </label>
+          <label>Nome de exibição<input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} required /></label>
+          <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern="[a-zA-Z0-9][a-zA-Z0-9._-]{2,31}" aria-describedby="username-help" required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
         </div>
 
-        <label>
-          Faixa etária
-          {ageLocked ? (
-            <>
-              <input type="hidden" name="age_band" value={compliance.age_band} />
-              <input value={ageLabel(compliance.age_band)} disabled />
-            </>
-          ) : (
-            <select name="age_band" defaultValue="" required>
-              <option value="" disabled>Selecione</option>
-              <option value="child">Menos de 12 anos</option>
-              <option value="adolescent">12 a 17 anos</option>
-              <option value="adult">18 anos ou mais</option>
-            </select>
-          )}
-          <span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública.</span>
-        </label>
+        <label>Faixa etária{ageLocked ? <><input type="hidden" name="age_band" value={compliance.age_band} /><input value={ageLabel(compliance.age_band)} disabled /></> : <select name="age_band" defaultValue="" required><option value="" disabled>Selecione</option><option value="child">Menos de 12 anos</option><option value="adolescent">12 a 17 anos</option><option value="adult">18 anos ou mais</option></select>}<span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública.</span></label>
 
-        <label>
-          Bio <span className={styles.muted}>(opcional)</span>
-          <textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} placeholder="Conte um pouco sobre seus interesses ou o que você está construindo." />
-        </label>
+        <label>Bio <span className={styles.muted}>(opcional)</span><textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} placeholder="Conte um pouco sobre seus interesses ou o que você está construindo." /></label>
 
         {participant ? (
-          <div className={styles.grid2}>
-            <label>Escola/instituição <span className={styles.muted}>(opcional)</span> <input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} /></label>
-            <label>Cidade <span className={styles.muted}>(opcional)</span> <input name="public_city" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} /></label>
-            <label>Estado <span className={styles.muted}>(opcional)</span> <input name="public_state" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} /></label>
-          </div>
+          <div className={styles.grid2}><label>Escola/instituição <span className={styles.muted}>(opcional)</span><input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} /></label><label>Cidade <span className={styles.muted}>(opcional)</span><input name="public_city" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} /></label><label>Estado <span className={styles.muted}>(opcional)</span><input name="public_state" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} /></label></div>
         ) : (
-          <div className={styles.grid2}>
-            <label>Organização <span className={styles.muted}>(opcional)</span> <input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} /></label>
-            <label>Tipo de organização <span className={styles.muted}>(opcional)</span> <input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label>
-          </div>
+          <div className={styles.grid2}><label>Organização <span className={styles.muted}>(opcional)</span><input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} /></label><label>Tipo de organização <span className={styles.muted}>(opcional)</span><input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label></div>
         )}
 
         <div className={styles.divider} />
-        <div className={styles.notice}>
-          Os documentos abaixo são <strong>versões internas de teste</strong>. Não são os textos finais para lançamento público.
-        </div>
         <div className={styles.checks}>
-          <label className={styles.check}>
-            <input type="checkbox" name="terms" required />
-            <span>Li e aceito os <a href="/terms" target="_blank" rel="noreferrer">Termos de Uso internos</a>.</span>
-          </label>
-          <label className={styles.check}>
-            <input type="checkbox" name="privacy" required />
-            <span>Li o <a href="/privacy" target="_blank" rel="noreferrer">Aviso de Privacidade interno</a>. Esta ciência não é tratada automaticamente como consentimento para toda finalidade.</span>
-          </label>
+          <label className={styles.check}><input type="checkbox" name="terms" required /><span>Li e aceito os <a href="/terms" target="_blank" rel="noreferrer">Termos de Uso</a>.</span></label>
+          <label className={styles.check}><input type="checkbox" name="privacy" required /><span>Li o <a href="/privacy" target="_blank" rel="noreferrer">Aviso de Privacidade</a>. Esta ciência não é tratada automaticamente como consentimento para toda finalidade.</span></label>
         </div>
+        {!participant ? <div className={styles.notice}>Contas de investidor podem explorar a plataforma imediatamente. Para iniciar contatos com projetos, será necessário concluir a verificação de investidor.</div> : null}
         <button className={`${styles.primary} ${styles.full}`} type="submit">Salvar e entrar no Envista</button>
-        <span className={styles.muted}>Depois disso, a página inicial mostra os próximos passos de acordo com o seu perfil.</span>
       </form>
     </AuthShell>
   );

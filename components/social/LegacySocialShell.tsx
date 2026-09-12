@@ -4,8 +4,10 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   Activity,
+  BadgeCheck,
   Bell,
   Bookmark,
+  BriefcaseBusiness,
   CircleUserRound,
   Compass,
   Eye,
@@ -34,6 +36,7 @@ const participantNav = [
   ["/app/explore", Compass, "Explorar"],
   ["/app/projects", FolderKanban, "Meus projetos"],
   ["/app/teams", Users, "Minhas equipes"],
+  ["/app/interests", BriefcaseBusiness, "Interesses recebidos"],
   ["/app/competitions", Trophy, "Competições"],
   ["/app/learn", GraduationCap, "Aprender"],
   ["/app/messages", MessageCircle, "Mensagens"],
@@ -41,12 +44,14 @@ const participantNav = [
 
 const investorNav = [
   ["/investor", Home, "Início"],
-  ["/investor/social", Activity, "Social"],
-  ["/investor/explore", Compass, "Explorar"],
-  ["/investor/competitions", Trophy, "Competições"],
+  ["/investor/explore", Compass, "Radar"],
+  ["/investor/interests", BriefcaseBusiness, "Pipeline"],
   ["/investor/saved", Bookmark, "Projetos salvos"],
+  ["/investor/social", Activity, "Atualizações"],
   ["/investor/following", Eye, "Seguindo"],
+  ["/investor/competitions", Trophy, "Competições"],
   ["/investor/messages", MessageCircle, "Mensagens"],
+  ["/investor/verification", BadgeCheck, "Verificação"],
   ["/investor/profile", CircleUserRound, "Perfil"],
 ] as const;
 
@@ -59,8 +64,8 @@ const participantMobileNav = [
 
 const investorMobileNav = [
   ["/investor", Home, "Início"],
-  ["/investor/explore", Compass, "Explorar"],
-  ["/investor/saved", Bookmark, "Salvos"],
+  ["/investor/explore", Compass, "Radar"],
+  ["/investor/interests", BriefcaseBusiness, "Pipeline"],
   ["/investor/messages", MessageCircle, "Mensagens"],
 ] as const;
 
@@ -118,21 +123,11 @@ export default function LegacySocialShell({
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       <TaxonomyNavigationEnhancer />
       {mobileOpen && (
-        <button
-          className="sidebar-backdrop"
-          aria-label="Fechar navegação"
-          onClick={() => setMobileOpen(false)}
-        />
+        <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} />
       )}
 
-      <aside
-        id="app-navigation"
-        aria-label="Navegação principal"
-        className={cx("sidebar", mobileOpen && "mobile-open")}
-      >
-        <button className="mobile-close" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)}>
-          <X size={20} />
-        </button>
+      <aside id="app-navigation" aria-label="Navegação principal" className={cx("sidebar", mobileOpen && "mobile-open")}>
+        <button className="mobile-close" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)}><X size={20} /></button>
 
         <button className="brand" onClick={() => go(home)} aria-label="Ir para o início do Envista">
           <img src="/envista-logo.png" alt="" />
@@ -141,12 +136,7 @@ export default function LegacySocialShell({
 
         <nav aria-label="Seções do produto">
           {nav.map(([href, Icon, label]) => (
-            <button
-              key={href}
-              onClick={() => go(href)}
-              className={cx(isNavItemActive(pathname, href) && "active")}
-              aria-current={isNavItemActive(pathname, href) ? "page" : undefined}
-            >
+            <button key={href} onClick={() => go(href)} className={cx(isNavItemActive(pathname, href) && "active")} aria-current={isNavItemActive(pathname, href) ? "page" : undefined}>
               <Icon size={18} aria-hidden="true" />
               <span>{label}</span>
             </button>
@@ -155,89 +145,43 @@ export default function LegacySocialShell({
 
         {role === "participant" && (
           <div className="side-section">
-            <span>Configurações</span>
-            <button onClick={() => go(profile)}>
-              <CircleUserRound size={18} aria-hidden="true" /> Perfil
-            </button>
-            <button onClick={() => go("/account/profile")}>
-              <Settings size={18} aria-hidden="true" /> Preferências
-            </button>
-            <button onClick={() => go("/app/notifications")}>
-              <Bell size={18} aria-hidden="true" /> Notificações
-            </button>
+            <span>Conta</span>
+            <button onClick={() => go(profile)}><CircleUserRound size={18} aria-hidden="true" /> Perfil</button>
+            <button onClick={() => go("/account/profile")}><Settings size={18} aria-hidden="true" /> Preferências</button>
+            <button onClick={() => go("/app/notifications")}><Bell size={18} aria-hidden="true" /> Notificações</button>
           </div>
         )}
 
         <div className="side-bottom">
-          {role === "investor" && (
-            <button onClick={() => go(settings)}>
-              <Settings size={18} aria-hidden="true" /> Configurações
-            </button>
-          )}
+          {role === "investor" && <button onClick={() => go(settings)}><Settings size={18} aria-hidden="true" /> Configurações</button>}
           <div className="user-card">
-            <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}>
-              <Avatar name={user.name} />
-            </button>
-            <div>
-              <b>{user.name}</b>
-              <small>@{user.username} · {role === "investor" ? "Investidor" : "Participante"}</small>
-            </div>
-            <button aria-label="Sair" onClick={logout}>
-              <LogOut size={17} aria-hidden="true" />
-            </button>
+            <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}><Avatar name={user.name} /></button>
+            <div><b>{user.name}</b><small>@{user.username} · {role === "investor" ? "Investidor" : "Participante"}</small></div>
+            <button aria-label="Sair" onClick={logout}><LogOut size={17} aria-hidden="true" /></button>
           </div>
         </div>
       </aside>
 
       <main className="main" id="main-content" tabIndex={-1}>
         <header className="topbar">
-          <button
-            className="mobile-menu"
-            aria-label="Abrir navegação"
-            aria-expanded={mobileOpen}
-            aria-controls="app-navigation"
-            onClick={() => setMobileOpen(true)}
-          >
-            <Menu aria-hidden="true" />
-          </button>
-
-          <button className="global-search" onClick={() => go(`${home}/explore`)}>
-            <Search size={17} aria-hidden="true" />
-            <span>Buscar no Envista</span>
-          </button>
-
+          <button className="mobile-menu" aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="app-navigation" onClick={() => setMobileOpen(true)}><Menu aria-hidden="true" /></button>
+          <button className="global-search" onClick={() => go(`${home}/explore`)}><Search size={17} aria-hidden="true" /><span>{role === "investor" ? "Buscar projetos no Radar" : "Buscar no Envista"}</span></button>
           <div className="top-actions">
             <NotificationsBell userId={user.id} prefix={prefix} dark />
-            <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}>
-              <Avatar name={user.name} />
-            </button>
+            <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}><Avatar name={user.name} /></button>
           </div>
         </header>
-
         <div className="page-wrap">{children}</div>
       </main>
 
       <nav className="bottom-nav" aria-label="Navegação móvel">
         {mobileNav.map(([href, Icon, label]) => (
-          <button
-            key={href}
-            onClick={() => go(href)}
-            className={cx(isNavItemActive(pathname, href) && "active")}
-            aria-current={isNavItemActive(pathname, href) ? "page" : undefined}
-          >
-            <Icon size={19} aria-hidden="true" />
-            <span>{label}</span>
+          <button key={href} onClick={() => go(href)} className={cx(isNavItemActive(pathname, href) && "active")} aria-current={isNavItemActive(pathname, href) ? "page" : undefined}>
+            <Icon size={19} aria-hidden="true" /><span>{label}</span>
           </button>
         ))}
-        <button
-          onClick={() => setMobileOpen(true)}
-          className={cx(!mobileNav.some(([href]) => isNavItemActive(pathname, href)) && "active")}
-          aria-label="Abrir mais destinos"
-          aria-expanded={mobileOpen}
-          aria-controls="app-navigation"
-        >
-          <MoreHorizontal size={19} aria-hidden="true" />
-          <span>Mais</span>
+        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(pathname, href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation">
+          <MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span>
         </button>
       </nav>
     </div>

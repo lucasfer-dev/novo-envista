@@ -61,6 +61,15 @@ export async function sendProjectInterestAction(formData: FormData) {
   const returnTo = returnPath(formData);
   if (!projectId) redirect(withQuery(returnTo, "error=interest"));
 
+  const { data: verification } = await supabase
+    .from("investor_verifications")
+    .select("status")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (verification?.status !== "verified") {
+    redirect(`/investor/verification?next=${encodeURIComponent(returnTo)}&status=required`);
+  }
+
   const { data: interest, error } = await supabase.from("project_interests").upsert(
     {
       investor_id: userId,
@@ -74,6 +83,8 @@ export async function sendProjectInterestAction(formData: FormData) {
 
   if (error || !interest) redirect(withQuery(returnTo, "error=interest"));
   revalidatePath("/investor");
+  revalidatePath("/investor/interests");
+  revalidatePath("/app/interests");
   revalidatePath(returnTo.split("?")[0]);
   redirect(withQuery(returnTo, "status=interest"));
 }
