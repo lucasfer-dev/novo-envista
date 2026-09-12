@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Building2, ExternalLink, Github, Linkedin, MapPin, MessageCircle, School } from "lucide-react";
+import { Building2, ExternalLink, MapPin, MessageCircle, School } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
 import ReportContentForm from "@/components/moderation/ReportContentForm";
@@ -49,8 +49,8 @@ export async function LegacyPublicProfileServerPage({ expectedRole, username, pa
           </div>
           {skills.length ? <div className={styles.readinessList}>{skills.slice(0, 12).map((skill: string) => <span key={skill} data-done="true">{skill}</span>)}</div> : null}
           <div className={styles.links} style={{ marginTop: 12 }}>
-            {profile.github_url ? <a className={styles.linkChip} href={profile.github_url} target="_blank" rel="noreferrer"><Github size={14}/> GitHub</a> : null}
-            {profile.linkedin_url ? <a className={styles.linkChip} href={profile.linkedin_url} target="_blank" rel="noreferrer"><Linkedin size={14}/> LinkedIn</a> : null}
+            {profile.github_url ? <a className={styles.linkChip} href={profile.github_url} target="_blank" rel="noreferrer"><ExternalLink size={14}/> GitHub</a> : null}
+            {profile.linkedin_url ? <a className={styles.linkChip} href={profile.linkedin_url} target="_blank" rel="noreferrer"><ExternalLink size={14}/> LinkedIn</a> : null}
             {profile.website_url ? <a className={styles.linkChip} href={profile.website_url} target="_blank" rel="noreferrer"><ExternalLink size={14}/> Portfólio</a> : null}
           </div>
         </div>
