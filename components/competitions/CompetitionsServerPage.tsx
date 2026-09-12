@@ -1,4 +1,4 @@
-import ProductShell from "@/components/real/ProductShell";
+import LegacySocialShell from "@/components/social/LegacySocialShell";
 import { CompetitionDetailClient, CompetitionsBrowser } from "@/components/competitions/CompetitionsClient";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import type { CompetitionRecommendationContext } from "@/lib/competitions/recommendations";
@@ -67,9 +67,9 @@ export async function CompetitionsServerPage({ expectedRole }: { expectedRole: P
   const basePath = expectedRole === "investor" ? "/investor/competitions" : "/app/competitions";
   const recommendationContext = await loadRecommendationContext(supabase, userId, role);
   return (
-    <ProductShell user={appUser} title="Competições" variant="legacyDark">
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={basePath}>
       <CompetitionsBrowser basePath={basePath} recommendationContext={recommendationContext} />
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
 
@@ -78,8 +78,8 @@ export async function CompetitionDetailServerPage({ expectedRole, slug }: { expe
   const basePath = expectedRole === "investor" ? "/investor/competitions" : "/app/competitions";
   const recommendationContext = await loadRecommendationContext(supabase, userId, role);
   return (
-    <ProductShell user={appUser} title="Competições" variant="legacyDark">
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={`${basePath}/${slug}`}>
       <CompetitionDetailClient basePath={basePath} slug={slug} recommendationContext={recommendationContext} />
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
