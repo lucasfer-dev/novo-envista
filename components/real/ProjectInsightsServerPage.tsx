@@ -70,7 +70,7 @@ export async function ProjectInsightsServerPage({ pathname = "/app/insights" }: 
                 <div className={styles.progress}><i style={{ width: `${ready.score}%` }} /></div>
                 <div className={styles.readinessList}>{ready.checks.map(([done, label]) => <span key={label} data-done={done}>{done ? "✓" : "○"} {label}</span>)}</div>
               </div>
-              <div className={styles.projectActions}><Link className="secondary" href={`/app/projects/${encodeURIComponent(project.slug)}`}>Abrir</Link>{project.visibility === "platform" ? <Link className="secondary" href={`/p/${encodeURIComponent(project.slug)}`} target="_blank">Compartilhar <ExternalLink size={14} /></Link> : null}</div>
+              <div className={styles.projectActions}><Link className="primary" href={`/app/projects/${encodeURIComponent(project.slug)}/cockpit`}>Cockpit</Link><Link className="secondary" href={`/app/projects/${encodeURIComponent(project.slug)}`}>Abrir</Link>{project.visibility === "platform" ? <Link className="secondary" href={`/p/${encodeURIComponent(project.slug)}`} target="_blank">Compartilhar <ExternalLink size={14} /></Link> : null}</div>
             </article>;
           })}
         </div> : <div className="empty"><h3>Crie seu primeiro projeto</h3><p>Os indicadores de prontidão e alcance aparecem assim que você tiver um projeto.</p><Link className="primary" href="/app/projects/new">Criar projeto</Link></div>}
