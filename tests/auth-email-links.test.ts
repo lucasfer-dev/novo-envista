@@ -64,6 +64,11 @@ describe("auth email links", () => {
     expect(emailActions).toContain("verifyOtp");
   });
 
+  it("uses the session returned by one-time token verification", () => {
+    expect(emailActions).toContain("result.data.session?.user?.id");
+    expect(emailActions).not.toContain("supabase.auth.getClaims()");
+  });
+
   it("shows a dedicated success screen after email verification", () => {
     expect(emailActions).toContain('/confirm-email?status=confirmed');
     expect(confirmPage).toContain('params.status === "confirmed"');
