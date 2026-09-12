@@ -45,6 +45,21 @@ export async function deleteLessonAdminAction(formData:FormData){
  const {supabase,userId}=await requireAdminUser();const courseId=text(formData,"course_id",80),lessonId=text(formData,"lesson_id",80);if(lessonId){const {error}=await supabase.from("course_lessons").delete().eq("id",lessonId);if(!error)await audit(supabase,userId,"course.lesson.delete","course_lesson",lessonId,{course_id:courseId});}revalidatePath(`/admin/courses/${courseId}`);redirect(`/admin/courses/${courseId}`);
 }
 
+export async function deleteCourseAssetAdminAction(formData:FormData){
+ const {supabase,userId}=await requireAdminUser();
+ const courseId=text(formData,"course_id",80),assetId=text(formData,"asset_id",80);
+ if(!courseId||!assetId)redirect("/admin/courses");
+ const {data:asset}=await supabase.from("course_lesson_assets").select("path,file_name").eq("id",assetId).maybeSingle();
+ if(!asset)redirect(`/admin/courses/${courseId}?error=asset`);
+ const {error:storageError}=await supabase.storage.from("course-assets").remove([asset.path]);
+ if(storageError)redirect(`/admin/courses/${courseId}?error=asset`);
+ const {error}=await supabase.from("course_lesson_assets").delete().eq("id",assetId);
+ if(error)redirect(`/admin/courses/${courseId}?error=asset`);
+ await audit(supabase,userId,"course.asset.delete","course_lesson_asset",assetId,{course_id:courseId,file_name:asset.file_name});
+ revalidatePath(`/admin/courses/${courseId}`);
+ redirect(`/admin/courses/${courseId}?status=asset-deleted`);
+}
+
 export async function updateMessageReportAdminAction(formData:FormData){
  const {supabase,userId}=await requireAdminUser();const id=text(formData,"report_id",80);const status=text(formData,"status",20);if(!id||!["open","reviewing","resolved","dismissed"].includes(status))redirect("/admin/moderation?error=report");const resolved=["resolved","dismissed"].includes(status)?new Date().toISOString():null;
  const {error}=await supabase.from("message_reports").update({status,admin_note:text(formData,"admin_note",2000),resolved_at:resolved}).eq("id",id);if(error)redirect("/admin/moderation?error=report");await audit(supabase,userId,"message_report.update","message_report",id,{status});revalidatePath("/admin/moderation");redirect("/admin/moderation?status=saved");
