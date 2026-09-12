@@ -5,6 +5,10 @@ async function expectNoHorizontalOverflow(page) {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+function visibleAlert(page, text) {
+  return page.getByRole("alert").filter({ hasText: text });
+}
+
 test.describe("Envista critical public auth journeys", () => {
   test("login exposes only real authentication entry points", async ({ page }) => {
     await page.goto("/login");
@@ -65,11 +69,11 @@ test.describe("Envista critical public auth journeys", () => {
   test("typed token links reject the wrong flow without contacting Supabase", async ({ page }) => {
     await page.goto("/confirm-email?token_hash=render-only-token&type=recovery");
     await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toHaveCount(0);
-    await expect(page.getByRole("alert")).toContainText(/tipo inválido|possui um tipo inválido/i);
+    await expect(visibleAlert(page, /tipo inválido|possui um tipo inválido/i)).toBeVisible();
 
     await page.goto("/recover-account?token_hash=render-only-token&type=email");
     await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toHaveCount(0);
-    await expect(page.getByRole("alert")).toContainText(/não corresponde|inválido/i);
+    await expect(visibleAlert(page, /não corresponde|inválido/i)).toBeVisible();
   });
 
   test("legacy GET callbacks forward confirmation/recovery credentials without consuming them", async ({ page }) => {
@@ -84,11 +88,11 @@ test.describe("Envista critical public auth journeys", () => {
 
   test("custom email pages fail safely when credentials are missing", async ({ page }) => {
     await page.goto("/confirm-email");
-    await expect(page.getByRole("alert")).toContainText(/link de confirmação está incompleto/i);
+    await expect(visibleAlert(page, /link de confirmação está incompleto/i)).toBeVisible();
     await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toHaveCount(0);
 
     await page.goto("/recover-account");
-    await expect(page.getByRole("alert")).toContainText(/link de recuperação está incompleto/i);
+    await expect(visibleAlert(page, /link de recuperação está incompleto/i)).toBeVisible();
     await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toHaveCount(0);
   });
 
