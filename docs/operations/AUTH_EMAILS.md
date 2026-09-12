@@ -1,119 +1,138 @@
 # Auth e e-mails de produção
 
-Este runbook registra a configuração de Supabase Auth que acompanha o código do Envista. As opções abaixo vivem no Dashboard do Supabase e não são migrations PostgreSQL, por isso precisam ser conferidas sempre que o domínio oficial mudar.
+Este runbook registra a configuração de Supabase Auth compatível com o fluxo SSR do Envista em `https://useenvista.com.br`.
 
-## Objetivo do fluxo
+## Princípios do fluxo
 
-Confirmação de e-mail e recuperação de senha devem acontecer visualmente dentro do Envista. O Supabase continua responsável por emitir e validar credenciais, mas o primeiro endereço aberto pelo usuário deve ser uma página do próprio produto.
+- `GET /confirm-email` e `GET /recover-account` **não consomem** credenciais.
+- `token_hash` só é validado por `verifyOtp` depois de clique explícito do usuário.
+- `code` PKCE legado só é trocado por sessão depois de clique explícito.
+- `type` é validado contra o fluxo esperado (`email` ou `recovery`).
+- a Server Action exige que cookies de sessão sejam persistidos; falha de `Set-Cookie` é erro, não sucesso silencioso.
+- recuperação cria um marcador HttpOnly, assinado e de curta duração antes de permitir `/update-password`.
+- tokens, hashes, access tokens e refresh tokens nunca devem ir para logs, analytics ou localStorage.
 
-Os links novos usam `token_hash` e só consomem a credencial depois de uma ação explícita do usuário. Isso reduz problemas causados por scanners/prefetchers de provedores de e-mail que podem abrir links automaticamente.
+A estratégia de clique explícito protege os links contra Gmail/Outlook/Safe Links, antivírus e outros scanners que fazem prefetch de URLs.
 
-## URL Configuration
+## URL Configuration no Supabase
 
-Enquanto o domínio próprio não estiver configurado:
+**Site URL**
 
-- **Site URL:** `https://envista-novo.vercel.app`
-- **Redirect URLs:**
-  - `https://envista-novo.vercel.app/**`
-  - `https://*-akaakashiseijuro-4610s-projects.vercel.app/**`
-  - `http://localhost:3000/**`
+`https://useenvista.com.br`
 
-Quando houver domínio próprio:
+**Redirect URLs mínimas**
 
-1. altere `NEXT_PUBLIC_SITE_URL` na Vercel para o domínio oficial;
-2. altere **Site URL** no Supabase para o mesmo domínio;
-3. adicione `https://DOMINIO-OFICIAL/**` à allow list;
-4. mantenha o alias `envista-novo.vercel.app` durante a transição/rollback;
-5. faça um cadastro novo e uma recuperação de senha reais antes de marcar o release como GO.
+- `https://useenvista.com.br/confirm-email`
+- `https://useenvista.com.br/recover-account`
+- `https://useenvista.com.br/update-password`
+- `https://envista-novo.vercel.app/**` (rollback/compatibilidade)
+- URLs de preview da Vercel somente se o time realmente testar Auth em preview
+- `http://localhost:3000/**` somente para desenvolvimento
 
-O código de produção usa `emailRedirectTo`/`redirectTo` explicitamente. A configuração do Supabase continua necessária porque URLs que não estão na allow list podem cair no **Site URL** padrão. Portanto, deixar o Site URL em `localhost` quebra confirmação de e-mail e recuperação mesmo quando a aplicação está publicada.
-
-## Rotas oficiais
-
-Fluxo novo:
-
-- confirmação visual: `/confirm-email?token_hash=...`
-- recuperação visual: `/recover-account?token_hash=...`
-- criação da nova senha após validação: `/update-password`
-- erro amigável: `/auth/error`
-
-Compatibilidade com e-mails antigos:
-
-- `/auth/callback` continua aceitando `code` PKCE e `token_hash`;
-- `/auth/confirm` continua aceitando links token-hash antigos;
-- `/confirm-email` e `/recover-account` também aceitam `code` PKCE recebido de um template antigo que ainda use `{{ .ConfirmationURL }}`.
-
-Não remova as rotas legadas enquanto puderem existir e-mails antigos válidos em caixas de entrada.
+O código usa `emailRedirectTo` e `redirectTo` explicitamente. A allowlist do Supabase continua necessária: um redirect não permitido pode cair no Site URL configurado.
 
 ## Template — Confirm signup
 
-**Assunto:** `Confirme seu e-mail | Envista`
-
-O botão deve apontar para o `RedirectTo` que a aplicação enviou (`/confirm-email`) e anexar o hash gerado pelo Supabase. Não use `{{ .ConfirmationURL }}` no template novo.
+O botão deve apontar diretamente para a página visual do Envista e carregar `token_hash` + `type=email`. Não use `{{ .ConfirmationURL }}` neste template porque esse URL pode ser consumido por scanners de e-mail.
 
 ```html
-<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#17202a">
-  <h2 style="margin-bottom:8px">Bem-vindo ao Envista</h2>
-  <p>Confirme seu e-mail para concluir a criação da conta e continuar seu perfil.</p>
-  <p style="margin:28px 0">
-    <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}" style="background:#111827;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;display:inline-block">Confirmar meu e-mail</a>
-  </p>
-  <p style="font-size:13px;color:#667085">O link abre uma página segura do Envista. A confirmação só é concluída quando você confirma a ação nessa página.</p>
-  <p style="font-size:13px;color:#667085">Se você não criou uma conta no Envista, pode ignorar esta mensagem.</p>
-</div>
+<a href="https://useenvista.com.br/confirm-email?token_hash={{ .TokenHash }}&type=email">
+  Confirmar meu e-mail
+</a>
+```
+
+Também é válido usar `{{ .RedirectTo }}` porque `registerAction` envia `/confirm-email`, desde que o tipo seja mantido:
+
+```html
+<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email">
+  Confirmar meu e-mail
+</a>
 ```
 
 ## Template — Reset password
 
-**Assunto:** `Redefina sua senha | Envista`
+```html
+<a href="https://useenvista.com.br/recover-account?token_hash={{ .TokenHash }}&type=recovery">
+  Redefinir minha senha
+</a>
+```
 
-O botão deve apontar para o `RedirectTo` que a aplicação enviou (`/recover-account`) e anexar o hash de recuperação.
+Ou, usando o `redirectTo` enviado por `resetPasswordForEmail`:
 
 ```html
-<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#17202a">
-  <h2 style="margin-bottom:8px">Redefinição de senha</h2>
-  <p>Recebemos uma solicitação para alterar a senha da sua conta Envista.</p>
-  <p style="margin:28px 0">
-    <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}" style="background:#111827;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;display:inline-block">Redefinir minha senha</a>
-  </p>
-  <p style="font-size:13px;color:#667085">O link abre o Envista primeiro. Sua senha não é alterada até você validar o link e definir uma nova senha.</p>
-  <p style="font-size:13px;color:#667085">Se não foi você, ignore este e-mail. Sua senha atual continuará válida.</p>
-</div>
+<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">
+  Redefinir minha senha
+</a>
 ```
 
 ## Sequência de confirmação
 
-1. `signUp` envia `emailRedirectTo=https://.../confirm-email`;
-2. o template monta `{{ .RedirectTo }}?token_hash={{ .TokenHash }}`;
-3. o usuário abre `/confirm-email` sem consumir o token;
-4. ao clicar **Confirmar meu e-mail**, uma Server Action chama `verifyOtp` com `type: email`;
-5. a sessão é gravada nos cookies do Envista;
-6. o usuário segue para `/onboarding`.
+1. `signUp` envia `emailRedirectTo=https://useenvista.com.br/confirm-email`.
+2. o e-mail entrega `token_hash` e `type=email`.
+3. o GET apenas exibe a página; scanners não consomem o token.
+4. o usuário clica **Confirmar meu e-mail**.
+5. a Server Action valida `type=email` e chama `verifyOtp`.
+6. o cliente SSR grava a sessão em cookies na mesma resposta.
+7. sucesso segue para `/confirm-email?status=confirmed` e então onboarding.
 
 ## Sequência de recuperação
 
-1. `/forgot-password` chama `resetPasswordForEmail` com `redirectTo=https://.../recover-account`;
-2. o template monta `{{ .RedirectTo }}?token_hash={{ .TokenHash }}`;
-3. o usuário abre `/recover-account` sem alterar a senha;
-4. ao clicar **Continuar para criar nova senha**, uma Server Action chama `verifyOtp` com `type: recovery`;
-5. a sessão temporária de recuperação é gravada nos cookies;
-6. o usuário segue para `/update-password`;
-7. após salvar, as sessões são encerradas e o usuário volta ao login.
+1. `/forgot-password` chama `resetPasswordForEmail` com `redirectTo=https://useenvista.com.br/recover-account`.
+2. o e-mail entrega `token_hash` e `type=recovery`.
+3. o GET apenas exibe a página; scanners não consomem o token.
+4. o usuário clica **Continuar para criar nova senha**.
+5. a Server Action valida `type=recovery` e chama `verifyOtp`.
+6. a sessão retornada é persistida em cookies; falha de escrita aborta o fluxo.
+7. é emitido `envista-recovery-intent`, HttpOnly/SameSite=Lax, assinado e válido por 15 minutos.
+8. `/update-password` exige claims válidas **e** o recovery intent ligado ao mesmo usuário.
+9. `updateUser({ password })` altera a senha.
+10. o recovery intent é removido e `signOut({ scope: "global" })` revoga refresh tokens/sessões; há fallback local.
+11. o usuário segue para `/login?status=password-updated`.
 
-## Teste obrigatório
+## Compatibilidade com e-mails antigos
 
-Faça os testes usando uma caixa de e-mail real:
+- `/confirm-email` e `/recover-account` aceitam `code` PKCE antigo.
+- `/auth/callback` e `/auth/confirm` continuam como rotas de compatibilidade.
+- para confirmação e recuperação, as rotas legadas agora apenas encaminham a credencial em GET para a página visual; não fazem `verifyOtp`/`exchangeCodeForSession` automaticamente.
+- outros tipos legados (`invite`, `email_change`, etc.) preservam o comportamento existente e devem ser auditados separadamente se forem habilitados em produção.
 
-1. criar uma conta nova;
-2. confirmar que o botão do e-mail aponta para `envista-novo.vercel.app/confirm-email?...`;
-3. abrir o e-mail em janela anônima e confirmar que a página do Envista aparece antes da confirmação;
-4. clicar **Confirmar meu e-mail** e confirmar chegada ao onboarding;
-5. sair da conta;
-6. solicitar **Esqueci minha senha**;
-7. confirmar que o botão do e-mail aponta para `envista-novo.vercel.app/recover-account?...`;
-8. abrir o link e confirmar que a senha ainda não foi alterada;
-9. clicar para continuar e confirmar chegada em `/update-password` com sessão válida;
-10. definir nova senha;
-11. confirmar redirecionamento para login e acesso com a nova senha;
-12. confirmar que um link antigo/usado mostra `/auth/error` com opção de solicitar outro link;
-13. confirmar que um e-mail antigo que ainda entregue `code` PKCE continua utilizável durante a transição.
+## Variáveis da Vercel
+
+Obrigatórias em produção:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_SITE_URL=https://useenvista.com.br`
+- `AUTH_RECOVERY_COOKIE_SECRET` com pelo menos 32 caracteres aleatórios, server-only
+
+Conforme o ambiente:
+
+- `AUTH_SIGNUP_ENABLED=true` para permitir cadastro
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` se Bot Protection/Turnstile estiver configurado no Supabase
+
+Nunca exponha `service_role`, `sb_secret_*`, senha do banco ou `AUTH_RECOVERY_COOKIE_SECRET` em `NEXT_PUBLIC_*`.
+
+## Logging de diagnóstico
+
+Os eventos de Auth registram apenas metadados operacionais, como fluxo, transporte (`token_hash`/PKCE), estágio, código/status do erro e falha de cookie. Nunca registrar e-mail, `token_hash`, `code`, access token, refresh token ou conteúdo de cookies.
+
+O Supabase nem sempre distingue de forma confiável um OTP expirado de um OTP já consumido no erro retornado; nesses casos o log deve preservar o `error_code` original e a UI continua genérica.
+
+## Checklist real de produção
+
+1. confirmar Site URL e Redirect URLs no Supabase;
+2. confirmar os dois templates exatamente com `type=email`/`type=recovery`;
+3. desabilitar link tracking do provedor SMTP, se houver;
+4. habilitar Leaked Password Protection no Supabase Auth;
+5. configurar `AUTH_RECOVERY_COOKIE_SECRET` na Vercel;
+6. criar conta nova em janela privada e abrir o link de confirmação;
+7. confirmar que o primeiro GET só mostra a página e não confirma a conta;
+8. clicar no botão e confirmar sessão + onboarding;
+9. sair e solicitar recuperação;
+10. abrir o link e confirmar que o primeiro GET não consome o token;
+11. clicar e confirmar chegada a `/update-password`;
+12. atualizar a senha e confirmar redirect para `/login?status=password-updated`;
+13. confirmar que a senha antiga não autentica e a nova autentica;
+14. abrir novamente o link já usado e confirmar erro genérico;
+15. testar link inválido, sem token, tipo errado, clique duplo e janela anônima;
+16. consultar logs por `auth.email.*`, `auth.cookies.write_failed` e `auth.password_update.*` sem dados sensíveis.

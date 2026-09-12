@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
-import { updatePasswordAction } from "@/app/auth/actions";
+import { updateRecoveryPasswordAction } from "@/app/auth/email-actions";
+import { hasValidRecoveryIntent } from "@/lib/auth/recovery-intent";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
 import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 export default async function UpdatePasswordPage({
   searchParams,
@@ -12,7 +15,8 @@ export default async function UpdatePasswordPage({
 }) {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims?.sub) {
+  const userId = data?.claims?.sub;
+  if (error || !userId || !(await hasValidRecoveryIntent(userId))) {
     redirect("/auth/error?reason=recovery-session&flow=recovery");
   }
   const params = await searchParams;
@@ -20,7 +24,7 @@ export default async function UpdatePasswordPage({
   return (
     <AuthShell title="Definir nova senha" description="Ao salvar, as sessões anteriores serão encerradas e será necessário entrar novamente.">
       {params.error ? <div className={styles.error}>Não foi possível alterar a senha. Confira os campos e tente novamente.</div> : null}
-      <form action={updatePasswordAction} className={styles.form}>
+      <form action={updateRecoveryPasswordAction} className={styles.form}>
         <label>
           Nova senha
           <input type="password" name="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required />

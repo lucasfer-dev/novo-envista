@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { updateRecoveryPasswordAction } from "@/app/auth/email-actions";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -143,7 +144,6 @@ export async function registerAction(formData: FormData) {
       redirect(authErrorPath("/register", code));
     }
     if (error.code === "weak_password") redirect(authErrorPath("/register", "password"));
-    // Mantém resposta genérica para não transformar cadastro em consulta de existência de e-mail.
     redirect("/register?status=check-email");
   }
   if (data.session) redirect("/onboarding");
@@ -166,31 +166,12 @@ export async function forgotPasswordAction(formData: FormData) {
       redirect(authErrorPath("/forgot-password", code));
     }
   }
-  // Resposta intencionalmente genérica para evitar enumeração de contas.
   redirect("/forgot-password?status=sent");
 }
 
+/** @deprecated Use updateRecoveryPasswordAction. Kept fail-closed for stale action references. */
 export async function updatePasswordAction(formData: FormData) {
-  const { supabase } = await getVerifiedUser();
-  const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
-  const confirmation =
-    typeof formData.get("password_confirmation") === "string"
-      ? String(formData.get("password_confirmation"))
-      : "";
-
-  if (validatePassword(password) || password !== confirmation) {
-    redirect("/update-password?error=password");
-  }
-
-  const { error } = await supabase.auth.updateUser({ password });
-  if (error) redirect("/update-password?error=save");
-
-  // Revoga refresh tokens existentes e encerra a sessão usada na recuperação.
-  // Se a revogação global falhar por indisponibilidade temporária, pelo menos
-  // removemos a sessão atual do navegador antes de voltar ao login.
-  const { error: signOutError } = await supabase.auth.signOut({ scope: "global" });
-  if (signOutError) await supabase.auth.signOut({ scope: "local" });
-  redirect("/login?status=password-updated");
+  return updateRecoveryPasswordAction(formData);
 }
 
 async function ensureLegalEvent(

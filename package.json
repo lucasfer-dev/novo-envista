@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "security:scan": "node scripts/security-scan.mjs"
   },
   "dependencies": {

@@ -5,6 +5,10 @@ async function expectNoHorizontalOverflow(page) {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+function visibleAlert(page, text) {
+  return page.getByRole("alert").filter({ hasText: text });
+}
+
 test.describe("Envista critical public auth journeys", () => {
   test("login exposes only real authentication entry points", async ({ page }) => {
     await page.goto("/login");
@@ -46,33 +50,49 @@ test.describe("Envista critical public auth journeys", () => {
     await expect(page).toHaveURL(/\/register$/);
   });
 
-  test("email confirmation opens inside Envista before consuming the token", async ({ page }) => {
-    await page.goto("/confirm-email?token_hash=render-only-token");
+  test("email confirmation GET is scanner-safe and requires the expected type", async ({ page }) => {
+    await page.goto("/confirm-email?token_hash=render-only-token&type=email");
 
     await expect(page.getByRole("heading", { name: "Confirme seu e-mail" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toBeVisible();
-    await expect(page).toHaveURL(/\/confirm-email\?token_hash=render-only-token$/);
+    await expect(page).toHaveURL(/\/confirm-email\?token_hash=render-only-token&type=email$/);
   });
 
-  test("password recovery opens inside Envista before changing the password", async ({ page }) => {
-    await page.goto("/recover-account?token_hash=render-only-token");
+  test("password recovery GET is scanner-safe and requires the expected type", async ({ page }) => {
+    await page.goto("/recover-account?token_hash=render-only-token&type=recovery");
 
     await expect(page.getByRole("heading", { name: "Redefinição de senha" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toBeVisible();
-    await expect(page).toHaveURL(/\/recover-account\?token_hash=render-only-token$/);
+    await expect(page).toHaveURL(/\/recover-account\?token_hash=render-only-token&type=recovery$/);
+  });
+
+  test("typed token links reject the wrong flow without contacting Supabase", async ({ page }) => {
+    await page.goto("/confirm-email?token_hash=render-only-token&type=recovery");
+    await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toHaveCount(0);
+    await expect(visibleAlert(page, /tipo inválido|possui um tipo inválido/i)).toBeVisible();
+
+    await page.goto("/recover-account?token_hash=render-only-token&type=email");
+    await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toHaveCount(0);
+    await expect(visibleAlert(page, /não corresponde|inválido/i)).toBeVisible();
+  });
+
+  test("legacy GET callbacks forward confirmation/recovery credentials without consuming them", async ({ page }) => {
+    await page.goto("/auth/confirm?token_hash=legacy-confirm&type=email");
+    await expect(page).toHaveURL(/\/confirm-email\?token_hash=legacy-confirm&type=email$/);
+    await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toBeVisible();
+
+    await page.goto("/auth/confirm?token_hash=legacy-recovery&type=recovery");
+    await expect(page).toHaveURL(/\/recover-account\?token_hash=legacy-recovery&type=recovery$/);
+    await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toBeVisible();
   });
 
   test("custom email pages fail safely when credentials are missing", async ({ page }) => {
     await page.goto("/confirm-email");
-    await expect(
-      page.getByRole("alert").filter({ hasText: "link de confirmação está incompleto" }),
-    ).toBeVisible();
+    await expect(visibleAlert(page, /link de confirmação está incompleto/i)).toBeVisible();
     await expect(page.getByRole("button", { name: "Confirmar meu e-mail" })).toHaveCount(0);
 
     await page.goto("/recover-account");
-    await expect(
-      page.getByRole("alert").filter({ hasText: "link de recuperação está incompleto" }),
-    ).toBeVisible();
+    await expect(visibleAlert(page, /link de recuperação está incompleto/i)).toBeVisible();
     await expect(page.getByRole("button", { name: "Continuar para criar nova senha" })).toHaveCount(0);
   });
 
@@ -81,16 +101,12 @@ test.describe("Envista critical public auth journeys", () => {
 
     await page.goto("/login");
     await expectNoHorizontalOverflow(page);
-
     await page.goto("/forgot-password");
     await expectNoHorizontalOverflow(page);
-
-    await page.goto("/confirm-email?token_hash=render-only-token");
+    await page.goto("/confirm-email?token_hash=render-only-token&type=email");
     await expectNoHorizontalOverflow(page);
-
-    await page.goto("/recover-account?token_hash=render-only-token");
+    await page.goto("/recover-account?token_hash=render-only-token&type=recovery");
     await expectNoHorizontalOverflow(page);
-
     await page.goto("/register");
     await expectNoHorizontalOverflow(page);
   });
