@@ -12,9 +12,9 @@ const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
-  it("does not require twelve-character passwords", () => {
-    expect(validation).toContain("export const MIN_PASSWORD_LENGTH = 8;");
-    expect(validation).not.toContain("MIN_PASSWORD_LENGTH = 12");
+  it("requires twelve-character passwords for new credentials", () => {
+    expect(validation).toContain("export const MIN_PASSWORD_LENGTH = 12;");
+    expect(validation).not.toContain("MIN_PASSWORD_LENGTH = 8");
   });
 
   it("keeps Envista branding visible on auth pages", () => {

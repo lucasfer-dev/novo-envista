@@ -2,32 +2,9 @@
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const scriptSources = [
-  "'self'",
-  "'unsafe-inline'",
-  ...(!isProduction ? ["'unsafe-eval'"] : []),
-  "https://challenges.cloudflare.com",
-].join(" ");
-
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  `script-src ${scriptSources}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com",
-  "media-src 'self' blob: https:",
-  "worker-src 'self' blob:",
-  "frame-src https://challenges.cloudflare.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  ...(isProduction ? ["upgrade-insecure-requests"] : []),
-].join("; ");
-
+// Content-Security-Policy is generated per request in proxy.ts because a nonce
+// must never be reused between responses. Static security headers remain here.
 const securityHeaders = [
-  { key: "Content-Security-Policy", value: contentSecurityPolicy },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
@@ -84,6 +61,7 @@ const nextConfig = {
         "/update-password",
         "/onboarding",
         "/guardian-required",
+        "/admin-mfa",
         "/auth/:path*",
         "/account/:path*",
         "/admin/:path*",

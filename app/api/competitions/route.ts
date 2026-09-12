@@ -12,7 +12,8 @@ async function canForceFreshScan(requested: boolean) {
   const supabase = await createClient();
   const { data: claims, error: claimsError } = await supabase.auth.getClaims();
   const userId = claims?.claims?.sub;
-  if (claimsError || !userId) return false;
+  const aal = claims?.claims?.aal;
+  if (claimsError || !userId || aal !== "aal2") return false;
 
   const { data: adminMembership } = await supabase
     .from("admin_memberships")
