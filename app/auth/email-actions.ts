@@ -23,17 +23,23 @@ async function establishSession(
 ) {
   const supabase = await createClient();
 
-  const { error } = tokenHash
+  const result = tokenHash
     ? await supabase.auth.verifyOtp({
         token_hash: tokenHash,
         type: flow === "recovery" ? "recovery" : "email",
       })
     : await supabase.auth.exchangeCodeForSession(code);
 
-  if (error) redirect(authError(flow, "confirmation"));
+  if (result.error) {
+    redirect(authError(flow, flow === "recovery" ? "recovery-token" : "confirmation"));
+  }
 
-  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
-  if (claimsError || !claimsData?.claims?.sub) {
+  // verifyOtp/exchangeCodeForSession já devolvem a sessão autenticada e o
+  // cliente SSR grava os cookies nessa mesma resposta. Não consulte getClaims
+  // imediatamente depois de consumir um token de uso único: em um Server
+  // Action isso pode observar o estado anterior dos cookies e transformar uma
+  // validação bem-sucedida em erro, enquanto o token já ficou consumido.
+  if (!result.data.session?.user?.id) {
     redirect(authError(flow, flow === "recovery" ? "recovery-session" : "session"));
   }
 }
@@ -53,9 +59,9 @@ export async function confirmEmailAction(formData: FormData) {
 }
 
 /**
- * Valida automaticamente a credencial de recuperação quando a página segura
- * /recover-account é aberta. Ao concluir, a sessão temporária fica disponível
- * para /update-password sem exigir um clique intermediário.
+ * Valida a credencial de recuperação a partir de uma ação explícita no Envista.
+ * O GET de /recover-account nunca consome o token; isso evita que scanners de
+ * e-mail invalidem o link antes do clique real do usuário.
  */
 export async function establishRecoverySession(tokenHash: string, code: string) {
   const safeTokenHash = tokenHash.trim().slice(0, 2048);

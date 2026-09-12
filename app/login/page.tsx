@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         : error === "temporary"
           ? "O login está temporariamente indisponível. Tente novamente em instantes."
           : error
-            ? "E-mail, CPF ou senha inválidos."
+            ? "E-mail ou senha inválidos."
             : "";
 
   return (
@@ -30,7 +30,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       {status === "confirmed" ? <div className={styles.success}>E-mail confirmado. Agora você pode entrar.</div> : null}
       <form action={loginAction} className={styles.form}>
         <input type="hidden" name="next" value={next} />
-        <label>E-mail ou CPF<input type="text" name="identifier" autoComplete="username" maxLength={254} placeholder="voce@email.com ou 000.000.000-00" required /></label>
+        <label>E-mail<input type="email" name="identifier" autoComplete="username" maxLength={254} placeholder="voce@email.com" required /></label>
         <label>Senha<input type="password" name="password" autoComplete="current-password" maxLength={128} required /></label>
         <div className={styles.captcha}><AuthCaptcha action="login" /></div>
         <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Entrando...">Entrar</AuthSubmitButton>

@@ -6,7 +6,6 @@ const authShell = readFileSync("components/auth/AuthShell.tsx", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
-const actions = readFileSync("app/auth/actions.ts", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
 const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
@@ -29,23 +28,23 @@ describe("auth form feedback", () => {
     expect(onboarding).not.toMatch(/name="organization"[^>]*required/);
   });
 
-  it("accepts email or CPF as the login identifier and asks CPF on signup", () => {
-    expect(login).toContain("E-mail ou CPF");
+  it("keeps active login and signup email-only while CPF verification is paused", () => {
+    expect(login).toContain("<label>E-mail<input type=\"email\"");
     expect(login).toContain('name="identifier"');
-    expect(register).toContain('name="cpf"');
-    expect(register).toContain("O CPF não aparece no seu perfil");
-    expect(actions).toContain("isValidCpf");
-    expect(actions).toContain("signInWithCpf");
+    expect(login).not.toContain("E-mail ou CPF");
+    expect(login).not.toContain("000.000.000-00");
+    expect(register).not.toContain('name="cpf"');
+    expect(register).not.toContain("O CPF não aparece no seu perfil");
   });
 
-  it("keeps CPF out of public profile data and browser-readable table access", () => {
+  it("keeps dormant CPF compatibility data out of public profile access", () => {
     expect(migration).toContain("new.raw_user_meta_data := coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf'");
     expect(migration).toContain("revoke all on table public.account_private_identifiers from public, anon, authenticated");
     expect(migration).toContain("alter table public.account_private_identifiers enable row level security");
     expect(onboarding).not.toContain('name="cpf"');
   });
 
-  it("protects deterministic CPF lookup with a Vault-managed HMAC key", () => {
+  it("protects the dormant CPF lookup with a Vault-managed HMAC key", () => {
     expect(hmacMigration).toContain("vault.create_secret");
     expect(hmacMigration).toContain("extensions.hmac");
     expect(hmacMigration).toContain("envista_cpf_hmac_key");
