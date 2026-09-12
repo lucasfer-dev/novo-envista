@@ -16,6 +16,17 @@ alter table public.profiles add constraint profiles_linkedin_url_len check (link
 alter table public.profiles drop constraint if exists profiles_website_url_len;
 alter table public.profiles add constraint profiles_website_url_len check (website_url is null or char_length(website_url) <= 500);
 
+alter table public.projects
+  add column if not exists repository_url text,
+  add column if not exists demo_url text,
+  add column if not exists design_url text;
+alter table public.projects drop constraint if exists projects_repository_url_len;
+alter table public.projects add constraint projects_repository_url_len check (repository_url is null or char_length(repository_url) <= 500);
+alter table public.projects drop constraint if exists projects_demo_url_len;
+alter table public.projects add constraint projects_demo_url_len check (demo_url is null or char_length(demo_url) <= 500);
+alter table public.projects drop constraint if exists projects_design_url_len;
+alter table public.projects add constraint projects_design_url_len check (design_url is null or char_length(design_url) <= 500);
+
 create table if not exists public.team_tasks (
   id uuid primary key default gen_random_uuid(), team_id uuid not null references public.teams(id) on delete cascade,
   created_by uuid not null references auth.users(id) on delete cascade, assignee_id uuid references auth.users(id) on delete set null,
@@ -34,6 +45,54 @@ drop policy if exists team_tasks_member_update on public.team_tasks;
 create policy team_tasks_member_update on public.team_tasks for update to authenticated using (private.is_team_member(team_id,(select auth.uid())) or (select private.is_admin())) with check (private.is_team_member(team_id,(select auth.uid())) or (select private.is_admin()));
 drop policy if exists team_tasks_member_delete on public.team_tasks;
 create policy team_tasks_member_delete on public.team_tasks for delete to authenticated using (private.is_team_member(team_id,(select auth.uid())) or created_by=(select auth.uid()) or (select private.is_admin()));
+
+create table if not exists public.project_milestones (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  created_by uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  description text not null default '',
+  due_date date,
+  completed_at timestamptz,
+  position integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint project_milestones_title_len check (char_length(title) between 2 and 140),
+  constraint project_milestones_description_len check (char_length(description) <= 700)
+);
+create index if not exists project_milestones_project_idx on public.project_milestones(project_id,position,created_at);
+alter table public.project_milestones enable row level security;
+revoke all on public.project_milestones from anon,authenticated;
+grant select,insert,update,delete on public.project_milestones to authenticated;
+drop policy if exists project_milestones_select_visible on public.project_milestones;
+create policy project_milestones_select_visible on public.project_milestones for select to authenticated using (private.can_view_project(project_id,(select auth.uid())) or (select private.is_admin()));
+drop policy if exists project_milestones_insert_editor on public.project_milestones;
+create policy project_milestones_insert_editor on public.project_milestones for insert to authenticated with check (created_by=(select auth.uid()) and private.can_edit_project(project_id,(select auth.uid())));
+drop policy if exists project_milestones_update_editor on public.project_milestones;
+create policy project_milestones_update_editor on public.project_milestones for update to authenticated using (private.can_edit_project(project_id,(select auth.uid())) or (select private.is_admin())) with check (private.can_edit_project(project_id,(select auth.uid())) or (select private.is_admin()));
+drop policy if exists project_milestones_delete_editor on public.project_milestones;
+create policy project_milestones_delete_editor on public.project_milestones for delete to authenticated using (private.can_edit_project(project_id,(select auth.uid())) or (select private.is_admin()));
+
+create table if not exists public.project_updates (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  author_id uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  body text not null default '',
+  created_at timestamptz not null default now(),
+  constraint project_updates_title_len check (char_length(title) between 2 and 160),
+  constraint project_updates_body_len check (char_length(body) <= 4000)
+);
+create index if not exists project_updates_project_created_idx on public.project_updates(project_id,created_at desc);
+alter table public.project_updates enable row level security;
+revoke all on public.project_updates from anon,authenticated;
+grant select,insert,delete on public.project_updates to authenticated;
+drop policy if exists project_updates_select_visible on public.project_updates;
+create policy project_updates_select_visible on public.project_updates for select to authenticated using (private.can_view_project(project_id,(select auth.uid())) or (select private.is_admin()));
+drop policy if exists project_updates_insert_editor on public.project_updates;
+create policy project_updates_insert_editor on public.project_updates for insert to authenticated with check (author_id=(select auth.uid()) and private.can_edit_project(project_id,(select auth.uid())));
+drop policy if exists project_updates_delete_editor on public.project_updates;
+create policy project_updates_delete_editor on public.project_updates for delete to authenticated using (private.can_edit_project(project_id,(select auth.uid())) or author_id=(select auth.uid()) or (select private.is_admin()));
 
 create table if not exists public.notification_preferences (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -95,6 +154,7 @@ returns jsonb language sql stable security definer set search_path=pg_catalog,pu
     'id',p.id,'slug',p.slug,'title',p.title,'short_description',p.short_description,
     'description',case when nullif(p.readme,'') is not null then p.readme else concat_ws(E'\n\n',nullif(p.problem,''),nullif(p.solution,'')) end,
     'stage',p.stage,'category',p.category,'location',p.location,'tags',p.tags,'updated_at',p.updated_at,
+    'repository_url',p.repository_url,'demo_url',p.demo_url,'design_url',p.design_url,
     'owner',case when pr.id is not null then jsonb_build_object('name',pr.display_name,'username',pr.username,'headline',pr.headline) else null end,
     'team',case when t.id is not null then jsonb_build_object('name',t.name,'slug',t.slug) else null end
   )
@@ -107,5 +167,8 @@ grant execute on function public.get_public_project_share(text) to anon,authenti
 do $$begin
   if exists(select 1 from pg_publication where pubname='supabase_realtime') and not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='team_tasks') then
     execute 'alter publication supabase_realtime add table public.team_tasks';
+  end if;
+  if exists(select 1 from pg_publication where pubname='supabase_realtime') and not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename='project_updates') then
+    execute 'alter publication supabase_realtime add table public.project_updates';
   end if;
 end$$;
