@@ -5,14 +5,14 @@ export default function TermsPage() {
     <AuthShell
       wide
       title="Termos de Uso"
-      description="Versão 2026-09-11-v1. Estes termos regulam o uso do Envista e das funcionalidades oferecidas na plataforma."
+      description="Versão 2026-09-11-v2. Estes termos regulam o uso do Envista e das funcionalidades oferecidas na plataforma."
     >
       <div className={styles.legal}>
         <h2>1. O Envista</h2>
         <p>O Envista é uma plataforma de aprendizagem, projetos, equipes, competições e conexão entre participantes e investidores. O uso da plataforma deve respeitar estes Termos, a legislação aplicável e os direitos de terceiros.</p>
 
-        <h2>2. Conta e segurança</h2>
-        <p>O usuário deve fornecer informações verdadeiras nos campos obrigatórios, manter suas credenciais protegidas e não compartilhar acesso à conta de forma que comprometa a segurança do serviço. Tentativas de obter privilégios, acessar dados sem autorização, burlar controles técnicos ou explorar vulnerabilidades sem autorização são proibidas.</p>
+        <h2>2. Conta, identidade e segurança</h2>
+        <p>Para novos cadastros, o usuário deve informar dados verdadeiros, incluindo CPF próprio e data de nascimento. Esses dados podem ser conferidos por meio do serviço oficial Consulta CPF do Serpro antes da criação da conta. Não é permitido cadastrar-se usando CPF ou dados de identidade de outra pessoa, burlar a verificação, compartilhar credenciais ou tentar obter acesso não autorizado.</p>
 
         <h2>3. Perfis de participante e investidor</h2>
         <p>Participantes podem aprender, criar projetos, integrar equipes e publicar sua evolução. Investidores podem explorar, salvar e acompanhar projetos. O envio de interesse a um projeto exige conta de investidor verificada. A verificação indica apenas que a conta passou pelos controles internos definidos pelo Envista; não representa recomendação financeira, garantia de capacidade de investimento ou endosso.</p>
@@ -27,7 +27,7 @@ export default function TermsPage() {
         <p>Não é permitido assediar usuários, enviar spam, tentar obter dados pessoais por meios indevidos, contornar bloqueios ou usar os recursos de comunicação para fraude, exploração ou abordagem incompatível com a finalidade da plataforma.</p>
 
         <h2>7. Crianças e adolescentes</h2>
-        <p>O Envista aplica proteções adicionais conforme a faixa etária declarada, incluindo restrições de visibilidade e comunicação. Recursos podem ser limitados quando necessário para segurança, melhor interesse e cumprimento das regras aplicáveis.</p>
+        <p>O Envista aplica proteções adicionais conforme a faixa etária derivada das informações fornecidas e verificadas no cadastro, incluindo restrições de visibilidade e comunicação. Recursos podem ser limitados quando necessário para segurança, melhor interesse e cumprimento das regras aplicáveis.</p>
 
         <h2>8. Moderação e segurança</h2>
         <p>Conteúdos, contas ou funcionalidades podem ser restringidos quando houver indícios de violação destes Termos, risco de segurança, abuso, fraude ou necessidade de proteção de usuários. Controles técnicos reduzem riscos, mas nenhum sistema é absolutamente invulnerável.</p>
@@ -36,7 +36,7 @@ export default function TermsPage() {
         <p>O Envista pode evoluir funcionalidades, corrigir comportamentos, alterar limites e realizar manutenções. Mudanças relevantes destes Termos serão versionadas e, quando necessário, apresentadas novamente ao usuário.</p>
 
         <h2>10. Privacidade</h2>
-        <p>O tratamento de dados pessoais é descrito no Aviso de Privacidade. A aceitação destes Termos não transforma automaticamente todas as finalidades de tratamento em consentimento.</p>
+        <p>O tratamento de dados pessoais, inclusive o fluxo de validação de CPF e data de nascimento, é descrito no Aviso de Privacidade. A aceitação destes Termos não transforma automaticamente todas as finalidades de tratamento em consentimento.</p>
       </div>
     </AuthShell>
   );
