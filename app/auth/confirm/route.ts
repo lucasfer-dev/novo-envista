@@ -24,17 +24,26 @@ function defaultDestination(type: EmailOtpType | null) {
 }
 
 export async function GET(request: NextRequest) {
-  const tokenHash = request.nextUrl.searchParams.get("token_hash");
+  const tokenHash = request.nextUrl.searchParams.get("token_hash")?.trim() ?? "";
   const type = parseOtpType(request.nextUrl.searchParams.get("type"));
-  const next = safeInternalPath(
-    request.nextUrl.searchParams.get("next"),
-    defaultDestination(type),
-  );
+  const next = safeInternalPath(request.nextUrl.searchParams.get("next"), defaultDestination(type));
   const target = request.nextUrl.clone();
   target.search = "";
 
+  // Confirmation and password-recovery links must never be consumed by GET.
+  // Mail scanners may follow this route before the user. Forward the credential
+  // to the Envista landing page, where a Server Action performs verifyOtp.
+  if (tokenHash && (type === "email" || type === "recovery")) {
+    target.pathname = type === "recovery" ? "/recover-account" : "/confirm-email";
+    target.searchParams.set("token_hash", tokenHash.slice(0, 2048));
+    target.searchParams.set("type", type);
+    return NextResponse.redirect(target);
+  }
+
+  // Compatibility for other legacy OTP types that are not part of the signup/
+  // recovery templates audited here.
   if (tokenHash && type) {
-    const supabase = await createClient();
+    const supabase = await createClient({ requireCookieWrites: true });
     const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
     if (!error) {
       target.pathname = next;
