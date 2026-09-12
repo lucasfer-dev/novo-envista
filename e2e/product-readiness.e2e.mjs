@@ -16,11 +16,11 @@ test.describe("Envista product readiness routes", () => {
     });
   }
 
-  test("registration keeps CPF optional", async ({ page }) => {
+  test("registration route remains available when signup is closed", async ({ page }) => {
     await page.goto("/register");
-    const cpf = page.getByLabel(/CPF/);
-    await expect(cpf).toBeVisible();
-    await expect(cpf).not.toHaveAttribute("required", "");
+    await expect(page.getByRole("heading", { name: "Criar conta" })).toBeVisible();
+    await expect(page.getByText(/cadastro está temporariamente fechado/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: "Já tenho uma conta" })).toBeVisible();
   });
 
   test("public legal pages no longer present themselves as internal beta documents", async ({ page }) => {
