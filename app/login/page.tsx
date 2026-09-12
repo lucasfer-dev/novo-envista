@@ -5,64 +5,37 @@ import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { loginAction } from "@/app/auth/actions";
 import { safeInternalPath } from "@/lib/auth/validation";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const error = typeof params.error === "string" ? params.error : "";
   const status = typeof params.status === "string" ? params.status : "";
   const next = safeInternalPath(params.next, "");
 
-  const errorMessage =
-    error === "session"
-      ? "Sua sessão não pôde ser validada. Entre novamente."
-      : error === "captcha"
-        ? "Conclua a verificação de segurança e tente novamente."
-        : error === "rate"
-          ? "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente."
-          : error === "temporary"
-            ? "O login está temporariamente indisponível. Tente novamente em instantes."
-            : error
-              ? "E-mail, CPF ou senha inválidos."
-              : "";
+  const errorMessage = error === "session"
+    ? "Sua sessão não pôde ser validada. Entre novamente."
+    : error === "captcha"
+      ? "Conclua a verificação de segurança e tente novamente."
+      : error === "rate"
+        ? "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente."
+        : error === "temporary"
+          ? "O login está temporariamente indisponível. Tente novamente em instantes."
+          : error
+            ? "E-mail, CPF ou senha inválidos."
+            : "";
 
   return (
-    <AuthShell title="Entrar no Envista" description="Acesse sua conta com autenticação protegida pelo Supabase.">
+    <AuthShell title="Entrar no Envista" description="Acesse sua conta para continuar aprendendo, construindo e acompanhando projetos.">
       {errorMessage ? <div className={styles.error} role="alert">{errorMessage}</div> : null}
-      {status === "password-updated" ? (
-        <div className={styles.success}>Senha atualizada e sessões anteriores encerradas. Entre novamente.</div>
-      ) : null}
-      {status === "confirmed" ? (
-        <div className={styles.success}>E-mail confirmado. Agora você pode entrar.</div>
-      ) : null}
+      {status === "password-updated" ? <div className={styles.success}>Senha atualizada e sessões anteriores encerradas. Entre novamente.</div> : null}
+      {status === "confirmed" ? <div className={styles.success}>E-mail confirmado. Agora você pode entrar.</div> : null}
       <form action={loginAction} className={styles.form}>
         <input type="hidden" name="next" value={next} />
-        <label>
-          E-mail ou CPF
-          <input
-            type="text"
-            name="identifier"
-            autoComplete="username"
-            maxLength={254}
-            placeholder="voce@email.com ou 000.000.000-00"
-            required
-          />
-        </label>
-        <label>
-          Senha
-          <input type="password" name="password" autoComplete="current-password" maxLength={128} required />
-        </label>
+        <label>E-mail ou CPF<input type="text" name="identifier" autoComplete="username" maxLength={254} placeholder="voce@email.com ou 000.000.000-00" required /></label>
+        <label>Senha<input type="password" name="password" autoComplete="current-password" maxLength={128} required /></label>
         <div className={styles.captcha}><AuthCaptcha action="login" /></div>
-        <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Entrando...">
-          Entrar
-        </AuthSubmitButton>
+        <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Entrando...">Entrar</AuthSubmitButton>
       </form>
-      <div className={styles.links}>
-        <Link href="/forgot-password">Esqueci minha senha</Link>
-        <Link href="/register">Criar conta</Link>
-      </div>
+      <div className={styles.links}><Link href="/forgot-password">Esqueci minha senha</Link><Link href="/register">Criar conta</Link></div>
     </AuthShell>
   );
 }
