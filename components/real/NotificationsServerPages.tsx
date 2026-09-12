@@ -1,4 +1,4 @@
-import ProductShell from "@/components/real/ProductShell";
+import LegacySocialShell from "@/components/social/LegacySocialShell";
 import { NotificationsView } from "@/components/real/NotificationsViews";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
@@ -28,7 +28,7 @@ export async function NotificationsServerPage({ expectedRole, searchParams }: { 
     .range(from, from + PAGE_SIZE - 1);
 
   return (
-    <ProductShell user={appUser} title="Notificações" variant="legacyDark">
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={basePath}>
       <NotificationsView
         notifications={(data ?? []) as never[]}
         status={first(query.status)}
@@ -38,6 +38,6 @@ export async function NotificationsServerPage({ expectedRole, searchParams }: { 
         total={totalCount ?? 0}
         basePath={basePath}
       />
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
