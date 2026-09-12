@@ -4,3 +4,4 @@
 .createCard input,.createCard textarea,.createCard select,.createCard button{min-width:0;max-width:100%;width:100%;box-sizing:border-box}
 .createCard textarea{display:block}
 @media(max-width:1180px){.manager{grid-template-columns:minmax(0,1fr)}}
+/* deployment refresh */
