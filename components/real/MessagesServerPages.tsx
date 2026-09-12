@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import ProductShell from "@/components/real/ProductShell";
+import LegacySocialShell from "@/components/social/LegacySocialShell";
 import { ConversationView, MessagesIndexView } from "@/components/real/MessagesViews";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
@@ -11,6 +11,7 @@ function cursor(value: string | undefined) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
+function messagesPath(role: ProductRole) { return role === "investor" ? "/investor/messages" : "/app/messages"; }
 
 export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
   const { supabase, appUser } = await requireProductUser(expectedRole);
@@ -41,14 +42,14 @@ export async function MessagesServerPage({ expectedRole, searchParams }: { expec
   });
 
   return (
-    <ProductShell user={appUser} title="Mensagens" variant="legacyDark">
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
       <MessagesIndexView
         role={expectedRole}
         threads={threads}
         status={first(query.status)}
         error={summaryError ? "inbox" : first(query.error)}
       />
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
 
@@ -84,7 +85,7 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
   const target = { id: targetId, display_name: profile?.display_name ?? "Conta privada", username: profile?.username ?? null };
 
   return (
-    <ProductShell user={appUser} title="Mensagens" variant="legacyDark">
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={`${messagesPath(expectedRole)}/${conversationId}`}>
       <ConversationView
         role={expectedRole}
         currentUserId={userId}
@@ -100,6 +101,6 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
         status={first(query.status)}
         error={first(query.error)}
       />
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
