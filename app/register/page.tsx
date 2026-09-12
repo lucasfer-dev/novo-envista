@@ -16,7 +16,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const errorMessage = error === "password" ? `Confira as senhas. Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.` : error === "captcha" ? "Conclua a verificação de segurança e tente novamente." : error === "rate" ? "Muitas tentativas de cadastro em pouco tempo. Aguarde alguns minutos." : error === "temporary" ? "O cadastro está temporariamente indisponível. Tente novamente em instantes." : error ? "Revise os dados informados." : "";
 
   return (
-    <AuthShell wide title="Criar sua conta" description="Entre no ecossistema para aprender, formar equipes, construir projetos e criar oportunidades.">
+    <AuthShell wide title="Criar conta" description="Entre no ecossistema para aprender, formar equipes, construir projetos e criar oportunidades.">
       {!enabled || status === "closed" ? <><div className={styles.notice}>O cadastro está temporariamente fechado. Contas existentes continuam podendo entrar normalmente.</div><div className={styles.actions}><Link className={`${styles.primary} ${styles.full}`} href="/login">Já tenho uma conta</Link></div></> : status === "check-email" ? <><div className={styles.success}>Confira seu e-mail para concluir a criação da conta.</div><Link className={`${styles.primary} ${styles.full}`} href="/login">Voltar ao login</Link></> : <>
         {errorMessage ? <div className={styles.error} role="alert">{errorMessage}</div> : null}
         <form action={registerProductAction} className={styles.form}>
