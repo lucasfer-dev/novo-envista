@@ -3,7 +3,7 @@ export type DeclaredAgeBand = "child" | "adolescent" | "adult";
 
 export const INTERNAL_TERMS_VERSION = "internal-2026-08-26-v2";
 export const INTERNAL_PRIVACY_VERSION = "internal-2026-08-26-v2";
-export const MIN_PASSWORD_LENGTH = 8;
+export const MIN_PASSWORD_LENGTH = 12;
 
 export function safeInternalPath(value: unknown, fallback = "/") {
   if (typeof value !== "string") return fallback;
