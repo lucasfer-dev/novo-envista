@@ -53,9 +53,9 @@ export async function confirmEmailAction(formData: FormData) {
 }
 
 /**
- * Valida automaticamente a credencial de recuperação quando a página segura
- * /recover-account é aberta. Ao concluir, a sessão temporária fica disponível
- * para /update-password sem exigir um clique intermediário.
+ * Estabelece a sessão temporária de recuperação somente quando chamada pela
+ * ação explícita da página /recover-account. O helper continua aceitando PKCE
+ * para links antigos enquanto eles expiram.
  */
 export async function establishRecoverySession(tokenHash: string, code: string) {
   const safeTokenHash = tokenHash.trim().slice(0, 2048);
@@ -65,10 +65,6 @@ export async function establishRecoverySession(tokenHash: string, code: string) 
   await establishSession("recovery", safeTokenHash, safeCode);
 }
 
-/**
- * Compatibilidade com formulários/links antigos que ainda submetem manualmente
- * a etapa de recuperação.
- */
 export async function beginRecoveryAction(formData: FormData) {
   const { tokenHash, code } = credentialFrom(formData);
   await establishRecoverySession(tokenHash, code);
