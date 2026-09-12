@@ -1,7 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { issueRecoveryIntent } from "@/lib/auth/recovery-intent";
+import {
+  clearRecoveryIntent,
+  hasValidRecoveryIntent,
+  issueRecoveryIntent,
+} from "@/lib/auth/recovery-intent";
+import { validatePassword } from "@/lib/auth/validation";
 import { logServerEvent } from "@/lib/observability/logger";
 import { createClient } from "@/lib/supabase/server";
 
@@ -32,9 +37,7 @@ function expectedType(flow: EmailFlow): ExpectedOtpType {
 function validateCredential(flow: EmailFlow, tokenHash: string, code: string, type: string) {
   if (!tokenHash && !code) return "missing-credentials";
   if (tokenHash && code) return "ambiguous-credentials";
-
   const expected = expectedType(flow);
-  // TokenHash templates always carry an explicit type. Old PKCE links may not.
   if (tokenHash && type !== expected) return "invalid-type";
   if (code && type && type !== expected) return "invalid-type";
   return null;
@@ -103,7 +106,6 @@ async function establishSession(flow: EmailFlow, tokenHash: string, code: string
   }
 }
 
-/** Consome a credencial somente após ação explícita do usuário. */
 export async function confirmEmailAction(formData: FormData) {
   const { tokenHash, code, type } = credentialFrom(formData);
   await establishSession("confirmation", tokenHash, code, type);
@@ -123,4 +125,50 @@ export async function beginRecoveryAction(formData: FormData) {
   const { tokenHash, code, type } = credentialFrom(formData);
   await establishSession("recovery", tokenHash, code, type);
   redirect("/update-password");
+}
+
+export async function updateRecoveryPasswordAction(formData: FormData) {
+  const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
+  const confirmation =
+    typeof formData.get("password_confirmation") === "string"
+      ? String(formData.get("password_confirmation"))
+      : "";
+
+  if (validatePassword(password) || password !== confirmation) {
+    redirect("/update-password?error=password");
+  }
+
+  const supabase = await createClient({ requireCookieWrites: true });
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+  if (claimsError || !userId) {
+    logServerEvent("warn", "auth.password_update.denied", { reason: "missing-session" });
+    redirect(authError("recovery", "recovery-session"));
+  }
+
+  if (!(await hasValidRecoveryIntent(userId))) {
+    logServerEvent("warn", "auth.password_update.denied", { reason: "missing-recovery-intent" });
+    redirect(authError("recovery", "recovery-intent"));
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    logServerEvent("warn", "auth.password_update.failed", {
+      error_code: error.code ?? null,
+      status: error.status ?? null,
+    });
+    redirect("/update-password?error=save");
+  }
+
+  await clearRecoveryIntent();
+  const { error: signOutError } = await supabase.auth.signOut({ scope: "global" });
+  if (signOutError) {
+    logServerEvent("warn", "auth.password_update.global_signout_failed", {
+      error_code: signOutError.code ?? null,
+      status: signOutError.status ?? null,
+    });
+    await supabase.auth.signOut({ scope: "local" });
+  }
+
+  redirect("/login?status=password-updated");
 }
