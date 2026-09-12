@@ -5,6 +5,7 @@ import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
 import { isValidCpf, isValidEmail, normalizeCpf, parseProductRole, validatePassword } from "@/lib/auth/validation";
 import { parseBirthDate } from "@/lib/identity/birth-date";
+import { verifyCpfWithSerpro } from "@/lib/identity/serpro-cpf";
 
 const TURNSTILE_FIELD = "cf-turnstile-response";
 
@@ -46,8 +47,22 @@ export async function registerProductAction(formData: FormData) {
   const captchaToken = value(formData, TURNSTILE_FIELD).slice(0, 4096);
   if (captchaConfigured() && !captchaToken) redirect(errorPath("captcha"));
 
+  const identity = await verifyCpfWithSerpro(cpf, birthDate);
+  if (!identity.ok) {
+    if (identity.reason === "invalid_birth_date") redirect(errorPath("birthdate"));
+    if (identity.reason === "mismatch") redirect(errorPath("identity"));
+    if (identity.reason === "non_regular") redirect(errorPath("cpf-status"));
+    redirect(errorPath("verification-unavailable"));
+  }
+
   const supabase = await createClient();
-  const metadata: Record<string, string> = { display_name: displayName, role, cpf };
+  const metadata: Record<string, string> = {
+    display_name: displayName,
+    role,
+    cpf,
+    verified_age_band: identity.ageBand,
+    identity_provider: "serpro_cpf_v3",
+  };
 
   const { data, error } = await supabase.auth.signUp({
     email,
