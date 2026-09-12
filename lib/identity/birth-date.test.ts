@@ -18,4 +18,10 @@ describe("birth date identity helpers", () => {
     expect(ageBandFromBirthDate("2010-01-01", now)).toBe("adolescent");
     expect(ageBandFromBirthDate("2000-01-01", now)).toBe("adult");
   });
+
+  it("uses the Brazil calendar day near midnight UTC", () => {
+    const lateEveningInBrazil = new Date("2026-09-12T01:30:00.000Z");
+    expect(parseBirthDate("2026-09-12", lateEveningInBrazil)).toBeNull();
+    expect(ageBandFromBirthDate("2008-09-12", lateEveningInBrazil)).toBe("adolescent");
+  });
 });
