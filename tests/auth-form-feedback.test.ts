@@ -7,6 +7,7 @@ const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
 const registerAction = readFileSync("app/auth/register-product-action.ts", "utf8");
+const verificationTicket = readFileSync("lib/identity/verification-ticket.ts", "utf8");
 const actions = readFileSync("app/auth/actions.ts", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
 const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
@@ -38,17 +39,33 @@ describe("auth form feedback", () => {
     expect(register).toMatch(/name="birth_date"[^>]*required/);
     expect(register).toContain("O CPF não aparece no seu perfil");
     expect(registerAction).toContain("verifyCpfWithSerpro");
-    expect(registerAction).toContain('identity_provider: "serpro_cpf_v3"');
+    expect(registerAction).toContain("createIdentityVerificationTicket");
+    expect(registerAction).toContain("verification_id: verificationId");
+    expect(registerAction).not.toContain('identity_provider: "serpro_cpf_v3"');
     expect(actions).toContain("isValidCpf");
     expect(actions).toContain("signInWithCpf");
   });
 
-  it("keeps CPF out of public profile data and browser-readable table access", () => {
+  it("binds account creation to a short-lived service-role verification ticket", () => {
+    expect(verificationTicket).toContain('rpc("create_pending_identity_verification"');
+    expect(verificationTicket).toContain("SUPABASE_SECRET_KEY");
+    expect(verifiedIdentityMigration).toContain("private.pending_identity_verifications");
+    expect(verifiedIdentityMigration).toContain("interval '10 minutes'");
+    expect(verifiedIdentityMigration).toContain("to service_role");
+    expect(verifiedIdentityMigration).toContain("verification_id");
+    expect(verifiedIdentityMigration).toContain("for update");
+    expect(verifiedIdentityMigration).toContain("delete from private.pending_identity_verifications where id = pending.id");
+    expect(verifiedIdentityMigration).toContain("p.cpf_hash = expected_cpf_hash");
+    expect(verifiedIdentityMigration).toContain("p.email_hash = expected_email_hash");
+  });
+
+  it("keeps CPF and full birth date out of public profile data", () => {
     expect(migration).toContain("new.raw_user_meta_data := coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf'");
     expect(migration).toContain("revoke all on table public.account_private_identifiers from public, anon, authenticated");
     expect(migration).toContain("alter table public.account_private_identifiers enable row level security");
     expect(verifiedIdentityMigration).toContain("verification_provider");
     expect(verifiedIdentityMigration).toContain("verified_at");
+    expect(verifiedIdentityMigration).not.toContain("birth_date date");
     expect(onboarding).not.toContain('name="cpf"');
     expect(onboarding).not.toContain('name="birth_date"');
   });
