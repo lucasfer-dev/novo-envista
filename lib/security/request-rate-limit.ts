@@ -18,6 +18,7 @@ const globalStore = globalThis as typeof globalThis & {
 
 const buckets = (globalStore.__envistaRateLimitStore ??= new Map<string, Bucket>());
 const unsafeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+const protectedGetPaths = new Set(["/api/competitions"]);
 
 function clientIp(request: NextRequest) {
   // A Vercel sobrescreve x-forwarded-for na borda. Fora da Vercel usamos um
@@ -27,7 +28,11 @@ function clientIp(request: NextRequest) {
   return first || "local";
 }
 
-function policyForPath(pathname: string): Policy {
+function policyForRequest(request: NextRequest): Policy {
+  const pathname = request.nextUrl.pathname;
+  if (request.method === "GET" && pathname === "/api/competitions") {
+    return { scope: "competitions-read", limit: 60, windowMs: 60_000 };
+  }
   if (pathname === "/login" || pathname === "/admin/login") {
     return { scope: "login", limit: 10, windowMs: 60_000 };
   }
@@ -91,14 +96,19 @@ function denied(status: 403 | 429, retryAfter?: number) {
  *
  * Não substitui as quotas atômicas no Supabase: instâncias serverless podem ter
  * memória separada. A função reduz rajadas, brute force e CSRF antes de o request
- * chegar às Server Actions; o banco continua sendo a camada autoritativa para
- * abuso por usuários autenticados.
+ * chegar às Server Actions. GETs caros explicitamente listados também recebem
+ * limitação por IP; o banco continua sendo a camada autoritativa para abuso que
+ * precisa de coordenação global.
  */
 export function guardUnsafeRequest(request: NextRequest) {
-  if (!unsafeMethods.has(request.method.toUpperCase())) return null;
-  if (!sameOrigin(request)) return denied(403);
+  const method = request.method.toUpperCase();
+  const isUnsafe = unsafeMethods.has(method);
+  const isProtectedGet = method === "GET" && protectedGetPaths.has(request.nextUrl.pathname);
 
-  const policy = policyForPath(request.nextUrl.pathname);
+  if (!isUnsafe && !isProtectedGet) return null;
+  if (isUnsafe && !sameOrigin(request)) return denied(403);
+
+  const policy = policyForRequest(request);
   const now = Date.now();
   cleanup(now);
 

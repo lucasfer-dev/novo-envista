@@ -7,9 +7,15 @@ const JSON_HEADERS = {
 };
 
 const CPF_LOGIN_SINK_EMAIL = "cpf-login-sink@invalid.envista.local";
+const RATE_WINDOW_SECONDS = 15 * 60;
+const CPF_ATTEMPT_LIMIT = 10;
+const IP_ATTEMPT_LIMIT = 30;
 
-function json(body: Record<string, unknown>, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
+function json(body: Record<string, unknown>, status = 200, extraHeaders?: Record<string, string>) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...JSON_HEADERS, ...(extraHeaders ?? {}) },
+  });
 }
 
 function normalizeCpf(value: unknown) {
@@ -30,6 +36,42 @@ function isValidCpf(value: unknown) {
   };
 
   return checkDigit(9) === Number(cpf[9]) && checkDigit(10) === Number(cpf[10]);
+}
+
+async function sha256(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function clientIp(req: Request) {
+  return (
+    req.headers.get("cf-connecting-ip") ||
+    req.headers.get("x-real-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "unknown"
+  ).slice(0, 128);
+}
+
+async function consumeRateLimit(
+  supabaseAdmin: any,
+  scope: string,
+  subjectHash: string,
+  maxAttempts: number,
+) {
+  const { data, error } = await supabaseAdmin.rpc("consume_private_rate_limit", {
+    rate_scope: scope,
+    subject_hash: subjectHash,
+    max_attempts: maxAttempts,
+    window_seconds: RATE_WINDOW_SECONDS,
+  });
+
+  if (error || !data || data.allowed !== true) {
+    const retryAfter = Number(data?.retry_after || 60);
+    return { allowed: false, retryAfter: Math.max(1, Math.min(retryAfter, RATE_WINDOW_SECONDS)) };
+  }
+
+  return { allowed: true, retryAfter: 0 };
 }
 
 function authError(error: { code?: string; status?: number } | null) {
@@ -65,16 +107,27 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const [cpfHash, ipHash] = await Promise.all([
+      sha256(`cpf-login:cpf:${cpf}`),
+      sha256(`cpf-login:ip:${clientIp(req)}`),
+    ]);
+
+    const [cpfLimit, ipLimit] = await Promise.all([
+      consumeRateLimit(ctx.supabaseAdmin, "cpf_login_cpf", cpfHash, CPF_ATTEMPT_LIMIT),
+      consumeRateLimit(ctx.supabaseAdmin, "cpf_login_ip", ipHash, IP_ATTEMPT_LIMIT),
+    ]);
+
+    if (!cpfLimit.allowed || !ipLimit.allowed) {
+      const retryAfter = Math.max(cpfLimit.retryAfter, ipLimit.retryAfter, 1);
+      return json({ error: "rate" }, 429, { "Retry-After": String(retryAfter) });
+    }
+
     const { data: userId, error: mappingError } = await ctx.supabaseAdmin.rpc("resolve_cpf_login", {
       cpf_value: cpf,
     });
 
     if (mappingError) return json({ error: "temporary" }, 503);
 
-    // Always execute a real password-auth request for valid CPF shapes. When the
-    // mapping does not exist we use a fixed sink address so CAPTCHA/rate-limit
-    // behavior stays in the authentication layer and account existence is not
-    // exposed by a short-circuit response.
     let email = CPF_LOGIN_SINK_EMAIL;
     if (typeof userId === "string" && userId) {
       const { data: userData } = await ctx.supabaseAdmin.auth.admin.getUserById(userId);
