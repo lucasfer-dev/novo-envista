@@ -3,6 +3,7 @@ import './team-role-select.css'
 import './scrollbar.css'
 import './accessibility.css'
 import './dashboard-spacing.css'
+import './product-polish.css'
 import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
