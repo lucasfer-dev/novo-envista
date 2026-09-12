@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
-import { isValidCpf, isValidEmail, normalizeCpf, parseProductRole, validatePassword } from "@/lib/auth/validation";
+import { isValidEmail, parseProductRole, validatePassword } from "@/lib/auth/validation";
 
 const TURNSTILE_FIELD = "cf-turnstile-response";
 
@@ -31,28 +31,22 @@ export async function registerProductAction(formData: FormData) {
 
   const displayName = value(formData, "display_name").slice(0, 100);
   const email = value(formData, "email").toLowerCase();
-  const rawCpf = value(formData, "cpf");
-  const cpf = normalizeCpf(rawCpf);
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const confirmation = typeof formData.get("password_confirmation") === "string" ? String(formData.get("password_confirmation")) : "";
   const role = parseProductRole(formData.get("role"));
 
   if (!displayName || !isValidEmail(email)) redirect(errorPath("invalid"));
-  if (rawCpf && !isValidCpf(cpf)) redirect(errorPath("cpf"));
   if (validatePassword(password) || password !== confirmation) redirect(errorPath("password"));
 
   const captchaToken = value(formData, TURNSTILE_FIELD).slice(0, 4096);
   if (captchaConfigured() && !captchaToken) redirect(errorPath("captcha"));
 
   const supabase = await createClient();
-  const metadata: Record<string, string> = { display_name: displayName, role };
-  if (cpf) metadata.cpf = cpf;
-
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: metadata,
+      data: { display_name: displayName, role },
       emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
