@@ -68,6 +68,9 @@ async function queryCpf(cpf: string, birthDate: string, token: string) {
 }
 
 export async function verifyCpfWithSerpro(cpf: string, birthDateIso: string): Promise<VerificationResult> {
+  const normalizedCpf = cpf.replace(/\D/g, "");
+  if (normalizedCpf.length !== 11) return { ok: false, reason: "mismatch" };
+
   const serproBirthDate = formatBirthDateForSerpro(birthDateIso);
   const ageBand = ageBandFromBirthDate(birthDateIso);
   if (!serproBirthDate || !ageBand) return { ok: false, reason: "invalid_birth_date" };
@@ -77,11 +80,11 @@ export async function verifyCpfWithSerpro(cpf: string, birthDateIso: string): Pr
     let token = await getAccessToken();
     if (!token) return { ok: false, reason: "unavailable" };
 
-    let response = await queryCpf(cpf, serproBirthDate, token);
+    let response = await queryCpf(normalizedCpf, serproBirthDate, token);
     if (response.status === 401) {
       token = await getAccessToken(true);
       if (!token) return { ok: false, reason: "unavailable" };
-      response = await queryCpf(cpf, serproBirthDate, token);
+      response = await queryCpf(normalizedCpf, serproBirthDate, token);
     }
 
     if ([400, 404, 422].includes(response.status)) return { ok: false, reason: "mismatch" };
@@ -95,13 +98,13 @@ export async function verifyCpfWithSerpro(cpf: string, birthDateIso: string): Pr
 
     const returnedCpf = String(payload.ni ?? "").replace(/\D/g, "");
     const returnedBirthDate = String(payload.nascimento ?? "").replace(/\D/g, "");
-    if (returnedCpf !== cpf || returnedBirthDate !== serproBirthDate) {
+    if (returnedCpf !== normalizedCpf || returnedBirthDate !== serproBirthDate) {
       return { ok: false, reason: "mismatch" };
     }
 
     const code = String(payload.situacao?.codigo ?? "").trim();
     const description = String(payload.situacao?.descricao ?? "").trim().toLocaleLowerCase("pt-BR");
-    if (code !== "0" && description !== "regular") {
+    if (code !== "0" || (description && description !== "regular")) {
       return { ok: false, reason: "non_regular" };
     }
 
