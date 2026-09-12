@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink, GitBranch, Link2, MapPin, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import { requireProductUser } from "@/lib/auth/require-product-user";
+import { calculateProjectReadiness } from "@/lib/projects/readiness-score";
 import {
   createProjectMilestoneAction,
   createProjectUpdateAction,
@@ -26,7 +27,7 @@ export default async function ProjectCockpitPage({ params, searchParams }: { par
   const { supabase, userId, appUser } = await requireProductUser("participant");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,stage,category,location,tags,visibility,owner_user_id,owner_team_id,repository_url,demo_url,design_url,updated_at")
+    .select("id,slug,title,short_description,problem,solution,impact,stage,category,location,tags,needs,readme,cover_path,visibility,owner_user_id,owner_team_id,website_url,repository_url,demo_url,design_url,updated_at")
     .eq("slug", slug)
     .maybeSingle();
   if (!project) notFound();
@@ -50,6 +51,7 @@ export default async function ProjectCockpitPage({ params, searchParams }: { par
   const milestones = milestonesResult.data ?? [];
   const completed = milestones.filter((item: any) => item.completed_at).length;
   const progress = milestones.length ? Math.round((completed / milestones.length) * 100) : 0;
+  const readiness = calculateProjectReadiness(project);
   const updates = updatesResult.data ?? [];
   const authorIds = Array.from(new Set(updates.map((item: any) => item.author_id).filter(Boolean)));
   const { data: updateAuthors } = authorIds.length
@@ -71,10 +73,25 @@ export default async function ProjectCockpitPage({ params, searchParams }: { par
       {error ? <div className="form-error">Não foi possível salvar esta alteração.</div> : null}
 
       <div className={styles.grid}>
+        <div className={styles.metric}><b>{readiness.score}%</b><span>prontidão do projeto</span></div>
         <div className={styles.metric}><b>{Number(metric?.view_count || 0)}</b><span>visualizações</span></div>
         <div className={styles.metric}><b>{savesResult.count ?? 0}</b><span>salvamentos</span></div>
         <div className={styles.metric}><b>{interestsResult.count ?? 0}</b><span>interesses</span></div>
       </div>
+
+      <section className="section-block panel" style={{ padding: 20 }}>
+        <div className="section-row">
+          <div><h2>Prontidão para apresentar</h2><p>Score explicável de completude do projeto — sem IA opaca. Estado atual: <strong>{readiness.level}</strong>.</p></div>
+          <strong>{readiness.score}%</strong>
+        </div>
+        <div className={styles.progress}><i style={{ width: `${readiness.score}%` }} /></div>
+        {readiness.missing.length ? (
+          <div style={{ marginTop: 14 }}>
+            <strong>Próximos passos que mais aumentam a qualidade:</strong>
+            <ul>{readiness.missing.slice(0, 4).map((item) => <li key={item}>{item}</li>)}</ul>
+          </div>
+        ) : <p style={{ marginTop: 14 }}>Os principais sinais de apresentação estão completos. Agora foque em evidências de uso, evolução e resultados.</p>}
+      </section>
 
       <section className="section-block panel" style={{ padding: 20 }}>
         <div className="section-row"><div><h2>Progresso</h2><p>{completed} de {milestones.length} marcos concluídos.</p></div><strong>{progress}%</strong></div>
