@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { beginRecoveryAction } from "@/app/auth/email-actions";
+import { redirect } from "next/navigation";
+import { establishRecoverySession } from "@/app/auth/email-actions";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
-import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 
 export default async function RecoverAccountPage({
   searchParams,
@@ -9,43 +9,27 @@ export default async function RecoverAccountPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim() : "";
-  const code = typeof params.code === "string" ? params.code.trim() : "";
-  const hasCredential = Boolean(tokenHash || code);
+  const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim().slice(0, 2048) : "";
+  const code = typeof params.code === "string" ? params.code.trim().slice(0, 2048) : "";
+
+  if (tokenHash || code) {
+    await establishRecoverySession(tokenHash, code);
+    redirect("/update-password");
+  }
 
   return (
     <AuthShell
-      title="Redefinição de senha"
-      description="Recebemos uma solicitação para redefinir a senha da sua conta Envista."
+      title="Link de recuperação inválido"
+      description="Não foi possível encontrar as credenciais necessárias para redefinir sua senha."
     >
-      {hasCredential ? (
-        <>
-          <div className={styles.notice}>
-            Sua senha ainda não foi alterada. Clique em continuar para validar este link e abrir a página segura onde você poderá criar uma nova senha.
-          </div>
-          <form action={beginRecoveryAction} className={styles.form}>
-            {tokenHash ? <input type="hidden" name="token_hash" value={tokenHash} /> : null}
-            {code ? <input type="hidden" name="code" value={code} /> : null}
-            <AuthSubmitButton
-              className={`${styles.primary} ${styles.full}`}
-              pendingText="Validando..."
-            >
-              Continuar para criar nova senha
-            </AuthSubmitButton>
-          </form>
-        </>
-      ) : (
-        <>
-          <div className={styles.error} role="alert">
-            Este link de recuperação está incompleto. Solicite um novo e-mail e use sempre o link mais recente recebido.
-          </div>
-          <div className={styles.actions}>
-            <Link className={`${styles.primary} ${styles.full}`} href="/forgot-password">
-              Enviar novo link de recuperação
-            </Link>
-          </div>
-        </>
-      )}
+      <div className={styles.error} role="alert">
+        Este link de recuperação está incompleto. Solicite um novo e-mail e use sempre o link mais recente recebido.
+      </div>
+      <div className={styles.actions}>
+        <Link className={`${styles.primary} ${styles.full}`} href="/forgot-password">
+          Enviar novo link de recuperação
+        </Link>
+      </div>
       <div className={styles.links}>
         <Link href="/login">Voltar ao login</Link>
       </div>
