@@ -2,6 +2,7 @@ import './globals.css'
 import './team-role-select.css'
 import './scrollbar.css'
 import './accessibility.css'
+import './dashboard-spacing.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
