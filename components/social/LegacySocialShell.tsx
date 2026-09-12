@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Activity,
   BadgeCheck,
+  BarChart3,
   Bell,
   Bookmark,
   BriefcaseBusiness,
@@ -14,11 +15,12 @@ import {
   FolderKanban,
   GraduationCap,
   Home,
+  LifeBuoy,
   LogOut,
   Menu,
   MessageCircle,
   MoreHorizontal,
-  Search,
+  PanelsTopLeft,
   Settings,
   Trophy,
   Users,
@@ -27,6 +29,7 @@ import {
 import { isNavItemActive } from "@/lib/navigation";
 import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationEnhancer";
 import NotificationsBell from "@/components/real/NotificationsBell";
+import GlobalSearchCommand from "@/components/product/GlobalSearchCommand";
 import type { User } from "@/types";
 import type { ProductRole } from "@/lib/auth/require-product-user";
 
@@ -36,6 +39,8 @@ const participantNav = [
   ["/app/explore", Compass, "Explorar"],
   ["/app/projects", FolderKanban, "Meus projetos"],
   ["/app/teams", Users, "Minhas equipes"],
+  ["/app/workspace", PanelsTopLeft, "Workspace"],
+  ["/app/insights", BarChart3, "Insights"],
   ["/app/interests", BriefcaseBusiness, "Interesses recebidos"],
   ["/app/competitions", Trophy, "Competições"],
   ["/app/learn", GraduationCap, "Aprender"],
@@ -47,6 +52,7 @@ const investorNav = [
   ["/investor/explore", Compass, "Radar"],
   ["/investor/interests", BriefcaseBusiness, "Pipeline"],
   ["/investor/saved", Bookmark, "Projetos salvos"],
+  ["/investor/activity", Bell, "Atividade"],
   ["/investor/social", Activity, "Atualizações"],
   ["/investor/following", Eye, "Seguindo"],
   ["/investor/competitions", Trophy, "Competições"],
@@ -74,30 +80,14 @@ function cx(...values: Array<string | false | undefined>) {
 }
 
 function initials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
+  return name.split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
 function Avatar({ name }: { name: string }) {
   return <span className="avatar">{initials(name)}</span>;
 }
 
-export default function LegacySocialShell({
-  user,
-  role,
-  pathname: activePath,
-  children,
-}: {
-  user: User;
-  role: ProductRole;
-  pathname?: string;
-  children: ReactNode;
-}) {
+export default function LegacySocialShell({ user, role, pathname: activePath, children }: { user: User; role: ProductRole; pathname?: string; children: ReactNode }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = activePath ?? (role === "investor" ? "/investor/social" : "/app/social");
@@ -106,54 +96,32 @@ export default function LegacySocialShell({
   const prefix: "/app" | "/investor" = role === "investor" ? "/investor" : "/app";
   const home = prefix;
   const profile = role === "investor" ? "/investor/profile" : `/app/profile/${user.username}`;
-  const settings = role === "investor" ? "/investor/settings" : "/app/settings";
 
-  const go = (path: string) => {
-    router.push(path);
-    setMobileOpen(false);
-  };
-
-  const logout = async () => {
-    await fetch("/auth/signout", { method: "POST", credentials: "same-origin" });
-    window.location.assign("/login");
-  };
+  const go = (path: string) => { router.push(path); setMobileOpen(false); };
+  const logout = async () => { await fetch("/auth/signout", { method: "POST", credentials: "same-origin" }); window.location.assign("/login"); };
 
   return (
     <div className="app-shell">
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       <TaxonomyNavigationEnhancer />
-      {mobileOpen && (
-        <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} />
-      )}
+      {mobileOpen && <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} />}
 
       <aside id="app-navigation" aria-label="Navegação principal" className={cx("sidebar", mobileOpen && "mobile-open")}>
         <button className="mobile-close" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)}><X size={20} /></button>
-
-        <button className="brand" onClick={() => go(home)} aria-label="Ir para o início do Envista">
-          <img src="/envista-logo.png" alt="" />
-          <b>Envista</b>
-        </button>
-
+        <button className="brand" onClick={() => go(home)} aria-label="Ir para o início do Envista"><img src="/envista-logo.png" alt="" /><b>Envista</b></button>
         <nav aria-label="Seções do produto">
-          {nav.map(([href, Icon, label]) => (
-            <button key={href} onClick={() => go(href)} className={cx(isNavItemActive(pathname, href) && "active")} aria-current={isNavItemActive(pathname, href) ? "page" : undefined}>
-              <Icon size={18} aria-hidden="true" />
-              <span>{label}</span>
-            </button>
-          ))}
+          {nav.map(([href, Icon, label]) => <button key={href} onClick={() => go(href)} className={cx(isNavItemActive(pathname, href) && "active")} aria-current={isNavItemActive(pathname, href) ? "page" : undefined}><Icon size={18} aria-hidden="true" /><span>{label}</span></button>)}
         </nav>
 
-        {role === "participant" && (
-          <div className="side-section">
-            <span>Conta</span>
-            <button onClick={() => go(profile)}><CircleUserRound size={18} aria-hidden="true" /> Perfil</button>
-            <button onClick={() => go("/account/profile")}><Settings size={18} aria-hidden="true" /> Preferências</button>
-            <button onClick={() => go("/app/notifications")}><Bell size={18} aria-hidden="true" /> Notificações</button>
-          </div>
-        )}
+        <div className="side-section">
+          <span>Conta</span>
+          <button onClick={() => go(profile)}><CircleUserRound size={18} aria-hidden="true" /> Perfil</button>
+          <button onClick={() => go("/account/settings")}><Settings size={18} aria-hidden="true" /> Configurações</button>
+          <button onClick={() => go(`${prefix}/activity`)}><Bell size={18} aria-hidden="true" /> Central de atividade</button>
+          <button onClick={() => go("/account/feedback")}><LifeBuoy size={18} aria-hidden="true" /> Feedback e suporte</button>
+        </div>
 
         <div className="side-bottom">
-          {role === "investor" && <button onClick={() => go(settings)}><Settings size={18} aria-hidden="true" /> Configurações</button>}
           <div className="user-card">
             <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}><Avatar name={user.name} /></button>
             <div><b>{user.name}</b><small>@{user.username} · {role === "investor" ? "Investidor" : "Participante"}</small></div>
@@ -165,24 +133,15 @@ export default function LegacySocialShell({
       <main className="main" id="main-content" tabIndex={-1}>
         <header className="topbar">
           <button className="mobile-menu" aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="app-navigation" onClick={() => setMobileOpen(true)}><Menu aria-hidden="true" /></button>
-          <button className="global-search" onClick={() => go(`${home}/explore`)}><Search size={17} aria-hidden="true" /><span>{role === "investor" ? "Buscar projetos no Radar" : "Buscar no Envista"}</span></button>
-          <div className="top-actions">
-            <NotificationsBell userId={user.id} prefix={prefix} dark />
-            <button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}><Avatar name={user.name} /></button>
-          </div>
+          <GlobalSearchCommand label={role === "investor" ? "Buscar projetos, equipes e pessoas" : "Buscar no Envista"} />
+          <div className="top-actions"><NotificationsBell userId={user.id} prefix={prefix} dark /><button className="profile-avatar-btn" aria-label="Abrir meu perfil" onClick={() => go(profile)}><Avatar name={user.name} /></button></div>
         </header>
         <div className="page-wrap">{children}</div>
       </main>
 
       <nav className="bottom-nav" aria-label="Navegação móvel">
-        {mobileNav.map(([href, Icon, label]) => (
-          <button key={href} onClick={() => go(href)} className={cx(isNavItemActive(pathname, href) && "active")} aria-current={isNavItemActive(pathname, href) ? "page" : undefined}>
-            <Icon size={19} aria-hidden="true" /><span>{label}</span>
-          </button>
-        ))}
-        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(pathname, href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation">
-          <MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span>
-        </button>
+        {mobileNav.map(([href, Icon, label]) => <button key={href} onClick={() => go(href)} className={cx(isNavItemActive(pathname, href) && "active")} aria-current={isNavItemActive(pathname, href) ? "page" : undefined}><Icon size={19} aria-hidden="true" /><span>{label}</span></button>)}
+        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(pathname, href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation"><MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span></button>
       </nav>
     </div>
   );
