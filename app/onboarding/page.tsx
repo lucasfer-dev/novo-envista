@@ -52,7 +52,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
       <form action={onboardingAction} className={styles.form}>
         <div className={styles.grid2}>
           <label>Nome de exibição<input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} required /></label>
-          <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern="[a-zA-Z0-9][a-zA-Z0-9._-]{2,31}" aria-describedby="username-help" required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
+          <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern="[a-zA-Z0-9][a-zA-Z0-9._\\-]{2,31}" aria-describedby="username-help" required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
         </div>
 
         <label>Faixa etária{ageLocked ? <><input type="hidden" name="age_band" value={compliance.age_band} /><input value={ageLabel(compliance.age_band)} disabled /></> : <select name="age_band" defaultValue="" required><option value="" disabled>Selecione</option><option value="child">Menos de 12 anos</option><option value="adolescent">12 a 17 anos</option><option value="adult">18 anos ou mais</option></select>}<span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública.</span></label>
