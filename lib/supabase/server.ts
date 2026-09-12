@@ -5,20 +5,14 @@ import { getSupabaseConfig } from "@/lib/supabase/config";
 export async function createClient() {
   const cookieStore = await cookies();
   const { url, publishableKey } = getSupabaseConfig();
-
   return createServerClient(url, publishableKey, {
     cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
+      getAll() { return cookieStore.getAll(); },
+      setAll(cookiesToSet, _cacheHeaders) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
-          );
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
-          // Server Components não podem gravar cookies diretamente.
-          // A renovação de sessão será tratada pelo fluxo de Auth.
+          // Server Components podem não escrever cookies; o Proxy renova a sessão e propaga cabeçalhos de cache.
         }
       },
     },
