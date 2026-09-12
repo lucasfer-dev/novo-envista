@@ -2,12 +2,9 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import styles from "./AdminMfa.module.css";
 
 type Mode = "loading" | "enroll" | "challenge";
-
-const boxStyle = { border: "1px solid #e4e7ec", borderRadius: 14, padding: 16, background: "#f9fafb" } as const;
-const inputStyle = { width: "100%", boxSizing: "border-box" as const, border: "1px solid #d0d5dd", borderRadius: 10, padding: "12px 14px", fontSize: 18, letterSpacing: 4, marginTop: 10 };
-const buttonStyle = { width: "100%", border: 0, borderRadius: 10, padding: "12px 16px", fontWeight: 700, cursor: "pointer", background: "#037fb0", color: "white", marginTop: 12 } as const;
 
 export function AdminMfaClient() {
   const [mode, setMode] = useState<Mode>("loading");
@@ -48,9 +45,6 @@ export function AdminMfaClient() {
         return;
       }
 
-      // Fatores não verificados não podem ser retomados com segurança porque o
-      // segredo inicial não é devolvido novamente. Removemos tentativas antigas
-      // antes de criar uma matrícula nova para evitar acumular fatores órfãos.
       for (const factor of factors.data.totp.filter((item) => item.status !== "verified")) {
         await supabase.auth.mfa.unenroll({ factorId: factor.id });
       }
@@ -94,8 +88,6 @@ export function AdminMfaClient() {
       return;
     }
 
-    // Garante que o cookie usado pelo SSR já carregue o JWT aal2 antes de abrir
-    // qualquer rota administrativa.
     await supabase.auth.refreshSession();
     window.location.replace("/admin");
   }
@@ -107,37 +99,37 @@ export function AdminMfaClient() {
   }
 
   if (mode === "loading" && !error) {
-    return <div style={boxStyle}>Preparando a autenticação segura…</div>;
+    return <div className={styles.loading}>Preparando a autenticação segura…</div>;
   }
 
   return (
-    <div style={{ display: "grid", gap: 16 }}>
+    <div className={styles.client}>
       {mode === "enroll" && (
-        <div style={boxStyle}>
-          <strong>1. Adicione o Envista no seu autenticador</strong>
-          <p style={{ color: "#667085", lineHeight: 1.5 }}>
+        <div className={styles.box}>
+          <div className={styles.boxTitle}><span className={styles.step}>1</span> Adicione o Envista ao autenticador</div>
+          <p className={styles.muted}>
             Escaneie o QR Code com Google Authenticator, Microsoft Authenticator, Authy, 1Password ou outro aplicativo TOTP.
           </p>
-          {qrCode && <img src={qrCode} alt="QR Code para configurar MFA" style={{ display: "block", width: 220, maxWidth: "100%", margin: "14px auto", background: "white", padding: 8, borderRadius: 12 }} />}
+          {qrCode && <div className={styles.qrWrap}><img src={qrCode} alt="QR Code para configurar MFA" className={styles.qr} /></div>}
           {secret && (
-            <details>
-              <summary style={{ cursor: "pointer", fontWeight: 600 }}>Não consegue ler o QR Code?</summary>
-              <p style={{ color: "#667085" }}>Cadastre manualmente este segredo e guarde-o longe do computador:</p>
-              <code style={{ display: "block", overflowWrap: "anywhere", background: "white", padding: 10, borderRadius: 8 }}>{secret}</code>
+            <details className={styles.details}>
+              <summary>Não consegue ler o QR Code?</summary>
+              <p className={styles.muted}>Cadastre manualmente este segredo e guarde-o longe do computador:</p>
+              <code className={styles.secret}>{secret}</code>
             </details>
           )}
         </div>
       )}
 
       {mode === "challenge" && (
-        <div style={boxStyle}>
-          <strong>Confirme sua identidade</strong>
-          <p style={{ color: "#667085", lineHeight: 1.5 }}>Abra o autenticador que já está vinculado ao Envista e use o código atual.</p>
+        <div className={styles.box}>
+          <div className={styles.boxTitle}>Confirme sua identidade</div>
+          <p className={styles.muted}>Abra o autenticador já vinculado ao Envista e use o código atual.</p>
         </div>
       )}
 
-      <form onSubmit={verify}>
-        <label htmlFor="admin-mfa-code" style={{ fontWeight: 700 }}>
+      <form onSubmit={verify} className={styles.form}>
+        <label htmlFor="admin-mfa-code" className={styles.label}>
           {mode === "enroll" ? "2. Digite o código gerado" : "Código do autenticador"}
         </label>
         <input
@@ -148,21 +140,20 @@ export function AdminMfaClient() {
           autoComplete="one-time-code"
           pattern="[0-9]{6}"
           maxLength={6}
-          style={inputStyle}
+          className={styles.input}
           aria-invalid={Boolean(error)}
           autoFocus={mode === "challenge"}
+          aria-describedby={error ? "admin-mfa-error" : undefined}
         />
-        {error && <p role="alert" style={{ color: "#b42318", lineHeight: 1.5 }}>{error}</p>}
-        <button type="submit" disabled={busy || mode === "loading"} style={{ ...buttonStyle, opacity: busy || mode === "loading" ? 0.65 : 1 }}>
+        {error && <p id="admin-mfa-error" role="alert" className={styles.error}>{error}</p>}
+        <button type="submit" disabled={busy || mode === "loading"} className={styles.primary}>
           {busy ? "Verificando…" : "Verificar e entrar no painel"}
         </button>
       </form>
 
-      <button type="button" onClick={signOut} style={{ border: 0, background: "transparent", color: "#475467", cursor: "pointer", padding: 8 }}>
-        Sair desta conta
-      </button>
-      <p style={{ margin: 0, fontSize: 13, color: "#667085", lineHeight: 1.5 }}>
-        Para evitar perda de acesso, depois de entrar cadastre um segundo fator TOTP de backup em um dispositivo separado.
+      <button type="button" onClick={signOut} className={styles.secondary}>Sair desta conta</button>
+      <p className={styles.footnote}>
+        Para reduzir o risco de perda de acesso, mantenha um segundo fator TOTP de backup em um dispositivo separado.
       </p>
     </div>
   );
