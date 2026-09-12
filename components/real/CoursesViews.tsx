@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, CheckCircle2, Clock3, FileText, GraduationCap, PlayCircle, Sparkles, Video } from "lucide-react";
+import { BookOpen, CheckCircle2, Clock3, FileText, GraduationCap, PlayCircle, Sparkles } from "lucide-react";
 import { completeLessonAction, enrollCourseAction, undoLessonAction } from "@/lib/courses/actions";
 import styles from "./Courses.module.css";
 
