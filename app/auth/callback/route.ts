@@ -38,32 +38,35 @@ function errorRedirect(request: NextRequest, reason: string, flow: string) {
   return NextResponse.redirect(target);
 }
 
-/**
- * Callback central dos e-mails do Supabase.
- *
- * Suporta os dois formatos usados pelos templates/fluxos de Auth:
- * - PKCE: `?code=...` (ConfirmationURL + redirect_to);
- * - token hash: `?token_hash=...&type=...` (template SSR customizado).
- *
- * Isso evita que uma alteração de template no Dashboard quebre cadastro ou
- * recuperação de senha desde que o link continue apontando para esta rota.
- */
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
-  const code = params.get("code");
-  const tokenHash = params.get("token_hash");
+  const code = params.get("code")?.trim() ?? "";
+  const tokenHash = params.get("token_hash")?.trim() ?? "";
   const type = parseOtpType(params.get("type"));
   const next = safeInternalPath(params.get("next"), defaultDestination(type));
   const flow = flowFor(type, next);
 
-  // O Supabase pode devolver erros do Auth no próprio redirect.
-  // Não refletimos descrição/token no HTML para evitar vazamento de detalhes.
   if (params.get("error") || params.get("error_code")) {
     return errorRedirect(request, "provider", flow);
   }
 
-  const supabase = await createClient();
+  if (code && tokenHash) return errorRedirect(request, "ambiguous-credentials", flow);
 
+  // Keep signup/confirmation and recovery credentials untouched during GET so
+  // Safe Links, previews and mail scanners cannot consume one-time credentials.
+  if ((code || tokenHash) && (flow === "recovery" || flow === "confirmation")) {
+    const target = request.nextUrl.clone();
+    target.pathname = flow === "recovery" ? "/recover-account" : "/confirm-email";
+    target.search = "";
+    if (code) target.searchParams.set("code", code.slice(0, 2048));
+    if (tokenHash) target.searchParams.set("token_hash", tokenHash.slice(0, 2048));
+    if (type === "email" || type === "recovery") target.searchParams.set("type", type);
+    else if (tokenHash) return errorRedirect(request, "invalid-type", flow);
+    return NextResponse.redirect(target);
+  }
+
+  // Preserve compatibility for non-signup/non-recovery legacy flows.
+  const supabase = await createClient({ requireCookieWrites: true });
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) return errorRedirect(request, "exchange", flow);
