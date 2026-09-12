@@ -40,7 +40,7 @@ export default async function ProjectCockpitPage({ params, searchParams }: { par
 
   const [milestonesResult, updatesResult, metricResult, savesResult, interestsResult, membersResult] = await Promise.all([
     supabase.from("project_milestones").select("id,title,description,due_date,completed_at,created_at").eq("project_id", project.id).order("position", { ascending: true }).order("created_at", { ascending: true }),
-    supabase.from("project_updates").select("id,title,body,created_at,author_id,profiles:author_id(display_name,username)").eq("project_id", project.id).order("created_at", { ascending: false }).limit(30),
+    supabase.from("project_updates").select("id,title,body,created_at,author_id").eq("project_id", project.id).order("created_at", { ascending: false }).limit(30),
     supabase.from("project_metrics").select("view_count,last_viewed_at").eq("project_id", project.id).maybeSingle(),
     supabase.from("project_saves").select("user_id", { count: "exact", head: true }).eq("project_id", project.id),
     supabase.from("project_interests").select("id", { count: "exact", head: true }).eq("project_id", project.id),
@@ -51,6 +51,11 @@ export default async function ProjectCockpitPage({ params, searchParams }: { par
   const completed = milestones.filter((item: any) => item.completed_at).length;
   const progress = milestones.length ? Math.round((completed / milestones.length) * 100) : 0;
   const updates = updatesResult.data ?? [];
+  const authorIds = Array.from(new Set(updates.map((item: any) => item.author_id).filter(Boolean)));
+  const { data: updateAuthors } = authorIds.length
+    ? await supabase.from("profiles").select("id,display_name,username").in("id", authorIds)
+    : { data: [] as any[] };
+  const authors = new Map((updateAuthors ?? []).map((profile: any) => [profile.id, profile]));
   const members = membersResult.data ?? [];
   const metric = metricResult.data;
   const status = typeof query.status === "string" ? query.status : "";
@@ -110,7 +115,7 @@ export default async function ProjectCockpitPage({ params, searchParams }: { par
       <section className="section-block panel" style={{ padding: 20 }}>
         <div className="section-row"><div><h2>Changelog</h2><p>Registre versões, testes, aprendizados e entregas importantes.</p></div></div>
         <form action={createProjectUpdateAction} className="form-page" style={{ padding:0, marginBottom:20 }}><input type="hidden" name="project_id" value={project.id}/><input type="hidden" name="slug" value={project.slug}/><label>Título<input name="title" minLength={2} maxLength={160} required placeholder="Ex.: MVP v0.2 publicado"/></label><label>O que mudou<textarea name="body" maxLength={4000} placeholder="Mudanças, aprendizados, métricas, próximos passos..."/></label><button className="primary" type="submit">Publicar atualização</button></form>
-        {updates.length ? <div className={styles.activityList}>{updates.map((item:any)=>{const author=one<any>(item.profiles);return <article className={styles.activityItem} key={item.id}><span className={styles.activityDot}/><span><strong>{item.title}</strong><small>{item.body || "Atualização do projeto."}<br/>{author?.display_name || author?.username || "Equipe"} · {new Date(item.created_at).toLocaleString("pt-BR")}</small></span><form action={deleteProjectUpdateAction}><input type="hidden" name="update_id" value={item.id}/><input type="hidden" name="slug" value={project.slug}/><button className="secondary" type="submit">Remover</button></form></article>})}</div> : <div className="empty"><h3>Sem atualizações ainda</h3><p>Use o changelog para mostrar que o projeto está vivo e evoluindo.</p></div>}
+        {updates.length ? <div className={styles.activityList}>{updates.map((item:any)=>{const author:any=authors.get(item.author_id);return <article className={styles.activityItem} key={item.id}><span className={styles.activityDot}/><span><strong>{item.title}</strong><small>{item.body || "Atualização do projeto."}<br/>{author?.display_name || author?.username || "Equipe"} · {new Date(item.created_at).toLocaleString("pt-BR")}</small></span><form action={deleteProjectUpdateAction}><input type="hidden" name="update_id" value={item.id}/><input type="hidden" name="slug" value={project.slug}/><button className="secondary" type="submit">Remover</button></form></article>})}</div> : <div className="empty"><h3>Sem atualizações ainda</h3><p>Use o changelog para mostrar que o projeto está vivo e evoluindo.</p></div>}
       </section>
     </LegacySocialShell>
   );
