@@ -33,7 +33,7 @@ export default async function RecoverAccountPage({
 
   return (
     <AuthShell
-      title="Recuperar sua conta"
+      title="Redefinição de senha"
       description="Confirme a ação abaixo para validar o link e continuar para a criação de uma nova senha."
     >
       <form action={beginRecoveryAction} className={styles.form}>
