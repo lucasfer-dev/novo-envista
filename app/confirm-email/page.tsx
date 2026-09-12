@@ -3,16 +3,20 @@ import { confirmEmailAction } from "@/app/auth/email-actions";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function ConfirmEmailPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim() : "";
-  const code = typeof params.code === "string" ? params.code.trim() : "";
+  const tokenHash = typeof params.token_hash === "string" ? params.token_hash.trim().slice(0, 2048) : "";
+  const code = typeof params.code === "string" ? params.code.trim().slice(0, 2048) : "";
+  const type = typeof params.type === "string" ? params.type.trim().toLowerCase().slice(0, 64) : "";
   const confirmed = params.status === "confirmed";
-  const hasCredential = Boolean(tokenHash || code);
+  const validType = tokenHash ? type === "email" : !type || type === "email";
+  const hasCredential = Boolean((tokenHash || code) && !(tokenHash && code) && validType);
 
   if (confirmed) {
     return (
@@ -33,10 +37,7 @@ export default async function ConfirmEmailPage({
   }
 
   return (
-    <AuthShell
-      title="Confirme seu e-mail"
-      description="Falta só uma etapa para ativar sua conta e continuar no Envista."
-    >
+    <AuthShell title="Confirme seu e-mail" description="Falta só uma etapa para ativar sua conta e continuar no Envista.">
       {hasCredential ? (
         <>
           <div className={styles.notice}>
@@ -45,10 +46,8 @@ export default async function ConfirmEmailPage({
           <form action={confirmEmailAction} className={styles.form}>
             {tokenHash ? <input type="hidden" name="token_hash" value={tokenHash} /> : null}
             {code ? <input type="hidden" name="code" value={code} /> : null}
-            <AuthSubmitButton
-              className={`${styles.primary} ${styles.full}`}
-              pendingText="Confirmando..."
-            >
+            {type ? <input type="hidden" name="type" value={type} /> : null}
+            <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Confirmando...">
               Confirmar meu e-mail
             </AuthSubmitButton>
           </form>
@@ -56,7 +55,7 @@ export default async function ConfirmEmailPage({
       ) : (
         <>
           <div className={styles.error} role="alert">
-            Este link de confirmação está incompleto. Solicite um novo e-mail de confirmação e use o link mais recente recebido.
+            Este link de confirmação está incompleto ou possui um tipo inválido. Solicite um novo e-mail e use o link mais recente recebido.
           </div>
           <div className={styles.actions}>
             <Link className={`${styles.primary} ${styles.full}`} href="/register">
