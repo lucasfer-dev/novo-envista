@@ -16,6 +16,9 @@ type ProjectShare = {
   location?: string | null;
   tags?: string[] | null;
   updated_at?: string | null;
+  repository_url?: string | null;
+  demo_url?: string | null;
+  design_url?: string | null;
   owner?: { name?: string; username?: string; headline?: string | null } | null;
   team?: { name?: string; slug?: string } | null;
 };
@@ -46,6 +49,11 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
   const project = await load(slug);
   if (!project) notFound();
   const tags = project.tags ?? [];
+  const projectLinks = [
+    [project.demo_url, "Ver demo"],
+    [project.repository_url, "Código / repositório"],
+    [project.design_url, "Design / protótipo"],
+  ].filter((entry): entry is [string, string] => Boolean(entry[0]));
 
   return (
     <main className={styles.page}>
@@ -55,7 +63,7 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
         <h1>{project.title}</h1>
         <p className={styles.lead}>{project.short_description || "Projeto publicado no Envista."}</p>
         <div className={styles.tags}>{tags.map((tag)=><span key={tag}>{tag}</span>)}</div>
-        <div className={styles.actions}><Link className={styles.primary} href="/register">Conhecer o Envista <ArrowRight size={16}/></Link><Link className={styles.secondary} href="/login">Já tenho conta <ExternalLink size={15}/></Link></div>
+        <div className={styles.actions}>{projectLinks.map(([href,label])=><a className={styles.secondary} href={href} target="_blank" rel="noreferrer" key={label}>{label} <ExternalLink size={15}/></a>)}<Link className={styles.primary} href="/register">Conhecer o Envista <ArrowRight size={16}/></Link></div>
       </article>
       <section className={styles.content}>
         <div><h2>Sobre o projeto</h2><p>{project.description || project.short_description || "A equipe ainda não adicionou uma descrição detalhada."}</p></div>
