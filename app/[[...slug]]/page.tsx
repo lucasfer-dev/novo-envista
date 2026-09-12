@@ -59,6 +59,18 @@ export default async function Page({
 }) {
   const { slug = [] } = await params;
   const pathname = slug.length ? `/${slug.join("/")}` : "/";
+  const resolvedSearchParams = await searchParams;
+
+  // Alguns e-mails de recuperação do Supabase podem cair no Site URL raiz
+  // preservando apenas o token_hash. Encaminhamos esse caso para a tela
+  // dedicada de recuperação para que o fluxo continue de forma segura.
+  if (pathname === "/") {
+    const tokenHash = first(resolvedSearchParams.token_hash);
+    if (tokenHash) {
+      const query = new URLSearchParams({ token_hash: tokenHash });
+      redirect(`/recover-account?${query.toString()}`);
+    }
+  }
 
   // Área pública/landing ainda usa a shell visual histórica. Ela não acessa dados
   // autenticados e fica separada dos caminhos reais abaixo.
@@ -130,7 +142,7 @@ export default async function Page({
     const item = directProject[2];
     const projectBase = expectedRole === "investor" ? "/investor/projects" : "/app/projects";
     const exploreBase = expectedRole === "investor" ? "/investor/explore" : "/app/explore";
-    const fromExplore = first((await searchParams).from) === "explore";
+    const fromExplore = first(resolvedSearchParams.from) === "explore";
     if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewProjectPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (expectedRole === "investor" && fromExplore) {
@@ -155,7 +167,7 @@ export default async function Page({
     const item = directTeam[2];
     const teamBase = expectedRole === "investor" ? "/investor/teams" : "/app/teams";
     const exploreBase = expectedRole === "investor" ? "/investor/explore" : "/app/explore";
-    const fromExplore = first((await searchParams).from) === "explore";
+    const fromExplore = first(resolvedSearchParams.from) === "explore";
     if (!item) return <LegacyTeamsIndexPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     if (item === "new") return <LegacyNewTeamPage expectedRole={expectedRole} pathname={pathname} searchParams={searchParams} />;
     return <LegacyTeamDetailPage expectedRole={expectedRole} pathname={pathname} slug={item} backHref={fromExplore ? exploreBase : teamBase} publicView={fromExplore} searchParams={searchParams} />;
