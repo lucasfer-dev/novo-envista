@@ -12,6 +12,7 @@ export default function AdminShell({ profile, title, children }: Props) {
     ["/admin", "Visão geral"],
     ["/admin/analytics", "Analytics"],
     ["/admin/users", "Usuários"],
+    ["/admin/investors", "Investidores"],
     ["/admin/teams", "Equipes"],
     ["/admin/projects", "Projetos"],
     ["/admin/courses", "Cursos"],
@@ -28,20 +29,12 @@ export default function AdminShell({ profile, title, children }: Props) {
           <span>Envista Admin</span>
         </Link>
         <nav className={styles.nav} aria-label="Administração">
-          {nav.map(([href, label]) => (
-            <Link href={href} key={href}>{label}</Link>
-          ))}
+          {nav.map(([href, label]) => <Link href={href} key={href}>{label}</Link>)}
         </nav>
-        <div className={styles.meta}>
-          <strong>{profile.display_name}</strong>
-          <span>@{profile.username}</span>
-        </div>
+        <div className={styles.meta}><strong>{profile.display_name}</strong><span>@{profile.username}</span></div>
       </aside>
       <main className={styles.main} id="main-content" tabIndex={-1}>
-        <header className={styles.top}>
-          <strong>{title}</strong>
-          <span className={styles.badge}>Admin verificado</span>
-        </header>
+        <header className={styles.top}><strong>{title}</strong><span className={styles.badge}>Admin verificado</span></header>
         <div className={styles.content}>{children}</div>
       </main>
     </div>
