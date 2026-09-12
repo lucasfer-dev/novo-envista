@@ -13,21 +13,15 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   if (claimsError || !userId) redirect("/login?error=session");
 
   const [profileResult, complianceResult, completionResult] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type,profile_visibility,allow_messages")
-      .eq("id", userId)
-      .maybeSingle(),
+    supabase.from("profiles").select("username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type,profile_visibility,allow_messages").eq("id", userId).maybeSingle(),
     supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
 
   if (profileResult.error || complianceResult.error || completionResult.error) redirect("/auth/error?reason=profile-query");
-
   const profile = profileResult.data;
   const compliance = complianceResult.data;
   const completion = completionResult.data;
-
   if (!profile || !compliance || !completion) redirect("/onboarding");
   if (compliance.age_band === "child" && !compliance.guardian_consent_verified_at) redirect("/guardian-required");
 
@@ -38,7 +32,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   const home = homeForRole(parseProductRole(profile.role));
 
   return (
-    <AuthShell wide title="Meu perfil" description="Esses dados já são persistidos no Supabase. Você controla o que aparece para outras pessoas.">
+    <AuthShell wide title="Meu perfil" description="Atualize suas informações e escolha o que pode aparecer para outras pessoas no Envista.">
       {saved ? <div className={styles.success}>Perfil atualizado.</div> : null}
       {error ? <div className={styles.error}>{error === "username" ? "Esse nome de usuário já está em uso." : "Não foi possível salvar as alterações."}</div> : null}
       <AvatarUploader userId={userId} currentPath={profile.avatar_path} />
@@ -49,16 +43,9 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
         </div>
         <label>Bio<textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} /></label>
         {profile.role === "participant" ? (
-          <div className={styles.grid2}>
-            <label>Escola/instituição<input name="public_school" defaultValue={profile.public_school || ""} maxLength={160} /></label>
-            <label>Cidade<input name="public_city" defaultValue={profile.public_city || ""} maxLength={100} /></label>
-            <label>Estado<input name="public_state" defaultValue={profile.public_state || ""} maxLength={100} /></label>
-          </div>
+          <div className={styles.grid2}><label>Escola/instituição<input name="public_school" defaultValue={profile.public_school || ""} maxLength={160} /></label><label>Cidade<input name="public_city" defaultValue={profile.public_city || ""} maxLength={100} /></label><label>Estado<input name="public_state" defaultValue={profile.public_state || ""} maxLength={100} /></label></div>
         ) : (
-          <div className={styles.grid2}>
-            <label>Organização<input name="organization" defaultValue={profile.organization || ""} maxLength={160} /></label>
-            <label>Tipo de organização<input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label>
-          </div>
+          <div className={styles.grid2}><label>Organização<input name="organization" defaultValue={profile.organization || ""} maxLength={160} /></label><label>Tipo de organização<input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label></div>
         )}
         <div className={styles.divider} />
         <label>Visibilidade do perfil<select name="profile_visibility" defaultValue={profile.profile_visibility} disabled={isChild}><option value="private">Privado</option>{!isChild ? <option value="platform">Visível para usuários autenticados</option> : null}</select></label>
