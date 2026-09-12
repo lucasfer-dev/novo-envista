@@ -8,11 +8,11 @@ function first(value:string|string[]|undefined){return Array.isArray(value)?valu
 
 async function courseStructure(supabase:any,courseId:string,userId:string){
  const [{data:modules},{data:progress}]=await Promise.all([
-  supabase.from("course_modules").select("id,title,position,course_lessons(id,title,description,content_md,position,duration_minutes)").eq("course_id",courseId).order("position",{ascending:true}),
+  supabase.from("course_modules").select("id,title,position,course_lessons(id,title,description,content_md,position,duration_minutes,course_lesson_assets(id,kind))").eq("course_id",courseId).order("position",{ascending:true}),
   supabase.from("lesson_progress").select("lesson_id").eq("user_id",userId),
  ]);
  const completed=new Set((progress??[]).map((item:any)=>item.lesson_id));
- return (modules??[]).map((module:any)=>({id:module.id,title:module.title,position:module.position,lessons:(module.course_lessons??[]).sort((a:any,b:any)=>a.position-b.position).map((lesson:any)=>({...lesson,completed:completed.has(lesson.id)}))}));
+ return (modules??[]).map((module:any)=>({id:module.id,title:module.title,position:module.position,lessons:(module.course_lessons??[]).sort((a:any,b:any)=>a.position-b.position).map((lesson:any)=>({...lesson,assetCount:(lesson.course_lesson_assets??[]).length,completed:completed.has(lesson.id)}))}));
 }
 
 export async function LearnServerPage(){
@@ -39,5 +39,7 @@ export async function LessonServerPage({slug,lessonId,searchParams}:{slug:string
  const {data:course}=await supabase.from("courses").select("id,slug,title,status").eq("slug",slug).eq("status","published").maybeSingle();if(!course)notFound();
  const {data:enrollment}=await supabase.from("course_enrollments").select("course_id").eq("course_id",course.id).eq("user_id",userId).maybeSingle();if(!enrollment)redirect(`/app/learn/${slug}`);
  const modules=await courseStructure(supabase,course.id,userId);const lesson=modules.flatMap((module:any)=>module.lessons).find((item:any)=>item.id===lessonId);if(!lesson)notFound();
- return <LegacySocialShell user={appUser} role="participant" pathname={`/app/learn/${slug}/lesson/${lessonId}`}><LessonView course={course as never} lesson={lesson as never} modules={modules as never[]} completed={Boolean(lesson.completed)} status={first(query.status)} error={first(query.error)}/></LegacySocialShell>;
+ const {data:rawAssets}=await supabase.from("course_lesson_assets").select("id,path,file_name,mime_type,size_bytes,kind").eq("lesson_id",lessonId).order("created_at",{ascending:true});
+ const assets=await Promise.all((rawAssets??[]).map(async(asset:any)=>{const {data}=await supabase.storage.from("course-assets").createSignedUrl(asset.path,1800,{download:asset.kind==="file"?asset.file_name:undefined});return {...asset,url:data?.signedUrl??null};}));
+ return <LegacySocialShell user={appUser} role="participant" pathname={`/app/learn/${slug}/lesson/${lessonId}`}><LessonView course={course as never} lesson={lesson as never} modules={modules as never[]} assets={assets as never[]} completed={Boolean(lesson.completed)} status={first(query.status)} error={first(query.error)}/></LegacySocialShell>;
 }
