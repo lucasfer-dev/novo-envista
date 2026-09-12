@@ -6,29 +6,21 @@ import { createClient } from "@/lib/supabase/server";
 
 const ROBOCOMP_FALLBACK = "https://robocomp-finder.vercel.app/api/open-competitions";
 
-type RefreshDecision = {
-  fresh: boolean;
-  throttled: boolean;
-  unauthorized: boolean;
-};
-
-async function claimFreshRefresh(requested: boolean): Promise<RefreshDecision> {
-  if (!requested) return { fresh: false, throttled: false, unauthorized: false };
+async function canForceFreshScan(requested: boolean) {
+  if (!requested) return false;
 
   const supabase = await createClient();
   const { data: claims, error: claimsError } = await supabase.auth.getClaims();
-  if (claimsError || !claims?.claims?.sub) {
-    return { fresh: false, throttled: false, unauthorized: true };
-  }
+  const userId = claims?.claims?.sub;
+  if (claimsError || !userId) return false;
 
-  const { data, error } = await supabase.rpc("claim_competition_refresh");
-  if (error) {
-    // Falhar fechado para a opção cara: a rota continua podendo entregar o
-    // resultado em cache, mas nunca força consultas externas sem coordenação.
-    return { fresh: false, throttled: true, unauthorized: false };
-  }
+  const { data: adminMembership } = await supabase
+    .from("admin_memberships")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
 
-  return { fresh: data === true, throttled: data !== true, unauthorized: false };
+  return Boolean(adminMembership?.user_id);
 }
 
 async function fallbackToRoboComp(fresh: boolean): Promise<LiveCompetitionsResponse | null> {
@@ -46,27 +38,12 @@ async function fallbackToRoboComp(fresh: boolean): Promise<LiveCompetitionsRespo
 
 export async function GET(request: NextRequest) {
   const requestedFresh = request.nextUrl.searchParams.get("fresh") === "1";
-  const refresh = await claimFreshRefresh(requestedFresh);
+  const fresh = await canForceFreshScan(requestedFresh);
   const requestId = requestIdFromHeaders(request.headers);
   const startedAt = Date.now();
-
-  if (refresh.unauthorized) {
-    return NextResponse.json(
-      { error: "Autenticação necessária para forçar uma nova consulta." },
-      {
-        status: 401,
-        headers: {
-          "Cache-Control": "no-store",
-          "X-Request-ID": requestId,
-        },
-      },
-    );
-  }
-
-  const fresh = refresh.fresh;
   const responseHeaders: Record<string, string> = {
     "X-Request-ID": requestId,
-    ...(refresh.throttled ? { "X-Envista-Refresh": "throttled" } : {}),
+    ...(requestedFresh && !fresh ? { "X-Envista-Refresh": "cached" } : {}),
   };
 
   try {
@@ -77,7 +54,7 @@ export async function GET(request: NextRequest) {
         requestId,
         route: "/api/competitions",
         fresh,
-        refreshThrottled: refresh.throttled,
+        requestedFresh,
         itemCount: result.items.length,
         sourcesChecked: result.sourcesChecked,
         durationMs: Date.now() - startedAt,
@@ -97,7 +74,7 @@ export async function GET(request: NextRequest) {
         requestId,
         route: "/api/competitions",
         fresh,
-        refreshThrottled: refresh.throttled,
+        requestedFresh,
         itemCount: fallback.items.length,
         sourcesChecked: result.sourcesChecked,
         durationMs: Date.now() - startedAt,
@@ -126,7 +103,7 @@ export async function GET(request: NextRequest) {
       requestId,
       route: "/api/competitions",
       fresh,
-      refreshThrottled: refresh.throttled,
+      requestedFresh,
       sourcesChecked: result.sourcesChecked,
       durationMs: Date.now() - startedAt,
     });
@@ -138,7 +115,7 @@ export async function GET(request: NextRequest) {
         requestId,
         route: "/api/competitions",
         fresh,
-        refreshThrottled: refresh.throttled,
+        requestedFresh,
         errorName: safeErrorName(error),
         itemCount: fallback.items.length,
         durationMs: Date.now() - startedAt,
@@ -163,7 +140,7 @@ export async function GET(request: NextRequest) {
       requestId,
       route: "/api/competitions",
       fresh,
-      refreshThrottled: refresh.throttled,
+      requestedFresh,
       errorName: safeErrorName(error),
       durationMs: Date.now() - startedAt,
     });
