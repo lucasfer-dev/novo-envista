@@ -14,8 +14,6 @@ function contentSecurityPolicy(nonce: string) {
     `'nonce-${nonce}'`,
     "'strict-dynamic'",
     ...(process.env.NODE_ENV === "development" ? ["'unsafe-eval'"] : []),
-    // Fallback for browsers that do not implement strict-dynamic. Modern
-    // browsers trust Turnstile through the nonced Next.js script instead.
     "https://challenges.cloudflare.com",
   ].join(" ");
 
@@ -37,26 +35,38 @@ function contentSecurityPolicy(nonce: string) {
   ].join("; ");
 }
 
+function isSensitiveEmailAuthRoute(pathname: string) {
+  return (
+    pathname === "/confirm-email" ||
+    pathname === "/recover-account" ||
+    pathname === "/auth/callback" ||
+    pathname === "/auth/confirm"
+  );
+}
+
+function applySecurityHeaders(response: Response, request: NextRequest, csp: string) {
+  response.headers.set("Content-Security-Policy", csp);
+  if (isSensitiveEmailAuthRoute(request.nextUrl.pathname)) {
+    response.headers.set("Referrer-Policy", "no-referrer");
+    response.headers.set("Cache-Control", "private, no-store, max-age=0");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  }
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const nonce = createNonce();
   const csp = contentSecurityPolicy(nonce);
   const requestHeaders = new Headers(request.headers);
 
-  // Next.js reads x-nonce during SSR and applies it to framework/script tags.
-  // Sending the CSP to the request as well ensures the server render and browser
-  // receive the exact same nonce for this one response.
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
 
   const securityResponse = guardUnsafeRequest(request);
-  if (securityResponse) {
-    securityResponse.headers.set("Content-Security-Policy", csp);
-    return securityResponse;
-  }
+  if (securityResponse) return applySecurityHeaders(securityResponse, request, csp);
 
   const response = await updateSession(request, requestHeaders);
-  response.headers.set("Content-Security-Policy", csp);
-  return response;
+  return applySecurityHeaders(response, request, csp);
 }
 
 export const config = {
