@@ -8,8 +8,14 @@ export default async function AdminInvestorsPage({ searchParams }: { searchParam
   const params = await searchParams;
   const { data: requests } = await supabase
     .from("investor_verifications")
-    .select("user_id,status,organization_name,organization_type,website_url,review_note,requested_at,reviewed_at,profiles!investor_verifications_user_id_fkey(username,display_name,organization)")
+    .select("user_id,status,organization_name,organization_type,website_url,review_note,requested_at,reviewed_at")
     .order("requested_at", { ascending: false, nullsFirst: false });
+
+  const userIds = (requests ?? []).map((item: any) => item.user_id);
+  const { data: profiles } = userIds.length
+    ? await supabase.from("profiles").select("id,username,display_name,organization").in("id", userIds)
+    : { data: [] as any[] };
+  const profileMap = new Map((profiles ?? []).map((item: any) => [item.id, item]));
 
   return (
     <AdminShell profile={profile} title="Investidores">
@@ -18,7 +24,7 @@ export default async function AdminInvestorsPage({ searchParams }: { searchParam
       {params.error ? <div className={styles.card}>Não foi possível concluir a revisão.</div> : null}
       <div className={styles.stack}>
         {(requests ?? []).length ? (requests ?? []).map((request: any) => {
-          const linked = Array.isArray(request.profiles) ? request.profiles[0] : request.profiles;
+          const linked = profileMap.get(request.user_id) as any;
           return (
             <section className={styles.card} key={request.user_id}>
               <h2>{linked?.display_name || linked?.username || "Investidor"}</h2>
