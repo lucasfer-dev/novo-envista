@@ -53,14 +53,24 @@ export async function confirmEmailAction(formData: FormData) {
 }
 
 /**
- * Valida o token de recuperação e cria a sessão temporária que autoriza a troca
- * de senha. A senha só é alterada na etapa seguinte, em /update-password.
- * `code` mantém compatibilidade com links PKCE emitidos anteriormente.
+ * Valida automaticamente a credencial de recuperação quando a página segura
+ * /recover-account é aberta. Ao concluir, a sessão temporária fica disponível
+ * para /update-password sem exigir um clique intermediário.
+ */
+export async function establishRecoverySession(tokenHash: string, code: string) {
+  const safeTokenHash = tokenHash.trim().slice(0, 2048);
+  const safeCode = code.trim().slice(0, 2048);
+  if (!safeTokenHash && !safeCode) redirect(authError("recovery", "missing-credentials"));
+
+  await establishSession("recovery", safeTokenHash, safeCode);
+}
+
+/**
+ * Compatibilidade com formulários/links antigos que ainda submetem manualmente
+ * a etapa de recuperação.
  */
 export async function beginRecoveryAction(formData: FormData) {
   const { tokenHash, code } = credentialFrom(formData);
-  if (!tokenHash && !code) redirect(authError("recovery", "missing-credentials"));
-
-  await establishSession("recovery", tokenHash, code);
+  await establishRecoverySession(tokenHash, code);
   redirect("/update-password");
 }
