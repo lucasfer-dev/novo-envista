@@ -12,6 +12,7 @@ const recoveryPage = readFileSync("app/recover-account/page.tsx", "utf8");
 const updatePasswordPage = readFileSync("app/update-password/page.tsx", "utf8");
 const callback = readFileSync("app/auth/callback/route.ts", "utf8");
 const confirm = readFileSync("app/auth/confirm/route.ts", "utf8");
+const proxy = readFileSync("proxy.ts", "utf8");
 const serverClient = readFileSync("lib/supabase/server.ts", "utf8");
 const recoveryIntent = readFileSync("lib/auth/recovery-intent.ts", "utf8");
 const runbook = readFileSync("docs/operations/AUTH_EMAILS.md", "utf8");
@@ -26,9 +27,9 @@ describe("auth email links", () => {
     expect(resolveSiteUrl({
       VERCEL: "1",
       VERCEL_ENV: "production",
-      NEXT_PUBLIC_SITE_URL: "https://useenvista.com/",
+      NEXT_PUBLIC_SITE_URL: "https://useenvista.com.br/",
       VERCEL_PROJECT_PRODUCTION_URL: "envista-novo.vercel.app",
-    })).toBe("https://useenvista.com");
+    })).toBe("https://useenvista.com.br");
   });
 
   it("uses the stable Vercel alias when system URL variables are missing", () => {
@@ -103,6 +104,14 @@ describe("auth email links", () => {
     expect(confirm).toContain('type === "recovery" ? "/recover-account" : "/confirm-email"');
   });
 
+  it("suppresses referrers, caches and indexing on credential-bearing auth routes", () => {
+    expect(proxy).toContain('response.headers.set("Referrer-Policy", "no-referrer")');
+    expect(proxy).toContain('response.headers.set("Cache-Control", "private, no-store, max-age=0")');
+    expect(proxy).toContain('response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive")');
+    expect(proxy).toContain('pathname === "/recover-account"');
+    expect(proxy).toContain('pathname === "/confirm-email"');
+  });
+
   it("shows a dedicated success screen after email verification", () => {
     expect(emailActions).toContain('/confirm-email?status=confirmed');
     expect(confirmPage).toContain('params.status === "confirmed"');
@@ -117,7 +126,8 @@ describe("auth email links", () => {
   });
 
   it("documents token-hash templates that point directly at Envista", () => {
-    expect(runbook).toContain("{{ .RedirectTo }}?token_hash={{ .TokenHash }}");
+    expect(runbook).toContain("{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email");
+    expect(runbook).toContain("{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery");
     expect(runbook).toContain("/confirm-email");
     expect(runbook).toContain("/recover-account");
   });
