@@ -112,6 +112,18 @@ function kindLabel(kind: SocialAuthorKind) {
   return "Participante";
 }
 
+function socialErrorMessage(code?: string) {
+  if (!code) return "";
+  if (code === "profile-private") return "Seu perfil está privado. Publique como privado ou torne o perfil público nas configurações antes de publicar para todo o Envista.";
+  if (code === "team-private") return "Essa equipe está privada. Publique como privado ou altere a visibilidade da equipe antes de publicar para todo o Envista.";
+  if (code === "author") return "Você não tem permissão para publicar em nome dessa equipe.";
+  if (code === "project") return "Esse projeto não pode ser vinculado à publicação com a sua conta atual.";
+  if (code === "comment") return "Não foi possível enviar o comentário. Tente novamente.";
+  if (code === "like") return "Não foi possível atualizar a curtida. Tente novamente.";
+  if (code === "follow") return "Não foi possível atualizar esse follow. Tente novamente.";
+  return "Não foi possível concluir essa ação. Tente novamente.";
+}
+
 function feedHref(path: string, mode: FeedMode, query: string, page: number) {
   const params = new URLSearchParams();
   if (mode === "following") params.set("mode", "following");
@@ -161,6 +173,7 @@ export default function LegacySocialFeed({
   const [query, setQuery] = useState(initialQuery);
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const normalized = normalize(query);
+  const errorMessage = socialErrorMessage(error);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -210,7 +223,7 @@ export default function LegacySocialFeed({
       </div>
 
       {status === "posted" && <div className={styles.notice}>Publicação criada.</div>}
-      {error && <div className={styles.error}>Não foi possível concluir essa ação. Tente novamente.</div>}
+      {errorMessage && <div className={styles.error}>{errorMessage}</div>}
 
       <div className={styles.socialLayout}>
         <section className={styles.mainColumn}>
@@ -249,9 +262,9 @@ export default function LegacySocialFeed({
                 </label>
                 <label>
                   Visibilidade
-                  <select name="visibility" defaultValue="platform">
-                    <option value="platform">Público no Envista</option>
+                  <select name="visibility" defaultValue="private">
                     <option value="private">Privado</option>
+                    <option value="platform">Público no Envista</option>
                   </select>
                 </label>
                 <button className="primary" type="submit">Publicar</button>

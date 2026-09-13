@@ -39,7 +39,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
       <form action={profileUpdateAction} className={styles.form}>
         <div className={styles.grid2}>
           <label>Nome de exibição<input name="display_name" defaultValue={profile.display_name || ""} maxLength={100} required /></label>
-          <label>Nome de usuário<input name="username" defaultValue={profile.username || ""} minLength={3} maxLength={32} pattern="[a-zA-Z0-9][a-zA-Z0-9._-]{2,31}" required /></label>
+          <label>Nome de usuário<input name="username" defaultValue={profile.username || ""} minLength={3} maxLength={32} pattern={'[A-Za-z0-9][A-Za-z0-9._\\-]{2,31}'} required /></label>
         </div>
         <label>Bio<textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} /></label>
         {profile.role === "participant" ? (

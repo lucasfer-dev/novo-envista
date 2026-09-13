@@ -46,13 +46,38 @@ export async function createPostAction(formData: FormData) {
     if (!canAttach) redirect(withError(returnTo, "project"));
   }
 
+  const visibility = formData.get("visibility") === "platform" ? "platform" : "private";
+
+  // Mirror the RLS visibility contract before the insert so the UI can explain
+  // why a public post is unavailable instead of collapsing everything into a
+  // generic database failure. We never make a profile/team public implicitly.
+  if (visibility === "platform") {
+    if (personal) {
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("profile_visibility")
+        .eq("id", userId)
+        .maybeSingle();
+      if (profileError) redirect(withError(returnTo, "post"));
+      if (profile?.profile_visibility !== "platform") redirect(withError(returnTo, "profile-private"));
+    } else if (authorTeamId) {
+      const { data: team, error: teamError } = await supabase
+        .from("teams")
+        .select("visibility")
+        .eq("id", authorTeamId)
+        .maybeSingle();
+      if (teamError) redirect(withError(returnTo, "post"));
+      if (team?.visibility !== "platform") redirect(withError(returnTo, "team-private"));
+    }
+  }
+
   const { data: created, error } = await supabase.from("posts").insert({
     author_user_id: personal ? userId : null,
     author_team_id: authorTeamId,
     project_id: projectId,
     created_by: userId,
     body,
-    visibility: formData.get("visibility") === "private" ? "private" : "platform",
+    visibility,
   }).select("id").single();
   if (error || !created) redirect(withError(returnTo, "post"));
   revalidatePath(returnTo.split("?")[0]);
