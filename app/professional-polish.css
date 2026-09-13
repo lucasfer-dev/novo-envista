@@ -1,0 +1,196 @@
+/* Envista professional polish layer.
+   Centralized refinements for authenticated product surfaces.
+   Keeps business logic untouched while standardizing hierarchy, spacing,
+   interactive states, data surfaces and responsive behavior. */
+
+:root{
+  --ev-bg:#0b141f;
+  --ev-bg-soft:#0e1926;
+  --ev-sidebar:#09131d;
+  --ev-surface:#142233;
+  --ev-surface-2:#18283a;
+  --ev-surface-3:#1e3045;
+  --ev-surface-hover:#22364d;
+  --ev-border:rgba(148,163,184,.12);
+  --ev-border-strong:rgba(148,163,184,.22);
+  --ev-text:#f3f6fa;
+  --ev-text-soft:#d7e0ea;
+  --ev-muted:#8fa1b6;
+  --ev-muted-2:#6f8297;
+  --ev-accent:#00bfa6;
+  --ev-accent-bright:#39d6c1;
+  --ev-accent-soft:rgba(0,191,166,.10);
+  --ev-danger:#ff7a90;
+  --ev-warning:#f6b84b;
+  --ev-radius-xs:8px;
+  --ev-radius-sm:10px;
+  --ev-radius:13px;
+  --ev-radius-lg:16px;
+  --ev-shadow-sm:0 1px 0 rgba(255,255,255,.02),0 8px 24px rgba(0,0,0,.08);
+  --ev-shadow:0 18px 55px rgba(0,0,0,.16);
+}
+
+html{background:var(--ev-bg)}
+body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1,"cv02" 1;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* General authenticated shell consistency */
+.app-shell,.legacyDark{background:var(--ev-bg)!important;color:var(--ev-text)}
+.app-shell .main,.legacyDark .main{background:
+  radial-gradient(circle at 82% -8%,rgba(0,191,166,.045),transparent 24%),
+  radial-gradient(circle at 8% 18%,rgba(70,106,140,.035),transparent 22%),
+  var(--ev-bg)!important}
+
+.app-shell .page-wrap,.legacyDark .content{width:min(100%,1260px);margin-inline:auto}
+.app-shell .page-head,.legacyDark .page-head{margin-bottom:30px;gap:20px}
+.app-shell .page-head h1,.legacyDark .page-head h1{font-size:clamp(29px,2.4vw,38px);line-height:1.08;letter-spacing:-.032em;color:var(--ev-text);font-weight:800}
+.app-shell .page-head p,.legacyDark .page-head p{max-width:760px;color:var(--ev-muted);line-height:1.65;font-size:14.5px}
+.app-shell .section-row h2,.legacyDark .section-row h2{font-size:20px;letter-spacing:-.02em;color:var(--ev-text);margin:0}
+.app-shell .section-row p,.legacyDark .section-row p{color:var(--ev-muted);line-height:1.55;margin:.3rem 0 0}
+
+/* Data surfaces */
+.app-shell .panel,.app-shell .card,.legacyDark .panel,.legacyDark .card,
+.app-shell .project-card,.app-shell .team-card,.legacyDark .project-card,.legacyDark .team-card{
+  background:linear-gradient(180deg,rgba(25,40,58,.96),rgba(20,34,49,.96));
+  border:1px solid var(--ev-border)!important;
+  border-radius:var(--ev-radius)!important;
+  box-shadow:var(--ev-shadow-sm)
+}
+.app-shell .panel,.legacyDark .panel,.app-shell .project-card,.legacyDark .project-card,.app-shell .team-card,.legacyDark .team-card{
+  transition:border-color .16s ease,background-color .16s ease,transform .16s ease,box-shadow .16s ease
+}
+.app-shell a.panel:hover,.app-shell button.panel:hover,.app-shell .project-card:hover,.app-shell .team-card:hover,
+.legacyDark a.panel:hover,.legacyDark button.panel:hover,.legacyDark .project-card:hover,.legacyDark .team-card:hover{
+  border-color:var(--ev-border-strong)!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.14);
+  transform:translateY(-1px)
+}
+
+/* Stats and dashboard metrics */
+.app-shell .admin-stats,.legacyDark .admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.app-shell .admin-stats .panel,.legacyDark .admin-stats .panel{padding:18px 19px;min-height:112px;display:flex;flex-direction:column;justify-content:center}
+.app-shell .admin-stats b,.legacyDark .admin-stats b{display:block;font-size:clamp(24px,2vw,31px);line-height:1;color:var(--ev-text);letter-spacing:-.035em}
+.app-shell .admin-stats span,.legacyDark .admin-stats span{display:block;margin-top:8px;color:var(--ev-muted);font-size:12.5px;text-transform:none}
+
+/* Cards */
+.app-shell .project-card,.legacyDark .project-card{overflow:hidden}
+.app-shell .project-cover,.legacyDark .project-cover{min-height:118px;background:
+  radial-gradient(circle at 80% 10%,rgba(57,214,193,.12),transparent 34%),
+  linear-gradient(145deg,#15283b,#102030);border-bottom:1px solid var(--ev-border)}
+.app-shell .project-initial,.legacyDark .project-initial{background:rgba(0,191,166,.10);border:1px solid rgba(0,191,166,.16);color:#78eadb}
+.app-shell .card-body,.legacyDark .card-body{padding:18px}
+.app-shell .card-body h3,.legacyDark .card-body h3{font-size:17px;line-height:1.3;letter-spacing:-.015em;margin:7px 0}
+.app-shell .card-body h3 a,.legacyDark .card-body h3 a{color:var(--ev-text);text-decoration:none}
+.app-shell .card-body h3 a:hover,.legacyDark .card-body h3 a:hover{color:var(--ev-accent-bright)}
+.app-shell .card-body p,.legacyDark .card-body p{color:var(--ev-muted);line-height:1.55;font-size:13.5px}
+.app-shell .card-meta,.legacyDark .card-meta{color:var(--ev-muted-2);font-size:11.5px;gap:10px}
+
+.app-shell .team-card,.legacyDark .team-card{padding:18px}
+.app-shell .team-card h3,.legacyDark .team-card h3{letter-spacing:-.015em;margin:12px 0 7px}
+.app-shell .team-card p,.legacyDark .team-card p{color:var(--ev-muted);line-height:1.55}
+.app-shell .team-card small,.legacyDark .team-card small{color:var(--ev-muted-2)}
+
+/* Chips, badges and tags */
+.app-shell .chips,.legacyDark .chips{gap:6px}
+.app-shell .chips span,.app-shell .stage,.legacyDark .chips span,.legacyDark .stage,
+.app-shell .pill,.legacyDark .pill{
+  display:inline-flex;align-items:center;min-height:26px;padding:4px 8px;border-radius:999px;
+  border:1px solid rgba(148,163,184,.10);background:rgba(148,163,184,.065);color:#adbac8;font-size:11.5px;font-weight:650
+}
+.app-shell .stage,.legacyDark .stage{background:rgba(0,191,166,.09);border-color:rgba(0,191,166,.16);color:#73dfd0}
+
+/* Links and text actions */
+.app-shell .text-btn,.legacyDark .text-btn{color:#76dfd1;text-decoration:none;font-size:13px;font-weight:750}
+.app-shell .text-btn:hover,.legacyDark .text-btn:hover{color:#a5f2e7;text-decoration:underline;text-underline-offset:4px}
+
+/* Buttons */
+.app-shell .primary,.legacyDark .primary,.app-shell button.primary,.legacyDark button.primary{
+  min-height:40px;border-radius:9px!important;background:var(--ev-accent)!important;color:#032c27!important;border:0!important;
+  box-shadow:0 8px 20px rgba(0,191,166,.08);font-weight:800;letter-spacing:-.005em
+}
+.app-shell .primary:hover,.legacyDark .primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.app-shell .secondary,.legacyDark .secondary,.app-shell button.secondary,.legacyDark button.secondary{
+  min-height:40px;border-radius:9px!important;background:rgba(148,163,184,.055)!important;border:1px solid var(--ev-border)!important;color:#dbe4ed!important;font-weight:700
+}
+.app-shell .secondary:hover,.legacyDark .secondary:hover{background:rgba(148,163,184,.095)!important;border-color:var(--ev-border-strong)!important}
+.app-shell .danger,.legacyDark .danger{border-radius:9px!important;background:rgba(255,122,144,.055)!important;border:1px solid rgba(255,122,144,.18)!important;color:#ff9cae!important}
+
+/* Forms and search */
+.app-shell input,.app-shell textarea,.app-shell select,.legacyDark input,.legacyDark textarea,.legacyDark select{
+  background:rgba(8,19,30,.76)!important;border:1px solid rgba(148,163,184,.15)!important;color:var(--ev-text)!important;border-radius:10px!important;
+  transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease
+}
+.app-shell input:hover,.app-shell textarea:hover,.app-shell select:hover,.legacyDark input:hover,.legacyDark textarea:hover,.legacyDark select:hover{border-color:rgba(148,163,184,.24)!important}
+.app-shell input:focus,.app-shell textarea:focus,.app-shell select:focus,.legacyDark input:focus,.legacyDark textarea:focus,.legacyDark select:focus{
+  outline:none!important;border-color:rgba(0,191,166,.58)!important;box-shadow:0 0 0 3px rgba(0,191,166,.10)!important;background:rgba(8,19,30,.92)!important
+}
+.app-shell label,.legacyDark label{color:#c7d2df}
+.app-shell ::placeholder,.legacyDark ::placeholder{color:#61748a!important}
+
+/* Tables */
+.app-shell table,.legacyDark table{width:100%;border-collapse:separate;border-spacing:0;background:rgba(20,34,49,.82);border:1px solid var(--ev-border);border-radius:12px;overflow:hidden}
+.app-shell th,.legacyDark th{text-align:left;padding:12px 14px;background:rgba(148,163,184,.045);color:#94a7bc;font-size:11.5px;text-transform:uppercase;letter-spacing:.055em;border-bottom:1px solid var(--ev-border)}
+.app-shell td,.legacyDark td{padding:13px 14px;border-bottom:1px solid rgba(148,163,184,.075);color:#d7e0ea;font-size:13.5px}
+.app-shell tr:last-child td,.legacyDark tr:last-child td{border-bottom:0}
+.app-shell tbody tr,.legacyDark tbody tr{transition:background-color .14s ease}
+.app-shell tbody tr:hover,.legacyDark tbody tr:hover{background:rgba(148,163,184,.035)}
+
+/* Empty states and notices */
+.app-shell .empty,.legacyDark .empty{background:rgba(148,163,184,.025)!important;border:1px dashed rgba(148,163,184,.17)!important;border-radius:12px!important;color:var(--ev-muted)!important;padding:32px!important}
+.app-shell .empty h3,.legacyDark .empty h3{color:#e8eef5;margin:8px 0 6px}
+.app-shell .empty p,.legacyDark .empty p{color:var(--ev-muted);max-width:560px;margin-inline:auto;line-height:1.6}
+.app-shell .notice,.app-shell .form-feedback,.legacyDark .notice,.legacyDark .form-feedback{background:rgba(0,191,166,.08)!important;border:1px solid rgba(0,191,166,.18)!important;color:#6fe4d4!important;border-radius:10px!important}
+.app-shell .error,.app-shell .form-error,.legacyDark .error,.legacyDark .form-error{background:rgba(255,122,144,.07)!important;border:1px solid rgba(255,122,144,.17)!important;color:#ffa0b1!important;border-radius:10px!important}
+
+/* Activity / onboarding */
+.app-shell .activity-item,.legacyDark .activity-item{border-radius:10px;transition:background-color .14s ease}
+.app-shell .activity-item:hover,.legacyDark .activity-item:hover{background:rgba(148,163,184,.04)}
+.app-shell .activity-item i,.legacyDark .activity-item i{background:rgba(0,191,166,.085);border:1px solid rgba(0,191,166,.12);color:#67dfd0}
+.app-shell .activity-item b,.legacyDark .activity-item b{color:#e8eef5}
+.app-shell .activity-item small,.legacyDark .activity-item small{color:var(--ev-muted)}
+
+/* Progress */
+.app-shell .progress,.legacyDark .progress{height:8px;background:rgba(148,163,184,.09);border-radius:999px;overflow:hidden}
+.app-shell .progress i,.legacyDark .progress i{display:block;height:100%;background:linear-gradient(90deg,#00bfa6,#39d6c1);border-radius:inherit}
+
+/* Separators and detail areas */
+.app-shell hr,.legacyDark hr{border:0;border-top:1px solid var(--ev-border)}
+.app-shell .section,.legacyDark .section{border-color:var(--ev-border)!important}
+.app-shell .meta-row,.legacyDark .meta-row{color:var(--ev-muted);gap:9px 14px}
+
+/* Navigation/topbar refinements */
+.app-shell .sidebar,.legacyDark .sidebar{background:linear-gradient(180deg,#09131d 0%,#0a1520 100%)!important;border-right:1px solid rgba(148,163,184,.095)!important}
+.app-shell .topbar,.legacyDark .topbar{background:rgba(11,20,31,.88)!important;border-bottom:1px solid rgba(148,163,184,.095)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.app-shell .brand,.legacyDark .brand{letter-spacing:-.025em}
+
+/* Modal/dialog consistency */
+.app-shell [role="dialog"],.legacyDark [role="dialog"]{background:linear-gradient(180deg,#172638,#122131);border:1px solid var(--ev-border-strong);border-radius:16px;color:var(--ev-text);box-shadow:0 28px 90px rgba(0,0,0,.42)}
+
+/* Focus and accessibility */
+.app-shell a:focus-visible,.app-shell button:focus-visible,.app-shell input:focus-visible,.app-shell textarea:focus-visible,.app-shell select:focus-visible,
+.legacyDark a:focus-visible,.legacyDark button:focus-visible,.legacyDark input:focus-visible,.legacyDark textarea:focus-visible,.legacyDark select:focus-visible{
+  outline:2px solid rgba(57,214,193,.92)!important;outline-offset:2px
+}
+
+/* Responsive cleanup */
+@media(max-width:1000px){
+  .app-shell .admin-stats,.legacyDark .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:850px){
+  .app-shell .page-wrap,.legacyDark .content{padding:24px 18px 88px!important}
+  .app-shell .page-head,.legacyDark .page-head{align-items:flex-start;margin-bottom:24px}
+  .app-shell .page-head h1,.legacyDark .page-head h1{font-size:29px}
+  .app-shell .admin-stats,.legacyDark .admin-stats{grid-template-columns:1fr 1fr}
+  .app-shell table,.legacyDark table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+@media(max-width:600px){
+  .app-shell .page-wrap,.legacyDark .content{padding-inline:15px!important}
+  .app-shell .admin-stats,.legacyDark .admin-stats{grid-template-columns:1fr}
+  .app-shell .panel,.app-shell .card,.legacyDark .panel,.legacyDark .card{border-radius:12px!important}
+  .app-shell .actions,.legacyDark .actions{gap:8px}
+  .app-shell .actions>.primary,.app-shell .actions>.secondary,.legacyDark .actions>.primary,.legacyDark .actions>.secondary{min-width:0}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .app-shell *, .app-shell *::before, .app-shell *::after,
+  .legacyDark *, .legacyDark *::before, .legacyDark *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
