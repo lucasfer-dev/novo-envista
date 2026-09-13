@@ -35,12 +35,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const project = await load(slug);
   if (!project) return { title: "Projeto não encontrado" };
   const description = project.short_description || `Conheça ${project.title} no Envista.`;
+  const image = { url: "/opengraph-image", width: 1200, height: 630, alt: `${project.title} no Envista` };
   return {
     title: project.title,
     description,
     alternates: { canonical: `/p/${project.slug}` },
-    openGraph: { title: `${project.title} | Envista`, description, url: `/p/${project.slug}`, type: "website" },
-    twitter: { card: "summary_large_image", title: `${project.title} | Envista`, description },
+    openGraph: {
+      title: `${project.title} | Envista`,
+      description,
+      url: `/p/${project.slug}`,
+      type: "website",
+      siteName: "Envista",
+      locale: "pt_BR",
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} | Envista`,
+      description,
+      images: ["/opengraph-image"],
+    },
   };
 }
 
