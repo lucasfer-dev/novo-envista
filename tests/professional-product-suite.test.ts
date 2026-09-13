@@ -17,7 +17,7 @@ describe("professional product suite", () => {
   });
 
   it("adds activity, insights and team workspace routes", () => {
-    const router = read("app/[[...slug]]/page.tsx");
+    const router = read("app/[...slug]/page.tsx");
     expect(router).toContain('pathname === "/app/activity"');
     expect(router).toContain('pathname === "/app/insights"');
     expect(router).toContain('pathname === "/app/workspace"');

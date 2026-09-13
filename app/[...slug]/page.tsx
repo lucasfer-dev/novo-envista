@@ -31,18 +31,10 @@ function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export default async function Page({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const { slug = [] } = await params;
-  const pathname = slug.length ? `/${slug.join("/")}` : "/";
+export default async function Page({ params, searchParams }: { params: Promise<{ slug: string[] }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const { slug } = await params;
+  const pathname = `/${slug.join("/")}`;
   const resolvedSearchParams = await searchParams;
-
-  if (pathname === "/") {
-    const tokenHash = first(resolvedSearchParams.token_hash);
-    if (tokenHash) {
-      const query = new URLSearchParams({ token_hash: tokenHash });
-      redirect(`/recover-account?${query.toString()}`);
-    }
-  }
 
   if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 
-const router = readFileSync("app/[[...slug]]/page.tsx", "utf8");
+const router = readFileSync("app/[...slug]/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const backendReadme = readFileSync("backend/README.md", "utf8");
 const architecture = readFileSync("docs/ARCHITECTURE.md", "utf8");
