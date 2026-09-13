@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   title: { default: 'Envista — ideias que continuam', template: '%s | Envista' },
   description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades no Envista.',
   applicationName: 'Envista',
-  alternates: { canonical: '/' },
   icons: {
     icon: [{ url: '/envista-logo.png', type: 'image/png', sizes: '150x150' }],
     shortcut: '/envista-logo.png',
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Envista — ideias que continuam',
     description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades.',
-    images: ['/twitter-image'],
+    images: ['/opengraph-image'],
   },
 }
 
