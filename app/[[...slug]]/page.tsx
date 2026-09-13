@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import EnvistaApp from "@/components/EnvistaApp";
+import PublicLandingServer from "@/components/public/PublicLandingServer";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import LegacyExploreServerPage from "@/components/explore/LegacyExploreServerPage";
 import { CompetitionDetailServerPage, CompetitionsServerPage } from "@/components/competitions/CompetitionsServerPage";
@@ -42,6 +43,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       const query = new URLSearchParams({ token_hash: tokenHash });
       redirect(`/recover-account?${query.toString()}`);
     }
+    return <PublicLandingServer />;
   }
 
   if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
