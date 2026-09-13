@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { guardUnsafeRequest } from "@/lib/security/request-rate-limit";
 
@@ -54,6 +54,23 @@ function applySecurityHeaders(response: Response, request: NextRequest, csp: str
   return response;
 }
 
+function legacyRootEmailRedirect(request: NextRequest, csp: string) {
+  if (request.nextUrl.pathname !== "/") return null;
+  const tokenHash = request.nextUrl.searchParams.get("token_hash");
+  if (!tokenHash) return null;
+
+  const target = request.nextUrl.clone();
+  target.pathname = "/recover-account";
+  target.search = "";
+  target.searchParams.set("token_hash", tokenHash);
+
+  const response = NextResponse.redirect(target);
+  response.headers.set("Referrer-Policy", "no-referrer");
+  response.headers.set("Cache-Control", "private, no-store, max-age=0");
+  response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  return applySecurityHeaders(response, request, csp);
+}
+
 export async function proxy(request: NextRequest) {
   const nonce = createNonce();
   const csp = contentSecurityPolicy(nonce);
@@ -61,6 +78,9 @@ export async function proxy(request: NextRequest) {
 
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
+
+  const rootEmailRedirect = legacyRootEmailRedirect(request, csp);
+  if (rootEmailRedirect) return rootEmailRedirect;
 
   const securityResponse = guardUnsafeRequest(request);
   if (securityResponse) return applySecurityHeaders(securityResponse, request, csp);
