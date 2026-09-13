@@ -4,6 +4,7 @@ import './scrollbar.css'
 import './accessibility.css'
 import './dashboard-spacing.css'
 import './design-system.css'
+import './authenticated-layout-v2.css'
 import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
