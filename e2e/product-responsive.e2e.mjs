@@ -34,7 +34,7 @@ for (const viewport of viewports) {
 
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Ideias não deveriam terminar depois da competição." })).toBeVisible();
-    await expect(page.getByRole("button", { name: /começar agora/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /começar agora/i })).toBeVisible();
     await expectHealthyViewport(page);
     await expectPageHasNoBrokenImages(page);
 
@@ -52,17 +52,29 @@ for (const viewport of viewports) {
   });
 }
 
+test("homepage content is server rendered and useful without client JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "Ideias não deveriam terminar depois da competição." })).toBeVisible();
+  await expect(page.getByRole("link", { name: /começar agora/i })).toHaveAttribute("href", "/register");
+  await expect(page.getByRole("navigation", { name: "Links institucionais" })).toBeVisible();
+  await expectHealthyViewport(page);
+  await context.close();
+});
+
 test("public surfaces preserve useful keyboard focus and reduced motion", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/login");
+  await page.goto("/");
 
   await page.keyboard.press("Tab");
   const focused = page.locator(":focus");
   await expect(focused).toBeVisible();
 
   const reducedMotion = await page.evaluate(() => {
-    const probe = document.querySelector("button, a, input");
+    const probe = document.querySelector("a, summary");
     if (!probe) return null;
     return getComputedStyle(probe).transitionDuration;
   });
