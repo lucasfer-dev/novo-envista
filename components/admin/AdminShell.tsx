@@ -7,6 +7,7 @@ import {
   BarChart3,
   BookOpen,
   BriefcaseBusiness,
+  CalendarDays,
   ChevronRight,
   Flag,
   FolderKanban,
@@ -31,6 +32,7 @@ const operations: NavItem[] = [
   { href: "/admin/teams", label: "Equipes", icon: UsersRound },
   { href: "/admin/projects", label: "Projetos", icon: FolderKanban },
   { href: "/admin/courses", label: "Cursos", icon: BookOpen },
+  { href: "/admin/calendar", label: "Calendário", icon: CalendarDays },
 ];
 
 const governance: NavItem[] = [
@@ -89,7 +91,7 @@ export default function AdminShell({ profile, title, children }: Props) {
         </div>
 
         <div className={styles.sideBottom}>
-          <Link href="/app" className={styles.backToProduct}>
+          <Link href="/home" className={styles.backToProduct}>
             <Activity size={16} aria-hidden="true" /> Voltar ao Envista
           </Link>
           <div className={styles.meta}>
