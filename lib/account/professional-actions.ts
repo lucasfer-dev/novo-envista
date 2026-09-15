@@ -66,6 +66,7 @@ export async function updateNotificationPreferencesAction(formData: FormData) {
     messages: checked(formData, "messages"),
     investor_activity: checked(formData, "investor_activity"),
     saved_project_updates: checked(formData, "saved_project_updates"),
+    calendar_events: checked(formData, "calendar_events"),
     updated_at: new Date().toISOString(),
   };
   const { error } = await supabase.from("notification_preferences").upsert(payload, { onConflict: "user_id" });
