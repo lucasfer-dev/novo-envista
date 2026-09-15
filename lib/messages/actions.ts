@@ -11,7 +11,7 @@ function text(formData: FormData, name: string, max: number) {
 }
 
 function root(role: "participant" | "investor") {
-  return role === "investor" ? "/investor/messages" : "/app/messages";
+  return role === "investor" ? "/investor/messages" : "/messages";
 }
 
 function canonicalPair(a: string, b: string): [string, string] {
