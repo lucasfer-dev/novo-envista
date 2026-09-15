@@ -18,6 +18,7 @@ const PARTICIPANT_ROUTE_ROOTS = new Set([
   "projects",
   "workspace",
   "competitions",
+  "calendar",
 ]);
 
 function createNonce() {
