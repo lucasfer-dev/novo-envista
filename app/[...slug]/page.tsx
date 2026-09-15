@@ -3,7 +3,8 @@ import EnvistaApp from "@/components/EnvistaApp";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import LegacyExploreServerPage from "@/components/explore/LegacyExploreServerPage";
 import { CompetitionDetailServerPage, CompetitionsServerPage } from "@/components/competitions/CompetitionsServerPage";
-import { LegacyNewProjectPage, LegacyProjectDetailPage, LegacyProjectsIndexPage } from "@/components/projects/LegacyProjectsServerPage";
+import { LegacyProjectDetailPage, LegacyProjectsIndexPage } from "@/components/projects/LegacyProjectsServerPage";
+import { ProjectCreateServerPage } from "@/components/projects/ProjectCreateServerPage";
 import { LegacyNewTeamPage, LegacyTeamDetailPage, LegacyTeamsIndexPage } from "@/components/teams/LegacyTeamsServerPage";
 import { FollowingServerPage, InvestorSavedServerPage, RealHomeServerPage } from "@/components/real/LegacyDashboardServerPages";
 import { LegacyPublicProfileServerPage } from "@/components/real/LegacyProfileServerPage";
@@ -107,7 +108,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     const exploreBase = expectedRole === "investor" ? "/investor/explore" : "/explore";
     const fromExplore = first(resolvedSearchParams.from) === "explore";
     if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={projectBase} searchParams={searchParams} />;
-    if (item === "new") return <LegacyNewProjectPage expectedRole={expectedRole} pathname={`${projectBase}/new`} searchParams={searchParams} />;
+    if (item === "new") {
+      if (expectedRole === "participant") return <ProjectCreateServerPage searchParams={searchParams} />;
+      redirect(projectBase);
+    }
     if (expectedRole === "investor" && fromExplore) return <InvestorPublicProjectServerPage pathname={pathname} slug={item} backHref={exploreBase} searchParams={searchParams} />;
     return <LegacyProjectDetailPage expectedRole={expectedRole} pathname={pathname} slug={item} backHref={fromExplore ? exploreBase : projectBase} publicView={fromExplore} searchParams={searchParams} />;
   }
