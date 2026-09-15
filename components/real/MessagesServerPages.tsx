@@ -101,28 +101,32 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
     .limit(MESSAGE_PAGE_SIZE + 1);
   if (before) messageQuery = messageQuery.lt("created_at", before);
 
-  const readAt = new Date().toISOString();
-  const messageNotificationPaths = [
-    `/messages/${conversationId}`,
-    `/app/messages/${conversationId}`,
-    `/investor/messages/${conversationId}`,
-  ];
-
   const [{ data: profile }, { data: messageRows }, { data: blocks }] = await Promise.all([
     supabase.from("profiles").select("id,username,display_name,allow_messages,profile_visibility").eq("id", targetId).maybeSingle(),
     messageQuery,
     supabase.from("user_blocks").select("blocker_id,blocked_id").or(`and(blocker_id.eq.${conversation.user_a},blocked_id.eq.${conversation.user_b}),and(blocker_id.eq.${conversation.user_b},blocked_id.eq.${conversation.user_a})`),
-    supabase
-      .from("message_read_state")
-      .upsert({ conversation_id: conversationId, user_id: userId, last_read_at: readAt }, { onConflict: "conversation_id,user_id" }),
-    supabase
-      .from("notifications")
-      .update({ read_at: readAt })
-      .eq("user_id", userId)
-      .eq("kind", "message")
-      .in("href", messageNotificationPaths)
-      .is("read_at", null),
   ]);
+
+  if (!before) {
+    const readAt = new Date().toISOString();
+    const messageNotificationPaths = [
+      `/messages/${conversationId}`,
+      `/app/messages/${conversationId}`,
+      `/investor/messages/${conversationId}`,
+    ];
+    await Promise.all([
+      supabase
+        .from("message_read_state")
+        .upsert({ conversation_id: conversationId, user_id: userId, last_read_at: readAt }, { onConflict: "conversation_id,user_id" }),
+      supabase
+        .from("notifications")
+        .update({ read_at: readAt })
+        .eq("user_id", userId)
+        .eq("kind", "message")
+        .in("href", messageNotificationPaths)
+        .is("read_at", null),
+    ]);
+  }
 
   const rawMessages = messageRows ?? [];
   const hasOlder = rawMessages.length > MESSAGE_PAGE_SIZE;
