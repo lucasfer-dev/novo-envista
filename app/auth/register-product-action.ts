@@ -3,7 +3,13 @@
 import { redirect } from "next/navigation";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
-import { isValidEmail, parseProductRole, validatePassword } from "@/lib/auth/validation";
+import {
+  isValidEmail,
+  normalizePrivateDocument,
+  parseProductRole,
+  privateDocumentKind,
+  validatePassword,
+} from "@/lib/auth/validation";
 
 const TURNSTILE_FIELD = "cf-turnstile-response";
 
@@ -31,22 +37,27 @@ export async function registerProductAction(formData: FormData) {
 
   const displayName = value(formData, "display_name").slice(0, 100);
   const email = value(formData, "email").toLowerCase();
+  const documentValue = value(formData, "document");
+  const normalizedDocument = normalizePrivateDocument(documentValue);
+  const documentKind = documentValue ? privateDocumentKind(documentValue) : null;
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const confirmation = typeof formData.get("password_confirmation") === "string" ? String(formData.get("password_confirmation")) : "";
   const role = parseProductRole(formData.get("role"));
 
   if (!displayName || !isValidEmail(email)) redirect(errorPath("invalid"));
+  if (documentValue && !documentKind) redirect(errorPath("document"));
   if (validatePassword(password) || password !== confirmation) redirect(errorPath("password"));
 
   const captchaToken = value(formData, TURNSTILE_FIELD).slice(0, 4096);
   if (captchaConfigured() && !captchaToken) redirect(errorPath("captcha"));
 
+  const privateIdentifier = documentKind ? { [documentKind]: normalizedDocument } : {};
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { display_name: displayName, role },
+      data: { display_name: displayName, role, ...privateIdentifier },
       emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
@@ -56,9 +67,10 @@ export async function registerProductAction(formData: FormData) {
     const code = authFailureCode(error);
     if (code === "captcha" || code === "rate" || code === "temporary") redirect(errorPath(code));
     if (error.code === "weak_password") redirect(errorPath("password"));
-    redirect("/register?status=check-email");
+    if (error.code === "user_already_exists") redirect(errorPath("exists"));
+    redirect(errorPath("invalid"));
   }
 
   if (data.session) redirect("/onboarding");
-  redirect("/register?status=check-email");
+  redirect(`/register?status=check-email&email=${encodeURIComponent(email)}`);
 }
