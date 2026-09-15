@@ -3,7 +3,11 @@ import { CompetitionDetailClient, CompetitionsBrowser } from "@/components/compe
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import type { CompetitionRecommendationContext } from "@/lib/competitions/recommendations";
 
-const emptyRecommendationContext: CompetitionRecommendationContext = { teams: [], projects: [] };
+const emptyRecommendationContext: CompetitionRecommendationContext = {
+  profile: { city: "", state: "", tags: [] },
+  teams: [],
+  projects: [],
+};
 
 async function loadRecommendationContext(
   supabase: Awaited<ReturnType<typeof requireProductUser>>["supabase"],
@@ -12,34 +16,31 @@ async function loadRecommendationContext(
 ): Promise<CompetitionRecommendationContext> {
   if (role !== "participant") return emptyRecommendationContext;
 
-  const { data: memberships } = await supabase
-    .from("team_members")
-    .select("team_id")
-    .eq("user_id", userId);
+  const [{ data: profile }, { data: memberships }] = await Promise.all([
+    supabase.from("profiles").select("public_city,public_state,interest_tags").eq("id", userId).maybeSingle(),
+    supabase.from("team_members").select("team_id").eq("user_id", userId),
+  ]);
   const teamIds = Array.from(new Set((memberships || []).map((row) => row.team_id).filter(Boolean)));
 
   const [teamsResult, personalProjectsResult, teamProjectsResult] = await Promise.all([
     teamIds.length
       ? supabase.from("teams").select("id,slug,name,description,category,city,tags").in("id", teamIds)
       : Promise.resolve({ data: [], error: null }),
-    supabase
-      .from("projects")
-      .select("id,slug,title,short_description,category,location,tags,owner_team_id")
-      .eq("owner_user_id", userId),
+    supabase.from("projects").select("id,slug,title,short_description,category,location,tags,owner_team_id").eq("owner_user_id", userId),
     teamIds.length
-      ? supabase
-          .from("projects")
-          .select("id,slug,title,short_description,category,location,tags,owner_team_id")
-          .in("owner_team_id", teamIds)
+      ? supabase.from("projects").select("id,slug,title,short_description,category,location,tags,owner_team_id").in("owner_team_id", teamIds)
       : Promise.resolve({ data: [], error: null }),
   ]);
 
   const projectsById = new Map<string, any>();
-  for (const project of [...(personalProjectsResult.data || []), ...(teamProjectsResult.data || [])]) {
-    projectsById.set(project.id, project);
-  }
+  for (const project of [...(personalProjectsResult.data || []), ...(teamProjectsResult.data || [])]) projectsById.set(project.id, project);
 
   return {
+    profile: {
+      city: profile?.public_city || "",
+      state: profile?.public_state || "",
+      tags: profile?.interest_tags || [],
+    },
     teams: (teamsResult.data || []).map((team) => ({
       id: team.id,
       slug: team.slug,
