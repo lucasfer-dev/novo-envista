@@ -22,6 +22,7 @@ const PARTICIPANT_ROUTE_ROOTS = [
   "/projects",
   "/workspace",
   "/competitions",
+  "/calendar",
 ] as const;
 
 export function safeInternalPath(value: unknown, fallback = "/") {
