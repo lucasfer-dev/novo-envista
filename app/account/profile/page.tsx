@@ -6,6 +6,10 @@ import { profileUpdateAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 
+const TAG_OPTIONS = ["Tecnologia", "Programação", "Robótica", "IA", "Design", "Games", "Ciência", "Educação", "Empreendedorismo", "Negócios", "Sustentabilidade", "Acessibilidade"];
+const CITY_SUGGESTIONS = ["Rio de Janeiro", "Queimados", "Nova Iguaçu", "Japeri", "São João de Meriti", "Duque de Caxias", "Niterói", "São Paulo", "Belo Horizonte", "Curitiba", "Recife", "Salvador", "Brasília"];
+const STATE_SUGGESTIONS = ["RJ", "SP", "MG", "ES", "PR", "SC", "RS", "BA", "PE", "CE", "GO", "DF"];
+
 export default async function AccountProfilePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const supabase = await createClient();
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
@@ -13,7 +17,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   if (claimsError || !userId) redirect("/login?error=session");
 
   const [profileResult, complianceResult, completionResult] = await Promise.all([
-    supabase.from("profiles").select("username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type,profile_visibility,allow_messages").eq("id", userId).maybeSingle(),
+    supabase.from("profiles").select("username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type,interest_tags,profile_visibility,allow_messages").eq("id", userId).maybeSingle(),
     supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
@@ -30,6 +34,8 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   const error = typeof params.error === "string" ? params.error : "";
   const isChild = compliance.age_band === "child";
   const home = homeForRole(parseProductRole(profile.role));
+  const currentTags = new Set<string>(profile.interest_tags || []);
+  const customTags = [...currentTags].filter((tag) => !TAG_OPTIONS.includes(tag)).join(", ");
 
   return (
     <AuthShell wide title="Meu perfil" description="Atualize suas informações e escolha o que pode aparecer para outras pessoas no Envista.">
@@ -41,14 +47,24 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
           <label>Nome de exibição<input name="display_name" defaultValue={profile.display_name || ""} maxLength={100} required /></label>
           <label>Nome de usuário<input name="username" defaultValue={profile.username || ""} minLength={3} maxLength={32} pattern={'[A-Za-z0-9][A-Za-z0-9._\\-]{2,31}'} required /></label>
         </div>
-        <label>Bio<textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} /></label>
-        {profile.role === "participant" ? (
-          <div className={styles.grid2}><label>Escola/instituição<input name="public_school" defaultValue={profile.public_school || ""} maxLength={160} /></label><label>Cidade<input name="public_city" defaultValue={profile.public_city || ""} maxLength={100} /></label><label>Estado<input name="public_state" defaultValue={profile.public_state || ""} maxLength={100} /></label></div>
-        ) : (
-          <div className={styles.grid2}><label>Organização<input name="organization" defaultValue={profile.organization || ""} maxLength={160} /></label><label>Tipo de organização<input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label></div>
-        )}
+        <label>Apresentação<textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} /></label>
+        <div className={styles.grid2}>
+          {profile.role === "participant" ? <label>Escola/instituição<input name="public_school" defaultValue={profile.public_school || ""} maxLength={160} placeholder="Digite a escola ou instituição" /></label> : <><label>Organização<input name="organization" defaultValue={profile.organization || ""} maxLength={160} /></label><label>Tipo de organização<input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label></>}
+          <label>Cidade<input name="public_city" list="profile-cities" defaultValue={profile.public_city || ""} maxLength={100} placeholder="Escolha ou digite outra" /></label>
+          <label>Estado<input name="public_state" list="profile-states" defaultValue={profile.public_state || ""} maxLength={100} placeholder="RJ ou outro" /></label>
+        </div>
+        <datalist id="profile-cities">{CITY_SUGGESTIONS.map((city) => <option key={city} value={city} />)}</datalist>
+        <datalist id="profile-states">{STATE_SUGGESTIONS.map((state) => <option key={state} value={state} />)}</datalist>
+
+        <fieldset className={styles.formSection}>
+          <legend>Interesses e tags</legend>
+          <span className={styles.muted}>Essas tags ajudam nas sugestões de projetos, pessoas e competições. Se algo não estiver na lista, use “Outros”.</span>
+          <div className={styles.checks}>{TAG_OPTIONS.map((tag) => <label className={styles.check} key={tag}><input type="checkbox" name="interest_tags" value={tag} defaultChecked={currentTags.has(tag)} /><span>{tag}</span></label>)}</div>
+          <label>Outros<input name="interest_tags_other" defaultValue={customTags} maxLength={300} placeholder="Separe por vírgulas" /></label>
+        </fieldset>
+
         <div className={styles.divider} />
-        <label>Visibilidade do perfil<select name="profile_visibility" defaultValue={profile.profile_visibility} disabled={isChild}><option value="private">Privado</option>{!isChild ? <option value="platform">Visível para usuários autenticados</option> : null}</select></label>
+        <label>Visibilidade do perfil<select name="profile_visibility" defaultValue={profile.profile_visibility} disabled={isChild}><option value="private">Privado</option>{!isChild ? <option value="platform">Visível para usuários autenticados</option> : null}</select><span className={styles.muted}>Ao salvar, a alteração é validada no banco antes de mostrar sucesso.</span></label>
         {isChild ? <input type="hidden" name="profile_visibility" value="private" /> : null}
         <label className={styles.check}><input type="checkbox" name="allow_messages" defaultChecked={Boolean(profile.allow_messages)} disabled={isChild} /><span>{isChild ? "Mensagens permanecem desativadas para esta faixa etária." : "Permitir que outros usuários autenticados iniciem uma conversa comigo."}</span></label>
         <div className={styles.actions}><button className={styles.primary} type="submit">Salvar perfil</button><Link className={styles.secondary} href="/account/security">Login e segurança</Link><Link className={styles.secondary} href="/account/privacy">Privacidade e meus dados</Link><Link className={styles.secondary} href={home}>Voltar ao Envista</Link></div>
