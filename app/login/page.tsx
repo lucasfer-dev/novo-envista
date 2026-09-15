@@ -35,17 +35,17 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     }
   }
 
-  const errorMessage = error === "session" ? "Sua sessão não pôde ser validada. Entre novamente." : error === "captcha" ? "Conclua a verificação de segurança e tente novamente." : error === "rate" ? "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente." : error === "temporary" ? "O login está temporariamente indisponível. Tente novamente em instantes." : error ? "E-mail ou senha inválidos." : "";
+  const errorMessage = error === "session" ? "Sua sessão não pôde ser validada. Entre novamente." : error === "captcha" ? "Conclua a verificação de segurança e tente novamente." : error === "rate" ? "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente." : error === "temporary" ? "O login está temporariamente indisponível. Tente novamente em instantes." : error ? "E-mail, CPF/CNPJ ou senha inválidos." : "";
 
   return (
-    <AuthShell title="Entrar no Envista" description="Continue de onde parou e acompanhe seus projetos, equipes e oportunidades.">
+    <AuthShell title="Entrar no Envista" description="Acesse com e-mail, CPF ou CNPJ e continue de onde parou.">
       {errorMessage ? <div className={styles.error} role="alert">{errorMessage}</div> : null}
       {status === "password-updated" ? <div className={styles.success}>Senha atualizada e sessões anteriores encerradas. Entre novamente.</div> : null}
       {status === "confirmed" ? <div className={styles.success}>E-mail confirmado. Agora você pode entrar.</div> : null}
       {status === "signed-out-everywhere" ? <div className={styles.success}>Todas as sessões foram encerradas.</div> : null}
       <form action={loginAction} className={styles.form}>
         <input type="hidden" name="next" value={next} />
-        <label>E-mail<input type="email" name="identifier" autoComplete="username" maxLength={254} placeholder="voce@email.com" required /></label>
+        <label>E-mail, CPF ou CNPJ<input type="text" name="identifier" autoComplete="username" maxLength={254} placeholder="voce@email.com ou documento" required /><span className={styles.muted}>CPF/CNPJ é usado somente como identificador privado de acesso e não aparece no perfil.</span></label>
         <label><span className={styles.fieldLabel}><span>Senha</span><Link className={styles.inlineLink} href="/forgot-password">Esqueci minha senha</Link></span><input type="password" name="password" autoComplete="current-password" maxLength={128} required /></label>
         <div className={styles.captcha}><AuthCaptcha action="login" /></div>
         <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Entrando...">Entrar</AuthSubmitButton>
