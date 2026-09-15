@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scanOfficialCompetitions } from "@/lib/competitions/live-scan";
-import type { LiveCompetitionsResponse } from "@/lib/competitions/types";
+import { scanExtraOfficialCompetitions } from "@/lib/competitions/extra-live-sources";
+import type { CompetitionStatus, LiveCompetition, LiveCompetitionsResponse } from "@/lib/competitions/types";
 import { logServerEvent, requestIdFromHeaders, safeErrorName } from "@/lib/observability/logger";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,6 +38,26 @@ async function fallbackToRoboComp(fresh: boolean): Promise<LiveCompetitionsRespo
   }
 }
 
+function normalize(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function mergeItems(items: LiveCompetition[]) {
+  const map = new Map<string, LiveCompetition>();
+  for (const competition of items) {
+    const key = normalize(`${competition.name}|${competition.city}|${competition.eventDate || ""}`);
+    const current = map.get(key);
+    if (!current || competition.confidence > current.confidence) map.set(key, competition);
+  }
+  const order: Record<CompetitionStatus, number> = { OPEN: 0, UPCOMING: 1, UNKNOWN: 2, CLOSED: 3 };
+  return Array.from(map.values()).sort((a, b) => {
+    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+    const aDate = a.registrationEnd || a.eventDate || "9999-12-31";
+    const bDate = b.registrationEnd || b.eventDate || "9999-12-31";
+    return aDate.localeCompare(bDate);
+  });
+}
+
 export async function GET(request: NextRequest) {
   const requestedFresh = request.nextUrl.searchParams.get("fresh") === "1";
   const fresh = await canForceFreshScan(requestedFresh);
@@ -48,7 +69,17 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const result = await scanOfficialCompetitions({ fresh });
+    const [primary, extra] = await Promise.all([
+      scanOfficialCompetitions({ fresh }),
+      scanExtraOfficialCompetitions({ fresh }),
+    ]);
+    const result: LiveCompetitionsResponse = {
+      items: mergeItems([...primary.items, ...extra.items]),
+      checkedAt: new Date().toISOString(),
+      sourcesChecked: primary.sourcesChecked + extra.sourcesChecked,
+      errors: [...primary.errors, ...extra.errors],
+      mode: fresh ? "envista-expanded-official-scan-fresh-v2" : "envista-expanded-official-scan-v2",
+    };
 
     if (result.items.length > 0) {
       logServerEvent("info", "competitions_scan_success", {

@@ -14,10 +14,21 @@ function cursor(value: string | undefined) {
 function messagesPath(role: ProductRole) { return role === "investor" ? "/investor/messages" : "/app/messages"; }
 
 export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
-  const { supabase, appUser } = await requireProductUser(expectedRole);
+  const { supabase, userId, appUser } = await requireProductUser(expectedRole);
   const query = await searchParams;
 
-  const { data: summaries, error: summaryError } = await supabase.rpc("get_message_threads");
+  const [{ data: summaries, error: summaryError }, { data: suggestionRows }] = await Promise.all([
+    supabase.rpc("get_message_threads"),
+    supabase
+      .from("profiles")
+      .select("id,username,display_name")
+      .eq("profile_visibility", "platform")
+      .eq("allow_messages", true)
+      .neq("id", userId)
+      .not("username", "is", null)
+      .order("display_name")
+      .limit(10),
+  ]);
   const rows = summaryError ? [] : (summaries ?? []);
   const targetIds = Array.from(new Set(rows.map((row: any) => row.target_id).filter(Boolean)));
 
@@ -41,11 +52,31 @@ export async function MessagesServerPage({ expectedRole, searchParams }: { expec
     };
   });
 
+  const suggestions = (suggestionRows ?? []).filter((item: any) => item.username).map((item: any) => ({
+    id: item.id,
+    username: item.username as string,
+    displayName: item.display_name as string,
+  }));
+  const requestedTarget = first(query.to);
+  let initialUsername = suggestions.find((item) => item.id === requestedTarget)?.username ?? "";
+  if (!initialUsername && requestedTarget) {
+    const { data: requestedProfile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", requestedTarget)
+      .eq("profile_visibility", "platform")
+      .eq("allow_messages", true)
+      .maybeSingle();
+    initialUsername = requestedProfile?.username ?? "";
+  }
+
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
       <MessagesIndexView
         role={expectedRole}
         threads={threads}
+        suggestions={suggestions}
+        initialUsername={initialUsername}
         status={first(query.status)}
         error={summaryError ? "inbox" : first(query.error)}
       />
@@ -57,6 +88,7 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
   const { supabase, userId, appUser } = await requireProductUser(expectedRole);
   const query = await searchParams;
   const before = cursor(first(query.before));
+  const base = messagesPath(expectedRole);
   const { data: conversation } = await supabase.from("direct_conversations").select("id,user_a,user_b").eq("id", conversationId).maybeSingle();
   if (!conversation) notFound();
 
@@ -73,6 +105,13 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
     supabase.from("profiles").select("id,username,display_name,allow_messages,profile_visibility").eq("id", targetId).maybeSingle(),
     messageQuery,
     supabase.from("user_blocks").select("blocker_id,blocked_id").or(`and(blocker_id.eq.${conversation.user_a},blocked_id.eq.${conversation.user_b}),and(blocker_id.eq.${conversation.user_b},blocked_id.eq.${conversation.user_a})`),
+    supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .eq("kind", "message")
+      .eq("href", `${base}/${conversationId}`)
+      .is("read_at", null),
   ]);
 
   const rawMessages = messageRows ?? [];
@@ -85,7 +124,7 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
   const target = { id: targetId, display_name: profile?.display_name ?? "Conta privada", username: profile?.username ?? null };
 
   return (
-    <LegacySocialShell user={appUser} role={expectedRole} pathname={`${messagesPath(expectedRole)}/${conversationId}`}>
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={`${base}/${conversationId}`}>
       <ConversationView
         role={expectedRole}
         currentUserId={userId}

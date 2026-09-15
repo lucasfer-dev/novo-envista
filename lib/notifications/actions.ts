@@ -14,16 +14,36 @@ function root(role: "participant" | "investor") {
   return role === "investor" ? "/investor/notifications" : "/app/notifications";
 }
 
+async function markOneRead(supabase: any, userId: string, id: string) {
+  if (!id) return null;
+  const { data, error } = await supabase
+    .from("notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", userId)
+    .select("id")
+    .maybeSingle();
+  return error || !data ? new Error("notification-not-updated") : null;
+}
+
 export async function openNotificationAction(formData: FormData) {
   const { supabase, userId, role } = await requireProductUser();
   const base = root(role);
   const id = text(formData, "notification_id", 80);
   const href = safeInternalPath(formData.get("href"), base);
-  if (id) {
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id).eq("user_id", userId);
-  }
+  if (id) await markOneRead(supabase, userId, id);
   revalidatePath(base);
   redirect(href);
+}
+
+export async function markNotificationReadAction(formData: FormData) {
+  const { supabase, userId, role } = await requireProductUser();
+  const base = root(role);
+  const id = text(formData, "notification_id", 80);
+  const returnTo = safeInternalPath(formData.get("return_to"), base);
+  if (!id || await markOneRead(supabase, userId, id)) redirect(`${base}?error=read`);
+  revalidatePath(base);
+  redirect(returnTo);
 }
 
 export async function markAllNotificationsReadAction() {

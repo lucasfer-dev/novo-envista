@@ -8,6 +8,7 @@ const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
 const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
+const cnpjMigration = readFileSync("supabase/migrations/20260915161350_extend_private_identifier_with_cnpj.sql", "utf8");
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
@@ -28,29 +29,34 @@ describe("auth form feedback", () => {
     expect(onboarding).not.toMatch(/name="organization"[^>]*required/);
   });
 
-  it("keeps active login and signup email-only while CPF verification is paused", () => {
-    expect(login).toContain("<label>E-mail<input type=\"email\"");
+  it("supports email, CPF and CNPJ login while keeping documents private", () => {
+    expect(login).toContain("E-mail, CPF ou CNPJ");
     expect(login).toContain('name="identifier"');
-    expect(login).not.toContain("E-mail ou CPF");
-    expect(login).not.toContain("000.000.000-00");
-    expect(register).not.toContain('name="cpf"');
-    expect(register).not.toContain("O CPF não aparece no seu perfil");
+    expect(login).toContain('type="text" name="identifier"');
+    expect(login).toContain("identificador privado de acesso");
+    expect(register).toContain('name="document"');
+    expect(register).toContain("CPF ou CNPJ");
+    expect(register).toContain("O valor cru não é exibido no perfil nem salvo nos metadados da sessão");
   });
 
-  it("keeps dormant CPF compatibility data out of public profile access", () => {
+  it("keeps private document compatibility data out of public profile access", () => {
     expect(migration).toContain("new.raw_user_meta_data := coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf'");
     expect(migration).toContain("revoke all on table public.account_private_identifiers from public, anon, authenticated");
     expect(migration).toContain("alter table public.account_private_identifiers enable row level security");
     expect(onboarding).not.toContain('name="cpf"');
+    expect(onboarding).not.toContain('name="cnpj"');
   });
 
-  it("protects the dormant CPF lookup with a Vault-managed HMAC key", () => {
+  it("protects CPF/CNPJ lookup with a Vault-managed HMAC key", () => {
     expect(hmacMigration).toContain("vault.create_secret");
     expect(hmacMigration).toContain("extensions.hmac");
     expect(hmacMigration).toContain("envista_cpf_hmac_key");
     expect(hmacMigration).toContain("revoke all on function public.resolve_cpf_login(text) from public, anon, authenticated");
     expect(hmacMigration).toContain("grant execute on function public.resolve_cpf_login(text) to service_role");
+    expect(cnpjMigration).toContain("is_valid_cnpj");
+    expect(cnpjMigration).toContain("resolve_cpf_login");
     expect(cpfLoginFunction).toContain('rpc("resolve_cpf_login"');
+    expect(cpfLoginFunction).toContain("isValidCnpj");
     expect(cpfLoginFunction).not.toContain("sha256Hex");
   });
 });

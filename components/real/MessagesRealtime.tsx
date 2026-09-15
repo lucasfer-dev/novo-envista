@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { reportMessageAction, sendMessageAction } from "@/lib/messages/actions";
 import styles from "./Messages.module.css";
@@ -19,6 +19,7 @@ type Props = {
 export default function MessagesRealtime({ conversationId, currentUserId, initialMessages, canSend, returnTo, live = true }: Props) {
   const [messages, setMessages] = useState(initialMessages);
   const supabase = useMemo(() => createClient(), []);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setMessages(initialMessages);
@@ -46,10 +47,14 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
     return () => { void supabase.removeChannel(channel); };
   }, [conversationId, currentUserId, live, supabase]);
 
+  useEffect(() => {
+    if (live) bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [messages.length, live]);
+
   return (
     <>
       <div className={styles.messages} aria-live={live ? "polite" : "off"}>
-        {messages.length === 0 ? <div className={styles.empty}>Nenhuma mensagem ainda.</div> : messages.map((message) => {
+        {messages.length === 0 ? <div className={styles.empty}>Nenhuma mensagem ainda. Envie a primeira mensagem abaixo.</div> : messages.map((message) => {
           const mine = message.sender_id === currentUserId;
           return (
             <div key={message.id} className={`${styles.bubble} ${mine ? styles.mine : ""}`}>
@@ -76,12 +81,29 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
             </div>
           );
         })}
+        <div ref={bottomRef} aria-hidden="true" />
       </div>
       {!live ? <div className={styles.privacy}>Você está vendo uma página antiga do histórico. Volte às mensagens mais recentes para responder e receber novas mensagens em tempo real.</div> : canSend ? (
         <form className={styles.composer} action={sendMessageAction}>
           <input type="hidden" name="conversation_id" value={conversationId}/>
           <input type="hidden" name="return_to" value={returnTo}/>
-          <textarea name="body" maxLength={4000} required placeholder="Escreva uma mensagem…" aria-label="Mensagem"/>
+          <div className={styles.composerField}>
+            <textarea
+              name="body"
+              maxLength={4000}
+              required
+              placeholder="Escreva uma mensagem…"
+              aria-label="Mensagem"
+              rows={2}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
+            />
+            <small className={styles.composerHint}>Enter envia · Shift + Enter quebra a linha</small>
+          </div>
           <button className={styles.primary}>Enviar</button>
         </form>
       ) : <div className={styles.privacy}>O envio de novas mensagens está desativado nesta conversa por uma configuração de privacidade ou bloqueio.</div>}

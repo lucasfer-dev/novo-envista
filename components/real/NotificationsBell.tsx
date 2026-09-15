@@ -7,9 +7,10 @@ import { createClient } from "@/lib/supabase/client";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-type Props = { userId: string; prefix: "/app" | "/investor"; dark?: boolean };
+type NotificationPrefix = "" | "/investor";
+type Props = { userId: string; prefix: NotificationPrefix; dark?: boolean };
 
-function BellLink({ count, prefix, dark = false }: { count: number; prefix: "/app" | "/investor"; dark?: boolean }) {
+function BellLink({ count, prefix, dark = false }: { count: number; prefix: NotificationPrefix; dark?: boolean }) {
   return (
     <Link
       href={`${prefix}/notifications`}

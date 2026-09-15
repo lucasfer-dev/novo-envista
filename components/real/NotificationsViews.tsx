@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { deleteNotificationAction, markAllNotificationsReadAction, openNotificationAction } from "@/lib/notifications/actions";
+import { deleteNotificationAction, markAllNotificationsReadAction, markNotificationReadAction, openNotificationAction } from "@/lib/notifications/actions";
 import styles from "./Notifications.module.css";
 
 type Notification = { id:string; kind:string; title:string; body:string; href:string; read_at:string|null; created_at:string };
@@ -7,6 +7,7 @@ function href(basePath:string,page:number){return page<=1?basePath:`${basePath}?
 
 export function NotificationsView({notifications,status,unreadTotal,page,pageCount,total,basePath}:{notifications:Notification[];status?:string;unreadTotal:number;page:number;pageCount:number;total:number;basePath:string}){
  const totalLabel=total===1?"1 notificação":`${total} notificações`;
+ const returnTo=href(basePath,page);
  return <>
   <div className={styles.head}>
     <div><h1>Notificações</h1><p className={styles.muted}>{unreadTotal?`${unreadTotal} não lida${unreadTotal===1?"":"s"}.`:`${totalLabel} · tudo em dia.`}</p></div>
@@ -17,7 +18,8 @@ export function NotificationsView({notifications,status,unreadTotal,page,pageCou
     {notifications.length===0?<div className={styles.empty}>Você ainda não recebeu notificações.</div>:notifications.map(item=><article className={styles.item} data-unread={!item.read_at} key={item.id}>
       <div className={styles.content}><strong>{item.title}</strong><p>{item.body}</p><small>{new Date(item.created_at).toLocaleString("pt-BR")}</small></div>
       <div className={styles.actions}>
-        <form action={openNotificationAction}><input type="hidden" name="notification_id" value={item.id}/><input type="hidden" name="href" value={item.href}/><button className={styles.primary}>{item.read_at?"Abrir":"Ver e marcar lida"}</button></form>
+        <form action={openNotificationAction}><input type="hidden" name="notification_id" value={item.id}/><input type="hidden" name="href" value={item.href}/><button className={styles.primary}>{item.kind==="message"?"Abrir mensagem":"Abrir"}</button></form>
+        {!item.read_at?<form action={markNotificationReadAction}><input type="hidden" name="notification_id" value={item.id}/><input type="hidden" name="return_to" value={returnTo}/><button className={styles.secondary}>Marcar como lida</button></form>:null}
         <form action={deleteNotificationAction}><input type="hidden" name="notification_id" value={item.id}/><button className={styles.danger} aria-label={`Excluir notificação: ${item.title}`}>Excluir</button></form>
       </div>
     </article>)}

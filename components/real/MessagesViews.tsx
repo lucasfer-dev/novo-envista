@@ -13,11 +13,12 @@ type Thread = {
   lastAt: string | null;
   unreadCount: number;
 };
+type Suggestion = { id: string; username: string; displayName: string };
 type Message = { id: string; sender_id: string; body: string; created_at: string };
 
 function base(role: Role) { return role === "investor" ? "/investor/messages" : "/app/messages"; }
 
-export function MessagesIndexView({ role, threads, status, error }: { role: Role; threads: Thread[]; status?: string; error?: string }) {
+export function MessagesIndexView({ role, threads, suggestions = [], initialUsername = "", status, error }: { role: Role; threads: Thread[]; suggestions?: Suggestion[]; initialUsername?: string; status?: string; error?: string }) {
   const root = base(role);
   const totalUnread = threads.reduce((total, thread) => total + thread.unreadCount, 0);
   const notices: Record<string, string> = { blocked: "Usuário bloqueado.", unblocked: "Bloqueio removido." };
@@ -27,7 +28,7 @@ export function MessagesIndexView({ role, threads, status, error }: { role: Role
 
   return <>
     <div className={styles.head}>
-      <div><h1>Mensagens</h1><p className={styles.muted}>Conversas privadas persistidas no Supabase.</p></div>
+      <div><h1>Mensagens</h1><p className={styles.muted}>Converse com pessoas que habilitaram mensagens no Envista.</p></div>
       {totalUnread > 0 ? <span className={styles.unreadSummary}>{totalUnread} {totalUnread === 1 ? "nova" : "novas"}</span> : null}
     </div>
     {status && notices[status] ? <div className={styles.notice}>{notices[status]}</div> : null}
@@ -35,16 +36,18 @@ export function MessagesIndexView({ role, threads, status, error }: { role: Role
     <div className={styles.grid}>
       <aside className={styles.panel}>
         <h2>Nova conversa</h2>
-        <p className={styles.muted}>Use o @username. Só contas que permitem novas mensagens podem ser encontradas.</p>
+        <p className={styles.muted}>Busque por @usuário ou escolha uma das sugestões disponíveis.</p>
         <form className={styles.form} action={startConversationAction}>
-          <label>Usuário<input name="username" maxLength={50} placeholder="@usuario" required /></label>
+          <label>Usuário<input name="username" list="message-profile-suggestions" maxLength={50} placeholder="@usuario" defaultValue={initialUsername ? `@${initialUsername}` : ""} autoComplete="off" required /></label>
+          <datalist id="message-profile-suggestions">{suggestions.map((profile) => <option key={profile.id} value={`@${profile.username}`}>{profile.displayName}</option>)}</datalist>
+          {suggestions.length ? <div className={styles.actions} aria-label="Sugestões de perfis">{suggestions.slice(0,5).map((profile) => <span className={styles.secondary} key={profile.id} title={`@${profile.username}`}>{profile.displayName}</span>)}</div> : null}
           <button className={styles.primary}>Iniciar conversa</button>
         </form>
       </aside>
       <section className={styles.panel}>
         <h2>Conversas</h2>
         <div className={styles.stack}>
-          {threads.length === 0 ? <div className={styles.empty}>Você ainda não tem conversas reais.</div> : threads.map((thread) =>
+          {threads.length === 0 ? <div className={styles.empty}>Você ainda não tem conversas.</div> : threads.map((thread) =>
             <Link className={`${styles.thread} ${thread.unreadCount > 0 ? styles.threadUnread : ""}`} href={`${root}/${thread.id}`} key={thread.id}>
               <div className={styles.threadTop}><strong>{thread.targetName}</strong>{thread.unreadCount > 0 ? <span className={styles.unreadBadge} aria-label={`${thread.unreadCount} mensagens não lidas`}>{thread.unreadCount > 99 ? "99+" : thread.unreadCount}</span> : null}</div>
               <small>{thread.targetUsername ? `@${thread.targetUsername}` : "Conta privada"}</small>

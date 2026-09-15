@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bell, CircleUserRound, Database, LifeBuoy, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
+import { Bell, CalendarDays, CircleUserRound, Database, LifeBuoy, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import suite from "@/components/product/ProfessionalSuite.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -13,11 +13,11 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
   if (error || !userId) redirect("/login?error=session");
   const [{ data: profile }, { data: prefs }] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-    supabase.from("notification_preferences").select("social,teams,projects,messages,investor_activity,saved_project_updates").eq("user_id", userId).maybeSingle(),
+    supabase.from("notification_preferences").select("social,teams,projects,messages,investor_activity,saved_project_updates,calendar_events").eq("user_id", userId).maybeSingle(),
   ]);
   const params = await searchParams;
-  const home = profile?.role === "investor" ? "/investor" : "/app";
-  const defaults = prefs ?? { social: true, teams: true, projects: true, messages: true, investor_activity: true, saved_project_updates: true };
+  const home = profile?.role === "investor" ? "/investor" : "/home";
+  const defaults = prefs ?? { social: true, teams: true, projects: true, messages: true, investor_activity: true, saved_project_updates: true, calendar_events: true };
 
   return (
     <AuthShell wide title="Configurações" description="Conta, privacidade, notificações e segurança em um só lugar.">
@@ -42,6 +42,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
           <label className={styles.check}><input type="checkbox" name="messages" defaultChecked={defaults.messages} /><span>Mensagens diretas.</span></label>
           <label className={styles.check}><input type="checkbox" name="investor_activity" defaultChecked={defaults.investor_activity} /><span>Interesses e movimentações de investidores.</span></label>
           <label className={styles.check}><input type="checkbox" name="saved_project_updates" defaultChecked={defaults.saved_project_updates} /><span>Atualizações de projetos que você salvou.</span></label>
+          <label className={styles.check}><input type="checkbox" name="calendar_events" defaultChecked={defaults.calendar_events} /><span><CalendarDays size={15} style={{ verticalAlign: "-2px" }} /> Resumo semanal de eventos, competições e prazos do calendário.</span></label>
         </div>
         <button className={styles.primary} type="submit">Salvar notificações</button>
       </form>

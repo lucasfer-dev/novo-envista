@@ -6,9 +6,9 @@ const JSON_HEADERS = {
   "Cache-Control": "no-store, max-age=0",
 };
 
-const CPF_LOGIN_SINK_EMAIL = "cpf-login-sink@invalid.envista.local";
+const DOCUMENT_LOGIN_SINK_EMAIL = "document-login-sink@invalid.envista.local";
 const RATE_WINDOW_SECONDS = 15 * 60;
-const CPF_ATTEMPT_LIMIT = 10;
+const DOCUMENT_ATTEMPT_LIMIT = 10;
 const IP_ATTEMPT_LIMIT = 30;
 
 function json(body: Record<string, unknown>, status = 200, extraHeaders?: Record<string, string>) {
@@ -18,12 +18,12 @@ function json(body: Record<string, unknown>, status = 200, extraHeaders?: Record
   });
 }
 
-function normalizeCpf(value: unknown) {
+function normalizeDocument(value: unknown) {
   return typeof value === "string" ? value.replace(/\D/g, "") : "";
 }
 
 function isValidCpf(value: unknown) {
-  const cpf = normalizeCpf(value);
+  const cpf = normalizeDocument(value);
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
 
   const checkDigit = (length: number) => {
@@ -36,6 +36,26 @@ function isValidCpf(value: unknown) {
   };
 
   return checkDigit(9) === Number(cpf[9]) && checkDigit(10) === Number(cpf[10]);
+}
+
+function isValidCnpj(value: unknown) {
+  const cnpj = normalizeDocument(value);
+  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+
+  const calculateDigit = (base: string, weights: number[]) => {
+    const sum = base.split("").reduce((total, digit, index) => total + Number(digit) * weights[index], 0);
+    const remainder = sum % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  };
+
+  const first = calculateDigit(cnpj.slice(0, 12), [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  if (first !== Number(cnpj[12])) return false;
+  const second = calculateDigit(cnpj.slice(0, 13), [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  return second === Number(cnpj[13]);
+}
+
+function isValidDocument(value: unknown) {
+  return isValidCpf(value) || isValidCnpj(value);
 }
 
 async function sha256(value: string) {
@@ -97,38 +117,38 @@ Deno.serve(async (req) => {
     return json({ error: "invalid_credentials" }, 401);
   }
 
-  const cpf = normalizeCpf(payload.cpf);
+  const identifier = normalizeDocument(payload.identifier ?? payload.cpf ?? payload.cnpj);
   const password = typeof payload.password === "string" ? payload.password : "";
   const captchaToken =
     typeof payload.captchaToken === "string" ? payload.captchaToken.slice(0, 4096) : undefined;
 
-  if (!isValidCpf(cpf) || !password || password.length > 128) {
+  if (!isValidDocument(identifier) || !password || password.length > 128) {
     return json({ error: "invalid_credentials" }, 401);
   }
 
   try {
-    const [cpfHash, ipHash] = await Promise.all([
-      sha256(`cpf-login:cpf:${cpf}`),
-      sha256(`cpf-login:ip:${clientIp(req)}`),
+    const [identifierHash, ipHash] = await Promise.all([
+      sha256(`document-login:identifier:${identifier}`),
+      sha256(`document-login:ip:${clientIp(req)}`),
     ]);
 
-    const [cpfLimit, ipLimit] = await Promise.all([
-      consumeRateLimit(ctx.supabaseAdmin, "cpf_login_cpf", cpfHash, CPF_ATTEMPT_LIMIT),
-      consumeRateLimit(ctx.supabaseAdmin, "cpf_login_ip", ipHash, IP_ATTEMPT_LIMIT),
+    const [documentLimit, ipLimit] = await Promise.all([
+      consumeRateLimit(ctx.supabaseAdmin, "document_login_identifier", identifierHash, DOCUMENT_ATTEMPT_LIMIT),
+      consumeRateLimit(ctx.supabaseAdmin, "document_login_ip", ipHash, IP_ATTEMPT_LIMIT),
     ]);
 
-    if (!cpfLimit.allowed || !ipLimit.allowed) {
-      const retryAfter = Math.max(cpfLimit.retryAfter, ipLimit.retryAfter, 1);
+    if (!documentLimit.allowed || !ipLimit.allowed) {
+      const retryAfter = Math.max(documentLimit.retryAfter, ipLimit.retryAfter, 1);
       return json({ error: "rate" }, 429, { "Retry-After": String(retryAfter) });
     }
 
     const { data: userId, error: mappingError } = await ctx.supabaseAdmin.rpc("resolve_cpf_login", {
-      cpf_value: cpf,
+      cpf_value: identifier,
     });
 
     if (mappingError) return json({ error: "temporary" }, 503);
 
-    let email = CPF_LOGIN_SINK_EMAIL;
+    let email = DOCUMENT_LOGIN_SINK_EMAIL;
     if (typeof userId === "string" && userId) {
       const { data: userData } = await ctx.supabaseAdmin.auth.admin.getUserById(userId);
       if (userData.user?.email) email = userData.user.email;
