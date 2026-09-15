@@ -14,6 +14,10 @@ const errors: Record<string, string> = {
   completion: "O perfil foi salvo, mas a configuração ainda não pôde ser concluída. Tente novamente.",
 };
 
+const TAG_OPTIONS = ["Tecnologia", "Programação", "Robótica", "IA", "Design", "Games", "Ciência", "Educação", "Empreendedorismo", "Negócios", "Sustentabilidade", "Acessibilidade"];
+const CITY_SUGGESTIONS = ["Rio de Janeiro", "Queimados", "Nova Iguaçu", "Japeri", "São João de Meriti", "Duque de Caxias", "Niterói", "São Paulo", "Belo Horizonte", "Curitiba", "Recife", "Salvador", "Brasília"];
+const STATE_SUGGESTIONS = ["RJ", "SP", "MG", "ES", "PR", "SC", "RS", "BA", "PE", "CE", "GO", "DF"];
+
 function ageLabel(age: string) {
   if (age === "child") return "Menos de 12 anos";
   if (age === "adolescent") return "12 a 17 anos";
@@ -28,7 +32,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   if (claimsError || !userId) redirect("/login?error=session");
 
   const [{ data: profile }, { data: compliance }, { data: completion }] = await Promise.all([
-    supabase.from("profiles").select("username,display_name,role,bio,public_city,public_state,public_school,organization,organization_type").eq("id", userId).single(),
+    supabase.from("profiles").select("username,display_name,role,bio,public_city,public_state,public_school,organization,organization_type,interest_tags").eq("id", userId).single(),
     supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).single(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
@@ -43,9 +47,11 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   const errorCode = typeof params.error === "string" ? params.error : "";
   const ageLocked = compliance.age_band !== "unknown";
   const participant = profile.role === "participant";
+  const currentTags = new Set<string>(profile.interest_tags || []);
+  const customTags = [...currentTags].filter((tag) => !TAG_OPTIONS.includes(tag)).join(", ");
 
   return (
-    <AuthShell wide title="Complete seu perfil" description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Campos públicos opcionais podem ser alterados depois.`}>
+    <AuthShell wide title="Complete seu perfil" description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Localização e interesses ajudam a sugerir pessoas, projetos e competições mais relevantes.`}>
       <div className={styles.notice} role="status"><strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.</div>
       <div className={styles.notice}>Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.</div>
       {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
@@ -57,13 +63,22 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
 
         <label>Faixa etária{ageLocked ? <><input type="hidden" name="age_band" value={compliance.age_band} /><input value={ageLabel(compliance.age_band)} disabled /></> : <select name="age_band" defaultValue="" required><option value="" disabled>Selecione</option><option value="child">Menos de 12 anos</option><option value="adolescent">12 a 17 anos</option><option value="adult">18 anos ou mais</option></select>}<span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública.</span></label>
 
-        <label>Bio <span className={styles.muted}>(opcional)</span><textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} placeholder="Conte um pouco sobre seus interesses ou o que você está construindo." /></label>
+        <label>Apresentação <span className={styles.muted}>(opcional)</span><textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} placeholder="Conte um pouco sobre seus interesses ou o que você está construindo." /></label>
 
-        {participant ? (
-          <div className={styles.grid2}><label>Escola/instituição <span className={styles.muted}>(opcional)</span><input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} /></label><label>Cidade <span className={styles.muted}>(opcional)</span><input name="public_city" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} /></label><label>Estado <span className={styles.muted}>(opcional)</span><input name="public_state" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} /></label></div>
-        ) : (
-          <div className={styles.grid2}><label>Organização <span className={styles.muted}>(opcional)</span><input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} /></label><label>Tipo de organização <span className={styles.muted}>(opcional)</span><input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} /></label></div>
-        )}
+        <div className={styles.grid2}>
+          {participant ? <label>Escola/instituição <span className={styles.muted}>(opcional)</span><input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} placeholder="Digite o nome — aceitamos outras escolas" /></label> : <><label>Organização <span className={styles.muted}>(opcional)</span><input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} placeholder="Digite a organização" /></label><label>Tipo de organização <span className={styles.muted}>(opcional)</span><input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} placeholder="Escola, empresa, fundo, ONG…" /></label></>}
+          <label>Cidade <span className={styles.muted}>(opcional)</span><input name="public_city" list="envista-cities" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} placeholder="Escolha uma sugestão ou digite outra" /></label>
+          <label>Estado <span className={styles.muted}>(opcional)</span><input name="public_state" list="envista-states" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} placeholder="RJ ou outro" /></label>
+        </div>
+        <datalist id="envista-cities">{CITY_SUGGESTIONS.map((city) => <option key={city} value={city} />)}</datalist>
+        <datalist id="envista-states">{STATE_SUGGESTIONS.map((state) => <option key={state} value={state} />)}</datalist>
+
+        <fieldset className={styles.formSection}>
+          <legend>Interesses e tags <span className={styles.muted}>(opcional)</span></legend>
+          <span className={styles.muted}>Selecione quantas fizerem sentido. Se não encontrar, use “Outros”.</span>
+          <div className={styles.checks}>{TAG_OPTIONS.map((tag) => <label className={styles.check} key={tag}><input type="checkbox" name="interest_tags" value={tag} defaultChecked={currentTags.has(tag)} /><span>{tag}</span></label>)}</div>
+          <label>Outros<input name="interest_tags_other" defaultValue={customTags} maxLength={300} placeholder="Ex.: audiovisual, saúde, astronomia — separe por vírgulas" /></label>
+        </fieldset>
 
         <div className={styles.divider} />
         <div className={styles.checks}>
