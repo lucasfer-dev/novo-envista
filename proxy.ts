@@ -2,6 +2,24 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { guardUnsafeRequest } from "@/lib/security/request-rate-limit";
 
+const PARTICIPANT_ROUTE_ROOTS = new Set([
+  "home",
+  "learn",
+  "social",
+  "explore",
+  "participants",
+  "investors",
+  "activity",
+  "insights",
+  "messages",
+  "notifications",
+  "settings",
+  "teams",
+  "projects",
+  "workspace",
+  "competitions",
+]);
+
 function createNonce() {
   // UUID v4 supplies cryptographically secure randomness. Removing separators
   // leaves a CSP nonce value that is safe to place directly in a header.
@@ -54,6 +72,17 @@ function applySecurityHeaders(response: Response, request: NextRequest, csp: str
   return response;
 }
 
+function copySessionState(source: NextResponse, target: NextResponse) {
+  for (const cookie of source.cookies.getAll()) {
+    target.cookies.set(cookie.name, cookie.value, cookie);
+  }
+  for (const header of ["Cache-Control", "Pragma", "Expires"]) {
+    const value = source.headers.get(header);
+    if (value) target.headers.set(header, value);
+  }
+  return target;
+}
+
 function legacyRootEmailRedirect(request: NextRequest, csp: string) {
   if (request.nextUrl.pathname !== "/") return null;
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
@@ -71,6 +100,32 @@ function legacyRootEmailRedirect(request: NextRequest, csp: string) {
   return applySecurityHeaders(response, request, csp);
 }
 
+function participantRouteResponse(
+  request: NextRequest,
+  requestHeaders: Headers,
+  sessionResponse: NextResponse,
+) {
+  const pathname = request.nextUrl.pathname;
+
+  // Old links keep working, but the browser is moved to the canonical URL.
+  if (pathname === "/app" || pathname.startsWith("/app/")) {
+    const target = request.nextUrl.clone();
+    target.pathname = pathname === "/app" ? "/home" : pathname.slice(4) || "/home";
+    return copySessionState(sessionResponse, NextResponse.redirect(target, 308));
+  }
+
+  const firstSegment = pathname.split("/").filter(Boolean)[0] || "";
+  if (!PARTICIPANT_ROUTE_ROOTS.has(firstSegment)) return null;
+
+  // Keep the existing internal route tree while exposing clean participant URLs.
+  const target = request.nextUrl.clone();
+  target.pathname = pathname === "/home" ? "/app" : `/app${pathname}`;
+  return copySessionState(
+    sessionResponse,
+    NextResponse.rewrite(target, { request: { headers: requestHeaders } }),
+  );
+}
+
 export async function proxy(request: NextRequest) {
   const nonce = createNonce();
   const csp = contentSecurityPolicy(nonce);
@@ -85,8 +140,15 @@ export async function proxy(request: NextRequest) {
   const securityResponse = guardUnsafeRequest(request);
   if (securityResponse) return applySecurityHeaders(securityResponse, request, csp);
 
-  const response = await updateSession(request, requestHeaders);
-  return applySecurityHeaders(response, request, csp);
+  const sessionResponse = await updateSession(request, requestHeaders);
+  const participantResponse = participantRouteResponse(
+    request,
+    requestHeaders,
+    sessionResponse as NextResponse,
+  );
+  if (participantResponse) return applySecurityHeaders(participantResponse, request, csp);
+
+  return applySecurityHeaders(sessionResponse, request, csp);
 }
 
 export const config = {
