@@ -28,6 +28,19 @@ function value(formData: FormData, name: string) {
   return typeof item === "string" ? item.trim() : "";
 }
 
+function interestTags(formData: FormData) {
+  const selected = formData
+    .getAll("interest_tags")
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim().slice(0, 48))
+    .filter(Boolean);
+  const custom = value(formData, "interest_tags_other")
+    .split(",")
+    .map((item) => item.trim().slice(0, 48))
+    .filter(Boolean);
+  return Array.from(new Set([...selected, ...custom])).slice(0, 12);
+}
+
 function authErrorPath(base: string, code: string) {
   return `${base}?error=${encodeURIComponent(code)}`;
 }
@@ -66,23 +79,13 @@ async function destinationForSignedInUser(
 ) {
   const [{ data: profile }, { data: compliance }, { data: completion }] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-    supabase
-      .from("account_compliance")
-      .select("age_band,guardian_consent_verified_at")
-      .eq("user_id", userId)
-      .maybeSingle(),
-    supabase
-      .from("onboarding_completions")
-      .select("user_id")
-      .eq("user_id", userId)
-      .maybeSingle(),
+    supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
+    supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
 
   const role = parseProductRole(profile?.role);
   if (!completion) return "/onboarding";
-  if (compliance?.age_band === "child" && !compliance.guardian_consent_verified_at) {
-    return "/guardian-required";
-  }
+  if (compliance?.age_band === "child" && !compliance.guardian_consent_verified_at) return "/guardian-required";
 
   const fallback = homeForRole(role);
   const next = safeInternalPath(requestedNext, fallback);
@@ -108,16 +111,16 @@ export async function loginAction(formData: FormData) {
     });
     if (error) redirect(authErrorPath("/login", authFailureCode(error)));
   } else {
+    const normalizedDocument = normalizePrivateDocument(rawIdentifier);
     const { data, error } = await supabase.functions.invoke("cpf-login", {
       body: {
-        identifier: normalizePrivateDocument(rawIdentifier),
+        identifier: normalizedDocument,
+        cpf: normalizedDocument,
         password,
         ...(captchaToken ? { captchaToken } : {}),
       },
     });
-    if (error || !data?.access_token || !data?.refresh_token) {
-      redirect(authErrorPath("/login", "invalid"));
-    }
+    if (error || !data?.access_token || !data?.refresh_token) redirect(authErrorPath("/login", "invalid"));
     const { error: sessionError } = await supabase.auth.setSession({
       access_token: String(data.access_token),
       refresh_token: String(data.refresh_token),
@@ -128,26 +131,18 @@ export async function loginAction(formData: FormData) {
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
   if (claimsError || !userId) redirect(authErrorPath("/login", "session"));
-
   redirect(await destinationForSignedInUser(supabase, userId, requestedNext));
 }
 
 export async function registerAction(formData: FormData) {
   if (process.env.AUTH_SIGNUP_ENABLED !== "true") redirect("/register?status=closed");
-
   const displayName = value(formData, "display_name").slice(0, 100);
   const email = value(formData, "email").toLowerCase();
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
-  const confirmation =
-    typeof formData.get("password_confirmation") === "string"
-      ? String(formData.get("password_confirmation"))
-      : "";
+  const confirmation = typeof formData.get("password_confirmation") === "string" ? String(formData.get("password_confirmation")) : "";
   const role = parseProductRole(formData.get("role"));
-
   if (!displayName || !isValidEmail(email)) redirect(authErrorPath("/register", "invalid"));
-  if (validatePassword(password) || password !== confirmation) {
-    redirect(authErrorPath("/register", "password"));
-  }
+  if (validatePassword(password) || password !== confirmation) redirect(authErrorPath("/register", "password"));
   const captchaToken = getCaptchaToken(formData, "/register");
 
   const supabase = await createClient();
@@ -160,12 +155,9 @@ export async function registerAction(formData: FormData) {
       ...(captchaToken ? { captchaToken } : {}),
     },
   });
-
   if (error) {
     const code = authFailureCode(error);
-    if (code === "captcha" || code === "rate" || code === "temporary") {
-      redirect(authErrorPath("/register", code));
-    }
+    if (code === "captcha" || code === "rate" || code === "temporary") redirect(authErrorPath("/register", code));
     if (error.code === "weak_password") redirect(authErrorPath("/register", "password"));
     redirect("/register?status=check-email");
   }
@@ -177,7 +169,6 @@ export async function forgotPasswordAction(formData: FormData) {
   const email = value(formData, "email").toLowerCase();
   if (!isValidEmail(email)) redirect("/forgot-password?status=sent");
   const captchaToken = getCaptchaToken(formData, "/forgot-password");
-
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${resolveSiteUrl()}/recover-account`,
@@ -185,9 +176,7 @@ export async function forgotPasswordAction(formData: FormData) {
   });
   if (error) {
     const code = authFailureCode(error);
-    if (code === "captcha" || code === "rate" || code === "temporary") {
-      redirect(authErrorPath("/forgot-password", code));
-    }
+    if (code === "captcha" || code === "rate" || code === "temporary") redirect(authErrorPath("/forgot-password", code));
   }
   redirect("/forgot-password?status=sent");
 }
@@ -203,21 +192,9 @@ async function ensureLegalEvent(
   documentType: "terms" | "privacy",
   documentVersion: string,
 ) {
-  const { data: existing } = await supabase
-    .from("legal_acceptances")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("document_type", documentType)
-    .eq("document_version", documentVersion)
-    .maybeSingle();
-
+  const { data: existing } = await supabase.from("legal_acceptances").select("id").eq("user_id", userId).eq("document_type", documentType).eq("document_version", documentVersion).maybeSingle();
   if (existing) return null;
-  const { error } = await supabase.from("legal_acceptances").insert({
-    user_id: userId,
-    document_type: documentType,
-    document_version: documentVersion,
-    context: "internal_test",
-  });
+  const { error } = await supabase.from("legal_acceptances").insert({ user_id: userId, document_type: documentType, document_version: documentVersion, context: "internal_test" });
   return error;
 }
 
@@ -229,9 +206,7 @@ export async function onboardingAction(formData: FormData) {
   const acceptedTerms = formData.get("terms") === "on";
   const acknowledgedPrivacy = formData.get("privacy") === "on";
 
-  if (!displayName || !isValidUsername(username) || !ageBand || !acceptedTerms || !acknowledgedPrivacy) {
-    redirect("/onboarding?error=invalid");
-  }
+  if (!displayName || !isValidUsername(username) || !ageBand || !acceptedTerms || !acknowledgedPrivacy) redirect("/onboarding?error=invalid");
 
   const profilePatch = {
     username,
@@ -242,52 +217,27 @@ export async function onboardingAction(formData: FormData) {
     public_school: value(formData, "public_school").slice(0, 160) || null,
     organization: value(formData, "organization").slice(0, 160) || null,
     organization_type: value(formData, "organization_type").slice(0, 100) || null,
+    interest_tags: interestTags(formData),
     profile_visibility: "private" as const,
     allow_messages: false,
   };
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .update(profilePatch)
-    .eq("id", userId);
-  if (profileError) {
-    redirect(`/onboarding?error=${profileError.code === "23505" ? "username" : "profile"}`);
-  }
+  const { error: profileError } = await supabase.from("profiles").update(profilePatch).eq("id", userId);
+  if (profileError) redirect(`/onboarding?error=${profileError.code === "23505" ? "username" : "profile"}`);
 
-  const { data: compliance } = await supabase
-    .from("account_compliance")
-    .select("age_band")
-    .eq("user_id", userId)
-    .single();
-
+  const { data: compliance } = await supabase.from("account_compliance").select("age_band").eq("user_id", userId).single();
   if (compliance?.age_band === "unknown") {
-    const { error: ageError } = await supabase
-      .from("account_compliance")
-      .update({ age_band: ageBand })
-      .eq("user_id", userId);
+    const { error: ageError } = await supabase.from("account_compliance").update({ age_band: ageBand }).eq("user_id", userId);
     if (ageError) redirect("/onboarding?error=age");
-  } else if (compliance?.age_band !== ageBand) {
-    redirect("/onboarding?error=age-locked");
-  }
+  } else if (compliance?.age_band !== ageBand) redirect("/onboarding?error=age-locked");
 
   const termsError = await ensureLegalEvent(supabase, userId, "terms", INTERNAL_TERMS_VERSION);
-  const privacyError = await ensureLegalEvent(
-    supabase,
-    userId,
-    "privacy",
-    INTERNAL_PRIVACY_VERSION,
-  );
+  const privacyError = await ensureLegalEvent(supabase, userId, "privacy", INTERNAL_PRIVACY_VERSION);
   if (termsError || privacyError) redirect("/onboarding?error=legal");
 
-  const { data: completion } = await supabase
-    .from("onboarding_completions")
-    .select("user_id")
-    .eq("user_id", userId)
-    .maybeSingle();
+  const { data: completion } = await supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle();
   if (!completion) {
-    const { error: completionError } = await supabase
-      .from("onboarding_completions")
-      .insert({ user_id: userId });
+    const { error: completionError } = await supabase.from("onboarding_completions").insert({ user_id: userId });
     if (completionError) redirect("/onboarding?error=completion");
   }
 
@@ -302,11 +252,7 @@ export async function profileUpdateAction(formData: FormData) {
   const displayName = value(formData, "display_name").slice(0, 100);
   if (!displayName || !isValidUsername(username)) redirect("/account/profile?error=invalid");
 
-  const { data: compliance } = await supabase
-    .from("account_compliance")
-    .select("age_band,guardian_consent_verified_at")
-    .eq("user_id", userId)
-    .single();
+  const { data: compliance } = await supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).single();
   if (!compliance || compliance.age_band === "unknown") redirect("/onboarding");
 
   let profileVisibility = formData.get("profile_visibility") === "platform" ? "platform" : "private";
@@ -327,6 +273,7 @@ export async function profileUpdateAction(formData: FormData) {
       public_school: value(formData, "public_school").slice(0, 160) || null,
       organization: value(formData, "organization").slice(0, 160) || null,
       organization_type: value(formData, "organization_type").slice(0, 100) || null,
+      interest_tags: interestTags(formData),
       profile_visibility: profileVisibility,
       allow_messages: allowMessages,
     })
@@ -338,5 +285,6 @@ export async function profileUpdateAction(formData: FormData) {
   revalidatePath("/account/profile");
   revalidatePath("/app/social");
   revalidatePath("/app/explore");
+  revalidatePath("/app/competitions");
   redirect("/account/profile?status=saved");
 }
