@@ -47,25 +47,13 @@ export async function createPostAction(formData: FormData) {
   }
 
   const visibility = formData.get("visibility") === "platform" ? "platform" : "private";
-
-  // Mirror the RLS visibility contract before the insert so the UI can explain
-  // why a public post is unavailable instead of collapsing everything into a
-  // generic database failure. We never make a profile/team public implicitly.
   if (visibility === "platform") {
     if (personal) {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("profile_visibility")
-        .eq("id", userId)
-        .maybeSingle();
+      const { data: profile, error: profileError } = await supabase.from("profiles").select("profile_visibility").eq("id", userId).maybeSingle();
       if (profileError) redirect(withError(returnTo, "post"));
       if (profile?.profile_visibility !== "platform") redirect(withError(returnTo, "profile-private"));
     } else if (authorTeamId) {
-      const { data: team, error: teamError } = await supabase
-        .from("teams")
-        .select("visibility")
-        .eq("id", authorTeamId)
-        .maybeSingle();
+      const { data: team, error: teamError } = await supabase.from("teams").select("visibility").eq("id", authorTeamId).maybeSingle();
       if (teamError) redirect(withError(returnTo, "post"));
       if (team?.visibility !== "platform") redirect(withError(returnTo, "team-private"));
     }
@@ -122,9 +110,26 @@ export async function addPostCommentAction(formData: FormData) {
   const fallback = role === "investor" ? "/investor/social" : "/app/social";
   const returnTo = back(formData, fallback);
   const postId = text(formData, "post_id", 80);
+  const parentCommentId = text(formData, "parent_comment_id", 80) || null;
   const body = text(formData, "body", 2000);
   if (!postId || !body) redirect(withError(returnTo, "comment"));
-  const { data: created, error } = await supabase.from("post_comments").insert({ post_id: postId, user_id: userId, body }).select("id").single();
+
+  if (parentCommentId) {
+    const { data: parent, error: parentError } = await supabase
+      .from("post_comments")
+      .select("id,post_id,parent_comment_id")
+      .eq("id", parentCommentId)
+      .maybeSingle();
+    if (parentError || !parent || parent.post_id !== postId) redirect(withError(returnTo, "comment"));
+    if (parent.parent_comment_id) redirect(withError(returnTo, "reply-depth"));
+  }
+
+  const { data: created, error } = await supabase.from("post_comments").insert({
+    post_id: postId,
+    user_id: userId,
+    body,
+    parent_comment_id: parentCommentId,
+  }).select("id").single();
   if (error || !created) redirect(withError(returnTo, "comment"));
   revalidatePath(returnTo.split("?")[0]);
   redirect(returnTo);
