@@ -9,6 +9,7 @@ import {
   Bell,
   Bookmark,
   BriefcaseBusiness,
+  CalendarDays,
   CircleUserRound,
   Compass,
   Eye,
@@ -34,17 +35,18 @@ import type { User } from "@/types";
 import type { ProductRole } from "@/lib/auth/require-product-user";
 
 const participantNav = [
-  ["/app", Home, "Início"],
-  ["/app/social", Activity, "Social"],
-  ["/app/explore", Compass, "Explorar"],
-  ["/app/projects", FolderKanban, "Meus projetos"],
-  ["/app/teams", Users, "Minhas equipes"],
-  ["/app/workspace", PanelsTopLeft, "Workspace"],
-  ["/app/insights", BarChart3, "Insights"],
-  ["/app/interests", BriefcaseBusiness, "Interesses recebidos"],
-  ["/app/competitions", Trophy, "Competições"],
-  ["/app/learn", GraduationCap, "Aprender"],
-  ["/app/messages", MessageCircle, "Mensagens"],
+  ["/home", Home, "Início"],
+  ["/social", Activity, "Social"],
+  ["/explore", Compass, "Explorar"],
+  ["/projects", FolderKanban, "Meus projetos"],
+  ["/teams", Users, "Minhas equipes"],
+  ["/workspace", PanelsTopLeft, "Workspace"],
+  ["/insights", BarChart3, "Insights"],
+  ["/interests", BriefcaseBusiness, "Interesses recebidos"],
+  ["/competitions", Trophy, "Competições"],
+  ["/calendar", CalendarDays, "Calendário"],
+  ["/learn", GraduationCap, "Aprender"],
+  ["/messages", MessageCircle, "Mensagens"],
 ] as const;
 
 const investorNav = [
@@ -56,16 +58,17 @@ const investorNav = [
   ["/investor/social", Activity, "Atualizações"],
   ["/investor/following", Eye, "Seguindo"],
   ["/investor/competitions", Trophy, "Competições"],
+  ["/investor/calendar", CalendarDays, "Calendário"],
   ["/investor/messages", MessageCircle, "Mensagens"],
   ["/investor/verification", BadgeCheck, "Verificação"],
   ["/investor/profile", CircleUserRound, "Perfil"],
 ] as const;
 
 const participantMobileNav = [
-  ["/app", Home, "Início"],
-  ["/app/explore", Compass, "Explorar"],
-  ["/app/projects", FolderKanban, "Projetos"],
-  ["/app/messages", MessageCircle, "Mensagens"],
+  ["/home", Home, "Início"],
+  ["/explore", Compass, "Explorar"],
+  ["/projects", FolderKanban, "Projetos"],
+  ["/messages", MessageCircle, "Mensagens"],
 ] as const;
 
 const investorMobileNav = [
@@ -90,12 +93,12 @@ function Avatar({ name }: { name: string }) {
 export default function LegacySocialShell({ user, role, pathname: activePath, children }: { user: User; role: ProductRole; pathname?: string; children: ReactNode }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const pathname = activePath ?? (role === "investor" ? "/investor/social" : "/app/social");
+  const pathname = activePath ?? (role === "investor" ? "/investor/social" : "/social");
   const nav = role === "investor" ? investorNav : participantNav;
   const mobileNav = role === "investor" ? investorMobileNav : participantMobileNav;
-  const prefix: "/app" | "/investor" = role === "investor" ? "/investor" : "/app";
-  const home = prefix;
-  const profile = role === "investor" ? "/investor/profile" : `/app/profile/${user.username}`;
+  const prefix: "" | "/investor" = role === "investor" ? "/investor" : "";
+  const home = role === "investor" ? "/investor" : "/home";
+  const profile = role === "investor" ? "/investor/profile" : "/account/profile";
 
   const go = (path: string) => { router.push(path); setMobileOpen(false); };
   const logout = async () => { await fetch("/auth/signout", { method: "POST", credentials: "same-origin" }); window.location.assign("/login"); };
