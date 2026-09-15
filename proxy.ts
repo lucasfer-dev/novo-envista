@@ -11,6 +11,7 @@ const PARTICIPANT_ROUTE_ROOTS = new Set([
   "investors",
   "activity",
   "insights",
+  "interests",
   "messages",
   "notifications",
   "settings",
