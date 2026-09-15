@@ -14,7 +14,8 @@ describe("messages UX and read state", () => {
     expect(serverPages).toContain('return role === "investor" ? "/investor/messages" : "/messages";');
   });
 
-  it("marks both clean and legacy message notifications as read", () => {
+  it("marks both clean and legacy message notifications as read only on the current conversation window", () => {
+    expect(serverPages).toContain("if (!before)");
     expect(serverPages).toContain('`/messages/${conversationId}`');
     expect(serverPages).toContain('`/app/messages/${conversationId}`');
     expect(serverPages).toContain('.eq("kind", "message")');
@@ -26,6 +27,7 @@ describe("messages UX and read state", () => {
     expect(realtime).toContain('from("notifications")');
     expect(realtime).toContain('.update({ read_at: readAt })');
     expect(realtime).toContain('void markRead();');
+    expect(realtime).toContain("Volte às mensagens mais recentes");
   });
 
   it("syncs notifications from the semantic read-state in Postgres", () => {
