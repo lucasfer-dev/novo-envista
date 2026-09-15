@@ -13,10 +13,6 @@ const EXTRA_SOURCES = {
 
 type ExtraKey = keyof typeof EXTRA_SOURCES;
 
-function normalize(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
-}
-
 function textFromHtml(html: string) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -85,8 +81,8 @@ function parseFebrace(html: string) {
     name: "FEBRACE 2027 — Feira Brasileira de Ciências e Engenharia",
     organizer: "Escola Politécnica da USP / LSI-TEC",
     modalities: ["Ciências", "Engenharia", "Projetos Inovadores", "Tecnologia"],
-    minAge: 12,
-    maxAge: 20,
+    minAge: null,
+    maxAge: null,
     eligibility: "Estudantes do 8º ou 9º ano do Ensino Fundamental, Ensino Médio ou Técnico durante 2026, conforme regras oficiais da FEBRACE 2027.",
     city: "São Paulo",
     state: "SP",
@@ -114,7 +110,7 @@ function parseCampusMobile(html: string) {
     name: "15º Campus Mobile",
     organizer: "Instituto Claro / LSI-TEC / Escola Politécnica da USP",
     modalities: ["Tecnologia Mobile", "Inovação", "Educação", "Saúde", "Acessibilidade", "Green Tech"],
-    minAge: 18,
+    minAge: null,
     maxAge: null,
     eligibility: "Estudantes de graduação, mestrado ou doutorado no Brasil e pessoas que concluíram esses cursos em 2025 ou 2026; projetos individuais ou em equipes de até 3 integrantes.",
     city: "São Paulo",
@@ -122,14 +118,14 @@ function parseCampusMobile(html: string) {
     country: "Brasil",
     level: "Nacional",
     stages: ["Inscrição", "Seleção", "Mentorias", "Semana presencial", "Final"],
-    registrationStart: "2026-08-14",
+    registrationStart: null,
     registrationEnd: "2026-10-18",
     eventDate: null,
     officialUrl: EXTRA_SOURCES.campusMobile,
     sourceName: "Instituto Claro — Campus Mobile",
     evidence: "A 15ª edição está com inscrições de projetos em 2026; o prazo oficial divulgado pelo Instituto Claro termina em 18/10/2026.",
     confidence: 98,
-    status: statusFromWindow("2026-08-14", "2026-10-18"),
+    status: statusFromWindow(null, "2026-10-18"),
   })];
 }
 
@@ -258,13 +254,13 @@ function parseWro(html: string) {
     level: "Nacional / Internacional",
     stages: ["Etapas classificatórias", "Etapa nacional", "Internacional"],
     registrationStart: null,
-    registrationEnd: "2026-08-29",
+    registrationEnd: null,
     eventDate: "2026-08-29",
     officialUrl: EXTRA_SOURCES.wro,
     sourceName: "WRO Brasil — inscrições",
     evidence: "A página oficial de inscrição informa a etapa nacional em 29/08/2026 no Centreventos Cau Hansen, em Joinville/SC.",
     confidence: 88,
-    status: statusFromWindow(null, "2026-08-29"),
+    status: todayKey() > "2026-08-29" ? "CLOSED" : "UNKNOWN",
   })];
 }
 
