@@ -1,4 +1,4 @@
-const exactNavRoutes = new Set(["/app", "/investor", "/admin"]);
+const exactNavRoutes = new Set(["/home", "/app", "/investor", "/admin"]);
 
 export function isNavItemActive(pathname: string, href: string) {
   if (exactNavRoutes.has(href)) return pathname === href;
