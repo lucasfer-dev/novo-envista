@@ -1,20 +1,22 @@
 import { describe, expect, it } from "vitest";
 import {
   homeForRole,
+  isValidCnpj,
   isValidCpf,
   isValidEmail,
   isValidUsername,
   MIN_PASSWORD_LENGTH,
   normalizeCpf,
-  normalizeUsername,
   pathAllowedForRole,
+  privateDocumentKind,
   safeInternalPath,
   validatePassword,
+  normalizeUsername,
 } from "./validation";
 
 describe("safeInternalPath", () => {
   it("aceita somente caminhos internos", () => {
-    expect(safeInternalPath("/app/projects?tab=mine", "/login")).toBe("/app/projects?tab=mine");
+    expect(safeInternalPath("/projects?tab=mine", "/login")).toBe("/projects?tab=mine");
     expect(safeInternalPath("https://evil.example", "/login")).toBe("/login");
     expect(safeInternalPath("//evil.example", "/login")).toBe("/login");
     expect(safeInternalPath("/app\\evil", "/login")).toBe("/login");
@@ -50,12 +52,21 @@ describe("credenciais", () => {
     expect(isValidCpf("529.982.247-24")).toBe(false);
     expect(isValidCpf("123")).toBe(false);
   });
+
+  it("valida CNPJ e identifica o tipo de documento privado", () => {
+    expect(isValidCnpj("11.222.333/0001-81")).toBe(true);
+    expect(isValidCnpj("11.222.333/0001-82")).toBe(false);
+    expect(privateDocumentKind("529.982.247-25")).toBe("cpf");
+    expect(privateDocumentKind("11.222.333/0001-81")).toBe("cnpj");
+  });
 });
 
 describe("rotas por papel", () => {
   it("separa as áreas de participante e investidor", () => {
-    expect(homeForRole("participant")).toBe("/app");
+    expect(homeForRole("participant")).toBe("/home");
     expect(homeForRole("investor")).toBe("/investor");
+    expect(pathAllowedForRole("/projects", "participant")).toBe(true);
+    expect(pathAllowedForRole("/calendar", "participant")).toBe(true);
     expect(pathAllowedForRole("/app/projects", "participant")).toBe(true);
     expect(pathAllowedForRole("/investor/projects", "participant")).toBe(false);
   });
