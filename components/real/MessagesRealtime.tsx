@@ -129,7 +129,7 @@ export default function MessagesRealtime({ conversationId, currentUserId, initia
         })}
         <div ref={bottomRef} aria-hidden="true" />
       </div>
-      {!live ? <div className={styles.privacy}>Você está vendo uma parte antiga do histórico. Volte às mensagens recentes para responder e receber atualizações em tempo real.</div> : canSend ? (
+      {!live ? <div className={styles.privacy}>Você está vendo uma parte antiga do histórico. Volte às mensagens mais recentes para responder e receber atualizações em tempo real.</div> : canSend ? (
         <form className={styles.composer} action={sendMessageAction}>
           <input type="hidden" name="conversation_id" value={conversationId}/>
           <input type="hidden" name="return_to" value={returnTo}/>
