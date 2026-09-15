@@ -22,7 +22,7 @@ export async function SocialServerPage({expectedRole,searchParams}:{expectedRole
   if(postIds.length){
     const [likesResult,commentsResult]=await Promise.all([
       supabase.from("post_likes").select("post_id,user_id").in("post_id",postIds),
-      supabase.from("post_comments").select("id,post_id,user_id,body,created_at,author:profiles!post_comments_user_id_fkey(username,display_name)").in("post_id",postIds).order("created_at",{ascending:true}),
+      supabase.from("post_comments").select("id,post_id,user_id,parent_comment_id,body,created_at,author:profiles!post_comments_user_id_fkey(id,username,display_name,role)").in("post_id",postIds).order("created_at",{ascending:true}),
     ]);
     likes=likesResult.data??[];comments=commentsResult.data??[];
   }
@@ -30,7 +30,10 @@ export async function SocialServerPage({expectedRole,searchParams}:{expectedRole
   const view=(posts??[]).map((post:any)=>{
     const user=one<any>(post.author_user); const team=one<any>(post.author_team);
     const postLikes=likes.filter((like:any)=>like.post_id===post.id);
-    const postComments=comments.filter((comment:any)=>comment.post_id===post.id).map((comment:any)=>{const author=one<any>(comment.author);return {id:comment.id,body:comment.body,user_id:comment.user_id,authorLabel:author?.display_name??"Usuário"};});
+    const postComments=comments.filter((comment:any)=>comment.post_id===post.id).map((comment:any)=>{
+      const author=one<any>(comment.author);
+      return {id:comment.id,body:comment.body,user_id:comment.user_id,parentCommentId:comment.parent_comment_id??null,authorLabel:author?.display_name??"Usuário",authorHref:author?.username?`${base}/${author.role==="investor"?"investors":"participants"}/${author.username}`:base};
+    });
     return {
       id:post.id,body:post.body,visibility:post.visibility,created_at:post.created_at,
       authorLabel:team?.name??user?.display_name??"Conta",
