@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { updateRecoveryPasswordAction } from "@/app/auth/email-actions";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
@@ -10,10 +11,12 @@ import {
   INTERNAL_TERMS_VERSION,
   isValidEmail,
   isValidUsername,
+  normalizePrivateDocument,
   normalizeUsername,
   parseAgeBand,
   parseProductRole,
   pathAllowedForRole,
+  privateDocumentKind,
   safeInternalPath,
   validatePassword,
 } from "@/lib/auth/validation";
@@ -87,20 +90,40 @@ async function destinationForSignedInUser(
 }
 
 export async function loginAction(formData: FormData) {
-  const email = value(formData, "identifier").toLowerCase();
+  const rawIdentifier = value(formData, "identifier");
+  const email = rawIdentifier.toLowerCase();
+  const documentKind = privateDocumentKind(rawIdentifier);
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const requestedNext = safeInternalPath(formData.get("next"), "");
 
-  if (!isValidEmail(email) || !password) redirect(authErrorPath("/login", "invalid"));
+  if ((!isValidEmail(email) && !documentKind) || !password) redirect(authErrorPath("/login", "invalid"));
   const captchaToken = getCaptchaToken(formData, "/login");
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-    options: captchaToken ? { captchaToken } : undefined,
-  });
-  if (error) redirect(authErrorPath("/login", authFailureCode(error)));
+  if (isValidEmail(email)) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: captchaToken ? { captchaToken } : undefined,
+    });
+    if (error) redirect(authErrorPath("/login", authFailureCode(error)));
+  } else {
+    const { data, error } = await supabase.functions.invoke("cpf-login", {
+      body: {
+        identifier: normalizePrivateDocument(rawIdentifier),
+        password,
+        ...(captchaToken ? { captchaToken } : {}),
+      },
+    });
+    if (error || !data?.access_token || !data?.refresh_token) {
+      redirect(authErrorPath("/login", "invalid"));
+    }
+    const { error: sessionError } = await supabase.auth.setSession({
+      access_token: String(data.access_token),
+      refresh_token: String(data.refresh_token),
+    });
+    if (sessionError) redirect(authErrorPath("/login", "session"));
+  }
 
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
@@ -293,7 +316,7 @@ export async function profileUpdateAction(formData: FormData) {
     if (!compliance.guardian_consent_verified_at) profileVisibility = "private";
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("profiles")
     .update({
       username,
@@ -307,8 +330,13 @@ export async function profileUpdateAction(formData: FormData) {
       profile_visibility: profileVisibility,
       allow_messages: allowMessages,
     })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select("id,profile_visibility,allow_messages")
+    .maybeSingle();
 
-  if (error) redirect(`/account/profile?error=${error.code === "23505" ? "username" : "save"}`);
+  if (error || !updated) redirect(`/account/profile?error=${error?.code === "23505" ? "username" : "save"}`);
+  revalidatePath("/account/profile");
+  revalidatePath("/app/social");
+  revalidatePath("/app/explore");
   redirect("/account/profile?status=saved");
 }
