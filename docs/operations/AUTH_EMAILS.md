@@ -31,17 +31,25 @@ A estratégia de clique explícito protege os links contra Gmail/Outlook/Safe Li
 
 O código usa `emailRedirectTo` e `redirectTo` explicitamente. A allowlist do Supabase continua necessária: um redirect não permitido pode cair no Site URL configurado.
 
+## Templates oficiais do Envista
+
+Os templates visuais prontos e versionados ficam em:
+
+- confirmação de cadastro: `supabase/email-templates/confirm-signup.html`
+- recuperação de senha: `supabase/email-templates/reset-password.html`
+
+Assuntos recomendados:
+
+- confirmação: **Confirme seu e-mail no Envista**
+- recuperação: **Redefina sua senha do Envista**
+
+> Importante: versionar os arquivos no repositório não altera automaticamente o template hospedado pelo Supabase Auth. Em produção, copie o HTML correspondente para **Authentication → Email Templates** (ou aplique a mesma configuração por uma API administrativa autorizada) e confirme o assunto antes do release.
+
 ## Template — Confirm signup
 
 O botão deve apontar diretamente para a página visual do Envista e carregar `token_hash` + `type=email`. Não use `{{ .ConfirmationURL }}` neste template porque esse URL pode ser consumido por scanners de e-mail.
 
-```html
-<a href="https://useenvista.com.br/confirm-email?token_hash={{ .TokenHash }}&type=email">
-  Confirmar meu e-mail
-</a>
-```
-
-Também é válido usar `{{ .RedirectTo }}` porque `registerAction` envia `/confirm-email`, desde que o tipo seja mantido:
+O arquivo versionado usa:
 
 ```html
 <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email">
@@ -51,17 +59,11 @@ Também é válido usar `{{ .RedirectTo }}` porque `registerAction` envia `/conf
 
 ## Template — Reset password
 
-```html
-<a href="https://useenvista.com.br/recover-account?token_hash={{ .TokenHash }}&type=recovery">
-  Redefinir minha senha
-</a>
-```
-
-Ou, usando o `redirectTo` enviado por `resetPasswordForEmail`:
+O arquivo versionado usa:
 
 ```html
 <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">
-  Redefinir minha senha
+  Criar nova senha
 </a>
 ```
 
@@ -121,18 +123,19 @@ O Supabase nem sempre distingue de forma confiável um OTP expirado de um OTP j�
 ## Checklist real de produção
 
 1. confirmar Site URL e Redirect URLs no Supabase;
-2. confirmar os dois templates exatamente com `type=email`/`type=recovery`;
-3. desabilitar link tracking do provedor SMTP, se houver;
-4. habilitar Leaked Password Protection no Supabase Auth;
-5. configurar `AUTH_RECOVERY_COOKIE_SECRET` na Vercel;
-6. criar conta nova em janela privada e abrir o link de confirmação;
-7. confirmar que o primeiro GET só mostra a página e não confirma a conta;
-8. clicar no botão e confirmar sessão + onboarding;
-9. sair e solicitar recuperação;
-10. abrir o link e confirmar que o primeiro GET não consome o token;
-11. clicar e confirmar chegada a `/update-password`;
-12. atualizar a senha e confirmar redirect para `/login?status=password-updated`;
-13. confirmar que a senha antiga não autentica e a nova autentica;
-14. abrir novamente o link já usado e confirmar erro genérico;
-15. testar link inválido, sem token, tipo errado, clique duplo e janela anônima;
-16. consultar logs por `auth.email.*`, `auth.cookies.write_failed` e `auth.password_update.*` sem dados sensíveis.
+2. copiar `supabase/email-templates/confirm-signup.html` e `supabase/email-templates/reset-password.html` para os respectivos templates do Supabase Auth e configurar os assuntos;
+3. confirmar os links com `type=email`/`type=recovery`;
+4. desabilitar link tracking do provedor SMTP, se houver;
+5. habilitar Leaked Password Protection no Supabase Auth;
+6. configurar `AUTH_RECOVERY_COOKIE_SECRET` na Vercel;
+7. criar conta nova em janela privada e abrir o link de confirmação;
+8. confirmar que o primeiro GET só mostra a página e não confirma a conta;
+9. clicar no botão e confirmar sessão + onboarding;
+10. sair e solicitar recuperação;
+11. abrir o link e confirmar que o primeiro GET não consome o token;
+12. clicar e confirmar chegada a `/update-password`;
+13. atualizar a senha e confirmar redirect para `/login?status=password-updated`;
+14. confirmar que a senha antiga não autentica e a nova autentica;
+15. abrir novamente o link já usado e confirmar erro genérico;
+16. testar link inválido, sem token, tipo errado, clique duplo e janela anônima;
+17. consultar logs por `auth.email.*`, `auth.cookies.write_failed` e `auth.password_update.*` sem dados sensíveis.
