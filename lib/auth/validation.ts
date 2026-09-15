@@ -15,6 +15,7 @@ const PARTICIPANT_ROUTE_ROOTS = [
   "/investors",
   "/activity",
   "/insights",
+  "/interests",
   "/messages",
   "/notifications",
   "/settings",
