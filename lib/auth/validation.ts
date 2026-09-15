@@ -6,6 +6,24 @@ export const INTERNAL_TERMS_VERSION = "2026-09-15-v2";
 export const INTERNAL_PRIVACY_VERSION = "2026-09-11-v1";
 export const MIN_PASSWORD_LENGTH = 12;
 
+const PARTICIPANT_ROUTE_ROOTS = [
+  "/home",
+  "/learn",
+  "/social",
+  "/explore",
+  "/participants",
+  "/investors",
+  "/activity",
+  "/insights",
+  "/messages",
+  "/notifications",
+  "/settings",
+  "/teams",
+  "/projects",
+  "/workspace",
+  "/competitions",
+] as const;
+
 export function safeInternalPath(value: unknown, fallback = "/") {
   if (typeof value !== "string") return fallback;
   const path = value.trim();
@@ -102,10 +120,11 @@ export function parseAgeBand(value: unknown): DeclaredAgeBand | null {
 }
 
 export function homeForRole(role: ProductRole) {
-  return role === "investor" ? "/investor" : "/app";
+  return role === "investor" ? "/investor" : "/home";
 }
 
 export function pathAllowedForRole(path: string, role: ProductRole) {
   if (role === "investor") return path === "/investor" || path.startsWith("/investor/");
-  return path === "/app" || path.startsWith("/app/");
+  if (path === "/app" || path.startsWith("/app/")) return true;
+  return PARTICIPANT_ROUTE_ROOTS.some((root) => path === root || path.startsWith(`${root}/`));
 }
