@@ -48,8 +48,8 @@ describe("auth form feedback", () => {
     expect(register).toContain('name="document"');
     expect(register).toContain("CPF ou CNPJ");
     expect(register).toContain("O valor cru não é exibido no perfil nem salvo nos metadados da sessão");
-    expect(registerAction).toContain("privateDocumentKind(document)");
-    expect(registerAction).toContain("normalizePrivateDocument(document)");
+    expect(registerAction).toContain("privateDocumentKind(documentValue)");
+    expect(registerAction).toContain("normalizePrivateDocument(documentValue)");
   });
 
   it("keeps private document compatibility data out of persisted auth metadata and public profile access", () => {
