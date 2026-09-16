@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import EnvistaApp from "@/components/EnvistaApp";
+import { notFound, redirect } from "next/navigation";
 import LegacySocialServerPage from "@/components/social/LegacySocialServerPage";
 import LegacyExploreServerPage from "@/components/explore/LegacyExploreServerPage";
 import { CompetitionDetailServerPage, CompetitionsServerPage } from "@/components/competitions/CompetitionsServerPage";
@@ -38,7 +37,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const pathname = `/${slug.join("/")}`;
   const resolvedSearchParams = await searchParams;
 
-  if (!isProtectedProductPath(pathname)) return <EnvistaApp />;
+  if (!isProtectedProductPath(pathname)) notFound();
 
   if (pathname === "/app") return <RealHomeServerPage expectedRole="participant" pathname="/home" />;
   if (pathname === "/investor") return <RealHomeServerPage expectedRole="investor" pathname={pathname} />;

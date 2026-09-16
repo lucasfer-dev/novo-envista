@@ -194,7 +194,7 @@ async function ensureLegalEvent(
 ) {
   const { data: existing } = await supabase.from("legal_acceptances").select("id").eq("user_id", userId).eq("document_type", documentType).eq("document_version", documentVersion).maybeSingle();
   if (existing) return null;
-  const { error } = await supabase.from("legal_acceptances").insert({ user_id: userId, document_type: documentType, document_version: documentVersion, context: "internal_test" });
+  const { error } = await supabase.from("legal_acceptances").insert({ user_id: userId, document_type: documentType, document_version: documentVersion, context: "public_onboarding" });
   return error;
 }
 
@@ -283,8 +283,8 @@ export async function profileUpdateAction(formData: FormData) {
 
   if (error || !updated) redirect(`/account/profile?error=${error?.code === "23505" ? "username" : "save"}`);
   revalidatePath("/account/profile");
-  revalidatePath("/app/social");
-  revalidatePath("/app/explore");
-  revalidatePath("/app/competitions");
-  redirect("/account/profile?status=saved");
+  revalidatePath("/social");
+  revalidatePath("/explore");
+  revalidatePath("/competitions");
+  redirect("/account/profile?saved=1");
 }

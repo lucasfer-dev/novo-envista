@@ -76,7 +76,7 @@ function errorMessage(error: string) {
     case "invalid-email": return "Digite um e-mail válido.";
     case "same-email": return "Esse já é o e-mail atual da conta.";
     case "email-update": return "Não foi possível alterar o e-mail. Tente novamente em instantes.";
-    case "weak-password": return "A nova senha precisa ter pelo menos 8 caracteres.";
+    case "weak-password": return "A nova senha precisa ter pelo menos 12 caracteres.";
     case "password-mismatch": return "A confirmação da nova senha não confere.";
     case "current-password": return "Informe sua senha atual.";
     case "password-update": return "Não foi possível alterar a senha. Confira a senha atual e os requisitos de segurança.";
@@ -107,7 +107,7 @@ export default async function AccountSecurityPage({
   const status = typeof params.status === "string" ? params.status : "";
   const error = typeof params.error === "string" ? params.error : "";
   const sessions = (sessionsData ?? []) as SessionRow[];
-  const home = profile?.role === "investor" ? "/investor" : "/app";
+  const home = profile?.role === "investor" ? "/investor" : "/home";
 
   return (
     <AuthShell wide title="Login e segurança" description="Gerencie seu e-mail, senha e os dispositivos conectados à sua conta.">
@@ -131,8 +131,8 @@ export default async function AccountSecurityPage({
         <form action={updateAccountPasswordAction} className={styles.form}>
           <label>Senha atual<input type="password" name="current_password" autoComplete="current-password" maxLength={200} required /></label>
           <div className={styles.grid2}>
-            <label>Nova senha<input type="password" name="password" autoComplete="new-password" minLength={8} maxLength={200} required /></label>
-            <label>Confirmar nova senha<input type="password" name="confirm_password" autoComplete="new-password" minLength={8} maxLength={200} required /></label>
+            <label>Nova senha<input type="password" name="password" autoComplete="new-password" minLength={12} maxLength={200} required /></label>
+            <label>Confirmar nova senha<input type="password" name="confirm_password" autoComplete="new-password" minLength={12} maxLength={200} required /></label>
           </div>
           <div className={styles.actions}><button className={styles.primary} type="submit">Atualizar senha</button></div>
         </form>

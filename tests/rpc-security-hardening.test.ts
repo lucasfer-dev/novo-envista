@@ -7,6 +7,10 @@ const analyticsHardeningMigration = readFileSync(
   "supabase/migrations/20260908233000_admin_metrics_security_invoker.sql",
   "utf8",
 );
+const publicSharePrivacyMigration = readFileSync(
+  "supabase/migrations/20260916185654_respect_owner_privacy_in_public_project_share.sql",
+  "utf8",
+);
 
 describe("rpc security hardening", () => {
   it("runs the message inbox aggregate with caller RLS", () => {
@@ -33,5 +37,12 @@ describe("rpc security hardening", () => {
     expect(analyticsHardeningMigration).toContain("lesson_progress_select_admin");
     expect(analyticsHardeningMigration).toContain("project_interests_select_admin");
     expect(analyticsHardeningMigration).toContain("project_saves_select_admin");
+  });
+
+  it("does not disclose private project owners through the public share RPC", () => {
+    expect(publicSharePrivacyMigration).toContain("p.visibility='platform'");
+    expect(publicSharePrivacyMigration).toContain("pr.profile_visibility='platform'");
+    expect(publicSharePrivacyMigration).toContain("t.visibility='platform'");
+    expect(publicSharePrivacyMigration).toContain("else null end");
   });
 });
