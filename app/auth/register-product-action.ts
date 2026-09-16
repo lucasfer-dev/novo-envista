@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
+import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { createClient } from "@/lib/supabase/server";
 import {
   isValidEmail,
@@ -33,7 +34,7 @@ function authFailureCode(error: { code?: string; status?: number } | null) {
 }
 
 export async function registerProductAction(formData: FormData) {
-  if (process.env.AUTH_SIGNUP_ENABLED !== "true") redirect("/register?status=closed");
+  if (!isPublicSignupReady()) redirect("/register?status=closed");
 
   const displayName = value(formData, "display_name").slice(0, 100);
   const email = value(formData, "email").toLowerCase();
