@@ -6,15 +6,27 @@ const authShell = readFileSync("components/auth/AuthShell.tsx", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
+const registerAction = readFileSync("app/auth/register-product-action.ts", "utf8");
+const securityPage = readFileSync("app/account/security/page.tsx", "utf8");
+const securityActions = readFileSync("lib/account/security-actions.ts", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
 const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
 const cnpjMigration = readFileSync("supabase/migrations/20260915161350_extend_private_identifier_with_cnpj.sql", "utf8");
+const cleanupPrivateIdentifierMigration = readFileSync("supabase/migrations/20260916191500_cleanup_legacy_auth_private_identifier_metadata.sql", "utf8");
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
   it("requires twelve-character passwords for new credentials", () => {
     expect(validation).toContain("export const MIN_PASSWORD_LENGTH = 12;");
     expect(validation).not.toContain("MIN_PASSWORD_LENGTH = 8");
+    expect(securityPage).toContain('minLength={12}');
+    expect(securityActions).toContain("validatePassword(password)");
+  });
+
+  it("uses the current Supabase current-password contract for password changes", () => {
+    expect(securityActions).toContain("currentPassword,");
+    expect(securityActions).not.toContain("current_password: currentPassword");
+    expect(securityPage).toContain('profile?.role === "investor" ? "/investor" : "/home"');
   });
 
   it("keeps Envista branding visible on auth pages", () => {
@@ -37,12 +49,17 @@ describe("auth form feedback", () => {
     expect(register).toContain('name="document"');
     expect(register).toContain("CPF ou CNPJ");
     expect(register).toContain("O valor cru não é exibido no perfil nem salvo nos metadados da sessão");
+    expect(registerAction).toContain("privateDocumentKind(document)");
+    expect(registerAction).toContain("normalizePrivateDocument(document)");
   });
 
-  it("keeps private document compatibility data out of public profile access", () => {
+  it("keeps private document compatibility data out of persisted auth metadata and public profile access", () => {
     expect(migration).toContain("new.raw_user_meta_data := coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf'");
+    expect(cnpjMigration).toContain("- 'cpf' - 'cnpj'");
     expect(migration).toContain("revoke all on table public.account_private_identifiers from public, anon, authenticated");
     expect(migration).toContain("alter table public.account_private_identifiers enable row level security");
+    expect(cleanupPrivateIdentifierMigration).toContain("raw_user_meta_data");
+    expect(cleanupPrivateIdentifierMigration).toContain("- 'cpf' - 'cnpj'");
     expect(onboarding).not.toContain('name="cpf"');
     expect(onboarding).not.toContain('name="cnpj"');
   });
