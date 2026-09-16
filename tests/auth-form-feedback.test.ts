@@ -12,7 +12,7 @@ const securityActions = readFileSync("lib/account/security-actions.ts", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
 const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
 const cnpjMigration = readFileSync("supabase/migrations/20260915161350_extend_private_identifier_with_cnpj.sql", "utf8");
-const cleanupPrivateIdentifierMigration = readFileSync("supabase/migrations/20260916191500_cleanup_legacy_auth_private_identifier_metadata.sql", "utf8");
+const cleanupPrivateIdentifierMigration = readFileSync("supabase/migrations/20260916184957_cleanup_legacy_auth_private_identifier_metadata.sql", "utf8");
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
