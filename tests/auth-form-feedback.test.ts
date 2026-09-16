@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
 const validation = readFileSync("lib/auth/validation.ts", "utf8");
+const signupReadiness = readFileSync("lib/auth/signup-readiness.ts", "utf8");
+const envExample = readFileSync(".env.example", "utf8");
 const authActions = readFileSync("app/auth/actions.ts", "utf8");
 const authShell = readFileSync("components/auth/AuthShell.tsx", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
@@ -29,6 +31,16 @@ describe("auth form feedback", () => {
   it("uses the installed Supabase current-password contract for password changes", () => {
     expect(securityActions).toContain("current_password: currentPassword");
     expect(securityPage).toContain('profile?.role === "investor" ? "/investor" : "/home"');
+  });
+
+  it("fails closed public signup until email delivery and production CAPTCHA are ready", () => {
+    expect(signupReadiness).toContain('AUTH_SIGNUP_ENABLED !== "true"');
+    expect(signupReadiness).toContain('AUTH_EMAIL_DELIVERY_READY !== "true"');
+    expect(signupReadiness).toContain('process.env.NODE_ENV === "production"');
+    expect(signupReadiness).toContain("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
+    expect(register).toContain("isPublicSignupReady()");
+    expect(registerAction).toContain("!isPublicSignupReady()");
+    expect(envExample).toContain("AUTH_EMAIL_DELIVERY_READY=false");
   });
 
   it("keeps Envista branding visible on auth pages", () => {
