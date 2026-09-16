@@ -5,6 +5,7 @@ const router = readFileSync("app/[...slug]/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const proxy = readFileSync("proxy.ts", "utf8");
 const profile = readFileSync("app/account/profile/page.tsx", "utf8");
+const schools = readFileSync("app/schools/page.tsx", "utf8");
 const backendReadme = readFileSync("backend/README.md", "utf8");
 const architecture = readFileSync("docs/ARCHITECTURE.md", "utf8");
 
@@ -30,6 +31,15 @@ describe("product architecture boundaries", () => {
     expect(proxy).toContain('NextResponse.redirect(target, 308)');
     expect(proxy).toContain('target.pathname = pathname === "/home" ? "/app" : `/app${pathname}`');
     expect(proxy).toContain("NextResponse.rewrite(target");
+  });
+
+  it("does not serve the legacy demo shell for unknown public routes", () => {
+    expect(router).toContain("notFound()");
+    expect(router).not.toContain('import EnvistaApp from "@/components/EnvistaApp"');
+    expect(existsSync("app/about/page.tsx")).toBe(true);
+    expect(existsSync("app/schools/page.tsx")).toBe(true);
+    expect(schools).not.toContain("formulário do MVP é apenas demonstrativo");
+    expect(schools).not.toContain("Interesse registrado no MVP");
   });
 
   it("logs profile load failures without putting account identifiers in the event", () => {
