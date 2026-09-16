@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 
 const router = readFileSync("app/[...slug]/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
@@ -8,6 +9,20 @@ const profile = readFileSync("app/account/profile/page.tsx", "utf8");
 const schools = readFileSync("app/schools/page.tsx", "utf8");
 const backendReadme = readFileSync("backend/README.md", "utf8");
 const architecture = readFileSync("docs/ARCHITECTURE.md", "utf8");
+
+function sourceFiles(root: string): string[] {
+  return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(root, entry.name);
+    if (entry.isDirectory()) return sourceFiles(path);
+    return /\.(?:ts|tsx)$/.test(entry.name) ? [path] : [];
+  });
+}
+
+const productionGraphSources = ["app", "components", "lib"]
+  .flatMap(sourceFiles)
+  .filter((path) => path !== join("components", "EnvistaApp.tsx"))
+  .map((path) => readFileSync(path, "utf8"))
+  .join("\n");
 
 describe("product architecture boundaries", () => {
   it("does not expose full demo authentication or demo product routing", () => {
@@ -19,6 +34,11 @@ describe("product architecture boundaries", () => {
     expect(router).not.toContain("envista_demo");
     expect(existsSync("app/auth/demo/route.ts")).toBe(false);
     expect(existsSync("components/demo/DemoProductPage.tsx")).toBe(false);
+  });
+
+  it("does not let the legacy mock shell back into the production dependency graph", () => {
+    expect(productionGraphSources).not.toContain('@/components/EnvistaApp');
+    expect(productionGraphSources).not.toContain('@/data/mock');
   });
 
   it("does not use the local shell as the authenticated fallback", () => {
