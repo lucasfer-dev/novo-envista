@@ -23,9 +23,8 @@ describe("auth form feedback", () => {
     expect(securityActions).toContain("validatePassword(password)");
   });
 
-  it("uses the current Supabase current-password contract for password changes", () => {
-    expect(securityActions).toContain("currentPassword,");
-    expect(securityActions).not.toContain("current_password: currentPassword");
+  it("uses the installed Supabase current-password contract for password changes", () => {
+    expect(securityActions).toContain("current_password: currentPassword");
     expect(securityPage).toContain('profile?.role === "investor" ? "/investor" : "/home"');
   });
 
