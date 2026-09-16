@@ -2,17 +2,20 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
 const validation = readFileSync("lib/auth/validation.ts", "utf8");
+const authActions = readFileSync("app/auth/actions.ts", "utf8");
 const authShell = readFileSync("components/auth/AuthShell.tsx", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
 const registerAction = readFileSync("app/auth/register-product-action.ts", "utf8");
+const privacyPage = readFileSync("app/privacy/page.tsx", "utf8");
 const securityPage = readFileSync("app/account/security/page.tsx", "utf8");
 const securityActions = readFileSync("lib/account/security-actions.ts", "utf8");
 const migration = readFileSync("supabase/migrations/20260909213000_cpf_account_identifiers.sql", "utf8");
 const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_vault.sql", "utf8");
 const cnpjMigration = readFileSync("supabase/migrations/20260915161350_extend_private_identifier_with_cnpj.sql", "utf8");
 const cleanupPrivateIdentifierMigration = readFileSync("supabase/migrations/20260916184957_cleanup_legacy_auth_private_identifier_metadata.sql", "utf8");
+const privacyV2Migration = readFileSync("supabase/migrations/20260916194322_publish_privacy_2026_09_16_v2_and_fix_legal_context.sql", "utf8");
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
@@ -38,6 +41,17 @@ describe("auth form feedback", () => {
     expect(onboarding).toContain('Organização <span className={styles.muted}>(opcional)</span>');
     expect(onboarding).not.toMatch(/name="public_school"[^>]*required/);
     expect(onboarding).not.toMatch(/name="organization"[^>]*required/);
+  });
+
+  it("records the current public legal documents during onboarding", () => {
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-15-v2"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-16-v2"');
+    expect(authActions).toContain('context: "public_onboarding"');
+    expect(authActions).not.toContain('context: "internal_test"');
+    expect(privacyPage).toContain("Versão 2026-09-16-v2");
+    expect(privacyPage).toContain("CPF ou CNPJ");
+    expect(privacyV2Migration).toContain("public_onboarding");
+    expect(privacyV2Migration).toContain("2026-09-16-v2");
   });
 
   it("supports email, CPF and CNPJ login while keeping documents private", () => {
