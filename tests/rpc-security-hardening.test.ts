@@ -8,7 +8,7 @@ const analyticsHardeningMigration = readFileSync(
   "utf8",
 );
 const publicSharePrivacyMigration = readFileSync(
-  "supabase/migrations/20260916192000_respect_owner_privacy_in_public_project_share.sql",
+  "supabase/migrations/20260916185654_respect_owner_privacy_in_public_project_share.sql",
   "utf8",
 );
 
