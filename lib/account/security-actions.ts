@@ -51,7 +51,7 @@ export async function updateAccountPasswordAction(formData: FormData) {
 
   const { error } = await supabase.auth.updateUser({
     password,
-    currentPassword,
+    current_password: currentPassword,
   });
   if (error) redirect("/account/security?error=password-update");
 
