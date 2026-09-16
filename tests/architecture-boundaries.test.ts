@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 
 const router = readFileSync("app/[...slug]/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
+const proxy = readFileSync("proxy.ts", "utf8");
+const profile = readFileSync("app/account/profile/page.tsx", "utf8");
 const backendReadme = readFileSync("backend/README.md", "utf8");
 const architecture = readFileSync("docs/ARCHITECTURE.md", "utf8");
 
@@ -21,6 +23,21 @@ describe("product architecture boundaries", () => {
   it("does not use the local shell as the authenticated fallback", () => {
     expect(router).toContain("const { role } = await requireProductUser()");
     expect(router).toContain("redirect(homeForRole(role))");
+  });
+
+  it("keeps /app only as an internal compatibility route", () => {
+    expect(proxy).toContain('pathname === "/app" || pathname.startsWith("/app/")');
+    expect(proxy).toContain('NextResponse.redirect(target, 308)');
+    expect(proxy).toContain('target.pathname = pathname === "/home" ? "/app" : `/app${pathname}`');
+    expect(proxy).toContain("NextResponse.rewrite(target");
+  });
+
+  it("logs profile load failures without putting account identifiers in the event", () => {
+    expect(profile).toContain('logServerEvent("error", "account_profile_load_failed", loadError)');
+    expect(profile).toContain('source: "profiles"');
+    expect(profile).toContain('source: "account_compliance"');
+    expect(profile).toContain('source: "onboarding_completions"');
+    expect(profile).not.toContain('logServerEvent("error", "account_profile_load_failed", { userId');
   });
 
   it("marks the Java service as a non-production prototype", () => {
