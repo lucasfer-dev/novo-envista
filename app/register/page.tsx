@@ -4,13 +4,14 @@ import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { registerProductAction } from "@/app/auth/register-product-action";
+import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
 
 export const metadata: Metadata = { title: "Criar conta", description: "Crie sua conta no Envista." };
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
-  const enabled = process.env.AUTH_SIGNUP_ENABLED === "true";
+  const enabled = isPublicSignupReady();
   const error = typeof params.error === "string" ? params.error : "";
   const status = typeof params.status === "string" ? params.status : "";
   const sentTo = typeof params.email === "string" ? params.email.slice(0, 254) : "";
