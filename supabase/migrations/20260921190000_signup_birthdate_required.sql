@@ -14,11 +14,24 @@ declare
   raw_cpf text := new.raw_user_meta_data ->> 'cpf';
   raw_cnpj text := new.raw_user_meta_data ->> 'cnpj';
   raw_birth_date text := new.raw_user_meta_data ->> 'birth_date';
+  terms_accepted boolean := pg_catalog.coalesce((new.raw_user_meta_data ->> 'signup_terms_accepted')::boolean, false);
+  terms_version text := new.raw_user_meta_data ->> 'signup_terms_version';
+  privacy_acknowledged boolean := pg_catalog.coalesce((new.raw_user_meta_data ->> 'signup_privacy_acknowledged')::boolean, false);
+  privacy_version text := new.raw_user_meta_data ->> 'signup_privacy_version';
   normalized text;
   birth_date date;
   calculated_age integer;
   derived_age_band public.age_band;
+  signup_terms_version text;
+  signup_privacy_version text;
 begin
+  if not terms_accepted
+     or terms_version is distinct from '2026-09-21-v5'
+     or not privacy_acknowledged
+     or privacy_version is distinct from '2026-09-21-v5' then
+    raise exception using errcode = '22023', message = 'legal acknowledgement required';
+  end if;
+
   if (
     pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cpf, '')), '') is null
     and pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cnpj, '')), '') is null
@@ -115,8 +128,16 @@ begin
     else null
   end;
 
+  signup_terms_version := new.raw_user_meta_data ->> 'signup_terms_version';
+  signup_privacy_version := new.raw_user_meta_data ->> 'signup_privacy_version';
+
   if derived_age_band is null then
     raise exception using errcode = '22023', message = 'missing derived signup age band';
+  end if;
+
+  if signup_terms_version is distinct from '2026-09-21-v5'
+     or signup_privacy_version is distinct from '2026-09-21-v5' then
+    raise exception using errcode = '22023', message = 'missing legal signup versions';
   end if;
 
   insert into public.profiles (id, username, display_name, role)
@@ -135,9 +156,21 @@ begin
     age_band = excluded.age_band,
     age_declared_at = pg_catalog.coalesce(public.account_compliance.age_declared_at, excluded.age_declared_at);
 
-  -- Remove even the temporary derived signup marker from Auth metadata.
+  insert into public.legal_acceptances (user_id, document_type, document_version, context)
+  values
+    (new.id, 'terms', signup_terms_version, 'signup_terms_acceptance'),
+    (new.id, 'privacy', signup_privacy_version, 'signup_privacy_acknowledgement')
+  on conflict (user_id, document_type, document_version) do nothing;
+
+  -- Remove temporary signup-only markers from Auth metadata. Neither the exact
+  -- birth date, raw document nor legal checkbox transport markers remain there.
   update auth.users
-  set raw_user_meta_data = pg_catalog.coalesce(raw_user_meta_data, '{}'::jsonb) - 'signup_age_band'
+  set raw_user_meta_data = pg_catalog.coalesce(raw_user_meta_data, '{}'::jsonb)
+    - 'signup_age_band'
+    - 'signup_terms_accepted'
+    - 'signup_terms_version'
+    - 'signup_privacy_acknowledged'
+    - 'signup_privacy_version'
   where id = new.id;
 
   return new;
@@ -147,4 +180,4 @@ $$;
 revoke all on function public.handle_new_user() from public, anon, authenticated;
 
 comment on table public.account_compliance is
-  'Dados mínimos de conformidade. A data de nascimento é exigida no cadastro, convertida em faixa etária antes da persistência da conta e a data completa não é armazenada.';
+  'Dados mínimos de conformidade. A data de nascimento é exigida no cadastro, convertida em faixa etária antes da persistência da conta e a data completa não é armazenada. Os eventos jurídicos são registrados separadamente e sem os dados brutos de identidade.';
