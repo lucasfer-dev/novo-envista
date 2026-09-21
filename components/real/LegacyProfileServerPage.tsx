@@ -8,7 +8,7 @@ import { startConversationAction } from "@/lib/messages/actions";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import styles from "@/components/product/ProfessionalSuite.module.css";
 
-function root(role: ProductRole) { return role === "investor" ? "/investor" : "/app"; }
+function root(role: ProductRole) { return role === "investor" ? "/investor" : ""; }
 function initials(name: string) { return name.split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase(); }
 
 export async function LegacyPublicProfileServerPage({ expectedRole, username, pathname }: { expectedRole: ProductRole; username: string; pathname: string }) {
