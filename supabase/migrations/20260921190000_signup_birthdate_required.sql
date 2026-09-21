@@ -41,12 +41,12 @@ begin
     raise exception using errcode = '22023', message = 'invalid signup birth date';
   end;
 
-  if birth_date > pg_catalog.current_date
-     or birth_date < (pg_catalog.current_date - interval '120 years')::date then
+  if birth_date > current_date
+     or birth_date < (current_date - interval '120 years')::date then
     raise exception using errcode = '22023', message = 'invalid signup birth date';
   end if;
 
-  calculated_age := pg_catalog.extract(year from pg_catalog.age(pg_catalog.current_date, birth_date))::integer;
+  calculated_age := pg_catalog.date_part('year', pg_catalog.age(current_date, birth_date))::integer;
   derived_age_band := case
     when calculated_age < 12 then 'child'::public.age_band
     when calculated_age < 18 then 'adolescent'::public.age_band
