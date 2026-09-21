@@ -5,6 +5,10 @@ const migration = readFileSync(
   "supabase/migrations/20260921162000_authorization_hardening.sql",
   "utf8",
 );
+const productAccessMigration = readFileSync(
+  "supabase/migrations/20260921164000_product_access_gate.sql",
+  "utf8",
+);
 
 describe("authorization hardening", () => {
   it("requires the canonical AAL2 admin predicate for course assets", () => {
@@ -40,5 +44,30 @@ describe("authorization hardening", () => {
     expect(migration).toContain("revoke all on table public.project_view_events from anon");
     expect(migration).toContain("revoke truncate, trigger, references");
     expect(migration).toContain("revoke execute on function public.get_product_user_context() from anon");
+  });
+
+  it("enforces the guardian/product gate at the RLS boundary for normal product writes", () => {
+    expect(productAccessMigration).toContain("create or replace function private.has_product_access()");
+    expect(productAccessMigration).toContain("c.age_band = 'adult'");
+    expect(productAccessMigration).toContain("c.age_band in ('child', 'adolescent')");
+    expect(productAccessMigration).toContain("c.guardian_consent_verified_at is not null");
+    for (const policy of [
+      "direct_conversations_insert_allowed",
+      "direct_messages_insert_participant",
+      "posts_insert",
+      "posts_update",
+      "post_comments_insert",
+      "post_likes_insert",
+      "follows_insert_self",
+      "course_enrollments_insert_own_published",
+      "lesson_progress_insert_own_enrolled",
+      "project_saves_insert_self",
+      "project_interests_insert_investor",
+      "team_tasks_member_insert",
+      "team_tasks_member_update",
+    ]) {
+      expect(productAccessMigration).toContain(`alter policy "${policy}"`);
+    }
+    expect(productAccessMigration.match(/private\.has_product_access\(\)/g)?.length ?? 0).toBeGreaterThanOrEqual(15);
   });
 });
