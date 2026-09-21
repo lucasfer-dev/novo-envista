@@ -66,7 +66,7 @@ function normalize(value: string) {
 }
 
 function exploreBase(role: ProductRole) {
-  return role === "investor" ? "/investor/explore" : "/app/explore";
+  return role === "investor" ? "/investor/explore" : "/explore";
 }
 
 function taxonomyHref(base: string, value: string, kind: "q" | "stage" = "q") {
@@ -262,7 +262,7 @@ export default async function LegacyExploreServerPage({
           <div className="project-grid">
             {projects.map((project) => {
               const href = project.real
-                ? `${expectedRole === "investor" ? "/investor" : "/app"}/projects/${encodeURIComponent(project.slug)}?from=explore`
+                ? `${expectedRole === "investor" ? "/investor" : ""}/projects/${encodeURIComponent(project.slug)}?from=explore`
                 : entityRoute({ type: "project", id: project.slug, source: "explore", context });
 
               return (
@@ -302,7 +302,7 @@ export default async function LegacyExploreServerPage({
           <div className="team-row">
             {teams.map((team) => {
               const href = team.real
-                ? `${expectedRole === "investor" ? "/investor" : "/app"}/teams/${encodeURIComponent(team.slug)}?from=explore`
+                ? `${expectedRole === "investor" ? "/investor" : ""}/teams/${encodeURIComponent(team.slug)}?from=explore`
                 : entityRoute({ type: "team", id: team.slug, source: "explore", context });
 
               return (
