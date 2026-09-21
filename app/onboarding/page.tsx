@@ -6,13 +6,18 @@ import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 import BrazilLocationFields from "@/components/profile/BrazilLocationFields";
 
 const errors: Record<string, string> = {
-  invalid: "Revise os campos obrigatórios e as confirmações.",
-  username: "Esse nome de usuário já está em uso.",
-  profile: "Não foi possível salvar o perfil.",
+  invalid: "Revise os campos obrigatórios e tente novamente.",
+  "display-name": "Preencha o nome de exibição.",
+  "username-format": "Escolha um nome de usuário com 3 a 32 caracteres usando letras, números, ponto, hífen ou underline.",
+  username: "Esse nome de usuário já está em uso. Escolha outro.",
+  profile: "Não foi possível salvar os dados do perfil. Tente novamente.",
+  "age-required": "Não foi possível identificar sua faixa etária. Recarregue a página e tente novamente.",
   age: "Não foi possível registrar a faixa etária.",
-  "age-locked": "A faixa etária já foi declarada e não pode ser trocada por este formulário.",
-  legal: "Não foi possível registrar os documentos apresentados.",
-  completion: "O perfil foi salvo, mas a configuração ainda não pôde ser concluída. Tente novamente.",
+  "age-locked": "A faixa etária desta conta já foi definida e não pode ser alterada aqui.",
+  "terms-required": "Para continuar, aceite os Termos de Uso.",
+  "privacy-required": "Para continuar, confirme que leu o Aviso de Privacidade.",
+  legal: "Não foi possível registrar as confirmações jurídicas. Tente novamente.",
+  completion: "Seus dados foram salvos, mas ocorreu uma falha ao finalizar o cadastro. Você não precisa preencher tudo novamente; tente o botão mais uma vez.",
 };
 
 const TAG_OPTIONS = ["Tecnologia", "Programação", "Robótica", "IA", "Design", "Games", "Ciência", "Educação", "Empreendedorismo", "Negócios", "Sustentabilidade", "Acessibilidade"];
@@ -53,11 +58,11 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
     <AuthShell wide title="Complete seu perfil" description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Localização e interesses ajudam a sugerir pessoas, projetos e competições mais relevantes.`}>
       <div className={styles.notice} role="status"><strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.</div>
       <div className={styles.notice}>A data de nascimento informada no cadastro é usada somente para calcular sua faixa etária e é descartada na criação da conta. A faixa etária fica privada e serve para aplicar as proteções adequadas.</div>
-      {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
-      <form action={onboardingAction} className={styles.form}>
+      {errorCode ? <div className={styles.error} role="alert"><strong>Não foi possível concluir o cadastro.</strong>{" "}{errors[errorCode] || "Tente novamente. Se o problema continuar, recarregue a página."}</div> : null}
+      <form action={onboardingAction} className={styles.form} noValidate>
         <div className={styles.grid2}>
-          <label>Nome de exibição<input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} required /></label>
-          <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern={'[A-Za-z0-9][A-Za-z0-9._\\-]{2,31}'} aria-describedby="username-help" required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
+          <label>Nome de exibição<input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} aria-invalid={errorCode === "display-name" ? true : undefined} required /></label>
+          <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern={'[A-Za-z0-9][A-Za-z0-9._\\-]{2,31}'} aria-describedby="username-help" aria-invalid={errorCode === "username" || errorCode === "username-format" ? true : undefined} required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
         </div>
 
         <label>Faixa etária{ageLocked ? <><input type="hidden" name="age_band" value={compliance.age_band} /><input value={ageLabel(compliance.age_band)} disabled /></> : <select name="age_band" defaultValue="" required><option value="" disabled>Selecione</option><option value="child">Menos de 12 anos</option><option value="adolescent">12 a 17 anos</option><option value="adult">18 anos ou mais</option></select>}<span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública. Contas de menores de 18 anos permanecem bloqueadas até a verificação do responsável.</span></label>
@@ -83,8 +88,8 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
 
         <div className={styles.divider} />
         <div className={styles.checks}>
-          <label className={styles.check}><input type="checkbox" name="terms" required /><span>Li e aceito os <a href="/terms" target="_blank" rel="noreferrer">Termos de Uso</a>.</span></label>
-          <label className={styles.check}><input type="checkbox" name="privacy" required /><span>Li o <a href="/privacy" target="_blank" rel="noreferrer">Aviso de Privacidade</a>. Esta ciência não é tratada automaticamente como consentimento para toda finalidade.</span></label>
+          <label className={styles.check}><input type="checkbox" name="terms" aria-invalid={errorCode === "terms-required" ? true : undefined} required /><span>Li e aceito os <a href="/terms" target="_blank" rel="noreferrer">Termos de Uso</a>.</span></label>
+          <label className={styles.check}><input type="checkbox" name="privacy" aria-invalid={errorCode === "privacy-required" ? true : undefined} required /><span>Li o <a href="/privacy" target="_blank" rel="noreferrer">Aviso de Privacidade</a>. Esta ciência não é tratada automaticamente como consentimento para toda finalidade.</span></label>
         </div>
         {!participant ? <div className={styles.notice}>Contas de investidor podem explorar a plataforma imediatamente. Para iniciar contatos com projetos, será necessário concluir a verificação de investidor.</div> : null}
         <button className={`${styles.primary} ${styles.full}`} type="submit">Salvar e entrar no Envista</button>
