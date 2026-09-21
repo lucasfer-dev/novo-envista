@@ -16,7 +16,7 @@ describe("first-run product guidance", () => {
     expect(dashboard).toContain('label: "Crie seu primeiro projeto"');
     expect(dashboard).toContain('label: "Entre ou crie uma equipe"');
     expect(dashboard).toContain('label: "Comece um curso"');
-    expect(dashboard).toContain('href="/app/teams/new"');
+    expect(dashboard).toContain('href="/teams/new"');
   });
 
   it("gives investor accounts actionable first steps", () => {
