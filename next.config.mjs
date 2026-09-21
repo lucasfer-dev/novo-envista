@@ -5,7 +5,7 @@ const isProduction = process.env.NODE_ENV === "production";
 // Content-Security-Policy is generated per request in proxy.ts because a nonce
 // must never be reused between responses. Static security headers remain here.
 const securityHeaders = [
-  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Referrer-Policy", value: "no-referrer" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
