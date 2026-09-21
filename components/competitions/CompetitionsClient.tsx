@@ -50,7 +50,7 @@ export function CompetitionsBrowser({
   basePath,
   recommendationContext,
 }: {
-  basePath: "/app/competitions" | "/investor/competitions";
+  basePath: "/competitions" | "/investor/competitions";
   recommendationContext: CompetitionRecommendationContext;
 }) {
   const [data, setData] = useState<LiveCompetitionsResponse | null>(null);
@@ -206,7 +206,7 @@ export function CompetitionDetailClient({
   slug,
   recommendationContext,
 }: {
-  basePath: "/app/competitions" | "/investor/competitions";
+  basePath: "/competitions" | "/investor/competitions";
   slug: string;
   recommendationContext: CompetitionRecommendationContext;
 }) {
