@@ -8,7 +8,9 @@ const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const guardianRequired = readFileSync("app/guardian-required/page.tsx", "utf8");
 const privacy = readFileSync("app/privacy/page.tsx", "utf8");
 const terms = readFileSync("app/terms/page.tsx", "utf8");
-const migration = readFileSync("supabase/migrations/20260921143000_legal_compliance_minor_guardian_v3.sql", "utf8");\nconst signupBirthDateMigration = readFileSync("supabase/migrations/20260921190000_signup_birthdate_required.sql", "utf8");\nconst legalV4Migration = readFileSync("supabase/migrations/20260921191000_publish_legal_signup_identity_v4.sql", "utf8");
+const minorMigration = readFileSync("supabase/migrations/20260921143000_legal_compliance_minor_guardian_v3.sql", "utf8");
+const signupBirthDateMigration = readFileSync("supabase/migrations/20260921190000_signup_birthdate_required.sql", "utf8");
+const legalV4Migration = readFileSync("supabase/migrations/20260921191000_publish_legal_signup_identity_v4.sql", "utf8");
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
 const privacyContact = readFileSync("app/privacy/contact/page.tsx", "utf8");
 const adminPrivacy = readFileSync("app/admin/privacy/page.tsx", "utf8");
@@ -19,8 +21,8 @@ describe("legal and minor-account compliance", () => {
     expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v4"');
     expect(terms).toContain("2026-09-21-v4");
     expect(privacy).toContain("2026-09-21-v4");
-    expect(migration).toContain("'terms', '2026-09-21-v4'");
-    expect(migration).toContain("'privacy', '2026-09-21-v4'");
+    expect(legalV4Migration).toContain("'terms', '2026-09-21-v4'");
+    expect(legalV4Migration).toContain("'privacy', '2026-09-21-v4'");
   });
 
   it("derives age during signup and discards the exact birth date", () => {
@@ -37,11 +39,11 @@ describe("legal and minor-account compliance", () => {
   });
 
   it("enforces guardian clearance in the database authorization layer", () => {
-    expect(migration).toContain("create or replace function private.is_participant");
-    expect(migration).toContain("c.age_band in ('child', 'adolescent')");
-    expect(migration).toContain("c.guardian_consent_verified_at is not null");
-    expect(migration).toContain('alter policy "profiles_update_self"');
-    expect(migration).toContain('alter policy "onboarding_completions_insert_self_when_ready"');
+    expect(minorMigration).toContain("create or replace function private.is_participant");
+    expect(minorMigration).toContain("c.age_band in ('child', 'adolescent')");
+    expect(minorMigration).toContain("c.guardian_consent_verified_at is not null");
+    expect(minorMigration).toContain('alter policy "profiles_update_self"');
+    expect(minorMigration).toContain('alter policy "onboarding_completions_insert_self_when_ready"');
   });
 
   it("publishes explicit privacy and support channels", () => {
