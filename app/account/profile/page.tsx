@@ -15,7 +15,7 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
-import ProductShell from "@/components/real/ProductShell";
+import LegacySocialShell from "@/components/social/LegacySocialShell";
 import AvatarUploader from "@/components/storage/AvatarUploader";
 import { profileUpdateAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -119,7 +119,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   };
 
   return (
-    <ProductShell user={shellUser} title="Perfil" variant="legacyDark">
+    <LegacySocialShell user={shellUser} role={productRole} pathname="/account/profile">
       <div className={styles.page}>
         <header className={styles.hero}>
           <div>
@@ -311,6 +311,6 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
           </section>
         </div>
       </div>
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
