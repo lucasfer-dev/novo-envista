@@ -16,11 +16,13 @@ test.describe("Envista product readiness routes", () => {
     });
   }
 
-  test("registration route remains available when signup is closed", async ({ page }) => {
+  test("registration route is available by default", async ({ page }) => {
     await page.goto("/register");
     await expect(page.getByRole("heading", { name: "Criar conta" })).toBeVisible();
-    await expect(page.getByText(/cadastro está temporariamente fechado/i)).toBeVisible();
-    await expect(page.getByRole("link", { name: "Já tenho uma conta" })).toBeVisible();
+    await expect(page.getByLabel("Nome de exibição")).toBeVisible();
+    await expect(page.getByLabel("E-mail")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Criar conta" })).toBeVisible();
+    await expect(page.getByText(/cadastro está temporariamente fechado/i)).toHaveCount(0);
   });
 
   test("public legal pages no longer present themselves as internal beta documents", async ({ page }) => {
