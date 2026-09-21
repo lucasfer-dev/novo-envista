@@ -46,7 +46,7 @@ for (const viewport of viewports) {
     await expectPageHasNoBrokenImages(page);
 
     await page.goto("/register");
-    await expect(page.getByRole("heading", { name: "Criar conta" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Crie sua conta" })).toBeVisible();
     await expectHealthyViewport(page);
     await expectPageHasNoBrokenImages(page);
   });
