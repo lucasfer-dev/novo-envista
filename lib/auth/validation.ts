@@ -2,8 +2,8 @@ export type ProductRole = "participant" | "investor";
 export type DeclaredAgeBand = "child" | "adolescent" | "adult";
 export type PrivateDocumentKind = "cpf" | "cnpj";
 
-export const INTERNAL_TERMS_VERSION = "2026-09-15-v2";
-export const INTERNAL_PRIVACY_VERSION = "2026-09-16-v2";
+export const INTERNAL_TERMS_VERSION = "2026-09-21-v3";
+export const INTERNAL_PRIVACY_VERSION = "2026-09-21-v3";
 export const MIN_PASSWORD_LENGTH = 12;
 
 const PARTICIPANT_ROUTE_ROOTS = [
