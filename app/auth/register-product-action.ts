@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   isValidEmail,
   normalizePrivateDocument,
+  parseBirthDate,
   parseProductRole,
   privateDocumentKind,
   validatePassword,
@@ -40,25 +41,27 @@ export async function registerProductAction(formData: FormData) {
   const email = value(formData, "email").toLowerCase();
   const documentValue = value(formData, "document");
   const normalizedDocument = normalizePrivateDocument(documentValue);
-  const documentKind = documentValue ? privateDocumentKind(documentValue) : null;
+  const documentKind = privateDocumentKind(documentValue);
+  const birthDate = parseBirthDate(value(formData, "birth_date"));
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const confirmation = typeof formData.get("password_confirmation") === "string" ? String(formData.get("password_confirmation")) : "";
   const role = parseProductRole(formData.get("role"));
 
   if (!displayName || !isValidEmail(email)) redirect(errorPath("invalid"));
-  if (documentValue && !documentKind) redirect(errorPath("document"));
+  if (!documentValue || !documentKind) redirect(errorPath("document"));
+  if (!birthDate) redirect(errorPath("birth-date"));
   if (validatePassword(password) || password !== confirmation) redirect(errorPath("password"));
 
   const captchaToken = value(formData, TURNSTILE_FIELD).slice(0, 4096);
   if (captchaConfigured() && !captchaToken) redirect(errorPath("captcha"));
 
-  const privateIdentifier = documentKind ? { [documentKind]: normalizedDocument } : {};
+  const privateIdentifier = { [documentKind]: normalizedDocument };
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { display_name: displayName, role, ...privateIdentifier },
+      data: { display_name: displayName, role, birth_date: birthDate, ...privateIdentifier },
       emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
