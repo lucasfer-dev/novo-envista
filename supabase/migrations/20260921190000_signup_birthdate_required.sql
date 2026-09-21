@@ -143,7 +143,7 @@ begin
   insert into public.profiles (id, username, display_name, role)
   values (
     new.id,
-    'user_' || pg_catalog.substring(pg_catalog.replace(new.id::text, '-', '') from 1 for 20),
+    'user_' || pg_catalog.substr(pg_catalog.replace(new.id::text, '-', ''), 1, 20),
     safe_display_name,
     requested_role
   )
