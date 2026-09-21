@@ -17,18 +17,22 @@ const adminPrivacy = readFileSync("app/admin/privacy/page.tsx", "utf8");
 
 describe("legal and minor-account compliance", () => {
   it("uses the current public legal document versions", () => {
-    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v4"');
-    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v4"');
-    expect(terms).toContain("2026-09-21-v4");
-    expect(privacy).toContain("2026-09-21-v4");
-    expect(legalV4Migration).toContain("'terms', '2026-09-21-v4'");
-    expect(legalV4Migration).toContain("'privacy', '2026-09-21-v4'");
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v5"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v5"');
+    expect(terms).toContain("2026-09-21-v5");
+    expect(privacy).toContain("2026-09-21-v5");
+    expect(legalV4Migration).toContain("'terms', '2026-09-21-v5'");
+    expect(legalV4Migration).toContain("'privacy', '2026-09-21-v5'");
   });
 
   it("derives age during signup and discards the exact birth date", () => {
     expect(signupBirthDateMigration).toContain("birth_date");
     expect(signupBirthDateMigration).toContain("derived_age_band");
     expect(signupBirthDateMigration).toContain("- 'birth_date'");
+    expect(signupBirthDateMigration).toContain("signup_terms_acceptance");
+    expect(signupBirthDateMigration).toContain("signup_privacy_acknowledgement");
+    expect(signupBirthDateMigration).toContain("- 'signup_terms_version'");
+    expect(signupBirthDateMigration).toContain("- 'signup_privacy_version'");
   });
 
   it("keeps every minor account behind guardian verification", () => {
