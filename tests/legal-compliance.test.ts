@@ -8,19 +8,25 @@ const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const guardianRequired = readFileSync("app/guardian-required/page.tsx", "utf8");
 const privacy = readFileSync("app/privacy/page.tsx", "utf8");
 const terms = readFileSync("app/terms/page.tsx", "utf8");
-const migration = readFileSync("supabase/migrations/20260921143000_legal_compliance_minor_guardian_v3.sql", "utf8");
+const migration = readFileSync("supabase/migrations/20260921143000_legal_compliance_minor_guardian_v3.sql", "utf8");\nconst signupBirthDateMigration = readFileSync("supabase/migrations/20260921190000_signup_birthdate_required.sql", "utf8");\nconst legalV4Migration = readFileSync("supabase/migrations/20260921191000_publish_legal_signup_identity_v4.sql", "utf8");
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
 const privacyContact = readFileSync("app/privacy/contact/page.tsx", "utf8");
 const adminPrivacy = readFileSync("app/admin/privacy/page.tsx", "utf8");
 
 describe("legal and minor-account compliance", () => {
   it("uses the current public legal document versions", () => {
-    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v3"');
-    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v3"');
-    expect(terms).toContain("2026-09-21-v3");
-    expect(privacy).toContain("2026-09-21-v3");
-    expect(migration).toContain("'terms', '2026-09-21-v3'");
-    expect(migration).toContain("'privacy', '2026-09-21-v3'");
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v4"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v4"');
+    expect(terms).toContain("2026-09-21-v4");
+    expect(privacy).toContain("2026-09-21-v4");
+    expect(migration).toContain("'terms', '2026-09-21-v4'");
+    expect(migration).toContain("'privacy', '2026-09-21-v4'");
+  });
+
+  it("derives age during signup and discards the exact birth date", () => {
+    expect(signupBirthDateMigration).toContain("birth_date");
+    expect(signupBirthDateMigration).toContain("derived_age_band");
+    expect(signupBirthDateMigration).toContain("- 'birth_date'");
   });
 
   it("keeps every minor account behind guardian verification", () => {
