@@ -65,7 +65,7 @@ async function loadRecommendationContext(
 
 export async function CompetitionsServerPage({ expectedRole }: { expectedRole: ProductRole }) {
   const { appUser, supabase, userId, role } = await requireProductUser(expectedRole);
-  const basePath = expectedRole === "investor" ? "/investor/competitions" : "/app/competitions";
+  const basePath = expectedRole === "investor" ? "/investor/competitions" : "/competitions";
   const recommendationContext = await loadRecommendationContext(supabase, userId, role);
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={basePath}>
