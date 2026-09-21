@@ -9,7 +9,7 @@ export default function TermsPage() {
     <AuthShell
       wide
       title="Termos de Uso"
-      description="Versão 2026-09-21-v3 · Vigente a partir de 21 de setembro de 2026."
+      description="Versão 2026-09-21-v4 · Vigente a partir de 21 de setembro de 2026."
     >
       <div className={styles.legal}>
         <p>Estes Termos regulam o acesso e o uso do Envista. Ao criar ou utilizar uma conta, o usuário concorda em respeitar estas regras, a legislação brasileira e os direitos de terceiros. O <Link href="/privacy">Aviso de Privacidade</Link> integra este conjunto de regras.</p>
@@ -17,8 +17,9 @@ export default function TermsPage() {
         <h2>1. Serviço</h2>
         <p>O Envista é uma plataforma de aprendizagem, colaboração, projetos, equipes, portfólios, competições, oportunidades e conexões entre participantes, instituições e investidores. Funcionalidades podem evoluir, ser limitadas por categoria de conta ou ser descontinuadas por razões técnicas, jurídicas ou de segurança.</p>
 
-        <h2>2. Cadastro e segurança</h2>
-        <p>O usuário deve fornecer informações verdadeiras, manter os dados essenciais atualizados e proteger suas credenciais. É proibido usar identidade de terceiros sem autorização, compartilhar conta de modo inseguro, contornar controles de acesso ou tentar obter dados sem permissão.</p>
+        <h2>2. Cadastro, identificação e segurança</h2>
+        <p>O usuário deve fornecer informações verdadeiras, manter os dados essenciais atualizados e proteger suas credenciais. Para criação da conta, o Envista exige e-mail, nome, CPF ou CNPJ válido e data de nascimento. O CPF ou CNPJ é utilizado como identificador privado e pode também ser usado no login. A data de nascimento é utilizada para determinar a faixa etária e aplicar as proteções correspondentes, conforme detalhado no Aviso de Privacidade.</p>
+        <p>É proibido usar identidade ou documento de terceiros sem autorização, informar deliberadamente idade falsa para contornar proteções, compartilhar conta de modo inseguro, contornar controles de acesso ou tentar obter dados sem permissão.</p>
 
         <h2>3. Menores de idade</h2>
         <p>O Envista aplica proteção reforçada a crianças e adolescentes. Contas de menores não são liberadas para uso normal enquanto a verificação aplicável do responsável legal não estiver concluída. Recursos sociais, mensagens, visibilidade e outras funcionalidades podem permanecer bloqueados ou limitados por padrão.</p>
@@ -61,7 +62,7 @@ export default function TermsPage() {
         <h2>15. Lei aplicável e contato</h2>
         <p>Estes Termos são regidos pela legislação brasileira, sem prejuízo de normas obrigatórias aplicáveis ao usuário. O responsável pela operação é {CONTROLLER_NAME}. Dúvidas de suporte podem ser encaminhadas para <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
 
-        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v3.</div>
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v4.</div>
       </div>
     </AuthShell>
   );
