@@ -15,7 +15,6 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const enabled = isPublicSignupReady();
   const error = typeof params.error === "string" ? params.error : "";
   const status = typeof params.status === "string" ? params.status : "";
-  const sentTo = typeof params.email === "string" ? params.email.slice(0, 254) : "";
   const errorMessage =
     error === "password" ? `Confira as senhas. Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`
       : error === "document" ? "Informe um CPF ou CNPJ válido."
@@ -23,6 +22,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
       : error === "exists" ? "Já existe uma conta com esses dados. Tente entrar ou recuperar a senha."
       : error === "captcha" ? "Conclua a verificação de segurança e tente novamente."
       : error === "rate" ? "Muitas tentativas de cadastro em pouco tempo. Aguarde alguns minutos."
+      : error === "legal" ? "Para criar a conta, aceite os Termos de Uso e confirme que leu o Aviso de Privacidade."
       : error === "temporary" ? "O cadastro está temporariamente indisponível. Tente novamente em instantes."
       : error ? "Revise os dados informados."
       : "";
@@ -42,8 +42,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
         <>
           <div className={styles.success} role="status">
             <strong>E-mail de verificação enviado.</strong>{" "}
-            {sentTo ? <>Enviamos a confirmação para <strong>{sentTo}</strong>. </> : null}
-            Abra sua caixa de entrada e, se necessário, verifique Spam ou Promoções.
+            Enviamos a confirmação para o e-mail informado. Abra sua caixa de entrada e, se necessário, verifique Spam ou Promoções.
           </div>
           <div className={styles.notice}>Depois de confirmar o e-mail, volte ao Envista e conclua seu perfil.</div>
           <Link className={`${styles.primary} ${styles.full}`} href="/login">Ir para o login</Link>
@@ -108,10 +107,16 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
 
             <div className={styles.captcha}><AuthCaptcha action="register" /></div>
 
-            <p className={styles.legalHint}>
-              Antes de continuar, consulte os <Link href="/terms" target="_blank">Termos de Uso</Link> e o{" "}
-              <Link href="/privacy" target="_blank">Aviso de Privacidade</Link>. A aceitação formal é registrada na conclusão do perfil.
-            </p>
+            <div className={styles.checks}>
+              <label className={styles.check}>
+                <input type="checkbox" name="terms" required />
+                <span>Li e aceito os <Link href="/terms" target="_blank" rel="noreferrer">Termos de Uso</Link>.</span>
+              </label>
+              <label className={styles.check}>
+                <input type="checkbox" name="privacy" required />
+                <span>Li o <Link href="/privacy" target="_blank" rel="noreferrer">Aviso de Privacidade</Link> e entendo como meus dados são tratados. Esta confirmação não é consentimento genérico para qualquer finalidade.</span>
+              </label>
+            </div>
 
             <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Criando conta...">
               Criar minha conta
