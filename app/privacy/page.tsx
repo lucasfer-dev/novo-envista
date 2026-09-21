@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       description="Versão 2026-09-21-v3. Transparência sobre dados pessoais, segurança, direitos e proteção de menores."
     >
       <div className={styles.legal}>
-        <p><strong>Controlador:</strong> {CONTROLLER_NAME}. <strong>Canal de privacidade:</strong> <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
+        <p><strong>Controlador:</strong> {CONTROLLER_NAME}. <strong>Canal público de privacidade:</strong> <Link href="/privacy/contact">registrar solicitação</Link>. E-mail complementar: <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
 
         <h2>1. Escopo e princípios</h2>
         <p>Este Aviso se aplica ao uso do Envista e às operações de tratamento necessárias para autenticação, perfis, projetos, equipes, conteúdos, aprendizado, mensagens, moderação, segurança e conexão entre participantes, instituições e investidores. O tratamento observa finalidade, adequação, necessidade, transparência, segurança, prevenção, não discriminação e responsabilização.</p>
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
         <p>O Envista utiliza autenticação, controle de acesso, Row Level Security, segregação de dados privados, registro de eventos administrativos, limites antiabuso e práticas de desenvolvimento seguro. Nenhum sistema é absolutamente invulnerável; incidentes relevantes serão tratados segundo o plano de resposta e as obrigações legais aplicáveis.</p>
 
         <h2>10. Direitos dos titulares</h2>
-        <p>O titular pode solicitar, conforme aplicável, confirmação de tratamento, acesso, correção, anonimização, bloqueio, eliminação, portabilidade, informação sobre compartilhamentos e revisão de decisões automatizadas, além dos demais direitos previstos na LGPD. Usuários autenticados também podem usar a área de privacidade da conta. Solicitações externas podem ser enviadas para <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
+        <p>O titular pode solicitar, conforme aplicável, confirmação de tratamento, acesso, correção, anonimização, bloqueio, eliminação, portabilidade, informação sobre compartilhamentos e revisão de decisões automatizadas, além dos demais direitos previstos na LGPD. Usuários autenticados também podem usar a área de privacidade da conta. Solicitações externas podem ser registradas pelo <Link href="/privacy/contact">canal público de privacidade</Link> ou enviadas para <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
 
         <h2>11. Atualizações</h2>
         <p>Alterações relevantes serão publicadas com nova versão e data. Quando necessário, o Envista solicitará nova manifestação do usuário antes da continuidade de determinadas funcionalidades.</p>
