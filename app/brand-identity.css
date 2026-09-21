@@ -1,7 +1,6 @@
 /* Envista brand identity + interaction layer
    Official palette supplied in the 2026-09 visual identity:
-   #0086a7 · #00a99d · #22b573 · #0f1923.
-   Loaded after the canonical product CSS so brand tokens stay centralized. */
+   #0086a7 · #00a99d · #22b573 · #0f1923. */
 
 :root {
   --envista-blue: #0086a7;
@@ -9,7 +8,6 @@
   --envista-green: #22b573;
   --envista-ink: #0f1923;
   --envista-gradient: linear-gradient(135deg, var(--envista-green) 0%, var(--envista-teal) 48%, var(--envista-blue) 100%);
-
   --bg: #0f1923;
   --bg2: #132130;
   --surface: #162535;
@@ -18,7 +16,6 @@
   --green: var(--envista-teal);
   --turq: var(--envista-teal);
   --cyan: var(--envista-blue);
-
   --ev-bg: #0f1923;
   --ev-bg-subtle: #12202d;
   --ev-sidebar: #0b151e;
@@ -33,364 +30,261 @@
   --ev-focus: 0 0 0 3px rgba(0, 169, 157, 0.18);
 }
 
-html,
-body {
-  background: var(--envista-ink);
-}
+html, body { background: var(--envista-ink); }
+::selection { background: rgba(0,169,157,.3); color:#fff; }
 
-::selection {
-  background: rgba(0, 169, 157, 0.3);
-  color: #fff;
-}
-
-/* Brand lockups */
+/* Official mark placement */
 .app-shell .brand {
-  min-height: 44px;
-  border-radius: 10px;
-  transition: background-color 150ms ease;
+  min-height:44px;
+  border-radius:10px;
+  transition:background-color 150ms ease;
 }
-
-.app-shell .brand:hover {
-  background: rgba(255, 255, 255, 0.035);
-}
-
+.app-shell .brand:hover { background:rgba(255,255,255,.035); }
 .app-shell .brand img,
 .envista-auth-brand img,
 .envista-auth-mobile-brand img {
-  object-fit: contain;
-  background: transparent;
+  object-fit:contain;
+  background:transparent;
 }
-
+.app-shell .brand img { width:28px; height:36px; border-radius:0; }
 .app-shell .brand b {
-  font-size: 18px;
-  letter-spacing: -0.035em;
+  font-size:18px;
+  font-weight:850;
+  letter-spacing:-.04em;
+  text-transform:uppercase;
 }
+.envista-brand-lockup { display:inline-flex; align-items:center; gap:11px; }
+.envista-brand-lockup strong {
+  font-size:20px;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.045em;
+  text-transform:uppercase;
+}
+.envista-auth-brand .envista-brand-lockup img { width:31px; height:42px; }
+.envista-auth-mobile-brand img { width:25px; height:34px; }
 
-/* Brand texture: restrained so product content stays readable. */
+/* Supplied identity patterns in the correct low-noise surfaces. */
+.app-shell .sidebar { position:fixed; }
 .app-shell .sidebar::before,
 .envista-auth-brand::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.22;
-  background-image:
-    radial-gradient(circle at 10px 10px, rgba(0,169,157,.16) 1.2px, transparent 1.4px),
-    linear-gradient(45deg, transparent 47%, rgba(0,134,167,.08) 48%, rgba(0,134,167,.08) 52%, transparent 53%);
-  background-size: 30px 30px, 54px 54px;
-  mask-image: linear-gradient(to bottom, #000, transparent 76%);
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:url("/brand/envista-pattern-dark.svg") center/360px auto repeat;
+  opacity:.16;
+  mask-image:linear-gradient(to bottom,#000,transparent 82%);
 }
+.app-shell .sidebar > *,
+.envista-auth-brand > * { position:relative; z-index:1; }
 
-.app-shell .sidebar {
-  position: fixed;
-}
-
-.app-shell .sidebar::before {
-  inset: 0;
-}
-
-.app-shell .sidebar > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Navigation: clearer destinations and larger hit areas. */
 .app-shell .sidebar nav a,
 .app-shell .side-section a {
-  min-height: 42px;
-  border-radius: var(--ev-radius-control);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 10px;
-  color: #9eafc1;
-  text-decoration: none;
-  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+  min-height:42px;
+  border-radius:var(--ev-radius-control);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 10px;
+  color:#9eafc1;
+  text-decoration:none;
+  transition:background-color 150ms ease,color 150ms ease,transform 150ms ease;
 }
-
 .app-shell .sidebar nav a:hover,
 .app-shell .side-section a:hover {
-  background: rgba(148, 163, 184, 0.075);
-  color: #f2f7fa;
+  background:rgba(148,163,184,.075);
+  color:#f2f7fa;
 }
-
 .app-shell .sidebar nav a.active {
-  background:
-    linear-gradient(90deg, rgba(34,181,115,.10), rgba(0,169,157,.08) 55%, rgba(0,134,167,.04));
-  color: #fff;
-  box-shadow: inset 3px 0 0 var(--envista-teal);
+  background:linear-gradient(90deg,rgba(34,181,115,.10),rgba(0,169,157,.08) 55%,rgba(0,134,167,.04));
+  color:#fff;
+  box-shadow:inset 3px 0 0 var(--envista-teal);
 }
-
-.app-shell .sidebar nav a.active svg {
-  color: #55ddcb;
-}
-
+.app-shell .sidebar nav a.active svg { color:#55ddcb; }
 .app-shell .sidebar nav a:active,
-.app-shell .side-section a:active {
-  transform: scale(.992);
-}
+.app-shell .side-section a:active { transform:scale(.992); }
 
 .app-shell .user-card {
-  border: 1px solid transparent;
-  border-top-color: var(--ev-border);
-  border-radius: 10px;
+  border:1px solid transparent;
+  border-top-color:var(--ev-border);
+  border-radius:10px;
 }
+.app-shell .user-card:hover { background:rgba(255,255,255,.025); }
+.app-shell .topbar { background:rgba(15,25,35,.92)!important; }
 
-.app-shell .user-card:hover {
-  background: rgba(255,255,255,.025);
-}
-
-.app-shell .topbar {
-  background: rgba(15, 25, 35, 0.92) !important;
-}
-
-/* Search/filter controls become a coherent toolbar. */
 .app-shell .filters {
-  padding: 10px;
-  border: 1px solid var(--ev-border);
-  border-radius: 13px;
-  background: rgba(18, 32, 45, .72);
+  padding:10px;
+  border:1px solid var(--ev-border);
+  border-radius:13px;
+  background:rgba(18,32,45,.72);
 }
-
-.app-shell .filters .search-field {
-  min-height: 42px;
-  background: #0f1c29;
-}
-
+.app-shell .filters .search-field { min-height:42px; background:#0f1c29; }
 .app-shell .filters .search-field:focus-within {
-  border-color: rgba(0,169,157,.58);
-  box-shadow: var(--ev-focus);
+  border-color:rgba(0,169,157,.58);
+  box-shadow:var(--ev-focus);
 }
+.app-shell .filters .primary { background:var(--envista-teal)!important; }
 
-.app-shell .filters .primary {
-  background: var(--envista-teal) !important;
-}
-
-/* Whole-card navigation.
-   The hit target is a sibling overlay, so secondary links can remain valid HTML. */
+/* Whole-card navigation */
 .app-shell .project-card,
 .app-shell .team-card {
-  position: relative;
-  isolation: isolate;
-  cursor: pointer;
+  position:relative;
+  isolation:isolate;
+  cursor:pointer;
 }
-
 .app-shell .project-card:focus-within,
 .app-shell .team-card:focus-within {
-  border-color: rgba(0, 169, 157, .58) !important;
-  box-shadow: var(--ev-focus), 0 14px 36px rgba(0,0,0,.16);
+  border-color:rgba(0,169,157,.58)!important;
+  box-shadow:var(--ev-focus),0 14px 36px rgba(0,0,0,.16);
 }
-
 .app-shell .card-hit-target {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
+  position:absolute;
+  inset:0;
+  z-index:1;
+  border-radius:inherit;
 }
-
 .app-shell .card-hit-target:focus-visible {
-  outline: 2px solid #55ddcb !important;
-  outline-offset: 3px;
+  outline:2px solid #55ddcb!important;
+  outline-offset:3px;
 }
-
 .app-shell .project-card > *:not(.card-hit-target),
 .app-shell .team-card > *:not(.card-hit-target) {
-  position: relative;
-  z-index: 2;
-  pointer-events: none;
+  position:relative;
+  z-index:2;
+  pointer-events:none;
 }
-
 .app-shell .project-card a:not(.card-hit-target),
 .app-shell .team-card a:not(.card-hit-target),
 .app-shell .project-card button,
-.app-shell .team-card button {
-  pointer-events: auto;
-}
-
+.app-shell .team-card button { pointer-events:auto; }
 .app-shell .interactive-card-arrow {
-  position: absolute !important;
-  right: 14px;
-  top: 14px;
-  z-index: 3 !important;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  color: #6f8398;
-  background: rgba(15,25,35,.72);
-  border: 1px solid var(--ev-border);
-  opacity: 0;
-  transform: translate(-3px, 3px);
-  transition: opacity 150ms ease, transform 150ms ease, color 150ms ease, border-color 150ms ease;
+  position:absolute!important;
+  right:14px;
+  top:14px;
+  z-index:3!important;
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  color:#6f8398;
+  background:rgba(15,25,35,.72);
+  border:1px solid var(--ev-border);
+  opacity:0;
+  transform:translate(-3px,3px);
+  transition:opacity 150ms ease,transform 150ms ease,color 150ms ease,border-color 150ms ease;
 }
-
 .app-shell .project-card:hover .interactive-card-arrow,
 .app-shell .team-card:hover .interactive-card-arrow,
 .app-shell .project-card:focus-within .interactive-card-arrow,
 .app-shell .team-card:focus-within .interactive-card-arrow {
-  opacity: 1;
-  transform: translate(0,0);
-  color: #7be5d7;
-  border-color: rgba(0,169,157,.26);
+  opacity:1;
+  transform:translate(0,0);
+  color:#7be5d7;
+  border-color:rgba(0,169,157,.26);
 }
-
 .app-shell .project-card:hover,
-.app-shell .team-card:hover {
-  border-color: rgba(0,169,157,.28) !important;
-}
-
+.app-shell .team-card:hover { border-color:rgba(0,169,157,.28)!important; }
 .app-shell .project-cover {
   background:
-    radial-gradient(circle at 90% 5%, rgba(34,181,115,.15), transparent 38%),
-    linear-gradient(145deg, #123041, #132433 63%, #152334) !important;
+    radial-gradient(circle at 90% 5%,rgba(34,181,115,.15),transparent 38%),
+    linear-gradient(145deg,#123041,#132433 63%,#152334)!important;
 }
-
 .app-shell .project-initial {
-  background: var(--envista-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
+  background:var(--envista-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent!important;
 }
-
 .app-shell .avatar {
-  background:
-    linear-gradient(#20374a, #20374a) padding-box,
-    var(--envista-gradient) border-box;
-  border: 1px solid transparent;
+  background:linear-gradient(#20374a,#20374a) padding-box,var(--envista-gradient) border-box;
+  border:1px solid transparent;
 }
-
 .app-shell .stage {
-  border-color: rgba(0,169,157,.22) !important;
-  background: rgba(0,169,157,.09) !important;
-  color: #7fe7db !important;
+  border-color:rgba(0,169,157,.22)!important;
+  background:rgba(0,169,157,.09)!important;
+  color:#7fe7db!important;
 }
 
-/* Better empty states: visually intentional and actionable instead of blank panels. */
 .app-shell .explore-empty {
-  min-height: 118px;
-  display: grid;
-  place-items: center;
-  gap: 8px;
-  padding: 28px 20px !important;
-  border-style: dashed !important;
-  text-align: center;
+  min-height:118px;
+  display:grid;
+  place-items:center;
+  gap:8px;
+  padding:28px 20px!important;
+  border-style:dashed!important;
+  text-align:center;
 }
+.app-shell .explore-empty svg { color:#62dccc; }
+.app-shell .explore-empty p { margin:0; max-width:500px; }
 
-.app-shell .explore-empty svg {
-  color: #62dccc;
-}
-
-.app-shell .explore-empty p {
-  margin: 0;
-  max-width: 500px;
-}
-
-/* Page hierarchy / section rhythm. */
 .app-shell .page-head::after {
-  content: "";
-  display: block;
-  width: 72px;
-  height: 3px;
-  border-radius: 999px;
-  margin-top: 14px;
-  background: var(--envista-gradient);
+  content:"";
+  display:block;
+  width:72px;
+  height:3px;
+  border-radius:999px;
+  margin-top:14px;
+  background:var(--envista-gradient);
 }
-
-.app-shell .page-head > div:first-child {
-  min-width: 0;
-}
-
-.app-shell .section-row h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
+.app-shell .page-head > div:first-child { min-width:0; }
+.app-shell .section-row h2 { display:flex; align-items:center; gap:8px; }
 .app-shell .section-row h2::before {
-  content: "";
-  width: 5px;
-  height: 18px;
-  border-radius: 99px;
-  background: var(--envista-gradient);
+  content:"";
+  width:5px;
+  height:18px;
+  border-radius:99px;
+  background:var(--envista-gradient);
 }
 
-/* Authentication uses the supplied identity as a branded environment,
-   while keeping the form itself calm and high-contrast. */
+/* Identity material in auth, where the richer branding belongs. */
 .envista-auth-page {
   background:
-    radial-gradient(circle at 15% 10%, rgba(34,181,115,.14), transparent 30%),
-    radial-gradient(circle at 82% 82%, rgba(0,134,167,.14), transparent 32%),
-    var(--envista-ink) !important;
+    radial-gradient(circle at 15% 10%,rgba(34,181,115,.14),transparent 30%),
+    radial-gradient(circle at 82% 82%,rgba(0,134,167,.14),transparent 32%),
+    var(--envista-ink)!important;
 }
-
 .envista-auth-brand {
-  position: relative;
-  overflow: hidden;
+  position:relative;
+  overflow:hidden;
   background:
-    radial-gradient(circle at 16% 22%, rgba(34,181,115,.18), transparent 34%),
-    radial-gradient(circle at 90% 84%, rgba(0,134,167,.17), transparent 34%),
-    #0b151e !important;
+    linear-gradient(rgba(8,21,29,.73),rgba(8,21,29,.76)),
+    url("/brand/envista-texture-green.svg") center/cover no-repeat!important;
 }
-
-.envista-auth-brand::before {
-  inset: 0;
-  opacity: .38;
-}
-
-.envista-auth-brand > * {
-  position: relative;
-  z-index: 1;
-}
-
+.envista-auth-brand::before { opacity:.12; }
 .envista-auth-brand::after {
-  content: "";
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  right: -155px;
-  bottom: -155px;
-  border-radius: 50%;
-  border: 1px solid rgba(0,169,157,.18);
-  box-shadow:
-    0 0 0 34px rgba(0,169,157,.035),
-    0 0 0 68px rgba(0,134,167,.025);
+  content:"";
+  position:absolute;
+  width:320px;
+  height:320px;
+  right:-155px;
+  bottom:-155px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 0 0 34px rgba(255,255,255,.025),0 0 0 68px rgba(255,255,255,.015);
 }
-
 .envista-auth-page input:focus,
 .envista-auth-page textarea:focus,
 .envista-auth-page select:focus {
-  border-color: rgba(0,169,157,.6) !important;
-  box-shadow: var(--ev-focus) !important;
+  border-color:rgba(0,169,157,.6)!important;
+  box-shadow:var(--ev-focus)!important;
 }
 
-/* Motion is purposeful: short, quiet, and disabled when requested. */
-@media (hover: hover) {
+@media (hover:hover) {
   .app-shell .project-card:hover,
   .app-shell .team-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 42px rgba(0,0,0,.18);
+    transform:translateY(-2px);
+    box-shadow:0 16px 42px rgba(0,0,0,.18);
   }
 }
-
-@media (max-width: 650px) {
-  .app-shell .filters {
-    padding: 9px;
-  }
-
-  .app-shell .interactive-card-arrow {
-    opacity: 1;
-    transform: none;
-  }
-
-  .app-shell .page-head::after {
-    width: 54px;
-  }
+@media (max-width:650px) {
+  .app-shell .filters { padding:9px; }
+  .app-shell .interactive-card-arrow { opacity:1; transform:none; }
+  .app-shell .page-head::after { width:54px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion:reduce) {
   .app-shell .interactive-card-arrow,
   .app-shell .sidebar nav a,
-  .app-shell .side-section a {
-    transition: none !important;
-  }
+  .app-shell .side-section a { transition:none!important; }
 }
