@@ -22,8 +22,6 @@ declare
   birth_date date;
   calculated_age integer;
   derived_age_band public.age_band;
-  signup_terms_version text;
-  signup_privacy_version text;
 begin
   if not terms_accepted
      or terms_version is distinct from '2026-09-21-v5'
@@ -106,6 +104,8 @@ declare
   requested_role public.account_role;
   safe_display_name text;
   derived_age_band public.age_band;
+  signup_terms_version text;
+  signup_privacy_version text;
 begin
   requested_role := case
     when new.raw_user_meta_data ->> 'role' = 'investor'
