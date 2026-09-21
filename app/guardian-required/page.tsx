@@ -15,7 +15,7 @@ export default async function GuardianRequiredPage() {
     .single();
 
   if (!compliance || compliance.age_band === "adult" || compliance.age_band === "unknown") redirect("/onboarding");
-  if (compliance.guardian_consent_verified_at) redirect("/app");
+  if (compliance.guardian_consent_verified_at) redirect("/onboarding");
 
   return (
     <AuthShell title="Conta protegida" description="Esta conta de menor de idade precisa concluir uma etapa com responsável antes de usar o Envista.">
