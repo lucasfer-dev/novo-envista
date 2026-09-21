@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades no Envista.',
   applicationName: 'Envista',
   icons: {
-    icon: [{ url: '/envista-logo.png', type: 'image/png', sizes: '150x150' }],
-    shortcut: '/envista-logo.png',
+    icon: [{ url: '/brand/envista-symbol-gradient.svg', type: 'image/svg+xml' }],
+    shortcut: '/brand/envista-symbol-gradient.svg',
     apple: '/envista-logo.png',
   },
   openGraph: {
