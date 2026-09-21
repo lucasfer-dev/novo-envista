@@ -8,8 +8,8 @@ where document_type in ('terms', 'privacy')
 
 insert into public.legal_documents(document_type, document_version, active, published_at, audience)
 values
-  ('terms', '2026-09-21-v4', true, now(), 'public'),
-  ('privacy', '2026-09-21-v4', true, now(), 'public')
+  ('terms', '2026-09-21-v5', true, now(), 'public'),
+  ('privacy', '2026-09-21-v5', true, now(), 'public')
 on conflict (document_type, document_version)
 do update set
   active = true,
