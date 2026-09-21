@@ -15,12 +15,31 @@ export async function GET(request: Request) {
   if (claimsError || !userId) return NextResponse.json({ items: [] }, { status: 401 });
 
   const query = cleanQuery(new URL(request.url).searchParams.get("q"));
-  if (query.length < 2) return NextResponse.json({ items: [] });
 
   const { data: ownProfile } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
   const role = parseProductRole(ownProfile?.role);
-  const prefix = role === "investor" ? "/investor" : "/app";
+  const prefix = role === "investor" ? "/investor" : "";
   const pattern = `%${query}%`;
+
+  if (query.length < 2) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id,username,display_name,bio,role")
+      .eq("profile_visibility", "platform")
+      .neq("id", userId)
+      .not("username", "is", null)
+      .order("updated_at", { ascending: false })
+      .limit(8);
+
+    const items = (profiles ?? []).map((item: any) => ({
+      id: item.id,
+      type: "profile" as const,
+      title: item.display_name,
+      subtitle: `@${item.username}${item.bio ? ` · ${item.bio}` : ""}`,
+      href: `${prefix}/${item.role === "investor" ? "investors" : "participants"}/${encodeURIComponent(item.username)}`,
+    }));
+    return NextResponse.json({ items }, { headers: { "Cache-Control": "private, no-store, max-age=0" } });
+  }
 
   const [projectsResult, teamsResult, profilesResult, coursesResult] = await Promise.all([
     supabase.from("projects").select("id,slug,title,short_description,stage").ilike("title", pattern).limit(6),
@@ -35,7 +54,7 @@ export async function GET(request: Request) {
     ...(projectsResult.data ?? []).map((item: any) => ({ id: item.id, type: "project" as const, title: item.title, subtitle: [item.stage, item.short_description].filter(Boolean).join(" · ") || "Projeto no Envista", href: `${prefix}/projects/${encodeURIComponent(item.slug)}?from=explore` })),
     ...(teamsResult.data ?? []).map((item: any) => ({ id: item.id, type: "team" as const, title: item.name, subtitle: [item.category, item.description].filter(Boolean).join(" · ") || "Equipe no Envista", href: `${prefix}/teams/${encodeURIComponent(item.slug)}?from=explore` })),
     ...(profilesResult.data ?? []).map((item: any) => ({ id: item.id, type: "profile" as const, title: item.display_name, subtitle: `@${item.username}${item.bio ? ` · ${item.bio}` : ""}`, href: `${prefix}/${item.role === "investor" ? "investors" : "participants"}/${encodeURIComponent(item.username)}` })),
-    ...(coursesResult.data ?? []).map((item: any) => ({ id: item.id, type: "course" as const, title: item.title, subtitle: item.description || "Curso no Envista", href: `/app/learn/${encodeURIComponent(item.slug)}` })),
+    ...(coursesResult.data ?? []).map((item: any) => ({ id: item.id, type: "course" as const, title: item.title, subtitle: item.description || "Curso no Envista", href: `/learn/${encodeURIComponent(item.slug)}` })),
   ].slice(0, 20);
 
   return NextResponse.json({ items }, { headers: { "Cache-Control": "private, no-store, max-age=0" } });
