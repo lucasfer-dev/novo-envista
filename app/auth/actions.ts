@@ -207,7 +207,11 @@ export async function onboardingAction(formData: FormData) {
   const acceptedTerms = formData.get("terms") === "on";
   const acknowledgedPrivacy = formData.get("privacy") === "on";
 
-  if (!displayName || !isValidUsername(username) || !ageBand || !acceptedTerms || !acknowledgedPrivacy) redirect("/onboarding?error=invalid");
+  if (!displayName) redirect("/onboarding?error=display-name");
+  if (!isValidUsername(username)) redirect("/onboarding?error=username-format");
+  if (!ageBand) redirect("/onboarding?error=age-required");
+  if (!acceptedTerms) redirect("/onboarding?error=terms-required");
+  if (!acknowledgedPrivacy) redirect("/onboarding?error=privacy-required");
 
   const profilePatch = {
     username,
@@ -223,8 +227,13 @@ export async function onboardingAction(formData: FormData) {
     allow_messages: false,
   };
 
-  const { error: profileError } = await supabase.from("profiles").update(profilePatch).eq("id", userId);
-  if (profileError) redirect(`/onboarding?error=${profileError.code === "23505" ? "username" : "profile"}`);
+  const { data: updatedProfile, error: profileError } = await supabase
+    .from("profiles")
+    .update(profilePatch)
+    .eq("id", userId)
+    .select("id")
+    .maybeSingle();
+  if (profileError || !updatedProfile) redirect(`/onboarding?error=${profileError?.code === "23505" ? "username" : "profile"}`);
 
   const { data: compliance } = await supabase.from("account_compliance").select("age_band").eq("user_id", userId).single();
   if (compliance?.age_band === "unknown") {

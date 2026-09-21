@@ -78,8 +78,16 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
               </label>
               <label>
                 Data de nascimento
-                <input type="date" name="birth_date" autoComplete="bday" required />
-                <span className={styles.muted}>Usamos a data somente para definir a faixa etária e aplicar as proteções adequadas. A data completa não fica salva.</span>
+                <input
+                  type="date"
+                  name="birth_date"
+                  autoComplete="bday"
+                  min="1906-01-01"
+                  max="2026-09-21"
+                  aria-describedby="birth-date-help"
+                  required
+                />
+                <span id="birth-date-help" className={styles.muted}>Digite ou escolha a data no formato exibido pelo seu navegador. Usamos apenas para calcular a faixa etária; a data completa não fica salva.</span>
               </label>
             </div>
 
