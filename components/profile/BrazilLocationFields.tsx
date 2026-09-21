@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BRAZIL_STATES } from "@/lib/brazil-locations";
+import { BRAZIL_STATES, stateCodeFromValue } from "@/lib/brazil-locations";
 
 type Props = {
   defaultCity?: string;
@@ -22,7 +22,7 @@ export default function BrazilLocationFields({
   helperClassName,
   optional = true,
 }: Props) {
-  const [state, setState] = useState(defaultState.toUpperCase());
+  const [state, setState] = useState(() => stateCodeFromValue(defaultState));
   const [city, setCity] = useState(defaultCity);
   const [cities, setCities] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
