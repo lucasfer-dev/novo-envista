@@ -9,7 +9,7 @@ export default function PrivacyPage() {
     <AuthShell
       wide
       title="Aviso de Privacidade"
-      description="Versão 2026-09-21-v4. Transparência sobre dados pessoais, segurança, direitos e proteção de menores."
+      description="Versão 2026-09-21-v5. Transparência sobre dados pessoais, segurança, direitos e proteção de menores."
     >
       <div className={styles.legal}>
         <p><strong>Controlador:</strong> {CONTROLLER_NAME}. <strong>Canal público de privacidade:</strong> <Link href="/privacy/contact">registrar solicitação</Link>. E-mail complementar: <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
 
         <h2>3. Finalidades e bases legais</h2>
         <p>Os dados são tratados para executar o serviço solicitado pelo usuário, identificar e proteger contas, aplicar proteções adequadas à idade, cumprir obrigações legais ou regulatórias, exercer direitos, prevenir fraude e abuso, atender solicitações de titulares e, quando aplicável, atender interesses legítimos avaliados com salvaguardas. Consentimento é usado somente quando a legislação exigir e pode ser revogado nos casos aplicáveis.</p>
-        <p>Quando um dado for condição necessária para criação ou uso da conta, essa exigência é apresentada de forma destacada no fluxo correspondente.</p>
+        <p>Quando um dado for condição necessária para criação ou uso da conta, essa exigência é apresentada de forma destacada no fluxo correspondente. No cadastro, o usuário confirma separadamente que leu este Aviso; essa ciência é registrada com a versão vigente e não é tratada como consentimento genérico para toda finalidade.</p>
 
         <h2>4. Crianças e adolescentes</h2>
         <p>O Envista adota proteção reforçada para menores de idade. A faixa etária é calculada a partir da data de nascimento informada no cadastro, sem retenção da data completa. Contas de menores permanecem privadas, com comunicação restrita e sem acesso normal ao produto até a verificação aplicável do responsável legal. O melhor interesse da criança e do adolescente prevalece sobre objetivos comerciais ou de crescimento da plataforma.</p>
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
         <p>Alterações relevantes serão publicadas com nova versão e data. Quando necessário, o Envista solicitará nova manifestação do usuário antes da continuidade de determinadas funcionalidades.</p>
 
         <p>Consulte também os <Link href="/terms">Termos de Uso</Link>.</p>
-        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v4.</div>
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v5.</div>
       </div>
     </AuthShell>
   );
