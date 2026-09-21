@@ -7,7 +7,7 @@ Use este documento para qualquer promoção relevante para produção. Ele separ
 Obrigatório antes do merge final:
 
 - Security CI verde: secret scan, testes, build e audit de dependências de produção.
-- Browser E2E verde: entrada demo Participante/Investidor, isolamento de papéis e fluxos críticos.
+- Browser E2E verde: landing, autenticação, isolamento de papéis e fluxos críticos.
 - Nenhuma migration já aplicada foi reescrita; correções entram como migration nova.
 - PR revisado quanto a dados privados, permissões, limites e comportamento de erro.
 - `main` contém somente a arquitetura de produção documentada em `docs/ARCHITECTURE.md`.
@@ -16,7 +16,7 @@ Obrigatório antes do merge final:
 
 Antes de abrir para usuários reais:
 
-- Security Advisor revisado e sem aviso privilegiado que não tenha justificativa explícita.
+- Security Advisor revisado e sem aviso privilegiado que não tenha justificativa explícita. O compartilhamento público de projetos usa `SECURITY INVOKER` + RLS e grants de colunas públicas.
 - Performance Advisor revisado para regressões importantes nas consultas do release.
 - RLS habilitado nas tabelas expostas e policies testadas.
 - Backups conferidos em **Database > Backups**; consulte `BACKUP_RECOVERY.md`.
@@ -80,4 +80,4 @@ Não tente “desaplicar” migrations alterando arquivos históricos. Crie migr
 
 Só marque **GO** quando todos os itens técnicos automatizáveis estiverem verdes e todos os bloqueadores manuais aplicáveis tiverem responsável e confirmação.
 
-No estado atual do projeto, a proteção de senha vazada depende de configuração do Auth no Dashboard/plano e os documentos jurídicos ainda são explicitamente internos. Portanto esses itens devem permanecer visíveis como pendências reais até serem confirmados, em vez de serem escondidos pelo checklist.
+No estado atual do projeto, a proteção contra senhas vazadas continua dependendo de configuração do Auth no Dashboard/plano. O cadastro público também permanece fail-closed até `AUTH_EMAIL_DELIVERY_READY=true` e Turnstile estarem configurados no ambiente de produção. Termos e Privacidade estão versionados no produto, mas a aprovação jurídica e os canais oficiais de suporte/privacidade continuam sendo uma confirmação humana obrigatória antes da abertura irrestrita ao público.
