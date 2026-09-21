@@ -114,8 +114,8 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
       <aside id="app-navigation" aria-label="Navegação principal" className={cx("sidebar", mobileOpen && "mobile-open")}>
         <button className="mobile-close" aria-label="Fechar navegação" onClick={closeMobile}><X size={20} /></button>
 
-        <Link className="brand" href={home} onClick={closeMobile} aria-label="Ir para o início do Envista">
-          <img src="/envista-logo.png" alt="" />
+        <Link className="brand envista-brand-lockup" href={home} onClick={closeMobile} aria-label="Ir para o início do Envista">
+          <img src="/brand/envista-symbol-gradient.svg" alt="" />
           <b>Envista</b>
         </Link>
 
