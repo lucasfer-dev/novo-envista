@@ -79,15 +79,17 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
               <label>
                 Data de nascimento
                 <input
-                  type="date"
+                  type="text"
                   name="birth_date"
+                  inputMode="numeric"
                   autoComplete="bday"
-                  min="1906-01-01"
-                  max="2026-09-21"
+                  placeholder="DD/MM/AAAA"
+                  maxLength={10}
+                  pattern="\\d{2}/\\d{2}/\\d{4}"
                   aria-describedby="birth-date-help"
                   required
                 />
-                <span id="birth-date-help" className={styles.muted}>Digite ou escolha a data no formato exibido pelo seu navegador. Usamos apenas para calcular a faixa etária; a data completa não fica salva.</span>
+                <span id="birth-date-help" className={styles.muted}>Use o formato brasileiro: dia/mês/ano (DD/MM/AAAA). Usamos apenas para calcular a faixa etária; a data completa não fica salva.</span>
               </label>
             </div>
 
