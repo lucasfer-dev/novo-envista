@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BellRing, CalendarDays, Clock3, MapPin } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import styles from "./Calendar.module.css";
@@ -86,14 +87,25 @@ export async function CalendarServerPage({ expectedRole }: { expectedRole: Produ
     <LegacySocialShell user={appUser} role={expectedRole} pathname={pathname}>
       <div className={styles.page}>
         <section className={styles.hero}>
-          <div>
+          <div className={styles.heroIcon}><CalendarDays size={22} aria-hidden="true" /></div>
+          <div className={styles.heroCopy}>
+            <span className={styles.eyebrow}>AGENDA ENVISTA</span>
             <h1>Calendário</h1>
-            <p>Acompanhe avisos, eventos, competições e prazos importantes. O Envista também envia um resumo semanal dos compromissos que estão chegando.</p>
+            <p>Acompanhe avisos, eventos, competições e prazos importantes em um só lugar.</p>
+          </div>
+          <div className={styles.heroStat}>
+            <strong>{events.length}</strong>
+            <span>{events.length === 1 ? "evento próximo" : "eventos próximos"}</span>
           </div>
         </section>
 
         <div className={styles.weekNotice}>
-          <strong>Resumo semanal ativo.</strong> Eventos das próximas semanas podem aparecer nas suas notificações às segundas-feiras. Você pode ajustar isso nas configurações de notificações.
+          <span className={styles.noticeIcon}><BellRing size={17} aria-hidden="true" /></span>
+          <div>
+            <strong>Resumo semanal ativo</strong>
+            <p>Às segundas-feiras, o Envista pode destacar compromissos das próximas semanas. Você controla isso nas configurações de notificações.</p>
+          </div>
+          <Link href="/account/settings" className={styles.noticeLink}>Configurar</Link>
         </div>
 
         {events.length ? (
@@ -114,8 +126,8 @@ export async function CalendarServerPage({ expectedRole }: { expectedRole: Produ
                       <h3>{event.title}</h3>
                       {event.description ? <p>{event.description}</p> : null}
                       <div className={styles.meta}>
-                        {event.location ? <span>📍 {event.location}</span> : null}
-                        {event.ends_at ? <span>Até {dateTime(event.ends_at)}</span> : null}
+                        {event.location ? <span><MapPin size={13} aria-hidden="true" /> {event.location}</span> : null}
+                        {event.ends_at ? <span><Clock3 size={13} aria-hidden="true" /> Até {dateTime(event.ends_at)}</span> : null}
                       </div>
                       {event.href && event.href !== "/calendar" && event.href !== "/investor/calendar" ? <Link className={styles.link} href={event.href} prefetch={false}>Ver detalhes →</Link> : null}
                     </article>
@@ -125,7 +137,14 @@ export async function CalendarServerPage({ expectedRole }: { expectedRole: Produ
             ))}
           </div>
         ) : (
-          <div className={styles.empty}><strong>Nenhum evento próximo por enquanto.</strong>Novos avisos e oportunidades aparecerão aqui assim que forem publicados.</div>
+          <div className={styles.empty}>
+            <span className={styles.emptyIcon}><CalendarDays size={24} aria-hidden="true" /></span>
+            <div>
+              <strong>Nenhum evento próximo por enquanto</strong>
+              <p>Quando houver avisos, competições ou prazos relevantes, eles aparecerão aqui organizados por semana.</p>
+            </div>
+            <Link href={expectedRole === "investor" ? "/investor/competitions" : "/competitions"} className={styles.emptyAction}>Explorar competições</Link>
+          </div>
         )}
       </div>
     </LegacySocialShell>
