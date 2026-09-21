@@ -11,6 +11,7 @@ const signoutRoute = readFileSync("app/auth/signout/route.ts", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
+const birthDateField = readFileSync("components/auth/BirthDateField.tsx", "utf8");
 const registerAction = readFileSync("app/auth/register-product-action.ts", "utf8");
 const privacyPage = readFileSync("app/privacy/page.tsx", "utf8");
 const securityPage = readFileSync("app/account/security/page.tsx", "utf8");
@@ -73,6 +74,16 @@ describe("auth form feedback", () => {
     expect(privacyPage).toContain("CPF ou CNPJ");
     expect(privacyV2Migration).toContain("public_onboarding");
     expect(privacyV2Migration).toContain("2026-09-16-v2");
+  });
+
+  it("uses the Brazilian DD/MM/AAAA birth-date pattern with numeric masking", () => {
+    expect(register).toContain("BirthDateField");
+    expect(birthDateField).toContain('placeholder="DD/MM/AAAA"');
+    expect(birthDateField).toContain('inputMode="numeric"');
+    expect(birthDateField).toContain('maxLength={10}');
+    expect(birthDateField).toContain('formatBirthDate');
+    expect(birthDateField).toContain('Informe uma data válida no formato DD/MM/AAAA.');
+    expect(registerAction).toContain('parseBirthDate(value(formData, "birth_date"))');
   });
 
   it("supports email, CPF and CNPJ login while keeping documents private", () => {
