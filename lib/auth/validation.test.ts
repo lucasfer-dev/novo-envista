@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ageBandFromBirthDate,
   homeForRole,
   isValidCnpj,
   isValidCpf,
@@ -7,6 +8,7 @@ import {
   isValidUsername,
   MIN_PASSWORD_LENGTH,
   normalizeCpf,
+  parseBirthDate,
   pathAllowedForRole,
   privateDocumentKind,
   safeInternalPath,
@@ -58,6 +60,18 @@ describe("credenciais", () => {
     expect(isValidCnpj("11.222.333/0001-82")).toBe(false);
     expect(privateDocumentKind("529.982.247-25")).toBe("cpf");
     expect(privateDocumentKind("11.222.333/0001-81")).toBe("cnpj");
+  });
+});
+
+describe("data de nascimento", () => {
+  it("valida a data e deriva a faixa etária sem precisar persistir a data completa", () => {
+    const now = new Date("2026-09-21T12:00:00Z");
+    expect(parseBirthDate("2007-07-03")).toBe("2007-07-03");
+    expect(parseBirthDate("2026-02-30")).toBeNull();
+    expect(parseBirthDate("2999-01-01")).toBeNull();
+    expect(ageBandFromBirthDate("2007-07-03", now)).toBe("adult");
+    expect(ageBandFromBirthDate("2010-12-01", now)).toBe("adolescent");
+    expect(ageBandFromBirthDate("2020-01-10", now)).toBe("child");
   });
 });
 
