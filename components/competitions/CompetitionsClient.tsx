@@ -137,7 +137,7 @@ export function CompetitionsBrowser({
     <div className={styles.head}>
       <div>
         <h1>Competições</h1>
-        <p>O Envista consulta páginas oficiais de competições e verifica inscrições, datas e modalidades. Os resultados abaixo não são exemplos nem dados mock.</p>
+        <p>O Envista combina consultas a páginas oficiais com um catálogo curado de competições verificadas para ampliar a cobertura de inscrições, datas, modalidades e regulamentos.</p>
       </div>
       <div className={styles.liveActions}>
         <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))}` : "Consultando fontes oficiais…"}</span>
