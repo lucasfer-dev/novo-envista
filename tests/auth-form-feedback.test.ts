@@ -44,8 +44,9 @@ describe("auth form feedback", () => {
   });
 
   it("keeps Envista branding visible on auth pages", () => {
-    expect(authShell).toContain('src="/envista-logo.png"');
-    expect(authShell).toContain("<span>Envista</span>");
+    expect(authShell).toContain('src="/brand/envista-symbol-white.svg"');
+    expect(authShell).toContain('src="/brand/envista-symbol-gradient.svg"');
+    expect(authShell).toContain("<strong>Envista</strong>");
   });
 
   it("makes institution-related onboarding fields visibly optional", () => {
