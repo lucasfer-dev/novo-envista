@@ -71,7 +71,7 @@ export default function GlobalSearchCommand({
   }, [items]);
 
   useEffect(() => {
-    if (!open || query.trim().length < 2) {
+    if (!open) {
       setItems([]);
       setLoading(false);
       return;
@@ -167,13 +167,14 @@ export default function GlobalSearchCommand({
               <button type="button" onClick={() => setOpen(false)} aria-label="Fechar busca"><X size={18} /></button>
             </div>
             <div className={styles.results} id="global-search-results" role="listbox" aria-label="Resultados da busca">
-              {trimmedQuery.length < 2 ? (
+              {trimmedQuery.length < 2 && !loading && !items.length ? (
                 <div className={styles.emptyState}>
                   <Search size={22} aria-hidden="true" />
                   <strong>Encontre qualquer coisa no Envista</strong>
-                  <span>Digite pelo menos 2 caracteres para buscar projetos, equipes, pessoas e cursos.</span>
+                  <span>Comece por uma sugestão de perfil ou digite pelo menos 2 caracteres para buscar tudo.</span>
                 </div>
               ) : null}
+              {trimmedQuery.length < 2 && items.length ? <p className={styles.hint}>Perfis sugeridos para você</p> : null}
               {loading ? <p className={styles.hint} role="status" aria-live="polite">Buscando no Envista...</p> : null}
               {!loading && trimmedQuery.length >= 2 && !items.length ? (
                 <div className={styles.emptyState} role="status" aria-live="polite">
