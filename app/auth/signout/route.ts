@@ -40,8 +40,15 @@ export async function POST(request: NextRequest) {
     return clearDemoCookie(NextResponse.redirect(new URL("/login", request.url), { status: 303 }));
   }
 
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+  const supabase = await createClient({ requireCookieWrites: true });
+  const { error } = await supabase.auth.signOut({ scope: "local" });
+  if (error) {
+    return NextResponse.json(
+      { error: "Não foi possível encerrar a sessão neste navegador." },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   return clearDemoCookie(NextResponse.redirect(new URL("/login", request.url), { status: 303 }));
 }
 
