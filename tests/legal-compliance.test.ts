@@ -9,6 +9,9 @@ const guardianRequired = readFileSync("app/guardian-required/page.tsx", "utf8");
 const privacy = readFileSync("app/privacy/page.tsx", "utf8");
 const terms = readFileSync("app/terms/page.tsx", "utf8");
 const migration = readFileSync("supabase/migrations/20260921143000_legal_compliance_minor_guardian_v3.sql", "utf8");
+const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
+const privacyContact = readFileSync("app/privacy/contact/page.tsx", "utf8");
+const adminPrivacy = readFileSync("app/admin/privacy/page.tsx", "utf8");
 
 describe("legal and minor-account compliance", () => {
   it("uses the current public legal document versions", () => {
@@ -39,6 +42,10 @@ describe("legal and minor-account compliance", () => {
     expect(privacy).toContain("LEGAL_PRIVACY_EMAIL");
     expect(terms).toContain("LEGAL_SUPPORT_EMAIL");
     expect(privacy).toContain("Direitos dos titulares");
+    expect(privacy).toContain("/privacy/contact");
+    expect(privacyContact).toContain("Privacidade e seus direitos");
+    expect(privacyChannelMigration).toContain("privacy_contact_requests");
+    expect(adminPrivacy).toContain("Canal público");
     expect(terms).toContain("Menores de idade");
   });
 });
