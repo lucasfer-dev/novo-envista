@@ -1,73 +1,67 @@
 import Link from "next/link";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 
+const SUPPORT_EMAIL = process.env.LEGAL_SUPPORT_EMAIL?.trim() || "suporte@useenvista.com.br";
+const CONTROLLER_NAME = process.env.LEGAL_CONTROLLER_NAME?.trim() || "Envista";
+
 export default function TermsPage() {
   return (
     <AuthShell
       wide
       title="Termos de Uso"
-      description="Versão 2026-09-15-v2 · Vigente a partir de 15 de setembro de 2026."
+      description="Versão 2026-09-21-v3 · Vigente a partir de 21 de setembro de 2026."
     >
       <div className={styles.legal}>
-        <p>Estes Termos regulam o acesso e o uso do Envista. Ao criar ou utilizar uma conta, o usuário concorda em respeitar estas regras, a legislação aplicável e os direitos de terceiros. O Aviso de Privacidade explica como os dados pessoais são tratados.</p>
+        <p>Estes Termos regulam o acesso e o uso do Envista. Ao criar ou utilizar uma conta, o usuário concorda em respeitar estas regras, a legislação brasileira e os direitos de terceiros. O <Link href="/privacy">Aviso de Privacidade</Link> integra este conjunto de regras.</p>
 
-        <h2>1. O que é o Envista</h2>
-        <p>O Envista é uma plataforma voltada a aprendizagem, projetos, equipes, portfólios, competições, oportunidades e conexões entre participantes, instituições e investidores. Algumas funcionalidades podem estar em fase de teste, receber alterações ou ser disponibilizadas apenas a determinados tipos de conta.</p>
+        <h2>1. Serviço</h2>
+        <p>O Envista é uma plataforma de aprendizagem, colaboração, projetos, equipes, portfólios, competições, oportunidades e conexões entre participantes, instituições e investidores. Funcionalidades podem evoluir, ser limitadas por categoria de conta ou ser descontinuadas por razões técnicas, jurídicas ou de segurança.</p>
 
-        <h2>2. Cadastro, informações da conta e segurança</h2>
-        <p>O usuário deve fornecer informações verdadeiras nos campos obrigatórios, manter os dados da conta atualizados e proteger suas credenciais. É proibido compartilhar uma conta de modo que comprometa a segurança da plataforma, utilizar identidade de terceiros sem autorização, contornar controles técnicos ou tentar obter acesso a dados e áreas para os quais não exista autorização.</p>
-        <p>O Envista pode solicitar confirmação de e-mail e utilizar identificadores privados de conta, como CPF ou CNPJ, quando disponibilizados pelo usuário. Esses identificadores são destinados a segurança e identificação da conta e não integram o perfil público.</p>
+        <h2>2. Cadastro e segurança</h2>
+        <p>O usuário deve fornecer informações verdadeiras, manter os dados essenciais atualizados e proteger suas credenciais. É proibido usar identidade de terceiros sem autorização, compartilhar conta de modo inseguro, contornar controles de acesso ou tentar obter dados sem permissão.</p>
 
-        <h2>3. Tipos de conta</h2>
-        <p>Participantes podem criar perfil, aprender, publicar conteúdos, formar equipes, registrar projetos e acompanhar oportunidades e competições. Contas de investidor ou organização podem explorar projetos e, quando os requisitos aplicáveis forem atendidos, manifestar interesse e iniciar contatos permitidos pela plataforma.</p>
-        <p>Selos, verificações ou classificações internas indicam somente que determinados controles do Envista foram concluídos. Eles não constituem recomendação, certificação profissional, garantia financeira ou endosso do usuário, projeto ou organização.</p>
+        <h2>3. Menores de idade</h2>
+        <p>O Envista aplica proteção reforçada a crianças e adolescentes. Contas de menores não são liberadas para uso normal enquanto a verificação aplicável do responsável legal não estiver concluída. Recursos sociais, mensagens, visibilidade e outras funcionalidades podem permanecer bloqueados ou limitados por padrão.</p>
+        <p>O melhor interesse do menor prevalece. O Envista poderá restringir ou suspender funcionalidades quando houver risco à segurança, privacidade ou integridade de crianças e adolescentes.</p>
 
-        <h2>4. Crianças e adolescentes</h2>
-        <p>O Envista aplica proteções adicionais de acordo com a faixa etária declarada. Recursos de visibilidade, comunicação e interação podem ser limitados para proteger usuários mais jovens e atender requisitos legais. Quando necessário, determinadas funcionalidades poderão depender de consentimento ou validação de responsável legal.</p>
+        <h2>4. Tipos de conta</h2>
+        <p>Participantes podem aprender, formar equipes e registrar projetos. Contas de investidor ou organização podem explorar projetos e, após as verificações aplicáveis, manifestar interesse. Verificações internas não constituem certificação profissional, recomendação de investimento ou garantia de idoneidade.</p>
 
-        <h2>5. Conteúdo publicado pelo usuário</h2>
-        <p>O usuário permanece responsável pelo conteúdo que publica e deve possuir os direitos ou autorizações necessários para compartilhá-lo. Não é permitido publicar material ilícito, fraudulento, discriminatório, abusivo, ameaçador, que viole propriedade intelectual, privacidade, imagem, segredo comercial ou outros direitos de terceiros.</p>
-        <p>Ao tornar um conteúdo visível na plataforma, o usuário concede ao Envista uma licença limitada, não exclusiva e pelo período necessário para hospedar, processar, exibir e distribuir esse conteúdo dentro das funcionalidades da própria plataforma. Essa autorização não transfere a titularidade da obra para o Envista.</p>
+        <h2>5. Conteúdo do usuário</h2>
+        <p>O usuário continua titular dos direitos que possuir sobre o conteúdo que publica. Ao disponibilizar conteúdo no Envista, concede licença não exclusiva, limitada e necessária para hospedar, processar, exibir e distribuir esse conteúdo dentro das funcionalidades do serviço.</p>
+        <p>É proibido publicar conteúdo ilícito, fraudulento, discriminatório, abusivo, ameaçador, sexualmente exploratório, que viole direitos autorais, marcas, privacidade, imagem, segredo comercial ou direitos de terceiros.</p>
 
-        <h2>6. Projetos, autoria e propriedade intelectual</h2>
-        <p>Projetos podem ser pessoais ou vinculados a equipes. O responsável pelo projeto deve respeitar os direitos de integrantes, colaboradores e terceiros, inclusive quanto a código, imagens, marcas, documentos e demais materiais utilizados.</p>
-        <p>Métricas como visualizações, interações, salvamentos ou acessos podem ser registradas para funcionamento, analytics, segurança e melhoria do produto. Uma visualização, clique, cópia de link ou outra interação isolada não constitui prova automática de plágio, apropriação de ideia ou violação de propriedade intelectual.</p>
+        <h2>6. Projetos, autoria e ideias</h2>
+        <p>O Envista não transfere para si a titularidade dos projetos publicados. Métricas, visualizações, cliques ou acessos não constituem prova automática de autoria, plágio, apropriação ou investimento. Usuários e equipes devem documentar autoria e acordos internos quando isso for relevante.</p>
 
-        <h2>7. Competições, eventos e informações de terceiros</h2>
-        <p>O Envista pode organizar ou agregar informações sobre competições, olimpíadas, eventos e oportunidades mantidas por terceiros. Datas, requisitos, locais, regulamentos, inscrições e resultados continuam sujeitos às regras e aos canais oficiais de cada organizador.</p>
-        <p>O usuário deve confirmar informações importantes no site oficial antes de realizar inscrição, viagem, pagamento ou envio de projeto. A exibição de uma competição no Envista não significa parceria ou vínculo com o organizador, salvo quando isso estiver expressamente informado.</p>
+        <h2>7. Competições e oportunidades de terceiros</h2>
+        <p>Informações sobre competições, eventos e oportunidades de terceiros podem mudar. O usuário deve conferir regulamentos, datas, requisitos e condições nos canais oficiais antes de tomar decisões ou realizar pagamentos.</p>
 
-        <h2>8. Investidores, interesses e contatos</h2>
-        <p>O Envista facilita descoberta e comunicação entre usuários, projetos e potenciais interessados. A plataforma não promete investimento, contratação, retorno financeiro ou sucesso comercial e, salvo quando explicitamente informado em serviço específico, não atua como instituição financeira, corretora ou consultoria de investimentos.</p>
-        <p>Negociações externas, diligências, contratos, pagamentos e transferências realizadas entre usuários são responsabilidade das partes envolvidas.</p>
+        <h2>8. Investidores e negociações</h2>
+        <p>O Envista facilita descoberta e comunicação, mas não garante investimento, contratação, retorno financeiro ou sucesso comercial. Salvo informação expressa em contrário, o Envista não atua como corretora, instituição financeira, consultoria de investimentos ou representante das partes.</p>
 
-        <h2>9. Mensagens, comentários e convivência</h2>
-        <p>Os recursos sociais e de comunicação devem ser usados de forma respeitosa e compatível com a finalidade da plataforma. É proibido assediar, ameaçar, perseguir, enviar spam, aplicar golpes, solicitar dados pessoais de forma indevida, contornar bloqueios ou explorar usuários vulneráveis.</p>
-        <p>Usuários podem ter ferramentas para bloquear, denunciar, restringir mensagens ou tornar o perfil privado. O Envista poderá analisar denúncias e aplicar medidas proporcionais quando houver indícios de abuso ou violação destes Termos.</p>
+        <h2>9. Conduta, mensagens e segurança</h2>
+        <p>É proibido assediar, ameaçar, perseguir, aplicar golpes, enviar spam, explorar usuários vulneráveis, solicitar dados indevidos, distribuir malware, contornar bloqueios, realizar scraping abusivo ou explorar vulnerabilidades sem autorização.</p>
 
-        <h2>10. Moderação, suspensão e encerramento</h2>
-        <p>O Envista pode remover ou limitar conteúdo, restringir funcionalidades, suspender ou encerrar contas quando houver indícios consistentes de fraude, abuso, violação destes Termos, risco à segurança, obrigação legal ou necessidade de proteger outros usuários. Sempre que apropriado e possível, medidas serão adotadas de forma proporcional ao risco identificado.</p>
+        <h2>10. Moderação e medidas de proteção</h2>
+        <p>O Envista poderá remover conteúdo, limitar alcance, restringir recursos, suspender ou encerrar contas quando houver fraude, abuso, risco à segurança, violação destes Termos ou obrigação legal. Medidas serão proporcionais ao risco e poderão preservar evidências necessárias à investigação.</p>
 
-        <h2>11. Uso aceitável e segurança técnica</h2>
-        <p>Não é permitido explorar vulnerabilidades sem autorização, automatizar acesso de forma abusiva, realizar scraping proibido, sobrecarregar deliberadamente a infraestrutura, distribuir malware, tentar elevar privilégios ou interferir no funcionamento normal do serviço. Pesquisas de segurança devem respeitar os canais e autorizações indicados pelo Envista.</p>
+        <h2>11. Disponibilidade</h2>
+        <p>O serviço pode passar por manutenção, correções, limites técnicos e mudanças de funcionalidade. Não há garantia de operação ininterrupta, mas o Envista adota medidas razoáveis de segurança, continuidade e recuperação.</p>
 
-        <h2>12. Disponibilidade e evolução do serviço</h2>
-        <p>O Envista pode alterar funcionalidades, corrigir comportamentos, realizar manutenções, impor limites técnicos e descontinuar recursos. Embora sejam adotadas medidas razoáveis de disponibilidade e segurança, não é possível garantir funcionamento ininterrupto ou ausência absoluta de falhas.</p>
+        <h2>12. Responsabilidade</h2>
+        <p>Nada nestes Termos exclui direitos obrigatórios previstos na legislação brasileira, inclusive direitos do consumidor quando aplicáveis. Cada usuário é responsável por suas decisões, conteúdos e negociações externas realizadas com terceiros.</p>
 
-        <h2>13. Responsabilidades</h2>
-        <p>Cada usuário é responsável por suas decisões, publicações, contatos e pela verificação de informações relevantes antes de agir. O Envista não controla integralmente conteúdos e condutas de terceiros e não garante a veracidade de toda informação publicada por usuários ou organizações externas.</p>
-        <p>Nada nestes Termos busca excluir direitos ou responsabilidades que não possam ser afastados pela legislação brasileira.</p>
+        <h2>13. Privacidade</h2>
+        <p>O tratamento de dados pessoais segue o <Link href="/privacy">Aviso de Privacidade</Link>, a LGPD e, quando aplicável, as regras de proteção de crianças e adolescentes no ambiente digital.</p>
 
-        <h2>14. Privacidade e proteção de dados</h2>
-        <p>O tratamento de dados pessoais segue o <Link href="/privacy">Aviso de Privacidade</Link> e a legislação aplicável, incluindo a Lei Geral de Proteção de Dados Pessoais quando pertinente. A aceitação destes Termos não transforma automaticamente todas as finalidades de tratamento em consentimento.</p>
+        <h2>14. Alterações</h2>
+        <p>Alterações materiais serão publicadas com nova versão e data. Quando exigido, o Envista solicitará nova aceitação antes de liberar a continuidade de determinados recursos.</p>
 
-        <h2>15. Alterações destes Termos</h2>
-        <p>Alterações relevantes serão publicadas com nova versão e data. Quando necessário, o Envista poderá solicitar nova manifestação do usuário antes de continuar o uso de determinadas funcionalidades.</p>
+        <h2>15. Lei aplicável e contato</h2>
+        <p>Estes Termos são regidos pela legislação brasileira, sem prejuízo de normas obrigatórias aplicáveis ao usuário. O responsável pela operação é {CONTROLLER_NAME}. Dúvidas de suporte podem ser encaminhadas para <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
 
-        <h2>16. Lei aplicável e contato</h2>
-        <p>Estes Termos são regidos pela legislação brasileira. Questões, solicitações ou denúncias relacionadas ao uso da plataforma devem ser encaminhadas pelos canais oficiais de suporte disponibilizados pelo Envista.</p>
-
-        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-15-v2. O registro de aceite mantém a versão apresentada ao usuário.</div>
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v3.</div>
       </div>
     </AuthShell>
   );

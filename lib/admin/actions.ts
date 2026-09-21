@@ -69,3 +69,16 @@ export async function updatePrivacyRequestAdminAction(formData:FormData){
  const {supabase,userId}=await requireAdminUser();const id=text(formData,"request_id",80),status=text(formData,"status",20);if(!id||!["open","in_review","completed","rejected"].includes(status))redirect("/admin/privacy?error=request");const resolved=["completed","rejected"].includes(status)?new Date().toISOString():null;
  const {error}=await supabase.from("privacy_requests").update({status,admin_note:text(formData,"admin_note",2000),resolved_at:resolved}).eq("id",id);if(error)redirect("/admin/privacy?error=request");await audit(supabase,userId,"privacy_request.update","privacy_request",id,{status});revalidatePath("/admin/privacy");redirect("/admin/privacy?status=saved");
 }
+
+
+export async function updatePublicPrivacyContactAdminAction(formData:FormData){
+ const {supabase,userId}=await requireAdminUser();
+ const id=text(formData,"request_id",80),status=text(formData,"status",20);
+ if(!id||!["open","in_progress","resolved","rejected"].includes(status))redirect("/admin/privacy?error=public-request");
+ const resolved=["resolved","rejected"].includes(status)?new Date().toISOString():null;
+ const {error}=await supabase.from("privacy_contact_requests").update({status,admin_note:text(formData,"admin_note",2000),resolved_at:resolved}).eq("id",id);
+ if(error)redirect("/admin/privacy?error=public-request");
+ await audit(supabase,userId,"privacy_contact_request.update","privacy_contact_request",id,{status});
+ revalidatePath("/admin/privacy");
+ redirect("/admin/privacy?status=public-saved");
+}

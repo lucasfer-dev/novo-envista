@@ -33,7 +33,7 @@ export async function requireProductUser(expectedRole?: ProductRole) {
 
   const context = (Array.isArray(contextRows) ? contextRows[0] : null) as ProductUserContext | null;
   if (!context || !context.age_band || !context.onboarding_completed) redirect("/onboarding");
-  if (context.age_band === "child" && !context.guardian_consent_verified_at) {
+  if (context.age_band !== "adult" && !context.guardian_consent_verified_at) {
     redirect("/guardian-required");
   }
 

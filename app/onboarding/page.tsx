@@ -38,10 +38,10 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   ]);
 
   if (!profile || !compliance) redirect("/auth/error?reason=profile");
-  if (completion) {
-    if (compliance.age_band === "child" && !compliance.guardian_consent_verified_at) redirect("/guardian-required");
-    redirect(homeForRole(parseProductRole(profile.role)));
+  if (compliance.age_band !== "unknown" && compliance.age_band !== "adult" && !compliance.guardian_consent_verified_at) {
+    redirect("/guardian-required");
   }
+  if (completion) redirect(homeForRole(parseProductRole(profile.role)));
 
   const params = await searchParams;
   const errorCode = typeof params.error === "string" ? params.error : "";
@@ -61,7 +61,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
           <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern={'[A-Za-z0-9][A-Za-z0-9._\\-]{2,31}'} aria-describedby="username-help" required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
         </div>
 
-        <label>Faixa etária{ageLocked ? <><input type="hidden" name="age_band" value={compliance.age_band} /><input value={ageLabel(compliance.age_band)} disabled /></> : <select name="age_band" defaultValue="" required><option value="" disabled>Selecione</option><option value="child">Menos de 12 anos</option><option value="adolescent">12 a 17 anos</option><option value="adult">18 anos ou mais</option></select>}<span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública.</span></label>
+        <label>Faixa etária{ageLocked ? <><input type="hidden" name="age_band" value={compliance.age_band} /><input value={ageLabel(compliance.age_band)} disabled /></> : <select name="age_band" defaultValue="" required><option value="" disabled>Selecione</option><option value="child">Menos de 12 anos</option><option value="adolescent">12 a 17 anos</option><option value="adult">18 anos ou mais</option></select>}<span className={styles.muted}>A faixa é usada para aplicar proteções adequadas. Ela não fica pública. Contas de menores de 18 anos permanecem bloqueadas até a verificação do responsável.</span></label>
 
         <label>Apresentação <span className={styles.muted}>(opcional)</span><textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} placeholder="Conte um pouco sobre seus interesses ou o que você está construindo." /></label>
 

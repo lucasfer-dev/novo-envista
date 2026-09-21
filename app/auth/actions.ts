@@ -84,8 +84,8 @@ async function destinationForSignedInUser(
   ]);
 
   const role = parseProductRole(profile?.role);
+  if (compliance?.age_band && compliance.age_band !== "unknown" && compliance.age_band !== "adult" && !compliance.guardian_consent_verified_at) return "/guardian-required";
   if (!completion) return "/onboarding";
-  if (compliance?.age_band === "child" && !compliance.guardian_consent_verified_at) return "/guardian-required";
 
   const fallback = homeForRole(role);
   const next = safeInternalPath(requestedNext, fallback);
@@ -235,6 +235,8 @@ export async function onboardingAction(formData: FormData) {
   const privacyError = await ensureLegalEvent(supabase, userId, "privacy", INTERNAL_PRIVACY_VERSION);
   if (termsError || privacyError) redirect("/onboarding?error=legal");
 
+  if (ageBand !== "adult") redirect("/guardian-required");
+
   const { data: completion } = await supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle();
   if (!completion) {
     const { error: completionError } = await supabase.from("onboarding_completions").insert({ user_id: userId });
@@ -242,7 +244,6 @@ export async function onboardingAction(formData: FormData) {
   }
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).single();
-  if (ageBand === "child") redirect("/guardian-required");
   redirect(homeForRole(parseProductRole(profile?.role)));
 }
 
@@ -257,7 +258,7 @@ export async function profileUpdateAction(formData: FormData) {
 
   let profileVisibility = formData.get("profile_visibility") === "platform" ? "platform" : "private";
   let allowMessages = formData.get("allow_messages") === "on";
-  if (compliance.age_band === "child") {
+  if (compliance.age_band !== "adult") {
     allowMessages = false;
     if (!compliance.guardian_consent_verified_at) profileVisibility = "private";
   }

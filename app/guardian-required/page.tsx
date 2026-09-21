@@ -14,16 +14,16 @@ export default async function GuardianRequiredPage() {
     .eq("user_id", userId)
     .single();
 
-  if (!compliance || compliance.age_band !== "child") redirect("/onboarding");
-  if (compliance.guardian_consent_verified_at) redirect("/app");
+  if (!compliance || compliance.age_band === "adult" || compliance.age_band === "unknown") redirect("/onboarding");
+  if (compliance.guardian_consent_verified_at) redirect("/onboarding");
 
   return (
-    <AuthShell title="Conta protegida" description="Esta conta precisa concluir uma etapa com responsável antes de usar as áreas sociais do Envista.">
+    <AuthShell title="Conta protegida" description="Esta conta de menor de idade precisa concluir uma etapa com responsável antes de usar o Envista.">
       <div className={styles.danger}>
-        O perfil continua <strong>privado</strong> e as mensagens permanecem <strong>desativadas</strong>. Ainda não implementamos a verificação de responsável, então não vamos liberar a área social por atalho.
+        O perfil continua <strong>privado</strong> e as mensagens permanecem <strong>desativadas</strong>. Enquanto a verificação de responsável não estiver concluída, a conta permanece bloqueada por segurança e conformidade.
       </div>
       <p className={styles.muted}>
-        Quando o fluxo de responsável estiver pronto e revisado, esta página será substituída pelas instruções adequadas. Nenhum documento do responsável é solicitado neste estágio.
+        O Envista não libera o acesso de menores sem a verificação aplicável do responsável. Nenhum documento adicional deve ser enviado fora de um fluxo oficial da plataforma.
       </p>
       <form action="/auth/signout" method="post" className={styles.form}>
         <button className={`${styles.secondary} ${styles.full}`} type="submit">Sair da conta</button>
