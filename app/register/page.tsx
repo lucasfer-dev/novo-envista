@@ -4,6 +4,7 @@ import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { RegisterPasswordFields } from "@/components/auth/RegisterPasswordFields";
+import { BirthDateField } from "@/components/auth/BirthDateField";
 import { registerProductAction } from "@/app/auth/register-product-action";
 import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
@@ -76,21 +77,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
                 Nome completo
                 <input name="display_name" autoComplete="name" maxLength={100} required />
               </label>
-              <label>
-                Data de nascimento
-                <input
-                  type="text"
-                  name="birth_date"
-                  inputMode="numeric"
-                  autoComplete="bday"
-                  placeholder="DD/MM/AAAA"
-                  maxLength={10}
-                  pattern="\\d{2}/\\d{2}/\\d{4}"
-                  aria-describedby="birth-date-help"
-                  required
-                />
-                <span id="birth-date-help" className={styles.muted}>Use o formato brasileiro: dia/mês/ano (DD/MM/AAAA). Usamos apenas para calcular a faixa etária; a data completa não fica salva.</span>
-              </label>
+              <BirthDateField />
             </div>
 
             <label>
