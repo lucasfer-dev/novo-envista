@@ -1,53 +1,63 @@
+import Link from "next/link";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
+
+const PRIVACY_EMAIL = process.env.LEGAL_PRIVACY_EMAIL?.trim() || "privacidade@useenvista.com.br";
+const CONTROLLER_NAME = process.env.LEGAL_CONTROLLER_NAME?.trim() || "Envista";
 
 export default function PrivacyPage() {
   return (
     <AuthShell
       wide
       title="Aviso de Privacidade"
-      description="Versão 2026-09-16-v2. Este aviso explica quais dados o Envista trata, para quais finalidades e quais controles estão disponíveis ao usuário."
+      description="Versão 2026-09-21-v3. Transparência sobre dados pessoais, segurança, direitos e proteção de menores."
     >
       <div className={styles.legal}>
-        <h2>1. Escopo</h2>
-        <p>O Envista é uma plataforma de aprendizagem, projetos, equipes, competições e conexão entre participantes e investidores. Este aviso se aplica aos dados tratados durante o uso da plataforma e dos seus recursos de conta.</p>
+        <p><strong>Controlador:</strong> {CONTROLLER_NAME}. <strong>Canal de privacidade:</strong> <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
+
+        <h2>1. Escopo e princípios</h2>
+        <p>Este Aviso se aplica ao uso do Envista e às operações de tratamento necessárias para autenticação, perfis, projetos, equipes, conteúdos, aprendizado, mensagens, moderação, segurança e conexão entre participantes, instituições e investidores. O tratamento observa finalidade, adequação, necessidade, transparência, segurança, prevenção, não discriminação e responsabilização.</p>
 
         <h2>2. Dados tratados</h2>
         <ul>
           <li>dados de conta, como e-mail, nome de exibição, username e credenciais de autenticação;</li>
-          <li>CPF ou CNPJ somente quando o usuário optar por cadastrá-lo como identificador alternativo de login; o número não é exibido no perfil e é convertido em identificador protegido para comparação;</li>
-          <li>faixa etária declarada e informações de conformidade necessárias para aplicar proteções adequadas à idade;</li>
-          <li>dados opcionais de perfil, como cidade, escola, organização, bio e imagem;</li>
-          <li>conteúdo criado pelo usuário, incluindo projetos, equipes, arquivos, posts, comentários, progresso em cursos e inscrições;</li>
-          <li>mensagens diretas, denúncias, bloqueios, notificações e registros necessários à segurança e moderação;</li>
-          <li>eventos de uso estritamente relacionados à operação do produto, como visualizações agregadas de projetos e interações necessárias para segurança, auditoria e melhoria da experiência;</li>
-          <li>dados técnicos de requisição processados pela infraestrutura de hospedagem e autenticação para entrega, proteção contra abuso e prevenção de acesso não autorizado.</li>
+          <li>CPF ou CNPJ quando fornecidos para identificação/login, tratados em formato protegido e não exibidos no perfil público;</li>
+          <li>faixa etária e dados mínimos de conformidade necessários para aplicar proteções adequadas;</li>
+          <li>dados opcionais de perfil, como cidade, estado, escola, organização, bio, imagem e interesses;</li>
+          <li>conteúdo criado ou enviado pelo usuário, como projetos, equipes, arquivos, posts, comentários, progresso em cursos e inscrições;</li>
+          <li>mensagens, denúncias, bloqueios, notificações e registros necessários à segurança, prevenção de abuso e moderação;</li>
+          <li>eventos técnicos e de produto estritamente necessários para segurança, auditoria, confiabilidade e métricas agregadas.</li>
         </ul>
 
-        <h2>3. Finalidades</h2>
-        <p>Os dados são tratados para autenticar contas, fornecer as funcionalidades contratadas pelo usuário, manter projetos e equipes, permitir colaboração, entregar cursos e competições, prevenir abuso, proteger contas e conteúdos, moderar denúncias, cumprir obrigações aplicáveis e melhorar a confiabilidade do serviço.</p>
+        <h2>3. Finalidades e bases legais</h2>
+        <p>Os dados são tratados para executar o serviço solicitado pelo usuário, cumprir obrigações legais ou regulatórias, exercer direitos, prevenir fraude e abuso, proteger contas e conteúdos, atender solicitações de titulares e, quando aplicável, atender interesses legítimos avaliados com salvaguardas. Consentimento é usado somente quando a legislação exigir e pode ser revogado nos casos aplicáveis.</p>
 
-        <h2>4. Privacidade por padrão</h2>
-        <p>Perfis novos começam privados e com novas mensagens desativadas. O usuário pode revisar as opções disponíveis em sua conta. Contas de crianças permanecem sujeitas a proteções adicionais, incluindo restrições de visibilidade e comunicação.</p>
+        <h2>4. Crianças e adolescentes</h2>
+        <p>O Envista adota proteção reforçada para menores de idade. Contas de menores permanecem privadas, com comunicação restrita e sem acesso normal ao produto até a verificação aplicável do responsável legal. O melhor interesse da criança e do adolescente prevalece sobre objetivos comerciais ou de crescimento da plataforma.</p>
+        <p>O Envista não utiliza dados de crianças ou adolescentes para publicidade comportamental ou perfilamento publicitário. Recursos de interação podem ser limitados ou desativados por padrão para esse público.</p>
 
-        <h2>5. Investidores e contatos com projetos</h2>
-        <p>Contas de investidor passam por uma etapa de verificação antes de usar a função “Tenho interesse”. Quando um investidor inicia esse contato, a identidade profissional necessária para o responsável pelo projeto avaliar a aproximação pode ser exibida a esse responsável, mesmo que o perfil geral do investidor não esteja público para toda a plataforma.</p>
+        <h2>5. Dados públicos e visibilidade</h2>
+        <p>O perfil começa privado. O usuário controla as opções de visibilidade permitidas para sua categoria de conta. Projetos e equipes somente são exibidos publicamente quando marcados como visíveis e quando as regras de privacidade do responsável permitirem. Dados privados de conta não são incluídos em superfícies públicas.</p>
 
-        <h2>6. Métricas de projeto</h2>
-        <p>O Envista pode registrar eventos limitados de uso, como a visualização de um projeto, para gerar métricas agregadas ao responsável pelo conteúdo. Essas métricas não são apresentadas como prova de plágio, cópia ou intenção do usuário. Eventos são limitados ao necessário para a funcionalidade informada.</p>
+        <h2>6. Investidores e contatos</h2>
+        <p>Contas de investidor podem estar sujeitas a verificação antes de iniciar contato com projetos. Quando houver manifestação de interesse, dados profissionais estritamente necessários poderão ser compartilhados com o responsável pelo projeto para avaliar a aproximação. O Envista não comercializa dados pessoais para investidores.</p>
 
-        <h2>7. Fornecedores</h2>
-        <p>A infraestrutura atual utiliza Supabase para autenticação, banco de dados e armazenamento e Vercel para hospedagem e entrega da aplicação. Esses fornecedores processam dados conforme suas funções técnicas na prestação do serviço.</p>
+        <h2>7. Fornecedores e transferências</h2>
+        <p>O Envista utiliza fornecedores de infraestrutura, autenticação, banco de dados, armazenamento e hospedagem, incluindo Supabase e Vercel. Esses fornecedores tratam dados conforme suas funções técnicas e contratos aplicáveis. Quando houver transferência internacional de dados, serão adotadas as salvaguardas exigidas pela legislação brasileira.</p>
 
-        <h2>8. Retenção e segurança</h2>
-        <p>Os dados são mantidos pelo período necessário às finalidades do produto, obrigações aplicáveis, prevenção de fraude e exercício regular de direitos. O Envista utiliza controles de acesso, políticas de autorização, autenticação reforçada para administração, limites antiabuso e separação de informações privadas para reduzir riscos de acesso indevido.</p>
+        <h2>8. Retenção e eliminação</h2>
+        <p>Os dados são mantidos pelo tempo necessário às finalidades informadas, à segurança, prevenção de fraude, exercício regular de direitos e obrigações legais. Solicitações de exclusão serão atendidas quando aplicáveis, sem prejuízo de retenções obrigatórias ou necessárias para defesa de direitos.</p>
 
-        <h2>9. Direitos do usuário</h2>
-        <p>A área “Privacidade e meus dados” permite solicitar acesso, correção, exportação e exclusão, conforme a natureza do dado e as hipóteses de retenção aplicáveis. O usuário também pode revisar visibilidade de perfil e permissões de mensagens.</p>
+        <h2>9. Segurança</h2>
+        <p>O Envista utiliza autenticação, controle de acesso, Row Level Security, segregação de dados privados, registro de eventos administrativos, limites antiabuso e práticas de desenvolvimento seguro. Nenhum sistema é absolutamente invulnerável; incidentes relevantes serão tratados segundo o plano de resposta e as obrigações legais aplicáveis.</p>
 
-        <h2>10. Atualizações</h2>
-        <p>Este aviso pode ser atualizado quando funcionalidades, fornecedores ou práticas relevantes mudarem. Mudanças materiais poderão exigir nova ciência ou aceite quando aplicável.</p>
+        <h2>10. Direitos dos titulares</h2>
+        <p>O titular pode solicitar, conforme aplicável, confirmação de tratamento, acesso, correção, anonimização, bloqueio, eliminação, portabilidade, informação sobre compartilhamentos e revisão de decisões automatizadas, além dos demais direitos previstos na LGPD. Usuários autenticados também podem usar a área de privacidade da conta. Solicitações externas podem ser enviadas para <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
 
-        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-16-v2. O registro de ciência mantém a versão apresentada ao usuário.</div>
+        <h2>11. Atualizações</h2>
+        <p>Alterações relevantes serão publicadas com nova versão e data. Quando necessário, o Envista solicitará nova manifestação do usuário antes da continuidade de determinadas funcionalidades.</p>
+
+        <p>Consulte também os <Link href="/terms">Termos de Uso</Link>.</p>
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v3.</div>
       </div>
     </AuthShell>
   );
