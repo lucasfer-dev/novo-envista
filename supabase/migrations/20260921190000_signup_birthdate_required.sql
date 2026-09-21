@@ -1,36 +1,52 @@
--- Require date of birth during signup, derive only the minimum age band needed
--- for product protections, and remove the exact date from auth metadata in the
--- same transaction. The full birth date is intentionally not persisted.
+-- Harden signup identity collection.
+-- CPF/CNPJ and birth date are mandatory at signup. Raw CPF/CNPJ are converted
+-- to one-way identifiers by the existing private table flow. The exact birth
+-- date is validated in the BEFORE INSERT auth trigger, converted to an age band,
+-- and removed before the auth.users row is persisted.
 
-create or replace function public.handle_new_user()
+create or replace function private.capture_signup_cpf()
 returns trigger
 language plpgsql
 security definer
 set search_path = ''
 as $$
 declare
-  requested_role public.account_role;
-  safe_display_name text;
-  raw_birth_date text;
+  raw_cpf text := new.raw_user_meta_data ->> 'cpf';
+  raw_cnpj text := new.raw_user_meta_data ->> 'cnpj';
+  raw_birth_date text := new.raw_user_meta_data ->> 'birth_date';
+  normalized text;
   birth_date date;
   calculated_age integer;
   derived_age_band public.age_band;
 begin
-  requested_role := case
-    when new.raw_user_meta_data ->> 'role' = 'investor'
-      then 'investor'::public.account_role
-    else 'participant'::public.account_role
-  end;
+  if (
+    pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cpf, '')), '') is null
+    and pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cnpj, '')), '') is null
+  ) or (
+    pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cpf, '')), '') is not null
+    and pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cnpj, '')), '') is not null
+  ) then
+    raise exception using errcode = '22023', message = 'signup identifier required';
+  end if;
 
-  safe_display_name := pg_catalog.left(
-    pg_catalog.coalesce(
-      pg_catalog.nullif(pg_catalog.btrim(new.raw_user_meta_data ->> 'display_name'), ''),
-      'Novo usuário'
-    ),
-    100
-  );
+  if pg_catalog.nullif(pg_catalog.btrim(pg_catalog.coalesce(raw_cpf, '')), '') is not null then
+    normalized := private.normalize_cpf(raw_cpf);
+    if not private.is_valid_cpf(normalized) then
+      raise exception using errcode = '22023', message = 'invalid signup identifier';
+    end if;
 
-  raw_birth_date := new.raw_user_meta_data ->> 'birth_date';
+    insert into public.account_private_identifiers(user_id, cpf_hash, cnpj_hash)
+    values(new.id, private.cpf_identifier_hash(normalized), null);
+  else
+    normalized := private.normalize_cpf(raw_cnpj);
+    if not private.is_valid_cnpj(normalized) then
+      raise exception using errcode = '22023', message = 'invalid signup identifier';
+    end if;
+
+    insert into public.account_private_identifiers(user_id, cpf_hash, cnpj_hash)
+    values(new.id, null, private.cpf_identifier_hash(normalized));
+  end if;
+
   if raw_birth_date is null or raw_birth_date !~ '^\d{4}-\d{2}-\d{2}$' then
     raise exception using errcode = '22023', message = 'invalid signup birth date';
   end if;
@@ -53,6 +69,56 @@ begin
     else 'adult'::public.age_band
   end;
 
+  new.raw_user_meta_data := pg_catalog.jsonb_set(
+    pg_catalog.coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf' - 'cnpj' - 'birth_date',
+    '{signup_age_band}',
+    pg_catalog.to_jsonb(derived_age_band::text),
+    true
+  );
+
+  return new;
+end;
+$$;
+
+revoke all on function private.capture_signup_cpf() from public, anon, authenticated;
+grant execute on function private.capture_signup_cpf() to supabase_auth_admin;
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  requested_role public.account_role;
+  safe_display_name text;
+  derived_age_band public.age_band;
+begin
+  requested_role := case
+    when new.raw_user_meta_data ->> 'role' = 'investor'
+      then 'investor'::public.account_role
+    else 'participant'::public.account_role
+  end;
+
+  safe_display_name := pg_catalog.left(
+    pg_catalog.coalesce(
+      pg_catalog.nullif(pg_catalog.btrim(new.raw_user_meta_data ->> 'display_name'), ''),
+      'Novo usuário'
+    ),
+    100
+  );
+
+  derived_age_band := case new.raw_user_meta_data ->> 'signup_age_band'
+    when 'child' then 'child'::public.age_band
+    when 'adolescent' then 'adolescent'::public.age_band
+    when 'adult' then 'adult'::public.age_band
+    else null
+  end;
+
+  if derived_age_band is null then
+    raise exception using errcode = '22023', message = 'missing derived signup age band';
+  end if;
+
   insert into public.profiles (id, username, display_name, role)
   values (
     new.id,
@@ -69,9 +135,9 @@ begin
     age_band = excluded.age_band,
     age_declared_at = pg_catalog.coalesce(public.account_compliance.age_declared_at, excluded.age_declared_at);
 
-  -- Keep only the derived age band in the dedicated compliance table.
+  -- Remove even the temporary derived signup marker from Auth metadata.
   update auth.users
-  set raw_user_meta_data = pg_catalog.coalesce(raw_user_meta_data, '{}'::jsonb) - 'birth_date'
+  set raw_user_meta_data = pg_catalog.coalesce(raw_user_meta_data, '{}'::jsonb) - 'signup_age_band'
   where id = new.id;
 
   return new;
@@ -81,4 +147,4 @@ $$;
 revoke all on function public.handle_new_user() from public, anon, authenticated;
 
 comment on table public.account_compliance is
-  'Dados mínimos de conformidade. A data de nascimento é exigida no cadastro para derivar a faixa etária, mas a data completa é descartada na mesma transação e não é persistida.';
+  'Dados mínimos de conformidade. A data de nascimento é exigida no cadastro, convertida em faixa etária antes da persistência da conta e a data completa não é armazenada.';
