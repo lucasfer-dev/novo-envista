@@ -8,6 +8,13 @@ type DraftValue =
 
 const EXCLUDED_NAMES = new Set(["terms", "privacy"]);
 
+function fieldKey(element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) {
+  if (element instanceof HTMLInputElement && element.type === "checkbox" && element.name === "interest_tags") {
+    return `${element.name}:${element.value}`;
+  }
+  return element.name;
+}
+
 function setNativeValue(element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement, value: string) {
   const prototype =
     element instanceof HTMLTextAreaElement
@@ -40,23 +47,22 @@ export function OnboardingDraftRestore({
     }
 
     const restore = () => {
-      for (const [name, saved] of Object.entries(draft)) {
-        if (EXCLUDED_NAMES.has(name)) continue;
-        const fields = Array.from(form.elements.namedItem(name) instanceof RadioNodeList
-          ? (form.elements.namedItem(name) as RadioNodeList)
-          : [form.elements.namedItem(name)]).filter(Boolean) as Array<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
+      for (const element of Array.from(form.elements)) {
+        if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement)) continue;
+        if (!element.name || EXCLUDED_NAMES.has(element.name) || element.type === "hidden" || element.type === "password") continue;
 
-        for (const field of fields) {
-          if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) {
-            if (saved.kind === "checkbox" && field.type === "checkbox") {
-              field.checked = saved.checked;
-              field.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-            continue;
+        const saved = draft[fieldKey(element)];
+        if (!saved) continue;
+
+        if (element instanceof HTMLInputElement && element.type === "checkbox") {
+          if (saved.kind === "checkbox") {
+            element.checked = saved.checked;
+            element.dispatchEvent(new Event("change", { bubbles: true }));
           }
-
-          if (saved.kind === "value" && !field.disabled) setNativeValue(field, saved.value);
+          continue;
         }
+
+        if (saved.kind === "value" && !element.disabled) setNativeValue(element, saved.value);
       }
     };
 
@@ -65,23 +71,17 @@ export function OnboardingDraftRestore({
 
     const save = () => {
       const next: Record<string, DraftValue> = {};
-      const data = new FormData(form);
 
       for (const element of Array.from(form.elements)) {
         if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement)) continue;
         if (!element.name || EXCLUDED_NAMES.has(element.name) || element.type === "hidden" || element.type === "password") continue;
 
+        const key = fieldKey(element);
         if (element instanceof HTMLInputElement && element.type === "checkbox") {
-          if (element.name === "interest_tags") {
-            next[`${element.name}:${element.value}`] = { kind: "checkbox", checked: element.checked };
-          } else {
-            next[element.name] = { kind: "checkbox", checked: element.checked };
-          }
-          continue;
+          next[key] = { kind: "checkbox", checked: element.checked };
+        } else {
+          next[key] = { kind: "value", value: element.value };
         }
-
-        const value = data.get(element.name);
-        if (typeof value === "string") next[element.name] = { kind: "value", value };
       }
 
       try {
@@ -91,15 +91,13 @@ export function OnboardingDraftRestore({
       }
     };
 
-    const onInput = () => save();
-    const onChange = () => save();
-    form.addEventListener("input", onInput);
-    form.addEventListener("change", onChange);
+    form.addEventListener("input", save);
+    form.addEventListener("change", save);
 
     return () => {
       window.clearTimeout(timer);
-      form.removeEventListener("input", onInput);
-      form.removeEventListener("change", onChange);
+      form.removeEventListener("input", save);
+      form.removeEventListener("change", save);
     };
   }, [formId, storageKey]);
 
