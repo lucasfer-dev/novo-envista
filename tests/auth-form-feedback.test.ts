@@ -20,6 +20,7 @@ const hmacMigration = readFileSync("supabase/migrations/20260909214500_cpf_hmac_
 const cnpjMigration = readFileSync("supabase/migrations/20260915161350_extend_private_identifier_with_cnpj.sql", "utf8");
 const cleanupPrivateIdentifierMigration = readFileSync("supabase/migrations/20260916184957_cleanup_legacy_auth_private_identifier_metadata.sql", "utf8");
 const privacyV2Migration = readFileSync("supabase/migrations/20260916194322_publish_privacy_2026_09_16_v2_and_fix_legal_context.sql", "utf8");
+const signupIdentityMigration = readFileSync("supabase/migrations/20260921190000_signup_birthdate_required.sql", "utf8");
 const cpfLoginFunction = readFileSync("supabase/functions/cpf-login/index.ts", "utf8");
 
 describe("auth form feedback", () => {
@@ -64,11 +65,11 @@ describe("auth form feedback", () => {
   });
 
   it("records the current public legal documents during onboarding", () => {
-    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v3"');
-    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v3"');
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v4"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v4"');
     expect(authActions).toContain('context: "public_onboarding"');
     expect(authActions).not.toContain('context: "internal_test"');
-    expect(privacyPage).toContain("Versão 2026-09-21-v3");
+    expect(privacyPage).toContain("Versão 2026-09-21-v4");
     expect(privacyPage).toContain("CPF ou CNPJ");
     expect(privacyV2Migration).toContain("public_onboarding");
     expect(privacyV2Migration).toContain("2026-09-16-v2");
@@ -81,7 +82,7 @@ describe("auth form feedback", () => {
     expect(login).toContain("identificador privado de acesso");
     expect(register).toContain('name="document"');
     expect(register).toContain("CPF ou CNPJ");
-    expect(register).toContain("O valor cru não é exibido no perfil nem salvo nos metadados da sessão");
+    expect(register).toContain("armazenado somente em formato protegido");
     expect(registerAction).toContain("privateDocumentKind(documentValue)");
     expect(registerAction).toContain("normalizePrivateDocument(documentValue)");
   });
@@ -89,6 +90,7 @@ describe("auth form feedback", () => {
   it("keeps private document compatibility data out of persisted auth metadata and public profile access", () => {
     expect(migration).toContain("new.raw_user_meta_data := coalesce(new.raw_user_meta_data, '{}'::jsonb) - 'cpf'");
     expect(cnpjMigration).toContain("- 'cpf' - 'cnpj'");
+    expect(signupIdentityMigration).toContain("- 'cpf' - 'cnpj' - 'birth_date'");
     expect(migration).toContain("revoke all on table public.account_private_identifiers from public, anon, authenticated");
     expect(migration).toContain("alter table public.account_private_identifiers enable row level security");
     expect(cleanupPrivateIdentifierMigration).toContain("raw_user_meta_data");
