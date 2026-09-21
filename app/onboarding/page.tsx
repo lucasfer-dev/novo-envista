@@ -38,10 +38,10 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   ]);
 
   if (!profile || !compliance) redirect("/auth/error?reason=profile");
-  if (completion) {
-    if (compliance.age_band !== "adult" && !compliance.guardian_consent_verified_at) redirect("/guardian-required");
-    redirect(homeForRole(parseProductRole(profile.role)));
+  if (compliance.age_band !== "unknown" && compliance.age_band !== "adult" && !compliance.guardian_consent_verified_at) {
+    redirect("/guardian-required");
   }
+  if (completion) redirect(homeForRole(parseProductRole(profile.role)));
 
   const params = await searchParams;
   const errorCode = typeof params.error === "string" ? params.error : "";
