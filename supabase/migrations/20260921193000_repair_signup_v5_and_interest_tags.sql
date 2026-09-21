@@ -22,7 +22,7 @@ set
     when pg_catalog.date_part('year', pg_catalog.age(current_date, s.birth_date))::integer < 18 then 'adolescent'::public.age_band
     else 'adult'::public.age_band
   end,
-  age_declared_at = pg_catalog.coalesce(c.age_declared_at, pg_catalog.now())
+  age_declared_at = coalesce(c.age_declared_at, pg_catalog.now())
 from signup_rows s
 where c.user_id = s.id
   and s.birth_date is not null
@@ -33,19 +33,19 @@ where c.user_id = s.id
 insert into public.legal_acceptances(user_id, document_type, document_version, context)
 select u.id, 'terms', u.raw_user_meta_data ->> 'signup_terms_version', 'signup_terms_acceptance'
 from auth.users u
-where pg_catalog.coalesce((u.raw_user_meta_data ->> 'signup_terms_accepted')::boolean, false)
+where coalesce((u.raw_user_meta_data ->> 'signup_terms_accepted')::boolean, false)
   and u.raw_user_meta_data ->> 'signup_terms_version' = '2026-09-21-v5'
 on conflict (user_id, document_type, document_version) do nothing;
 
 insert into public.legal_acceptances(user_id, document_type, document_version, context)
 select u.id, 'privacy', u.raw_user_meta_data ->> 'signup_privacy_version', 'signup_privacy_acknowledgement'
 from auth.users u
-where pg_catalog.coalesce((u.raw_user_meta_data ->> 'signup_privacy_acknowledged')::boolean, false)
+where coalesce((u.raw_user_meta_data ->> 'signup_privacy_acknowledged')::boolean, false)
   and u.raw_user_meta_data ->> 'signup_privacy_version' = '2026-09-21-v5'
 on conflict (user_id, document_type, document_version) do nothing;
 
 update auth.users u
-set raw_user_meta_data = pg_catalog.coalesce(u.raw_user_meta_data, '{}'::jsonb)
+set raw_user_meta_data = coalesce(u.raw_user_meta_data, '{}'::jsonb)
   - 'cpf'
   - 'cnpj'
   - 'birth_date'
