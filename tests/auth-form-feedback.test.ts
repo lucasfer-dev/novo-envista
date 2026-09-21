@@ -56,8 +56,8 @@ describe("auth form feedback", () => {
   });
 
   it("records the current public legal documents during onboarding", () => {
-    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-15-v2"');
-    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-16-v2"');
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v3"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v3"');
     expect(authActions).toContain('context: "public_onboarding"');
     expect(authActions).not.toContain('context: "internal_test"');
     expect(privacyPage).toContain("Versão 2026-09-16-v2");
