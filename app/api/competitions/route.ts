@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { scanOfficialCompetitions } from "@/lib/competitions/live-scan";
 import { scanExtraOfficialCompetitions } from "@/lib/competitions/extra-live-sources";
 import type { CompetitionStatus, LiveCompetition, LiveCompetitionsResponse } from "@/lib/competitions/types";
+import { VERIFIED_COMPETITION_CATALOG_2026 } from "@/lib/competitions/catalog-2026";
 import { logServerEvent, requestIdFromHeaders, safeErrorName } from "@/lib/observability/logger";
 import { createClient } from "@/lib/supabase/server";
 
@@ -74,11 +75,11 @@ export async function GET(request: NextRequest) {
       scanExtraOfficialCompetitions({ fresh }),
     ]);
     const result: LiveCompetitionsResponse = {
-      items: mergeItems([...primary.items, ...extra.items]),
+      items: mergeItems([...primary.items, ...extra.items, ...VERIFIED_COMPETITION_CATALOG_2026]),
       checkedAt: new Date().toISOString(),
       sourcesChecked: primary.sourcesChecked + extra.sourcesChecked,
       errors: [...primary.errors, ...extra.errors],
-      mode: fresh ? "envista-expanded-official-scan-fresh-v2" : "envista-expanded-official-scan-v2",
+      mode: fresh ? "envista-expanded-official-scan-fresh-v3" : "envista-expanded-official-scan-v3",
     };
 
     if (result.items.length > 0) {
