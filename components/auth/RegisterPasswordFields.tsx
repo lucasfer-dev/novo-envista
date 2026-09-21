@@ -19,10 +19,11 @@ export function RegisterPasswordFields({ minLength }: { minLength: number }) {
   return (
     <>
       <div className={styles.grid2}>
-        <label>
-          Senha
+        <div className={styles.fieldGroup}>
+          <label htmlFor="register-password">Senha</label>
           <div className={styles.passwordWrap}>
             <input
+              id="register-password"
               type={showPassword ? "text" : "password"}
               name="password"
               autoComplete="new-password"
@@ -42,12 +43,13 @@ export function RegisterPasswordFields({ minLength }: { minLength: number }) {
               {showPassword ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
             </button>
           </div>
-        </label>
+        </div>
 
-        <label>
-          Confirmar senha
+        <div className={styles.fieldGroup}>
+          <label htmlFor="register-password-confirmation">Confirmar senha</label>
           <div className={styles.passwordWrap}>
             <input
+              id="register-password-confirmation"
               type={showConfirmation ? "text" : "password"}
               name="password_confirmation"
               autoComplete="new-password"
@@ -67,7 +69,7 @@ export function RegisterPasswordFields({ minLength }: { minLength: number }) {
               {showConfirmation ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
             </button>
           </div>
-        </label>
+        </div>
       </div>
 
       <div className={styles.passwordRules} aria-live="polite">
