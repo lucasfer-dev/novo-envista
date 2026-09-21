@@ -5,6 +5,7 @@ const legacyShell = readFileSync("components/social/LegacySocialShell.tsx", "utf
 const productShell = readFileSync("components/real/ProductShell.tsx", "utf8");
 const adminShell = readFileSync("components/admin/AdminShell.tsx", "utf8");
 const accessibility = readFileSync("app/accessibility.css", "utf8");
+const accountProfile = readFileSync("app/account/profile/page.tsx", "utf8");
 
 describe("shared shell accessibility", () => {
   it("offers keyboard users a skip-to-content path", () => {
@@ -21,6 +22,13 @@ describe("shared shell accessibility", () => {
     expect(legacyShell).toContain('aria-controls="app-navigation"');
     expect(productShell).toContain('aria-expanded={open}');
     expect(productShell).toContain('aria-controls="product-navigation"');
+  });
+
+  it("keeps account profile inside the same authenticated shell as the product", () => {
+    expect(accountProfile).toContain('import LegacySocialShell from "@/components/social/LegacySocialShell"');
+    expect(accountProfile).toContain('<LegacySocialShell user={shellUser} role={productRole} pathname="/account/profile">');
+    expect(accountProfile).not.toContain("ProductShell");
+    expect(accountProfile).not.toContain("legacyDark");
   });
 
   it("adds visible focus and reduced-motion behavior globally", () => {
