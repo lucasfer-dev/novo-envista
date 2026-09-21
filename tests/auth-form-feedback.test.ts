@@ -65,11 +65,11 @@ describe("auth form feedback", () => {
   });
 
   it("records the current public legal documents during onboarding", () => {
-    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v4"');
-    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v4"');
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v5"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v5"');
     expect(authActions).toContain('context: "public_onboarding"');
     expect(authActions).not.toContain('context: "internal_test"');
-    expect(privacyPage).toContain("Versão 2026-09-21-v4");
+    expect(privacyPage).toContain("Versão 2026-09-21-v5");
     expect(privacyPage).toContain("CPF ou CNPJ");
     expect(privacyV2Migration).toContain("public_onboarding");
     expect(privacyV2Migration).toContain("2026-09-16-v2");
@@ -85,6 +85,12 @@ describe("auth form feedback", () => {
     expect(register).toContain("armazenado somente em formato protegido");
     expect(registerAction).toContain("privateDocumentKind(documentValue)");
     expect(registerAction).toContain("normalizePrivateDocument(documentValue)");
+    expect(register).toContain('name="terms"');
+    expect(register).toContain('name="privacy"');
+    expect(registerAction).toContain('formData.get("terms") === "on"');
+    expect(registerAction).toContain('formData.get("privacy") === "on"');
+    expect(registerAction).toContain('redirect("/register?status=check-email")');
+    expect(registerAction).not.toContain("encodeURIComponent(email)");
   });
 
   it("keeps private document compatibility data out of persisted auth metadata and public profile access", () => {
