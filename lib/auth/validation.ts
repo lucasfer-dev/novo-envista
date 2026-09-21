@@ -106,8 +106,20 @@ export function privateDocumentKind(value: unknown): PrivateDocumentKind | null 
 }
 
 export function parseBirthDate(value: unknown) {
-  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-  const [year, month, day] = value.split("-").map(Number);
+  if (typeof value !== "string") return null;
+  const raw = value.trim();
+  let year: number;
+  let month: number;
+  let day: number;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    [year, month, day] = raw.split("-").map(Number);
+  } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+    [day, month, year] = raw.split("/").map(Number);
+  } else {
+    return null;
+  }
+
   const date = new Date(Date.UTC(year, month - 1, day));
   if (
     date.getUTCFullYear() !== year ||
@@ -119,7 +131,7 @@ export function parseBirthDate(value: unknown) {
   const todayUtc = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
   const earliest = new Date(Date.UTC(todayUtc.getUTCFullYear() - 120, todayUtc.getUTCMonth(), todayUtc.getUTCDate()));
   if (date > todayUtc || date < earliest) return null;
-  return value;
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 export function ageBandFromBirthDate(value: unknown, now = new Date()): DeclaredAgeBand | null {

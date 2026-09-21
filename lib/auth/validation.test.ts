@@ -67,6 +67,8 @@ describe("data de nascimento", () => {
   it("valida a data e deriva a faixa etária sem precisar persistir a data completa", () => {
     const now = new Date("2026-09-21T12:00:00Z");
     expect(parseBirthDate("2007-07-03")).toBe("2007-07-03");
+    expect(parseBirthDate("03/07/2007")).toBe("2007-07-03");
+    expect(parseBirthDate("31/02/2026")).toBeNull();
     expect(parseBirthDate("2026-02-30")).toBeNull();
     expect(parseBirthDate("2999-01-01")).toBeNull();
     expect(ageBandFromBirthDate("2007-07-03", now)).toBe("adult");
