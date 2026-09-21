@@ -53,7 +53,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   return (
     <AuthShell wide title="Complete seu perfil" description={`Uma configuração rápida antes de entrar no Envista como ${participant ? "participante" : "investidor"}. Localização e interesses ajudam a sugerir pessoas, projetos e competições mais relevantes.`}>
       <div className={styles.notice} role="status"><strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.</div>
-      <div className={styles.notice}>Não guardamos sua data de nascimento neste fluxo. Você declara apenas uma faixa etária, uma única vez. Essa informação é usada para aplicar proteções adequadas à idade e não fica pública.</div>
+      <div className={styles.notice}>A data de nascimento informada no cadastro é usada somente para calcular sua faixa etária e é descartada na criação da conta. A faixa etária fica privada e serve para aplicar as proteções adequadas.</div>
       {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || "Não foi possível concluir. Tente novamente."}</div> : null}
       <form action={onboardingAction} className={styles.form}>
         <div className={styles.grid2}>

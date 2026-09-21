@@ -5,8 +5,11 @@ import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { createClient } from "@/lib/supabase/server";
 import {
+  INTERNAL_PRIVACY_VERSION,
+  INTERNAL_TERMS_VERSION,
   isValidEmail,
   normalizePrivateDocument,
+  parseBirthDate,
   parseProductRole,
   privateDocumentKind,
   validatePassword,
@@ -40,25 +43,39 @@ export async function registerProductAction(formData: FormData) {
   const email = value(formData, "email").toLowerCase();
   const documentValue = value(formData, "document");
   const normalizedDocument = normalizePrivateDocument(documentValue);
-  const documentKind = documentValue ? privateDocumentKind(documentValue) : null;
+  const documentKind = privateDocumentKind(documentValue);
+  const birthDate = parseBirthDate(value(formData, "birth_date"));
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
   const confirmation = typeof formData.get("password_confirmation") === "string" ? String(formData.get("password_confirmation")) : "";
   const role = parseProductRole(formData.get("role"));
+  const acceptedTerms = formData.get("terms") === "on";
+  const acknowledgedPrivacy = formData.get("privacy") === "on";
 
   if (!displayName || !isValidEmail(email)) redirect(errorPath("invalid"));
-  if (documentValue && !documentKind) redirect(errorPath("document"));
+  if (!documentValue || !documentKind) redirect(errorPath("document"));
+  if (!birthDate) redirect(errorPath("birth-date"));
+  if (!acceptedTerms || !acknowledgedPrivacy) redirect(errorPath("legal"));
   if (validatePassword(password) || password !== confirmation) redirect(errorPath("password"));
 
   const captchaToken = value(formData, TURNSTILE_FIELD).slice(0, 4096);
   if (captchaConfigured() && !captchaToken) redirect(errorPath("captcha"));
 
-  const privateIdentifier = documentKind ? { [documentKind]: normalizedDocument } : {};
+  const privateIdentifier = { [documentKind]: normalizedDocument };
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { display_name: displayName, role, ...privateIdentifier },
+      data: {
+        display_name: displayName,
+        role,
+        birth_date: birthDate,
+        signup_terms_accepted: true,
+        signup_terms_version: INTERNAL_TERMS_VERSION,
+        signup_privacy_acknowledged: true,
+        signup_privacy_version: INTERNAL_PRIVACY_VERSION,
+        ...privateIdentifier,
+      },
       emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
@@ -73,5 +90,5 @@ export async function registerProductAction(formData: FormData) {
   }
 
   if (data.session) redirect("/onboarding");
-  redirect(`/register?status=check-email&email=${encodeURIComponent(email)}`);
+  redirect("/register?status=check-email");
 }

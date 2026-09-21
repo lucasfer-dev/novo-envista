@@ -2,8 +2,8 @@ export type ProductRole = "participant" | "investor";
 export type DeclaredAgeBand = "child" | "adolescent" | "adult";
 export type PrivateDocumentKind = "cpf" | "cnpj";
 
-export const INTERNAL_TERMS_VERSION = "2026-09-21-v3";
-export const INTERNAL_PRIVACY_VERSION = "2026-09-21-v3";
+export const INTERNAL_TERMS_VERSION = "2026-09-21-v5";
+export const INTERNAL_PRIVACY_VERSION = "2026-09-21-v5";
 export const MIN_PASSWORD_LENGTH = 12;
 
 const PARTICIPANT_ROUTE_ROOTS = [
@@ -103,6 +103,39 @@ export function privateDocumentKind(value: unknown): PrivateDocumentKind | null 
   if (normalized.length === 11 && isValidCpf(normalized)) return "cpf";
   if (normalized.length === 14 && isValidCnpj(normalized)) return "cnpj";
   return null;
+}
+
+export function parseBirthDate(value: unknown) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) return null;
+
+  const today = new Date();
+  const todayUtc = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+  const earliest = new Date(Date.UTC(todayUtc.getUTCFullYear() - 120, todayUtc.getUTCMonth(), todayUtc.getUTCDate()));
+  if (date > todayUtc || date < earliest) return null;
+  return value;
+}
+
+export function ageBandFromBirthDate(value: unknown, now = new Date()): DeclaredAgeBand | null {
+  const birthDate = parseBirthDate(value);
+  if (!birthDate) return null;
+
+  const [year, month, day] = birthDate.split("-").map(Number);
+  let age = now.getUTCFullYear() - year;
+  const beforeBirthday =
+    now.getUTCMonth() + 1 < month ||
+    (now.getUTCMonth() + 1 === month && now.getUTCDate() < day);
+  if (beforeBirthday) age -= 1;
+
+  if (age < 12) return "child";
+  if (age < 18) return "adolescent";
+  return "adult";
 }
 
 export function validatePassword(value: unknown) {
