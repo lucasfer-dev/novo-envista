@@ -4,6 +4,7 @@ import { onboardingAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 import BrazilLocationFields from "@/components/profile/BrazilLocationFields";
+import { OnboardingDraftRestore } from "@/components/auth/OnboardingDraftRestore";
 
 const errors: Record<string, string> = {
   invalid: "Revise os campos obrigatórios e tente novamente.",
@@ -59,7 +60,8 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
       <div className={styles.notice} role="status"><strong>Privacidade primeiro.</strong> Seu perfil começa privado e com novas mensagens desativadas. Você poderá revisar essas opções depois em Configurações.</div>
       <div className={styles.notice}>A data de nascimento informada no cadastro é usada somente para calcular sua faixa etária e é descartada na criação da conta. A faixa etária fica privada e serve para aplicar as proteções adequadas.</div>
       {errorCode ? <div className={styles.error} role="alert"><strong>Não foi possível concluir o cadastro.</strong>{" "}{errors[errorCode] || "Tente novamente. Se o problema continuar, recarregue a página."}</div> : null}
-      <form action={onboardingAction} className={styles.form} noValidate>
+      <form id="onboarding-form" action={onboardingAction} className={styles.form} noValidate>
+        <OnboardingDraftRestore formId="onboarding-form" storageKey={`envista:onboarding-draft:${userId}`} />
         <div className={styles.grid2}>
           <label>Nome de exibição<input name="display_name" autoComplete="name" defaultValue={profile.display_name} maxLength={100} aria-invalid={errorCode === "display-name" ? true : undefined} required /></label>
           <label>Nome de usuário<input name="username" autoComplete="username" defaultValue={profile.username.startsWith("user_") ? "" : profile.username} placeholder="seu_usuario" minLength={3} maxLength={32} pattern={'[A-Za-z0-9][A-Za-z0-9._\\-]{2,31}'} aria-describedby="username-help" aria-invalid={errorCode === "username" || errorCode === "username-format" ? true : undefined} required /><span id="username-help" className={styles.muted}>De 3 a 32 caracteres: letras, números, ponto, hífen ou underline.</span></label>
