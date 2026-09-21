@@ -6,6 +6,8 @@ const signupReadiness = readFileSync("lib/auth/signup-readiness.ts", "utf8");
 const envExample = readFileSync(".env.example", "utf8");
 const authActions = readFileSync("app/auth/actions.ts", "utf8");
 const authShell = readFileSync("components/auth/AuthShell.tsx", "utf8");
+const rootPage = readFileSync("app/page.tsx", "utf8");
+const signoutRoute = readFileSync("app/auth/signout/route.ts", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
 const register = readFileSync("app/register/page.tsx", "utf8");
@@ -33,14 +35,19 @@ describe("auth form feedback", () => {
     expect(securityPage).toContain('profile?.role === "investor" ? "/investor" : "/home"');
   });
 
-  it("fails closed public signup until email delivery and production CAPTCHA are ready", () => {
-    expect(signupReadiness).toContain('AUTH_SIGNUP_ENABLED !== "true"');
-    expect(signupReadiness).toContain('AUTH_EMAIL_DELIVERY_READY !== "true"');
-    expect(signupReadiness).toContain('process.env.NODE_ENV === "production"');
-    expect(signupReadiness).toContain("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
+  it("keeps public signup available unless registrations are explicitly paused", () => {
+    expect(signupReadiness).toContain('AUTH_SIGNUP_ENABLED !== "false"');
+    expect(signupReadiness).not.toContain('AUTH_EMAIL_DELIVERY_READY !== "true"');
+    expect(signupReadiness).not.toContain('process.env.NODE_ENV === "production"');
     expect(register).toContain("isPublicSignupReady()");
     expect(registerAction).toContain("!isPublicSignupReady()");
-    expect(envExample).toContain("AUTH_EMAIL_DELIVERY_READY=false");
+  });
+
+  it("restores valid browser sessions from the root page and logs out locally", () => {
+    expect(rootPage).toContain("supabase.auth.getClaims()");
+    expect(rootPage).toContain("redirect(homeForRole(parseProductRole(profileResult.data?.role)))");
+    expect(signoutRoute).toContain('createClient({ requireCookieWrites: true })');
+    expect(signoutRoute).toContain('signOut({ scope: "local" })');
   });
 
   it("keeps Envista branding visible on auth pages", () => {

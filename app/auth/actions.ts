@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { updateRecoveryPasswordAction } from "@/app/auth/email-actions";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
+import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { createClient } from "@/lib/supabase/server";
 import {
   homeForRole,
@@ -135,7 +136,7 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function registerAction(formData: FormData) {
-  if (process.env.AUTH_SIGNUP_ENABLED !== "true") redirect("/register?status=closed");
+  if (!isPublicSignupReady()) redirect("/register?status=closed");
   const displayName = value(formData, "display_name").slice(0, 100);
   const email = value(formData, "email").toLowerCase();
   const password = typeof formData.get("password") === "string" ? String(formData.get("password")) : "";
