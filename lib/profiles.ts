@@ -27,7 +27,7 @@ export function profileRoute(
   idOrSlug: string,
   context: AppContext = "participant",
 ): string {
-  const base = context === "investor" ? "/investor" : "/app";
+  const base = context === "investor" ? "/investor" : "";
   if (kind === "team") return `${base}/teams/${idOrSlug}`;
   return `${base}/${kind === "participant" ? "participants" : "investors"}/${idOrSlug}`;
 }
@@ -43,7 +43,7 @@ export function entityRoute({
   source: NavigationSource;
   context?: AppContext;
 }): string {
-  const base = context === "investor" ? "/investor" : "/app";
+  const base = context === "investor" ? "/investor" : "";
   const segment = type === "participant" ? "participants" : type === "investor" ? "investors" : `${type}s`;
   return source === "management" ? `${base}/${segment}/${id}` : `${base}/${source}/${segment}/${id}`;
 }
@@ -54,9 +54,12 @@ export function parsePublicEntityRoute(pathname: string): {
   type: EntityKind;
   id: string;
 } | undefined {
-  const match = pathname.match(/^\/(app|investor)\/(explore|social|messages)\/(participants|investors|teams|projects)\/([^/]+)$/);
-  if (!match) return undefined;
-  const [, base, source, segment, id] = match;
+  const clean = pathname.match(/^\/(explore|social|messages)\/(participants|investors|teams|projects)\/([^/]+)$/);
+  const scoped = pathname.match(/^\/(app|investor)\/(explore|social|messages)\/(participants|investors|teams|projects)\/([^/]+)$/);
+  if (!clean && !scoped) return undefined;
+  const source = (clean?.[1] || scoped?.[2]) as "explore" | "social" | "messages";
+  const segment = clean?.[2] || scoped?.[3] || "";
+  const id = clean?.[3] || scoped?.[4] || "";
   const type = segment === "participants" ? "participant" : segment === "investors" ? "investor" : segment.slice(0, -1) as EntityKind;
-  return { context: base === "investor" ? "investor" : "participant", source: source as "explore" | "social" | "messages", type, id };
+  return { context: scoped?.[1] === "investor" ? "investor" : "participant", source, type, id };
 }
