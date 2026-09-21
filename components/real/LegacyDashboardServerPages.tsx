@@ -29,7 +29,7 @@ type TeamCardRow = {
 };
 
 function root(role: ProductRole) {
-  return role === "investor" ? "/investor" : "/app";
+  return role === "investor" ? "/investor" : "";
 }
 
 function first(value: string | string[] | undefined) {
