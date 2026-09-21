@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { validatePassword } from "@/lib/auth/validation";
 
 function text(formData: FormData, name: string, max = 500) {
   const raw = formData.get(name);
@@ -44,26 +45,15 @@ export async function updateAccountPasswordAction(formData: FormData) {
   const password = text(formData, "password", 200);
   const confirmPassword = text(formData, "confirm_password", 200);
 
-  if (password.length < 8) redirect("/account/security?error=weak-password");
+  if (validatePassword(password)) redirect("/account/security?error=weak-password");
   if (password !== confirmPassword) redirect("/account/security?error=password-mismatch");
   if (!currentPassword) redirect("/account/security?error=current-password");
 
-  // Supabase supports validating the current password when Secure password change
-  // is enabled. Keeping the value in a variable avoids coupling this file to a
-  // specific generated Auth type version while still sending the supported field.
-  const attributes = {
+  const { error } = await supabase.auth.updateUser({
     password,
     current_password: currentPassword,
-  };
-
-  const { error } = await supabase.auth.updateUser(attributes);
-  if (error) {
-    const message = error.message.toLowerCase();
-    if (message.includes("current") || message.includes("invalid") || message.includes("password")) {
-      redirect("/account/security?error=password-update");
-    }
-    redirect("/account/security?error=password-update");
-  }
+  });
+  if (error) redirect("/account/security?error=password-update");
 
   redirect("/account/security?status=password-updated");
 }

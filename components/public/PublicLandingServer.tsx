@@ -150,7 +150,7 @@ export default function PublicLandingServer() {
             <Link className={styles.textLink} href="/register">Criar meu espaço no Envista <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
           <div className={styles.workflowCard}>
-            <div className={styles.workflowHead}><span>Projeto em evolução</span><span className={styles.stage}>MVP</span></div>
+            <div className={styles.workflowHead}><span>Projeto em evolução</span><span className={styles.stage}>Em validação</span></div>
             <h3>Da ideia para algo demonstrável</h3>
             <p>Problema, solução, equipe, atualizações e próximos passos ficam no mesmo contexto.</p>
             <div className={styles.progressTrack}><i /></div>

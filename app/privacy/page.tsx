@@ -5,7 +5,7 @@ export default function PrivacyPage() {
     <AuthShell
       wide
       title="Aviso de Privacidade"
-      description="Versão 2026-09-11-v1. Este aviso explica quais dados o Envista trata, para quais finalidades e quais controles estão disponíveis ao usuário."
+      description="Versão 2026-09-16-v2. Este aviso explica quais dados o Envista trata, para quais finalidades e quais controles estão disponíveis ao usuário."
     >
       <div className={styles.legal}>
         <h2>1. Escopo</h2>
@@ -14,7 +14,7 @@ export default function PrivacyPage() {
         <h2>2. Dados tratados</h2>
         <ul>
           <li>dados de conta, como e-mail, nome de exibição, username e credenciais de autenticação;</li>
-          <li>CPF somente quando o usuário optar por cadastrá-lo como identificador alternativo de login; o número não é exibido no perfil e é convertido em identificador protegido para comparação;</li>
+          <li>CPF ou CNPJ somente quando o usuário optar por cadastrá-lo como identificador alternativo de login; o número não é exibido no perfil e é convertido em identificador protegido para comparação;</li>
           <li>faixa etária declarada e informações de conformidade necessárias para aplicar proteções adequadas à idade;</li>
           <li>dados opcionais de perfil, como cidade, escola, organização, bio e imagem;</li>
           <li>conteúdo criado pelo usuário, incluindo projetos, equipes, arquivos, posts, comentários, progresso em cursos e inscrições;</li>
@@ -46,6 +46,8 @@ export default function PrivacyPage() {
 
         <h2>10. Atualizações</h2>
         <p>Este aviso pode ser atualizado quando funcionalidades, fornecedores ou práticas relevantes mudarem. Mudanças materiais poderão exigir nova ciência ou aceite quando aplicável.</p>
+
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-16-v2. O registro de ciência mantém a versão apresentada ao usuário.</div>
       </div>
     </AuthShell>
   );

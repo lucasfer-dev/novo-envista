@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Compass, MapPin, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import ExploreFiltersClient from "@/components/explore/ExploreFiltersClient";
-import { people, projects as seedProjects, teams as seedTeams } from "@/data/mock";
 import { entityRoute } from "@/lib/profiles";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import type { User } from "@/types";
@@ -135,12 +134,10 @@ export default async function LegacyExploreServerPage({
   expectedRole,
   pathname,
   searchParams,
-  demoUser,
 }: {
   expectedRole: ProductRole;
   pathname: string;
   searchParams: ExploreSearchParams;
-  demoUser?: User;
 }) {
   const params = await searchParams;
   const q = first(params.q).trim().slice(0, 120);
@@ -162,59 +159,7 @@ export default async function LegacyExploreServerPage({
   let profileTotal = 0;
   let loadError = false;
 
-  if (demoUser) {
-    appUser = demoUser;
-    projects = seedProjects.map((project) => {
-      const team = project.author.type === "team" ? seedTeams.find((item) => item.id === project.author.id) : null;
-      const person = project.author.type === "user" ? people.find((item) => item.id === project.author.id) : null;
-      return {
-        key: `demo:${project.id}`,
-        title: project.title,
-        slug: project.slug,
-        description: project.shortDescription,
-        stage: project.stage,
-        category: project.category,
-        location: project.location,
-        tags: project.tags,
-        owner: team?.name || person?.name || "Envista",
-        real: false,
-      };
-    });
-    teams = seedTeams.map((team) => ({
-      key: `demo:${team.id}`,
-      name: team.name,
-      slug: team.slug,
-      description: team.description,
-      category: team.category,
-      city: team.city,
-      institution: team.institution,
-      tags: team.tags,
-      real: false,
-    }));
-    profiles = people.map((person) => ({
-      id: person.id,
-      username: person.username,
-      name: person.name,
-      role: "participant" as const,
-      bio: person.bio || "Participante no Envista.",
-      subtitle: (person.skills || []).slice(0, 3).join(" · ") || `@${person.username}`,
-    }));
-
-    projects = projects.filter((project) => {
-      const haystack = `${project.title} ${project.description} ${project.category} ${project.location} ${project.tags.join(" ")} ${project.owner}`;
-      return matches(haystack, q) && (stage === "Todos" || project.stage === stage);
-    });
-    teams = teams.filter((team) => matches(`${team.name} ${team.description} ${team.category} ${team.city} ${team.institution} ${team.tags.join(" ")}`, q));
-    profiles = profiles.filter((profile) => matches(`${profile.name} ${profile.username} ${profile.bio} ${profile.subtitle}`, q));
-
-    projectTotal = projects.length;
-    teamTotal = teams.length;
-    profileTotal = profiles.length;
-    projects = projects.slice((pages.projects_page - 1) * PAGE_SIZE, pages.projects_page * PAGE_SIZE);
-    teams = teams.slice((pages.teams_page - 1) * PAGE_SIZE, pages.teams_page * PAGE_SIZE);
-    profiles = profiles.slice((pages.people_page - 1) * PAGE_SIZE, pages.people_page * PAGE_SIZE);
-  } else {
-    const auth = await requireProductUser(expectedRole);
+  const auth = await requireProductUser(expectedRole);
     appUser = auth.appUser;
 
     const [projectsResult, teamsResult, profilesResult] = await Promise.all([
@@ -278,7 +223,6 @@ export default async function LegacyExploreServerPage({
       bio: profile.bio || (profile.role === "investor" ? "Investidor no Envista." : "Participante no Envista."),
       subtitle: profile.subtitle || `@${profile.username}`,
     }));
-  }
 
   const total = projectTotal + teamTotal + profileTotal;
 
@@ -317,7 +261,7 @@ export default async function LegacyExploreServerPage({
         <Pagination base={base} q={q} stage={stage} pages={pages} pageKey="people_page" total={profileTotal} />
       </section>
 
-      {!demoUser ? <div className="meta-row" style={{ marginTop: 28 }}><span><MapPin size={14} /> Busca e paginação executadas no banco sobre dados reais disponíveis para a sua conta.</span></div> : null}
+      <div className="meta-row" style={{ marginTop: 28 }}><span><MapPin size={14} /> Busca e paginação executadas no banco sobre dados reais disponíveis para a sua conta.</span></div>
     </LegacySocialShell>
   );
 }

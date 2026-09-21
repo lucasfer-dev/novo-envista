@@ -7,6 +7,14 @@ const analyticsHardeningMigration = readFileSync(
   "supabase/migrations/20260908233000_admin_metrics_security_invoker.sql",
   "utf8",
 );
+const publicSharePrivacyMigration = readFileSync(
+  "supabase/migrations/20260916185654_respect_owner_privacy_in_public_project_share.sql",
+  "utf8",
+);
+const publicShareInvokerMigration = readFileSync(
+  "supabase/migrations/20260921133209_public_project_share_security_invoker.sql",
+  "utf8",
+);
 
 describe("rpc security hardening", () => {
   it("runs the message inbox aggregate with caller RLS", () => {
@@ -33,5 +41,20 @@ describe("rpc security hardening", () => {
     expect(analyticsHardeningMigration).toContain("lesson_progress_select_admin");
     expect(analyticsHardeningMigration).toContain("project_interests_select_admin");
     expect(analyticsHardeningMigration).toContain("project_saves_select_admin");
+  });
+
+  it("does not disclose private project owners through the public share RPC", () => {
+    expect(publicSharePrivacyMigration).toContain("p.visibility='platform'");
+    expect(publicSharePrivacyMigration).toContain("pr.profile_visibility='platform'");
+    expect(publicSharePrivacyMigration).toContain("t.visibility='platform'");
+    expect(publicSharePrivacyMigration).toContain("else null end");
+  });
+
+  it("runs public project sharing with caller RLS instead of SECURITY DEFINER", () => {
+    expect(publicShareInvokerMigration).toContain("alter function public.get_public_project_share(text) security invoker");
+    expect(publicShareInvokerMigration).toContain('create policy "projects_select_platform_anon"');
+    expect(publicShareInvokerMigration).toContain('create policy "profiles_select_platform_anon"');
+    expect(publicShareInvokerMigration).toContain('create policy "teams_select_platform_anon"');
+    expect(publicShareInvokerMigration).toContain("to anon");
   });
 });

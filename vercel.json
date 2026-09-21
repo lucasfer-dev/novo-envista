@@ -1,11 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "regions": ["gru1"],
+  "regions": [
+    "gru1"
+  ],
   "env": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://yeqdalgzuutbputhjvwt.supabase.co",
     "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_cSr3SceabilO7-j-UO2aAQ_ZpIWlSgI",
-    "NEXT_PUBLIC_SITE_URL": "https://novo-envista.vercel.app",
-    "AUTH_SIGNUP_ENABLED": "true"
+    "NEXT_PUBLIC_SITE_URL": "https://useenvista.com.br"
   }
 }

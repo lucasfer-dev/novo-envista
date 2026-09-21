@@ -20,6 +20,7 @@ import AvatarUploader from "@/components/storage/AvatarUploader";
 import { profileUpdateAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
+import { logServerEvent } from "@/lib/observability/logger";
 import type { User } from "@/types";
 import styles from "./Profile.module.css";
 
@@ -61,7 +62,19 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
     supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
-  if (profileResult.error) throw new Error("Não foi possível carregar o perfil.");
+
+  const loadError = profileResult.error
+    ? { source: "profiles", code: profileResult.error.code }
+    : complianceResult.error
+      ? { source: "account_compliance", code: complianceResult.error.code }
+      : completionResult.error
+        ? { source: "onboarding_completions", code: completionResult.error.code }
+        : null;
+
+  if (loadError) {
+    logServerEvent("error", "account_profile_load_failed", loadError);
+    throw new Error("Não foi possível carregar o perfil.");
+  }
   if (!profileResult.data) redirect("/onboarding");
 
   const profile = profileResult.data;

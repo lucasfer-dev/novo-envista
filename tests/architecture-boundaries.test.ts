@@ -1,10 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 
 const router = readFileSync("app/[...slug]/page.tsx", "utf8");
 const login = readFileSync("app/login/page.tsx", "utf8");
+const proxy = readFileSync("proxy.ts", "utf8");
+const profile = readFileSync("app/account/profile/page.tsx", "utf8");
+const schools = readFileSync("app/schools/page.tsx", "utf8");
 const backendReadme = readFileSync("backend/README.md", "utf8");
 const architecture = readFileSync("docs/ARCHITECTURE.md", "utf8");
+
+function sourceFiles(root: string): string[] {
+  return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(root, entry.name);
+    if (entry.isDirectory()) return sourceFiles(path);
+    return /\.(?:ts|tsx)$/.test(entry.name) ? [path] : [];
+  });
+}
+
+const productionGraphSources = ["app", "components", "lib"]
+  .flatMap(sourceFiles)
+  .filter((path) => path !== join("components", "EnvistaApp.tsx"))
+  .map((path) => readFileSync(path, "utf8"))
+  .join("\n");
 
 describe("product architecture boundaries", () => {
   it("does not expose full demo authentication or demo product routing", () => {
@@ -18,9 +36,38 @@ describe("product architecture boundaries", () => {
     expect(existsSync("components/demo/DemoProductPage.tsx")).toBe(false);
   });
 
+  it("does not let the legacy mock shell back into the production dependency graph", () => {
+    expect(productionGraphSources).not.toContain('@/components/EnvistaApp');
+    expect(productionGraphSources).not.toContain('@/data/mock');
+  });
+
   it("does not use the local shell as the authenticated fallback", () => {
     expect(router).toContain("const { role } = await requireProductUser()");
     expect(router).toContain("redirect(homeForRole(role))");
+  });
+
+  it("keeps /app only as an internal compatibility route", () => {
+    expect(proxy).toContain('pathname === "/app" || pathname.startsWith("/app/")');
+    expect(proxy).toContain('NextResponse.redirect(target, 308)');
+    expect(proxy).toContain('target.pathname = pathname === "/home" ? "/app" : `/app${pathname}`');
+    expect(proxy).toContain("NextResponse.rewrite(target");
+  });
+
+  it("does not serve the legacy demo shell for unknown public routes", () => {
+    expect(router).toContain("notFound()");
+    expect(router).not.toContain('import EnvistaApp from "@/components/EnvistaApp"');
+    expect(existsSync("app/about/page.tsx")).toBe(true);
+    expect(existsSync("app/schools/page.tsx")).toBe(true);
+    expect(schools).not.toContain("formulário do MVP é apenas demonstrativo");
+    expect(schools).not.toContain("Interesse registrado no MVP");
+  });
+
+  it("logs profile load failures without putting account identifiers in the event", () => {
+    expect(profile).toContain('logServerEvent("error", "account_profile_load_failed", loadError)');
+    expect(profile).toContain('source: "profiles"');
+    expect(profile).toContain('source: "account_compliance"');
+    expect(profile).toContain('source: "onboarding_completions"');
+    expect(profile).not.toContain('logServerEvent("error", "account_profile_load_failed", { userId');
   });
 
   it("marks the Java service as a non-production prototype", () => {
