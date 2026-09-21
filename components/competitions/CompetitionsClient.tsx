@@ -50,7 +50,7 @@ export function CompetitionsBrowser({
   basePath,
   recommendationContext,
 }: {
-  basePath: "/app/competitions" | "/investor/competitions";
+  basePath: "/competitions" | "/investor/competitions";
   recommendationContext: CompetitionRecommendationContext;
 }) {
   const [data, setData] = useState<LiveCompetitionsResponse | null>(null);
@@ -107,7 +107,7 @@ export function CompetitionsBrowser({
         if (state !== "ALL" && item.state !== state) return false;
         if (modality !== "ALL" && !item.modalities.includes(modality)) return false;
         if (recommendedOnly && recommendation.score === 0) return false;
-        if (needle && ![item.name, item.organizer, item.city, item.state, item.level, item.eligibility, ...item.modalities].join(" ").toLocaleLowerCase("pt-BR").includes(needle)) return false;
+        if (needle && ![item.name, item.organizer, item.description, item.type, item.city, item.state, item.level, item.scope, item.format, item.eligibility, item.task, item.prize, ...(item.areas || []), ...(item.targetAudience || []), ...item.modalities].filter(Boolean).join(" ").toLocaleLowerCase("pt-BR").includes(needle)) return false;
         if (age && Number.isFinite(ageNumber)) {
           if (item.minAge == null && item.maxAge == null) return false;
           if (item.minAge != null && ageNumber < item.minAge) return false;
@@ -137,7 +137,7 @@ export function CompetitionsBrowser({
     <div className={styles.head}>
       <div>
         <h1>Competições</h1>
-        <p>O Envista consulta páginas oficiais de competições e verifica inscrições, datas e modalidades. Os resultados abaixo não são exemplos nem dados mock.</p>
+        <p>O Envista combina consultas a páginas oficiais com um catálogo curado de competições verificadas para ampliar a cobertura de inscrições, datas, modalidades e regulamentos.</p>
       </div>
       <div className={styles.liveActions}>
         <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))}` : "Consultando fontes oficiais…"}</span>
@@ -181,7 +181,8 @@ export function CompetitionsBrowser({
             {recommendation.team && <MatchBadge match={recommendation.team} />}
           </div>}
           <h3>{item.name}</h3><p>{item.organizer}</p>
-          <div className={styles.meta}><span>📍 {[item.city, item.state].filter(Boolean).join(" — ") || item.country}</span><span>👥 {ageLabel(item)}</span><span>📅 Inscrição: {fmt(item.registrationStart)} → {fmt(item.registrationEnd)}</span>{item.eventDate && <span>🏁 Evento: {fmt(item.eventDate)}</span>}</div>
+          {item.description ? <p>{item.description}</p> : null}
+          <div className={styles.meta}>{item.type ? <span>🏷️ {item.type}</span> : null}{item.format ? <span>💻 {item.format}</span> : null}<span>📍 {[item.city, item.state].filter(Boolean).join(" — ") || item.country}</span><span>👥 {ageLabel(item)}</span><span>📅 Inscrição: {fmt(item.registrationStart)} → {fmt(item.registrationEnd)}</span>{item.eventDate && <span>🏁 Evento: {fmt(item.eventDate)}</span>}</div>
           <div className={styles.chips}>{item.modalities.slice(0, 4).map((value) => <span key={value}>{value}</span>)}</div>
           <small className={styles.verifiedSource}>Fonte: {item.sourceName} · {item.confidence}% de confiança</small>
         </div>
@@ -206,7 +207,7 @@ export function CompetitionDetailClient({
   slug,
   recommendationContext,
 }: {
-  basePath: "/app/competitions" | "/investor/competitions";
+  basePath: "/competitions" | "/investor/competitions";
   slug: string;
   recommendationContext: CompetitionRecommendationContext;
 }) {
@@ -235,9 +236,14 @@ export function CompetitionDetailClient({
       <section className={styles.panel}>
         <span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span>
         <h1>{item.name}</h1><p>{item.organizer}</p>
-        <h2>Quem pode participar</h2><p>{ageLabel(item)}</p>
+        {item.description ? <><h2>Sobre</h2><p>{item.description}</p></> : null}
+        <h2>Quem pode participar</h2><p>{item.eligibility || ageLabel(item)}</p>
+        {item.targetAudience?.length ? <><h2>Público-alvo</h2><div className={styles.chips}>{item.targetAudience.map((value) => <span key={value}>{value}</span>)}</div></> : null}
+        {item.areas?.length ? <><h2>Áreas</h2><div className={styles.chips}>{item.areas.map((value) => <span key={value}>{value}</span>)}</div></> : null}
         <h2>Modalidades</h2><div className={styles.chips}>{item.modalities.map((value) => <span key={value}>{value}</span>)}</div>
         <h2>Etapas</h2><div className={styles.chips}>{item.stages.map((value) => <span key={value}>{value}</span>)}</div>
+        {item.task ? <><h2>O que precisa fazer</h2><p>{item.task}</p></> : null}
+        {item.prize ? <><h2>Premiação</h2><p>{item.prize}</p></> : null}
         <h2>Como o status foi verificado</h2><p>{item.evidence}</p>
         <p className={styles.source}>Fonte: {item.sourceName} · confiança {item.confidence}%</p>
       </section>
@@ -245,13 +251,22 @@ export function CompetitionDetailClient({
         <div className={styles.facts}>
           <div className={styles.fact}><small>Local</small><b>{[item.city, item.state].filter(Boolean).join(" — ") || item.country}</b></div>
           <div className={styles.fact}><small>Nível</small><b>{item.level}</b></div>
+          {item.type ? <div className={styles.fact}><small>Tipo</small><b>{item.type}</b></div> : null}
+          {item.participation ? <div className={styles.fact}><small>Participação</small><b>{item.participation}</b></div> : null}
+          {item.scope ? <div className={styles.fact}><small>Abrangência</small><b>{item.scope}</b></div> : null}
+          {item.format ? <div className={styles.fact}><small>Modalidade</small><b>{item.format}</b></div> : null}
+          {item.free != null ? <div className={styles.fact}><small>Gratuito</small><b>{item.free ? "Sim" : "Não"}</b></div> : null}
           <div className={styles.fact}><small>Abertura</small><b>{fmt(item.registrationStart)}</b></div>
           <div className={styles.fact}><small>Prazo</small><b>{fmt(item.registrationEnd)}</b></div>
           <div className={styles.fact}><small>Evento</small><b>{fmt(item.eventDate)}</b></div>
           <div className={styles.fact}><small>Idade</small><b>{item.minAge != null || item.maxAge != null ? ageLabel(item) : "Por categoria/regulamento"}</b></div>
         </div>
-        <h2>Fonte oficial</h2><p>Os dados vieram da página oficial indicada abaixo. Confira o regulamento final antes de enviar uma inscrição.</p>
-        <a className={styles.official} href={item.officialUrl} target="_blank" rel="noreferrer">Abrir fonte oficial ↗</a>
+        <h2>Links oficiais</h2><p>Confira sempre a fonte e o regulamento antes de enviar uma inscrição.</p>
+        <div className={styles.officialLinks}>
+          <a className={styles.official} href={item.officialUrl} target="_blank" rel="noreferrer">Site oficial ↗</a>
+          {item.registrationUrl && item.registrationUrl !== item.officialUrl ? <a className={styles.official} href={item.registrationUrl} target="_blank" rel="noreferrer">Inscrição ↗</a> : null}
+          {item.regulationUrl && item.regulationUrl !== item.officialUrl ? <a className={styles.official} href={item.regulationUrl} target="_blank" rel="noreferrer">Regulamento ↗</a> : null}
+        </div>
       </aside>
     </div>
   </div>;

@@ -22,6 +22,19 @@ export interface LiveCompetition {
   evidence: string;
   confidence: number;
   status: CompetitionStatus;
+  description?: string;
+  type?: string;
+  areas?: string[];
+  targetAudience?: string[];
+  participation?: "Individual" | "Equipe" | "Ambos" | string;
+  scope?: string;
+  format?: "Presencial" | "Online" | "Híbrida" | string;
+  free?: boolean | null;
+  task?: string;
+  prize?: string;
+  registrationUrl?: string;
+  regulationUrl?: string;
+  socialUrls?: string[];
 }
 
 export interface LiveCompetitionsResponse {

@@ -27,7 +27,7 @@ import styles from "./LegacySocialFeed.module.css";
 
 export type SocialTeamOption = { id: string; name: string };
 export type SocialProjectOption = { id: string; title: string; slug: string };
-export type SocialCommentView = { id: string; body: string; userId: string; authorLabel: string };
+export type SocialCommentView = { id: string; body: string; userId: string; authorLabel: string; authorHref: string; parentCommentId: string | null };
 export type SocialAuthorKind = "participant" | "investor" | "team";
 
 export type SocialPostFeedItem = {
@@ -172,6 +172,7 @@ export default function LegacySocialFeed({
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
+  const [replyingTo, setReplyingTo] = useState<Record<string, string | null>>({});
   const normalized = normalize(query);
   const errorMessage = socialErrorMessage(error);
 
@@ -404,22 +405,55 @@ export default function LegacySocialFeed({
 
                   {commentsOpen && (
                     <div className={styles.commentArea}>
-                      {item.comments.map((comment) => (
-                        <div className={styles.commentRow} key={comment.id}>
-                          <span className={styles.commentAvatar}>{initials(comment.authorLabel)}</span>
-                          <div>
-                            <strong>{comment.authorLabel}</strong>
-                            <p>{comment.body}</p>
-                            {comment.userId === userId && (
-                              <form action={deletePostCommentAction}>
-                                <input type="hidden" name="comment_id" value={comment.id} />
+                      {item.comments.filter((comment) => !comment.parentCommentId).map((comment) => {
+                        const replies = item.comments.filter((reply) => reply.parentCommentId === comment.id);
+                        return (
+                          <div className={styles.commentThread} key={comment.id}>
+                            <div className={styles.commentRow}>
+                              <Link className={styles.commentAvatar} href={comment.authorHref} aria-label={`Abrir perfil de ${comment.authorLabel}`}>{initials(comment.authorLabel)}</Link>
+                              <div>
+                                <Link className={styles.commentAuthor} href={comment.authorHref}><strong>{comment.authorLabel}</strong></Link>
+                                <p>{comment.body}</p>
+                                <div className={styles.commentActions}>
+                                  <button type="button" onClick={() => setReplyingTo((current) => ({ ...current, [item.id]: current[item.id] === comment.id ? null : comment.id }))}>Responder</button>
+                                  {comment.userId === userId && (
+                                    <form action={deletePostCommentAction}>
+                                      <input type="hidden" name="comment_id" value={comment.id} />
+                                      <input type="hidden" name="return_to" value={returnTo} />
+                                      <button className={styles.commentDelete} type="submit">Excluir</button>
+                                    </form>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            {replies.map((reply) => (
+                              <div className={`${styles.commentRow} ${styles.commentReply}`} key={reply.id}>
+                                <Link className={styles.commentAvatar} href={reply.authorHref} aria-label={`Abrir perfil de ${reply.authorLabel}`}>{initials(reply.authorLabel)}</Link>
+                                <div>
+                                  <Link className={styles.commentAuthor} href={reply.authorHref}><strong>{reply.authorLabel}</strong></Link>
+                                  <p>{reply.body}</p>
+                                  {reply.userId === userId && (
+                                    <form action={deletePostCommentAction}>
+                                      <input type="hidden" name="comment_id" value={reply.id} />
+                                      <input type="hidden" name="return_to" value={returnTo} />
+                                      <button className={styles.commentDelete} type="submit">Excluir</button>
+                                    </form>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                            {replyingTo[item.id] === comment.id ? (
+                              <form className={styles.replyComposer} action={addPostCommentAction}>
+                                <input type="hidden" name="post_id" value={item.id} />
+                                <input type="hidden" name="parent_comment_id" value={comment.id} />
                                 <input type="hidden" name="return_to" value={returnTo} />
-                                <button className={styles.commentDelete} type="submit">Excluir</button>
+                                <input required name="body" maxLength={2000} placeholder={`Responder a ${comment.authorLabel}…`} autoFocus />
+                                <button className="primary square" aria-label="Enviar resposta" type="submit"><Send size={15} /></button>
                               </form>
-                            )}
+                            ) : null}
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       <form className={styles.commentComposer} action={addPostCommentAction}>
                         <input type="hidden" name="post_id" value={item.id} />
                         <input type="hidden" name="return_to" value={returnTo} />

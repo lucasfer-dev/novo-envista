@@ -22,6 +22,7 @@ import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 import { logServerEvent } from "@/lib/observability/logger";
 import type { User } from "@/types";
+import BrazilLocationFields from "@/components/profile/BrazilLocationFields";
 import styles from "./Profile.module.css";
 
 const TAG_OPTIONS = [
@@ -38,8 +39,6 @@ const TAG_OPTIONS = [
   "Sustentabilidade",
   "Acessibilidade",
 ];
-const CITY_SUGGESTIONS = ["Rio de Janeiro", "Queimados", "Nova Iguaçu", "Japeri", "São João de Meriti", "Duque de Caxias", "Niterói", "São Paulo", "Belo Horizonte", "Curitiba", "Recife", "Salvador", "Brasília"];
-const STATE_SUGGESTIONS = ["RJ", "SP", "MG", "ES", "PR", "SC", "RS", "BA", "PE", "CE", "GO", "DF"];
 
 function initials(name: string) {
   return name
@@ -213,18 +212,14 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
                         </label>
                       </>
                     )}
-                    <div className={styles.gridCity}>
-                      <label className={styles.field}>
-                        <span className={styles.label}>Cidade</span>
-                        <input name="public_city" list="profile-cities" defaultValue={profile.public_city || ""} maxLength={100} placeholder="Escolha ou digite outra" autoComplete="address-level2" />
-                      </label>
-                      <label className={styles.field}>
-                        <span className={styles.label}>Estado</span>
-                        <input name="public_state" list="profile-states" defaultValue={profile.public_state || ""} maxLength={100} placeholder="UF" autoComplete="address-level1" />
-                      </label>
-                    </div>
-                    <datalist id="profile-cities">{CITY_SUGGESTIONS.map((city) => <option key={city} value={city} />)}</datalist>
-                    <datalist id="profile-states">{STATE_SUGGESTIONS.map((state) => <option key={state} value={state} />)}</datalist>
+                    <BrazilLocationFields
+                      defaultCity={profile.public_city || ""}
+                      defaultState={profile.public_state || ""}
+                      gridClassName={styles.gridCity}
+                      fieldClassName={styles.field}
+                      labelClassName={styles.label}
+                      helperClassName={styles.helper}
+                    />
                   </div>
                 </section>
 

@@ -99,9 +99,9 @@ function profileLocationScore(profile: RecommendationProfile, item: LiveCompetit
   const itemCity = normalize(item.city);
   const itemState = normalize(item.state);
   if (city && itemCity && (city === itemCity || city.includes(itemCity) || itemCity.includes(city))) {
-    return { score: 8, reason: `Perto de você · ${item.city}` };
+    return { score: 16, reason: `Na sua cidade · ${item.city}` };
   }
-  if (state && itemState && state === itemState) return { score: 4, reason: `No seu estado · ${item.state}` };
+  if (state && itemState && state === itemState) return { score: 8, reason: `No seu estado · ${item.state}` };
   return { score: 0, reason: "" };
 }
 

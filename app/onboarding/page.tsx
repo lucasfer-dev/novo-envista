@@ -3,6 +3,7 @@ import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { onboardingAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
+import BrazilLocationFields from "@/components/profile/BrazilLocationFields";
 
 const errors: Record<string, string> = {
   invalid: "Revise os campos obrigatórios e as confirmações.",
@@ -15,8 +16,6 @@ const errors: Record<string, string> = {
 };
 
 const TAG_OPTIONS = ["Tecnologia", "Programação", "Robótica", "IA", "Design", "Games", "Ciência", "Educação", "Empreendedorismo", "Negócios", "Sustentabilidade", "Acessibilidade"];
-const CITY_SUGGESTIONS = ["Rio de Janeiro", "Queimados", "Nova Iguaçu", "Japeri", "São João de Meriti", "Duque de Caxias", "Niterói", "São Paulo", "Belo Horizonte", "Curitiba", "Recife", "Salvador", "Brasília"];
-const STATE_SUGGESTIONS = ["RJ", "SP", "MG", "ES", "PR", "SC", "RS", "BA", "PE", "CE", "GO", "DF"];
 
 function ageLabel(age: string) {
   if (age === "child") return "Menos de 12 anos";
@@ -67,11 +66,13 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
 
         <div className={styles.grid2}>
           {participant ? <label>Escola/instituição <span className={styles.muted}>(opcional)</span><input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} placeholder="Digite o nome — aceitamos outras escolas" /></label> : <><label>Organização <span className={styles.muted}>(opcional)</span><input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} placeholder="Digite a organização" /></label><label>Tipo de organização <span className={styles.muted}>(opcional)</span><input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} placeholder="Escola, empresa, fundo, ONG…" /></label></>}
-          <label>Cidade <span className={styles.muted}>(opcional)</span><input name="public_city" list="envista-cities" autoComplete="address-level2" defaultValue={profile.public_city || ""} maxLength={100} placeholder="Escolha uma sugestão ou digite outra" /></label>
-          <label>Estado <span className={styles.muted}>(opcional)</span><input name="public_state" list="envista-states" autoComplete="address-level1" defaultValue={profile.public_state || ""} maxLength={100} placeholder="RJ ou outro" /></label>
         </div>
-        <datalist id="envista-cities">{CITY_SUGGESTIONS.map((city) => <option key={city} value={city} />)}</datalist>
-        <datalist id="envista-states">{STATE_SUGGESTIONS.map((state) => <option key={state} value={state} />)}</datalist>
+        <BrazilLocationFields
+          defaultCity={profile.public_city || ""}
+          defaultState={profile.public_state || ""}
+          gridClassName={styles.grid2}
+          helperClassName={styles.muted}
+        />
 
         <fieldset className={styles.formSection}>
           <legend>Interesses e tags <span className={styles.muted}>(opcional)</span></legend>

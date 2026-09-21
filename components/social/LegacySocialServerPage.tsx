@@ -65,7 +65,7 @@ export default async function LegacySocialServerPage({
   const { supabase, userId, appUser } = await requireProductUser(expectedRole);
   const query = await searchParams;
   const context = expectedRole === "investor" ? "investor" : "participant";
-  const path = expectedRole === "investor" ? "/investor/social" : "/app/social";
+  const path = expectedRole === "investor" ? "/investor/social" : "/social";
   const feedMode: FeedMode = first(query.mode) === "following" ? "following" : "for-you";
   const searchQuery = (first(query.q) ?? "").trim().slice(0, 120);
   const page = pageNumber(query.page);
@@ -137,7 +137,7 @@ export default async function LegacySocialServerPage({
     postIds.length
       ? supabase
           .from("post_comments")
-          .select("id,post_id,user_id,body,created_at,author:profiles!post_comments_user_id_fkey(username,display_name)")
+          .select("id,post_id,user_id,body,created_at,parent_comment_id,author:profiles!post_comments_user_id_fkey(username,display_name,role)")
           .in("post_id", postIds)
           .order("created_at", { ascending: true })
       : empty,
@@ -162,6 +162,15 @@ export default async function LegacySocialServerPage({
           body: comment.body,
           userId: comment.user_id,
           authorLabel: author?.display_name || author?.username || "Usuário",
+          authorHref: author?.username
+            ? entityRoute({
+                type: author?.role === "investor" ? "investor" : "participant",
+                id: author.username,
+                source: "social",
+                context,
+              })
+            : path,
+          parentCommentId: comment.parent_comment_id || null,
         };
       });
 

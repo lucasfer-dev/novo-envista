@@ -43,7 +43,7 @@ function one<T>(value: T | T[] | null | undefined): T | null {
 }
 
 function root(role: ProductRole) {
-  return role === "investor" ? "/investor" : "/app";
+  return role === "investor" ? "/investor" : "";
 }
 
 function teamsBase(role: ProductRole) {

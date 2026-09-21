@@ -495,6 +495,67 @@
   min-height: 39px;
   padding: 0 11px;
 }
+.commentThread {
+  display: grid;
+  gap: 7px;
+}
+
+.commentAuthor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.commentAuthor:hover strong {
+  color: #70e5d5;
+}
+
+.commentAvatar {
+  text-decoration: none;
+  transition: transform .15s ease, border-color .15s ease;
+  border: 1px solid transparent;
+}
+
+.commentAvatar:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0,191,166,.4);
+}
+
+.commentActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 3px;
+}
+
+.commentActions > button {
+  border: 0;
+  background: none;
+  padding: 4px 0 0;
+  color: #77dacc;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.commentActions form {
+  display: inline-flex;
+}
+
+.commentReply {
+  margin-left: 38px;
+}
+
+.replyComposer {
+  display: flex;
+  gap: 7px;
+  margin-left: 38px;
+}
+
+.replyComposer input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 10px;
+}
 
 .projectUpdateBody {
   display: block;

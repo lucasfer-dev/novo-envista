@@ -56,7 +56,6 @@ function Header() {
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Navegação principal">
-          <Link href="/about">Sobre</Link>
           <Link href="/schools">Para escolas</Link>
           <Link href="/login">Entrar</Link>
           <Link className={styles.headerCta} href="/register">Criar conta</Link>
@@ -65,7 +64,6 @@ function Header() {
         <details className={styles.mobileNav}>
           <summary aria-label="Abrir navegação"><Menu size={20} aria-hidden="true" /></summary>
           <nav aria-label="Navegação principal no celular">
-            <Link href="/about">Sobre</Link>
             <Link href="/schools">Para escolas</Link>
             <Link href="/login">Entrar</Link>
             <Link className={styles.headerCta} href="/register">Criar conta</Link>
@@ -92,7 +90,7 @@ export default function PublicLandingServer() {
             </p>
             <div className={styles.heroActions}>
               <Link className={styles.primary} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
-              <Link className={styles.secondary} href="/about">Conhecer o Envista</Link>
+              <Link className={styles.secondary} href="/schools">Envista para escolas</Link>
             </div>
             <div className={styles.heroProof} aria-label="Principais áreas do produto">
               <span><CheckCircle2 size={15} aria-hidden="true" /> Projetos</span>
