@@ -78,7 +78,7 @@ describe("product checklist round 2", () => {
   });
 
   it("merges a richer verified competition catalog into live official sources", () => {
-    for (const name of ["OBM 2026","OBMEP 2026","OBF 2026","OBI 2026","OBQ 2026","OBB 2026","Olimpíada Brasileira de Geografia","Olimpíada Nacional de Ciências","ONEE 2026","FECTI 2026","FEBIC 2026","Desafio Liga Jovem"]) {
+    for (const name of ["OBM)","OBMEP 2026","(OBF) 2026","(OBI) 2026","(OBQ) 2026","(OBB) 2026","Olimpíada Brasileira de Geografia","Olimpíada Nacional de Ciências","(ONEE) 2026","FECTI 2026","FEBIC 2026","Desafio Liga Jovem"]) {
       expect(competitionCatalog).toContain(name);
     }
     expect(competitionApi).toContain("VERIFIED_COMPETITION_CATALOG_2026");
