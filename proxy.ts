@@ -116,6 +116,8 @@ function participantRouteResponse(
     return copySessionState(sessionResponse, NextResponse.redirect(target, 308));
   }
 
+  if (pathname === "/projects") return null;
+
   const firstSegment = pathname.split("/").filter(Boolean)[0] || "";
   if (!PARTICIPANT_ROUTE_ROOTS.has(firstSegment)) return null;
 
