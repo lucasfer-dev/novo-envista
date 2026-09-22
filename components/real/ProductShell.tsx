@@ -29,7 +29,7 @@ export default function ProductShell({ user, children, title = "Envista", varian
   async function logout() { await fetch("/auth/signout", { method: "POST", credentials: "same-origin" }); window.location.assign("/login"); }
 
   return (
-    <div className={`${styles.shell} ${dark ? styles.legacyDark : ""}`}>
+    <div className={`${styles.shell} ${dark ? styles.legacyDark : ""}`} data-envista-product-shell>
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       {open && <button className={styles.backdrop} aria-label="Fechar navegação" onClick={() => setOpen(false)} />}
       <aside id="product-navigation" className={styles.sidebar} data-open={open} aria-label="Navegação do produto">
