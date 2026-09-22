@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
+import ShareProjectButton from "@/components/public/ShareProjectButton";
 import ProjectFilesPanel from "@/components/storage/ProjectFilesPanel";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
 import { requireProductUser } from "@/lib/auth/require-product-user";
@@ -53,11 +54,12 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
       <Link className="back" href="/app/projects">← Voltar aos projetos</Link>
       <div className="project-hero panel">
         <div><div className="project-icon">{project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto em construção."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
-        <div className="actions">{!canEdit && project.visibility === "platform" ? <FollowEntityButton targetType="project" targetId={project.id} returnTo={`/app/projects/${slug}`} /> : null}{canEdit ? <a className="secondary" href="#editar">Editar projeto</a> : null}</div>
+        <div className="actions">{!canEdit && project.visibility === "platform" ? <FollowEntityButton targetType="project" targetId={project.id} returnTo={`/app/projects/${slug}`} /> : null}{canEdit && project.visibility === "platform" ? <><Link className="secondary" href={`/p/${project.slug}`} target="_blank">Ver página pública</Link><ShareProjectButton className="secondary" title={project.title} href={`/p/${project.slug}`} /></> : null}{canEdit ? <a className="secondary" href="#editar">Editar projeto</a> : null}</div>
       </div>
 
       {status === "created" ? <div className="form-feedback">Projeto criado. Complete as evidências conforme ele evolui.</div> : null}
       {status === "saved" ? <div className="form-feedback">Projeto atualizado.</div> : null}
+      {canEdit && project.visibility === "platform" ? <div className="form-feedback">Sua página pública está ativa em <Link href={`/p/${project.slug}`}>/p/{project.slug}</Link>. Compartilhe esse link como portfólio, em processos seletivos e nas redes.</div> : null}
       {error ? <div className="form-error">{error === "url" ? "Use links HTTPS válidos." : "Não foi possível concluir a alteração."}</div> : null}
 
       {canEdit ? (
