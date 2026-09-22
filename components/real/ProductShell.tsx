@@ -33,7 +33,7 @@ export default function ProductShell({ user, children, title = "Envista", varian
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       {open && <button className={styles.backdrop} aria-label="Fechar navegação" onClick={() => setOpen(false)} />}
       <aside id="product-navigation" className={styles.sidebar} data-open={open} aria-label="Navegação do produto">
-        <Link className={styles.brand} href={home} prefetch={false} onClick={() => setOpen(false)}><img src="/envista-logo.png" alt="" /><span>Envista</span></Link>
+        <Link className={styles.brand} href={home} prefetch={false} onClick={() => setOpen(false)}><img src="/brand/envista-symbol-gradient.svg" alt="" /><span>Envista</span></Link>
         <nav className={styles.nav} aria-label="Navegação principal">{nav.map(([href,label,Icon])=>{const active=href===home?pathname===href:pathname===href||pathname.startsWith(`${href}/`);return <Link key={href} href={href} prefetch={false} data-active={active} aria-current={active?"page":undefined} onClick={()=>setOpen(false)}>{dark?<Icon size={18} strokeWidth={1.9} aria-hidden="true"/>:null}<span>{label}</span></Link>})}</nav>
         <div className={styles.bottom}><Link className={styles.profile} href="/account/settings" prefetch={false}><span className={styles.avatar}>{initials(user.name)}</span><span className={styles.meta}><strong>{user.name}</strong><span>@{user.username}</span></span></Link><button className={styles.logout} onClick={logout}>Sair</button></div>
       </aside>

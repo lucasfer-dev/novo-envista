@@ -47,7 +47,7 @@ export default async function ProjectsPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <Link href="/" className={styles.brand}><img src="/envista-logo.png" alt="" /><strong>Envista</strong></Link>
+        <Link href="/" className={styles.brand}><img src="/brand/envista-symbol-gradient.svg" alt="" /><strong>Envista</strong></Link>
         <nav><Link href="/schools">Para escolas</Link><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Publicar projeto</Link></nav>
       </header>
 

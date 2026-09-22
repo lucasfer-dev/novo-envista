@@ -21,7 +21,7 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 100% 0, rgba(0, 191, 166, 0.08), transparent 38%),
+    radial-gradient(circle at 100% 0, rgba(0, 169, 157, 0.08), transparent 38%),
     var(--ev-surface) !important;
 }
 
@@ -94,8 +94,8 @@
   }
 
   .app-shell .page-head + .panel.activity.section-block > .activity-item:hover {
-    border-color: rgba(0, 191, 166, 0.18);
-    background: rgba(0, 191, 166, 0.04);
+    border-color: rgba(0, 169, 157, 0.18);
+    background: rgba(0, 169, 157, 0.04);
   }
 
   .app-shell .page-head + .panel.activity.section-block > .activity-item i {

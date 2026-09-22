@@ -4,7 +4,7 @@
    interactive states, data surfaces and responsive behavior. */
 
 :root{
-  --ev-bg:#0b141f;
+  --ev-bg:#0f1923;
   --ev-bg-soft:#0e1926;
   --ev-sidebar:#09131d;
   --ev-surface:#142233;
@@ -17,9 +17,9 @@
   --ev-text-soft:#d7e0ea;
   --ev-muted:#8fa1b6;
   --ev-muted-2:#6f8297;
-  --ev-accent:#00bfa6;
+  --ev-accent:#00a99d;
   --ev-accent-bright:#39d6c1;
-  --ev-accent-soft:rgba(0,191,166,.10);
+  --ev-accent-soft:rgba(0,169,157,.10);
   --ev-danger:#ff7a90;
   --ev-warning:#f6b84b;
   --ev-radius-xs:8px;
@@ -36,7 +36,7 @@ body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1
 /* General authenticated shell consistency */
 .app-shell,.legacyDark{background:var(--ev-bg)!important;color:var(--ev-text)}
 .app-shell .main,.legacyDark .main{background:
-  radial-gradient(circle at 82% -8%,rgba(0,191,166,.045),transparent 24%),
+  radial-gradient(circle at 82% -8%,rgba(0,169,157,.045),transparent 24%),
   radial-gradient(circle at 8% 18%,rgba(70,106,140,.035),transparent 22%),
   var(--ev-bg)!important}
 
@@ -76,7 +76,7 @@ body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1
 .app-shell .project-cover,.legacyDark .project-cover{min-height:118px;background:
   radial-gradient(circle at 80% 10%,rgba(57,214,193,.12),transparent 34%),
   linear-gradient(145deg,#15283b,#102030);border-bottom:1px solid var(--ev-border)}
-.app-shell .project-initial,.legacyDark .project-initial{background:rgba(0,191,166,.10);border:1px solid rgba(0,191,166,.16);color:#78eadb}
+.app-shell .project-initial,.legacyDark .project-initial{background:rgba(0,169,157,.10);border:1px solid rgba(0,169,157,.16);color:#78eadb}
 .app-shell .card-body,.legacyDark .card-body{padding:18px}
 .app-shell .card-body h3,.legacyDark .card-body h3{font-size:17px;line-height:1.3;letter-spacing:-.015em;margin:7px 0}
 .app-shell .card-body h3 a,.legacyDark .card-body h3 a{color:var(--ev-text);text-decoration:none}
@@ -96,7 +96,7 @@ body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1
   display:inline-flex;align-items:center;min-height:26px;padding:4px 8px;border-radius:999px;
   border:1px solid rgba(148,163,184,.10);background:rgba(148,163,184,.065);color:#adbac8;font-size:11.5px;font-weight:650
 }
-.app-shell .stage,.legacyDark .stage{background:rgba(0,191,166,.09);border-color:rgba(0,191,166,.16);color:#73dfd0}
+.app-shell .stage,.legacyDark .stage{background:rgba(0,169,157,.09);border-color:rgba(0,169,157,.16);color:#73dfd0}
 
 /* Links and text actions */
 .app-shell .text-btn,.legacyDark .text-btn{color:#76dfd1;text-decoration:none;font-size:13px;font-weight:750}
@@ -105,7 +105,7 @@ body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1
 /* Buttons */
 .app-shell .primary,.legacyDark .primary,.app-shell button.primary,.legacyDark button.primary{
   min-height:40px;border-radius:9px!important;background:var(--ev-accent)!important;color:#032c27!important;border:0!important;
-  box-shadow:0 8px 20px rgba(0,191,166,.08);font-weight:800;letter-spacing:-.005em
+  box-shadow:0 8px 20px rgba(0,169,157,.08);font-weight:800;letter-spacing:-.005em
 }
 .app-shell .primary:hover,.legacyDark .primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
 .app-shell .secondary,.legacyDark .secondary,.app-shell button.secondary,.legacyDark button.secondary{
@@ -121,7 +121,7 @@ body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1
 }
 .app-shell input:hover,.app-shell textarea:hover,.app-shell select:hover,.legacyDark input:hover,.legacyDark textarea:hover,.legacyDark select:hover{border-color:rgba(148,163,184,.24)!important}
 .app-shell input:focus,.app-shell textarea:focus,.app-shell select:focus,.legacyDark input:focus,.legacyDark textarea:focus,.legacyDark select:focus{
-  outline:none!important;border-color:rgba(0,191,166,.58)!important;box-shadow:0 0 0 3px rgba(0,191,166,.10)!important;background:rgba(8,19,30,.92)!important
+  outline:none!important;border-color:rgba(0,169,157,.58)!important;box-shadow:0 0 0 3px rgba(0,169,157,.10)!important;background:rgba(8,19,30,.92)!important
 }
 .app-shell label,.legacyDark label{color:#c7d2df}
 .app-shell ::placeholder,.legacyDark ::placeholder{color:#61748a!important}
@@ -138,19 +138,19 @@ body{background:var(--ev-bg);color:var(--ev-text);font-feature-settings:"ss01" 1
 .app-shell .empty,.legacyDark .empty{background:rgba(148,163,184,.025)!important;border:1px dashed rgba(148,163,184,.17)!important;border-radius:12px!important;color:var(--ev-muted)!important;padding:32px!important}
 .app-shell .empty h3,.legacyDark .empty h3{color:#e8eef5;margin:8px 0 6px}
 .app-shell .empty p,.legacyDark .empty p{color:var(--ev-muted);max-width:560px;margin-inline:auto;line-height:1.6}
-.app-shell .notice,.app-shell .form-feedback,.legacyDark .notice,.legacyDark .form-feedback{background:rgba(0,191,166,.08)!important;border:1px solid rgba(0,191,166,.18)!important;color:#6fe4d4!important;border-radius:10px!important}
+.app-shell .notice,.app-shell .form-feedback,.legacyDark .notice,.legacyDark .form-feedback{background:rgba(0,169,157,.08)!important;border:1px solid rgba(0,169,157,.18)!important;color:#6fe4d4!important;border-radius:10px!important}
 .app-shell .error,.app-shell .form-error,.legacyDark .error,.legacyDark .form-error{background:rgba(255,122,144,.07)!important;border:1px solid rgba(255,122,144,.17)!important;color:#ffa0b1!important;border-radius:10px!important}
 
 /* Activity / onboarding */
 .app-shell .activity-item,.legacyDark .activity-item{border-radius:10px;transition:background-color .14s ease}
 .app-shell .activity-item:hover,.legacyDark .activity-item:hover{background:rgba(148,163,184,.04)}
-.app-shell .activity-item i,.legacyDark .activity-item i{background:rgba(0,191,166,.085);border:1px solid rgba(0,191,166,.12);color:#67dfd0}
+.app-shell .activity-item i,.legacyDark .activity-item i{background:rgba(0,169,157,.085);border:1px solid rgba(0,169,157,.12);color:#67dfd0}
 .app-shell .activity-item b,.legacyDark .activity-item b{color:#e8eef5}
 .app-shell .activity-item small,.legacyDark .activity-item small{color:var(--ev-muted)}
 
 /* Progress */
 .app-shell .progress,.legacyDark .progress{height:8px;background:rgba(148,163,184,.09);border-radius:999px;overflow:hidden}
-.app-shell .progress i,.legacyDark .progress i{display:block;height:100%;background:linear-gradient(90deg,#00bfa6,#39d6c1);border-radius:inherit}
+.app-shell .progress i,.legacyDark .progress i{display:block;height:100%;background:linear-gradient(90deg,#00a99d,#39d6c1);border-radius:inherit}
 
 /* Separators and detail areas */
 .app-shell hr,.legacyDark hr{border:0;border-top:1px solid var(--ev-border)}

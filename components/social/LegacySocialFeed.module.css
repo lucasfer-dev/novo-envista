@@ -31,9 +31,9 @@
   gap: 7px;
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(0, 191, 166, 0.18);
+  border: 1px solid rgba(0, 169, 157, 0.18);
   border-radius: 999px;
-  background: rgba(0, 191, 166, 0.065);
+  background: rgba(0, 169, 157, 0.065);
   color: #83e4d7;
   font-size: 12px;
   font-weight: 720;
@@ -50,8 +50,8 @@
 }
 
 .notice {
-  border: 1px solid rgba(0, 191, 166, 0.22);
-  background: rgba(0, 191, 166, 0.075);
+  border: 1px solid rgba(0, 169, 157, 0.22);
+  background: rgba(0, 169, 157, 0.075);
   color: #9ce9dd;
 }
 
@@ -88,7 +88,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 2px;
-  background: var(--ev-accent, #00bfa6);
+  background: var(--ev-accent, #00a99d);
   opacity: 0.8;
 }
 
@@ -202,7 +202,7 @@
   bottom: -7px;
   height: 2px;
   border-radius: 999px;
-  background: var(--ev-accent, #00bfa6);
+  background: var(--ev-accent, #00a99d);
 }
 
 .feedSearch {
@@ -219,8 +219,8 @@
 }
 
 .feedSearch:focus-within {
-  border-color: rgba(0, 191, 166, 0.42);
-  box-shadow: 0 0 0 3px rgba(0, 191, 166, 0.08);
+  border-color: rgba(0, 169, 157, 0.42);
+  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.08);
 }
 
 .feedSearch input {
@@ -296,8 +296,8 @@
 .projectAvatar {
   border-radius: 10px;
   color: #69dfd0;
-  background: rgba(0, 191, 166, 0.085);
-  border-color: rgba(0, 191, 166, 0.16);
+  background: rgba(0, 169, 157, 0.085);
+  border-color: rgba(0, 169, 157, 0.16);
 }
 
 .identityText {
@@ -377,9 +377,9 @@
 .projectReference {
   margin: 13px 0 0 51px;
   padding: 12px 13px;
-  border: 1px solid rgba(0, 191, 166, 0.13);
+  border: 1px solid rgba(0, 169, 157, 0.13);
   border-radius: 10px;
-  background: rgba(0, 191, 166, 0.045);
+  background: rgba(0, 169, 157, 0.045);
   color: #cde8e4;
   display: flex;
   align-items: center;
@@ -517,7 +517,7 @@
 
 .commentAvatar:hover {
   transform: translateY(-1px);
-  border-color: rgba(0,191,166,.4);
+  border-color: rgba(0,169,157,.4);
 }
 
 .commentActions {
@@ -561,9 +561,9 @@
   display: block;
   margin: 13px 0 0 51px;
   padding: 14px;
-  border: 1px solid rgba(0, 191, 166, 0.12);
+  border: 1px solid rgba(0, 169, 157, 0.12);
   border-radius: 11px;
-  background: rgba(0, 191, 166, 0.035);
+  background: rgba(0, 169, 157, 0.035);
 }
 
 .updateTitle {
@@ -649,7 +649,7 @@
 }
 
 .paginationButton:hover {
-  border-color: rgba(0, 191, 166, 0.28);
+  border-color: rgba(0, 169, 157, 0.28);
   color: #fff;
 }
 
@@ -727,9 +727,9 @@
 .followButton {
   min-height: 30px;
   padding: 0 9px;
-  border: 1px solid rgba(0, 191, 166, 0.2);
+  border: 1px solid rgba(0, 169, 157, 0.2);
   border-radius: 8px;
-  background: rgba(0, 191, 166, 0.05);
+  background: rgba(0, 169, 157, 0.05);
   color: #7fe2d5;
   font-size: 10.5px;
   font-weight: 750;
@@ -739,7 +739,7 @@
 }
 
 .followButton:hover {
-  background: rgba(0, 191, 166, 0.09);
+  background: rgba(0, 169, 157, 0.09);
 }
 
 .searchResultLabel {

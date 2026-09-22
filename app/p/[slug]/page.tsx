@@ -129,7 +129,7 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <header className={styles.header}><Link href="/"><img src="/envista-logo.png" alt=""/><strong>Envista</strong></Link><div><Link href="/projects">Explorar projetos</Link><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Criar conta</Link></div></header>
+      <header className={styles.header}><Link href="/"><img src="/brand/envista-symbol-gradient.svg" alt=""/><strong>Envista</strong></Link><div><Link href="/projects">Explorar projetos</Link><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Criar conta</Link></div></header>
       <article className={styles.hero}>
         <div className={styles.eyebrow}><span>{project.stage || "Projeto"}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div>
         <h1>{project.title}</h1>
