@@ -84,6 +84,10 @@ export function CompetitionsBrowser({
 
   useEffect(() => {
     void loadCompetitions(false);
+    const interval = window.setInterval(() => {
+      void loadCompetitions(false);
+    }, 5 * 60 * 1000);
+    return () => window.clearInterval(interval);
   }, [loadCompetitions]);
 
   useEffect(() => {
@@ -140,7 +144,7 @@ export function CompetitionsBrowser({
         <p>O Envista combina consultas a páginas oficiais com um catálogo curado de competições verificadas para ampliar a cobertura de inscrições, datas, modalidades e regulamentos.</p>
       </div>
       <div className={styles.liveActions}>
-        <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))}` : "Consultando fontes oficiais…"}</span>
+        <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))} · atualização automática a cada 5 min` : "Consultando fontes oficiais…"}</span>
         <button className={styles.refreshButton} type="button" disabled={refreshing} onClick={() => void loadCompetitions(true)}>{refreshing ? "Buscando…" : "↻ Buscar agora"}</button>
       </div>
     </div>
