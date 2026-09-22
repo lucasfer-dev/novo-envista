@@ -2458,25 +2458,45 @@ h3 {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 62px;
+    min-height: 64px;
+    padding-bottom: env(safe-area-inset-bottom);
     background: #101924;
     border-top: 1px solid var(--border);
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
   }
+  .bottom-nav a,
   .bottom-nav button {
-    flex: 1;
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 0;
+    min-height: 64px;
+    padding: 7px 2px 6px;
     border: 0;
     background: none;
     color: #748598;
+    text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    font-size: 12px;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
   }
+  .bottom-nav a svg,
+  .bottom-nav button svg {
+    flex: 0 0 auto;
+  }
+  .bottom-nav a span,
+  .bottom-nav button span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bottom-nav a.active,
   .bottom-nav button.active {
     color: #55d7c6;
   }
