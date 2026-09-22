@@ -109,7 +109,7 @@ export default async function AccountSecurityPage({
   const status = typeof params.status === "string" ? params.status : "";
   const error = typeof params.error === "string" ? params.error : "";
   const sessions = (sessionsData ?? []) as SessionRow[];
-  const home = profile.role === "investor" ? "/investor" : "/home";
+  const home = profile?.role === "investor" ? "/investor" : "/home";
 
   return (
     <AccountProductShell
