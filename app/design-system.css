@@ -3,7 +3,14 @@
    It is scoped to authenticated product shells so feature CSS modules remain safe. */
 
 :root {
-  --ev-bg: #0f1923;
+  /* Official Envista identity — single source of truth for the product UI. */
+  --ev-brand-blue: #0086a7;
+  --ev-brand-teal: #00a99d;
+  --ev-brand-green: #22b573;
+  --ev-brand-ink: #0f1923;
+  --ev-brand-gradient: linear-gradient(135deg, var(--ev-brand-green) 0%, var(--ev-brand-teal) 50%, var(--ev-brand-blue) 100%);
+
+  --ev-bg: var(--ev-brand-ink);
   --ev-bg-subtle: #12202d;
   --ev-sidebar: #0b151e;
   --ev-surface: #162535;
@@ -15,15 +22,15 @@
   --ev-text-secondary: #c5d0dc;
   --ev-muted: #91a2b6;
   --ev-muted-subtle: #718399;
-  --ev-accent: #00a99d;
+  --ev-accent: var(--ev-brand-teal);
   --ev-accent-hover: #18b8aa;
   --ev-accent-soft: rgba(0, 169, 157, 0.11);
   --ev-danger: #ff7a90;
   --ev-warning: #f5b84b;
-  --ev-success: #22b573;
-  --ev-radius-control: 9px;
-  --ev-radius-item: 11px;
-  --ev-radius-surface: 14px;
+  --ev-success: var(--ev-brand-green);
+  --ev-radius-control: 10px;
+  --ev-radius-item: 12px;
+  --ev-radius-surface: 16px;
   --ev-shadow-raised: 0 18px 55px rgba(0, 0, 0, 0.18);
   --ev-focus: 0 0 0 3px rgba(0, 169, 157, 0.18);
 }
