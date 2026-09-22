@@ -41,7 +41,7 @@ function one<T>(value: T | T[] | null | undefined): T | null {
 }
 
 function base(role: ProductRole) {
-  return role === "investor" ? "/investor/projects" : "/projects";
+  return role === "investor" ? "/investor/projects" : "/app/projects";
 }
 
 function ownerLabel(project: ProjectRow) {
