@@ -109,6 +109,10 @@ function participantRouteResponse(
 ) {
   const pathname = request.nextUrl.pathname;
 
+  // /projects is the public showcase. Keep the authenticated project area under
+  // /app/projects so it cannot collide with the public route.
+  if (pathname === "/app/projects" || pathname.startsWith("/app/projects/")) return null;
+
   // Old links keep working, but the browser is moved to the canonical URL.
   if (pathname === "/app" || pathname.startsWith("/app/")) {
     const target = request.nextUrl.clone();
