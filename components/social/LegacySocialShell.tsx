@@ -111,7 +111,7 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-envista-product-shell>
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
       <TaxonomyNavigationEnhancer />
       {mobileOpen && <button className="sidebar-backdrop" aria-label="Fechar navegação" onClick={closeMobile} />}

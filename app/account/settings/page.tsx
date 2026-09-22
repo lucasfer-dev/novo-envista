@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bell, CalendarDays, CircleUserRound, Database, LifeBuoy, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
-import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
+import AccountProductShell from "@/components/account/AccountProductShell";
+import { authStyles as styles } from "@/components/auth/AuthShell";
 import suite from "@/components/product/ProfessionalSuite.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { signOutEverywhereAction, updateNotificationPreferencesAction } from "@/lib/account/professional-actions";
@@ -11,18 +12,28 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
   const { data: claimsData, error } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;
   if (error || !userId) redirect("/login?error=session");
+
   const [{ data: profile }, { data: prefs }] = await Promise.all([
-    supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
+    supabase.from("profiles").select("username,display_name,role,avatar_path").eq("id", userId).maybeSingle(),
     supabase.from("notification_preferences").select("social,teams,projects,messages,investor_activity,saved_project_updates,calendar_events").eq("user_id", userId).maybeSingle(),
   ]);
+  if (!profile) redirect("/onboarding");
+
   const params = await searchParams;
-  const home = profile?.role === "investor" ? "/investor" : "/home";
+  const home = profile.role === "investor" ? "/investor" : "/home";
   const defaults = prefs ?? { social: true, teams: true, projects: true, messages: true, investor_activity: true, saved_project_updates: true, calendar_events: true };
 
   return (
-    <AuthShell wide title="Configurações" description="Conta, privacidade, notificações e segurança em um só lugar.">
+    <AccountProductShell
+      userId={userId}
+      profile={profile}
+      pathname="/account/settings"
+      title="Configurações"
+      description="Conta, privacidade, notificações e segurança em um só lugar."
+    >
       {params.status === "saved" ? <div className={styles.success}>Preferências atualizadas.</div> : null}
       {params.error ? <div className={styles.error}>Não foi possível salvar as alterações.</div> : null}
+
       <div className={suite.settingsGrid}>
         <Link className={suite.settingCard} href="/account/profile"><CircleUserRound size={20} /><h3>Perfil</h3><p>Nome, bio, avatar, localização e visibilidade.</p></Link>
         <Link className={suite.settingCard} href="/account/security"><LockKeyhole size={20} /><h3>Login e segurança</h3><p>E-mail, senha e dispositivos conectados à sua conta.</p></Link>
@@ -54,7 +65,10 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
         <Link className={styles.secondary} href="/account/security">Gerenciar login e dispositivos</Link>
         <form action={signOutEverywhereAction}><button className={styles.secondary} type="submit">Sair de todos os dispositivos</button></form>
       </div>
-      <div className={styles.actions} style={{ marginTop: 18 }}><Link className={styles.secondary} href={home}>Voltar ao Envista</Link><Link className={styles.secondary} href="/account/privacy"><Database size={15} /> Meus dados</Link></div>
-    </AuthShell>
+      <div className={styles.actions} style={{ marginTop: 18 }}>
+        <Link className={styles.secondary} href={home}>Voltar ao Envista</Link>
+        <Link className={styles.secondary} href="/account/privacy"><Database size={15} /> Meus dados</Link>
+      </div>
+    </AccountProductShell>
   );
 }
