@@ -130,15 +130,25 @@ function ProjectCard({ project }: { project: PublicProject }) {
 }
 
 export default async function PublicLandingServer() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("projects")
-    .select("slug,title,short_description,stage,category,tags,updated_at")
-    .eq("visibility", "platform")
-    .order("updated_at", { ascending: false })
-    .limit(6);
+  let projects: PublicProject[] = [];
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 
-  const projects = (data ?? []) as PublicProject[];
+  // Keep the public landing resilient when Supabase is unavailable (and in the
+  // browser E2E environment, which intentionally uses a placeholder endpoint).
+  if (supabaseUrl && !supabaseUrl.includes("example.supabase.co")) {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase
+        .from("projects")
+        .select("slug,title,short_description,stage,category,tags,updated_at")
+        .eq("visibility", "platform")
+        .order("updated_at", { ascending: false })
+        .limit(6);
+      projects = (data ?? []) as PublicProject[];
+    } catch {
+      projects = [];
+    }
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
