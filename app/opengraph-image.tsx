@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Envista — ideias que continuam'
+export const alt = 'Envista — projetos, portfólio e oportunidades para estudantes'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -42,19 +42,19 @@ export default function Image() {
 
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 920 }}>
           <span style={{ color: '#62ddcd', fontSize: 22, fontWeight: 700, marginBottom: 20 }}>
-            APRENDA · CONSTRUA · EVOLUA
+            PUBLIQUE · COMPARTILHE · EVOLUA
           </span>
           <div style={{ fontSize: 68, fontWeight: 780, lineHeight: 1.04, letterSpacing: '-3px' }}>
-            Ideias que continuam.
+            Seu projeto pode continuar.
           </div>
           <div style={{ color: '#a9b7c7', fontSize: 27, lineHeight: 1.35, marginTop: 24 }}>
-            Projetos, equipes, aprendizado e oportunidades em um único ecossistema.
+            Transforme trabalhos acadêmicos e projetos autorais em portfólio, visibilidade e novas oportunidades.
           </div>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', color: '#718399', fontSize: 20 }}>
           <span>useenvista.com.br</span>
-          <span style={{ color: '#62ddcd' }}>Construa algo que continue.</span>
+          <span style={{ color: '#62ddcd' }}>Projetos · Portfólio · Oportunidades</span>
         </div>
       </div>
     ),
