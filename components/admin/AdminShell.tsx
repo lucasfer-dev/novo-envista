@@ -71,7 +71,7 @@ export default function AdminShell({ profile, title, children }: Props) {
   const initials = (profile.display_name || profile.username || "A").trim().slice(0, 1).toUpperCase();
 
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} data-envista-admin-shell>
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
 
       <aside className={styles.side} aria-label="Navegação administrativa">
