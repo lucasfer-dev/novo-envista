@@ -295,6 +295,196 @@ html, body { background: var(--envista-ink); }
   background:var(--envista-gradient);
 }
 
+
+/* Product-wide identity expansion: use the official system as structure, not decoration. */
+.app-shell .main {
+  position:relative;
+  background:
+    radial-gradient(circle at 92% -6%,rgba(0,134,167,.08),transparent 28%),
+    radial-gradient(circle at 8% 108%,rgba(34,181,115,.055),transparent 30%),
+    var(--envista-ink);
+}
+.app-shell .main::before {
+  content:"";
+  position:fixed;
+  right:-120px;
+  bottom:-140px;
+  width:430px;
+  height:430px;
+  pointer-events:none;
+  background:url("/brand/envista-symbol-gradient.svg") center/contain no-repeat;
+  opacity:.018;
+  filter:saturate(.9);
+  z-index:0;
+}
+.app-shell .main > * {
+  position:relative;
+  z-index:1;
+}
+
+.app-shell .page-head {
+  position:relative;
+  overflow:hidden;
+  padding:22px 24px;
+  border:1px solid rgba(148,163,184,.105);
+  border-radius:16px;
+  background:
+    linear-gradient(120deg,rgba(0,169,157,.055),rgba(0,134,167,.025) 46%,rgba(15,25,35,.30)),
+    rgba(17,31,44,.40);
+}
+.app-shell .page-head::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:url("/brand/envista-pattern-dark.svg") right -35px center/310px auto repeat;
+  opacity:.055;
+  mask-image:linear-gradient(to left,#000,transparent 64%);
+}
+.app-shell .page-head::after {
+  content:"";
+  position:absolute;
+  left:24px;
+  bottom:0;
+  width:92px;
+  height:3px;
+  border-radius:999px 999px 0 0;
+  background:var(--envista-gradient);
+}
+.app-shell .page-head > * { position:relative; z-index:1; }
+.app-shell .page-head h1 {
+  background:linear-gradient(90deg,#fff 0%,#eef9f8 62%,#bcefe8 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.app-shell .panel,
+.app-shell .project-card,
+.app-shell .team-card {
+  position:relative;
+  overflow:hidden;
+}
+.app-shell .panel::before,
+.app-shell .project-card::before,
+.app-shell .team-card::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,169,157,.18),rgba(0,134,167,.10),transparent);
+  pointer-events:none;
+}
+.app-shell .panel:hover::before,
+.app-shell .project-card:hover::before,
+.app-shell .team-card:hover::before {
+  background:linear-gradient(90deg,transparent,rgba(34,181,115,.32),rgba(0,169,157,.34),rgba(0,134,167,.22),transparent);
+}
+
+.app-shell .primary {
+  background:var(--envista-gradient)!important;
+  color:#041c1a!important;
+  box-shadow:0 8px 24px rgba(0,169,157,.12)!important;
+}
+.app-shell .primary:hover {
+  filter:brightness(1.08) saturate(1.05);
+}
+.app-shell .text-btn {
+  color:#69dfd0;
+}
+.app-shell .text-btn:hover {
+  color:#8eefe4;
+}
+
+.app-shell .stage,
+.app-shell .chips span,
+.app-shell .meta-row > span {
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.app-shell .chips span {
+  border-color:rgba(0,169,157,.13);
+  background:linear-gradient(180deg,rgba(0,169,157,.065),rgba(0,134,167,.035));
+}
+.app-shell .chips span:hover {
+  border-color:rgba(0,169,157,.28);
+  background:linear-gradient(180deg,rgba(0,169,157,.12),rgba(0,134,167,.065));
+}
+
+.app-shell .empty {
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,rgba(0,169,157,.028),rgba(0,134,167,.018)),
+    rgba(148,163,184,.018)!important;
+}
+.app-shell .empty::after {
+  content:"";
+  position:absolute;
+  right:-42px;
+  bottom:-48px;
+  width:142px;
+  height:142px;
+  background:url("/brand/envista-symbol-gradient.svg") center/contain no-repeat;
+  opacity:.035;
+  pointer-events:none;
+}
+.app-shell .empty > * { position:relative; z-index:1; }
+
+.app-shell .home-grid .opportunity {
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,rgba(34,181,115,.085),rgba(0,169,157,.055) 44%,rgba(0,134,167,.035)),
+    #101d2b!important;
+}
+.app-shell .home-grid .opportunity::after {
+  content:"";
+  position:absolute;
+  right:-46px;
+  top:-48px;
+  width:180px;
+  height:180px;
+  background:url("/brand/envista-symbol-gradient.svg") center/contain no-repeat;
+  opacity:.065;
+  pointer-events:none;
+}
+.app-shell .home-grid .opportunity > * { position:relative; z-index:1; }
+
+.app-shell .activity-item i {
+  background:linear-gradient(#17313b,#17313b) padding-box,var(--envista-gradient) border-box!important;
+  border:1px solid transparent!important;
+}
+.app-shell .avatar {
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+}
+
+.app-shell .topbar {
+  box-shadow:0 1px 0 rgba(0,169,157,.025);
+}
+.app-shell .topbar::after {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,169,157,.15),rgba(0,134,167,.08),transparent);
+  pointer-events:none;
+}
+
+@media (max-width:650px) {
+  .app-shell .page-head {
+    padding:18px;
+    border-radius:14px;
+  }
+  .app-shell .page-head::after { left:18px; }
+  .app-shell .page-head::before { opacity:.035; }
+  .app-shell .main::before { display:none; }
+}
+
 /* Identity material in auth, where the richer branding belongs. */
 .envista-auth-page {
   background:
