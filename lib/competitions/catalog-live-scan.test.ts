@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { VERIFIED_COMPETITION_CATALOG_2026 } from "@/lib/competitions/catalog-2026";
-import { CATALOG_SCANNER_SOURCE_IDS, CATALOG_SCANNER_SOURCES } from "@/lib/competitions/catalog-live-scan";
+import { VERIFIED_COMPETITION_CATALOG_2026 } from "./catalog-2026";
+import { CATALOG_SCANNER_SOURCE_IDS, CATALOG_SCANNER_SOURCES } from "./catalog-live-scan";
 
 describe("curated competition live scanner coverage", () => {
   it("has an official scanner for every curated competition", () => {
