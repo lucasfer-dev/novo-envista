@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { KeyRound, Mail, MonitorSmartphone, ShieldCheck } from "lucide-react";
-import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
+import AccountProductShell from "@/components/account/AccountProductShell";
+import { authStyles as styles } from "@/components/auth/AuthShell";
 import suite from "@/components/product/ProfessionalSuite.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { signOutEverywhereAction } from "@/lib/account/professional-actions";
@@ -98,19 +99,26 @@ export default async function AccountSecurityPage({
   const [{ data: userData, error: userError }, { data: sessionsData, error: sessionsError }, { data: profile }] = await Promise.all([
     supabase.auth.getUser(),
     supabase.rpc("list_my_auth_sessions"),
-    supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
+    supabase.from("profiles").select("username,display_name,role,avatar_path").eq("id", userId).maybeSingle(),
   ]);
 
   if (userError || !userData.user) redirect("/login?error=session");
+  if (!profile) redirect("/onboarding");
 
   const params = await searchParams;
   const status = typeof params.status === "string" ? params.status : "";
   const error = typeof params.error === "string" ? params.error : "";
   const sessions = (sessionsData ?? []) as SessionRow[];
-  const home = profile?.role === "investor" ? "/investor" : "/home";
+  const home = profile.role === "investor" ? "/investor" : "/home";
 
   return (
-    <AuthShell wide title="Login e segurança" description="Gerencie seu e-mail, senha e os dispositivos conectados à sua conta.">
+    <AccountProductShell
+      userId={userId}
+      profile={profile}
+      pathname="/account/security"
+      title="Login e segurança"
+      description="Gerencie seu e-mail, senha e os dispositivos conectados à sua conta."
+    >
       {status ? <div className={styles.success}>{statusMessage(status)}</div> : null}
       {error ? <div className={styles.error}>{errorMessage(error)}</div> : null}
 
@@ -180,6 +188,6 @@ export default async function AccountSecurityPage({
         <Link className={styles.secondary} href="/account/settings"><ShieldCheck size={15} /> Configurações</Link>
         <Link className={styles.secondary} href={home}>Voltar ao Envista</Link>
       </div>
-    </AuthShell>
+    </AccountProductShell>
   );
 }
