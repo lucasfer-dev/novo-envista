@@ -28,6 +28,12 @@
   --ev-accent-tertiary: var(--envista-green);
   --ev-accent-soft: rgba(0, 169, 157, 0.11);
   --ev-focus: 0 0 0 3px rgba(0, 169, 157, 0.18);
+  --ev-primary-bg: #00a99d;
+  --ev-primary-bg-hover: #18b8aa;
+  --ev-primary-fg: #061916;
+  --ev-primary-height: 44px;
+  --ev-primary-radius: 10px;
+  --ev-primary-padding-x: 16px;
 }
 
 html, body { background: var(--envista-ink); }
@@ -384,12 +390,27 @@ html, body { background: var(--envista-ink); }
 }
 
 .app-shell .primary {
-  background:var(--envista-gradient)!important;
-  color:#041c1a!important;
-  box-shadow:0 8px 24px rgba(0,169,157,.12)!important;
+  background:var(--ev-primary-bg)!important;
+  color:var(--ev-primary-fg)!important;
+  min-height:var(--ev-primary-height)!important;
+  padding:0 var(--ev-primary-padding-x)!important;
+  border:0!important;
+  border-radius:var(--ev-primary-radius)!important;
+  box-shadow:0 8px 22px rgba(0,169,157,.14)!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  text-decoration:none!important;
+  cursor:pointer;
 }
 .app-shell .primary:hover {
-  filter:brightness(1.08) saturate(1.05);
+  background:var(--ev-primary-bg-hover)!important;
+  filter:none!important;
+  transform:translateY(-1px);
 }
 .app-shell .text-btn {
   color:#69dfd0;
@@ -533,4 +554,61 @@ html, body { background: var(--envista-ink); }
   .app-shell .interactive-card-arrow,
   .app-shell .sidebar nav a,
   .app-shell .side-section a { transition:none!important; }
+}
+
+
+/* Canonical filled action button.
+   Keeps actions such as “Filtrar”, “Ver cursos”, “Salvar” and equivalent
+   primary controls visually identical across the authenticated product. */
+[data-envista-product-shell] :is(a,button,input)[class*="_primary_"],
+[data-envista-admin-shell] :is(a,button,input)[class*="_primary_"],
+.envista-auth-page :is(a,button,input)[class*="_primary_"] {
+  min-height:var(--ev-primary-height)!important;
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  padding:0 var(--ev-primary-padding-x)!important;
+  border:0!important;
+  border-radius:var(--ev-primary-radius)!important;
+  background:var(--ev-primary-bg)!important;
+  color:var(--ev-primary-fg)!important;
+  font:inherit;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  box-shadow:0 8px 22px rgba(0,169,157,.14)!important;
+  cursor:pointer;
+  transition:background-color 150ms ease,transform 150ms ease,box-shadow 150ms ease!important;
+}
+[data-envista-product-shell] :is(a,button,input)[class*="_primary_"]:hover:not(:disabled),
+[data-envista-admin-shell] :is(a,button,input)[class*="_primary_"]:hover:not(:disabled),
+.envista-auth-page :is(a,button,input)[class*="_primary_"]:hover:not(:disabled) {
+  background:var(--ev-primary-bg-hover)!important;
+  filter:none!important;
+  transform:translateY(-1px);
+  box-shadow:0 10px 26px rgba(0,169,157,.18)!important;
+}
+[data-envista-product-shell] :is(a,button,input)[class*="_primary_"]:active:not(:disabled),
+[data-envista-admin-shell] :is(a,button,input)[class*="_primary_"]:active:not(:disabled),
+.envista-auth-page :is(a,button,input)[class*="_primary_"]:active:not(:disabled) {
+  transform:translateY(0);
+  box-shadow:0 5px 14px rgba(0,169,157,.12)!important;
+}
+[data-envista-product-shell] :is(a,button,input)[class*="_primary_"]:focus-visible,
+[data-envista-admin-shell] :is(a,button,input)[class*="_primary_"]:focus-visible,
+.envista-auth-page :is(a,button,input)[class*="_primary_"]:focus-visible {
+  outline:2px solid #74e2d1!important;
+  outline-offset:3px!important;
+  box-shadow:var(--ev-focus),0 8px 22px rgba(0,169,157,.14)!important;
+}
+[data-envista-product-shell] :is(button,input)[class*="_primary_"]:disabled,
+[data-envista-admin-shell] :is(button,input)[class*="_primary_"]:disabled,
+.envista-auth-page :is(button,input)[class*="_primary_"]:disabled {
+  opacity:.55!important;
+  cursor:not-allowed!important;
+  transform:none!important;
+  box-shadow:none!important;
 }
