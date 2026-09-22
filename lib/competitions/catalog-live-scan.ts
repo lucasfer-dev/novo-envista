@@ -1,5 +1,5 @@
-import { VERIFIED_COMPETITION_CATALOG_2026 } from "@/lib/competitions/catalog-2026";
-import type { CompetitionStatus, LiveCompetition } from "@/lib/competitions/types";
+import { VERIFIED_COMPETITION_CATALOG_2026 } from "./catalog-2026";
+import type { CompetitionStatus, LiveCompetition } from "./types";
 
 type CatalogScannerSource = {
   id: string;
