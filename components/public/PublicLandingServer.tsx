@@ -56,6 +56,7 @@ function Header() {
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Navegação principal">
+          <Link href="/projects">Projetos</Link>
           <Link href="/schools">Para escolas</Link>
           <Link href="/login">Entrar</Link>
           <Link className={styles.headerCta} href="/register">Criar conta</Link>
@@ -64,6 +65,7 @@ function Header() {
         <details className={styles.mobileNav}>
           <summary aria-label="Abrir navegação"><Menu size={20} aria-hidden="true" /></summary>
           <nav aria-label="Navegação principal no celular">
+            <Link href="/projects">Projetos</Link>
             <Link href="/schools">Para escolas</Link>
             <Link href="/login">Entrar</Link>
             <Link className={styles.headerCta} href="/register">Criar conta</Link>
@@ -75,8 +77,39 @@ function Header() {
 }
 
 export default function PublicLandingServer() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://useenvista.com.br/#organization",
+        name: "Envista",
+        url: "https://useenvista.com.br",
+        logo: "https://useenvista.com.br/envista-logo.png",
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://useenvista.com.br/#website",
+        url: "https://useenvista.com.br",
+        name: "Envista",
+        inLanguage: "pt-BR",
+        publisher: { "@id": "https://useenvista.com.br/#organization" },
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: "Envista",
+        applicationCategory: "EducationalApplication",
+        operatingSystem: "Web",
+        url: "https://useenvista.com.br",
+        description: "Plataforma para estudantes e equipes publicarem projetos, criarem portfólios vivos e encontrarem oportunidades.",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
+      },
+    ],
+  };
+
   return (
     <main className={styles.page}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <a className={styles.skipLink} href="#conteudo">Pular para o conteúdo</a>
       <Header />
 
