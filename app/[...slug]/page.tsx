@@ -103,7 +103,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (directProject) {
     const expectedRole = roleFromBase(directProject[1]);
     const item = directProject[2];
-    const projectBase = expectedRole === "investor" ? "/investor/projects" : "/projects";
+    const projectBase = expectedRole === "investor" ? "/investor/projects" : "/app/projects";
     const exploreBase = expectedRole === "investor" ? "/investor/explore" : "/explore";
     const fromExplore = first(resolvedSearchParams.from) === "explore";
     if (!item) return <LegacyProjectsIndexPage expectedRole={expectedRole} pathname={projectBase} searchParams={searchParams} />;
