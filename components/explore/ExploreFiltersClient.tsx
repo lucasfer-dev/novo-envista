@@ -40,7 +40,7 @@ export default function ExploreFiltersClient({
   const hasFilters = Boolean(query.trim()) || stage !== "Todos";
 
   return (
-    <form className="filters" onSubmit={submit} data-envista-server-explore="true">
+    <form className="filters explore-filters" onSubmit={submit} data-envista-server-explore="true">
       <label className="search-field">
         <Search size={18} />
         <input
