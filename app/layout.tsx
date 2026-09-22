@@ -8,29 +8,47 @@ import './authenticated-layout-v2.css'
 import './brand-identity.css'
 import type { Metadata, Viewport } from 'next'
 
+const siteUrl = 'https://useenvista.com.br'
+const siteTitle = 'Envista | Projetos, portfólio e oportunidades para estudantes'
+const siteDescription = 'Publique projetos, organize equipes e transforme trabalhos acadêmicos e projetos autorais em um portfólio vivo para compartilhar em processos seletivos, competições e novas oportunidades.'
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://useenvista.com.br'),
-  title: { default: 'Envista — ideias que continuam', template: '%s | Envista' },
-  description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades no Envista.',
+  metadataBase: new URL(siteUrl),
+  title: { default: siteTitle, template: '%s | Envista' },
+  description: siteDescription,
   applicationName: 'Envista',
+  keywords: [
+    'projetos de estudantes',
+    'portfólio para estudantes',
+    'portfólio de tecnologia',
+    'projetos universitários',
+    'projetos acadêmicos',
+    'competição de inovação',
+    'equipes de projetos',
+    'Envista',
+  ],
+  alternates: { canonical: '/' },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: [{ url: '/brand/envista-symbol-gradient.svg', type: 'image/svg+xml' }],
     shortcut: '/brand/envista-symbol-gradient.svg',
     apple: '/envista-logo.png',
   },
   openGraph: {
-    title: 'Envista — ideias que continuam',
-    description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades.',
-    url: 'https://useenvista.com.br',
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl,
     siteName: 'Envista',
     locale: 'pt_BR',
     type: 'website',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Envista — ideias que continuam' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Envista — projetos que continuam depois da entrega' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Envista — ideias que continuam',
-    description: 'Aprenda, construa projetos, forme equipes e transforme ideias em oportunidades.',
+    title: siteTitle,
+    description: siteDescription,
     images: ['/opengraph-image'],
   },
 }

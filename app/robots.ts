@@ -5,10 +5,25 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/about", "/schools", "/terms", "/privacy"],
-        disallow: ["/app/", "/investor/", "/admin/", "/account/", "/auth/", "/login", "/register", "/onboarding", "/forgot-password", "/recover-account", "/update-password"],
+        allow: ["/", "/about", "/schools", "/projects", "/p/"],
+        disallow: [
+          "/app/",
+          "/investor/",
+          "/admin/",
+          "/account/",
+          "/auth/",
+          "/api/",
+          "/login",
+          "/register",
+          "/onboarding",
+          "/guardian-required",
+          "/forgot-password",
+          "/recover-account",
+          "/update-password",
+        ],
       },
     ],
     sitemap: "https://useenvista.com.br/sitemap.xml",
+    host: "https://useenvista.com.br",
   };
 }

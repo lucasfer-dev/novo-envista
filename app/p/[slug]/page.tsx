@@ -31,30 +31,58 @@ async function load(slug: string): Promise<ProjectShare | null> {
   return data as ProjectShare;
 }
 
+function projectDescription(project: ProjectShare) {
+  return (
+    project.short_description?.trim() ||
+    project.description?.trim().slice(0, 220) ||
+    `Conheça o projeto ${project.title}, publicado no Envista.`
+  );
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const project = await load(slug);
-  if (!project) return { title: "Projeto não encontrado" };
-  const description = project.short_description || `Conheça ${project.title} no Envista.`;
-  const image = { url: "/opengraph-image", width: 1200, height: 630, alt: `${project.title} no Envista` };
+
+  if (!project) {
+    return {
+      title: "Projeto não encontrado",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const description = projectDescription(project);
+  const canonical = `/p/${project.slug}`;
+  const ogImage = `${canonical}/opengraph-image`;
+
   return {
-    title: project.title,
+    title: `${project.title} — projeto e portfólio`,
     description,
-    alternates: { canonical: `/p/${project.slug}` },
+    alternates: { canonical },
+    keywords: [
+      project.title,
+      project.category,
+      ...(project.tags ?? []),
+      "projeto de estudante",
+      "portfólio de projeto",
+      "Envista",
+    ].filter((value): value is string => Boolean(value)),
+    robots: { index: true, follow: true },
     openGraph: {
       title: `${project.title} | Envista`,
       description,
-      url: `/p/${project.slug}`,
-      type: "website",
+      url: canonical,
+      type: "article",
       siteName: "Envista",
       locale: "pt_BR",
-      images: [image],
+      modifiedTime: project.updated_at || undefined,
+      tags: project.tags ?? undefined,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${project.title} no Envista` }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${project.title} | Envista`,
       description,
-      images: ["/opengraph-image"],
+      images: [ogImage],
     },
   };
 }
@@ -63,6 +91,7 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
   const { slug } = await params;
   const project = await load(slug);
   if (!project) notFound();
+
   const tags = project.tags ?? [];
   const projectLinks = [
     [project.demo_url, "Ver demo"],
@@ -70,9 +99,37 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
     [project.design_url, "Design / protótipo"],
   ].filter((entry): entry is [string, string] => Boolean(entry[0]));
 
+  const authorName = project.team?.name || project.owner?.name || "Comunidade Envista";
+  const description = projectDescription(project);
+  const canonicalUrl = `https://useenvista.com.br/p/${project.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: project.title,
+    description,
+    url: canonicalUrl,
+    dateModified: project.updated_at || undefined,
+    genre: project.category || undefined,
+    keywords: tags.length ? tags.join(", ") : undefined,
+    author: {
+      "@type": project.team?.name ? "Organization" : "Person",
+      name: authorName,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Envista",
+      url: "https://useenvista.com.br",
+    },
+    sameAs: projectLinks.map(([href]) => href),
+  };
+
   return (
     <main className={styles.page}>
-      <header className={styles.header}><Link href="/"><img src="/envista-logo.png" alt=""/><strong>Envista</strong></Link><div><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Criar conta</Link></div></header>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <header className={styles.header}><Link href="/"><img src="/envista-logo.png" alt=""/><strong>Envista</strong></Link><div><Link href="/projects">Explorar projetos</Link><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Criar conta</Link></div></header>
       <article className={styles.hero}>
         <div className={styles.eyebrow}><span>{project.stage || "Projeto"}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div>
         <h1>{project.title}</h1>
