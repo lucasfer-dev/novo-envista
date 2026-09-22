@@ -72,8 +72,8 @@ html, body { background: var(--envista-ink); }
   position:absolute;
   inset:0;
   pointer-events:none;
-  background:url("/brand/envista-pattern-dark.svg") center/360px auto repeat;
-  opacity:.16;
+  background:url("/brand/envista-pattern-dark.svg") center/350px auto repeat;
+  opacity:.20;
   mask-image:linear-gradient(to bottom,#000,transparent 82%);
 }
 .app-shell .sidebar > *,
