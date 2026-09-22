@@ -85,8 +85,8 @@ function Header() {
     <header className={styles.header}>
       <div className={styles.headerInner}>
         <Link className={styles.brand} href="/" aria-label="Envista — página inicial">
-          <Image src="/envista-logo.png" alt="" width={30} height={30} priority />
-          <span>Envista</span>
+          <Image src="/brand/envista-symbol-gradient.svg" alt="" width={30} height={30} priority />
+          <span className={styles.brandWord}>Envista</span>
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Navegação principal">
@@ -190,7 +190,7 @@ export default async function PublicLandingServer() {
         <section className={styles.hero} aria-labelledby="hero-title">
           <div className={styles.heroCopy}>
             <span className={styles.kicker}>INCUBADORA DIGITAL DE PROJETOS</span>
-            <h1 id="hero-title">Ideias não precisam morrer depois da apresentação.</h1>
+            <h1 id="hero-title">Ideias não precisam morrer <span className={styles.heroAccent}>depois da apresentação.</span></h1>
             <p>
               O Envista ajuda estudantes e equipes a transformar trabalhos, desafios e projetos autorais em algo que continua evoluindo: com portfólio, equipe, feedback e oportunidades no mesmo lugar.
             </p>
@@ -338,7 +338,7 @@ export default async function PublicLandingServer() {
 
       <footer className={styles.footer}>
         <div>
-          <Link className={styles.brand} href="/"><Image src="/envista-logo.png" alt="" width={26} height={26} /><span>Envista</span></Link>
+          <Link className={styles.brand} href="/"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={26} height={26} /><span>Envista</span></Link>
           <p>Projetos que continuam depois da entrega.</p>
         </div>
         <nav aria-label="Links institucionais">
