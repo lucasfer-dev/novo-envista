@@ -35,7 +35,7 @@ const journey = [
   {
     Icon: Sparkles,
     title: "Encontre o próximo passo",
-    copy: "Descubra competições, oportunidades e pessoas interessadas no projeto.",
+    copy: "Compartilhe seu projeto, receba feedback e descubra competições e oportunidades.",
   },
 ];
 
@@ -43,7 +43,7 @@ const productSignals = [
   "Projetos como portfólio vivo",
   "Equipes e colaboração no mesmo espaço",
   "Aprendizado ligado à execução",
-  "Descoberta para participantes e investidores",
+  "Página pública pronta para compartilhar",
 ];
 
 function Header() {
@@ -83,20 +83,20 @@ export default function PublicLandingServer() {
       <div id="conteudo">
         <section className={styles.hero} aria-labelledby="hero-title">
           <div className={styles.heroCopy}>
-            <span className={styles.kicker}>ECOSSISTEMA DE INOVAÇÃO</span>
-            <h1 id="hero-title">Ideias não deveriam terminar depois da competição.</h1>
+            <span className={styles.kicker}>PROJETOS QUE CONTINUAM DEPOIS DA ENTREGA</span>
+            <h1 id="hero-title">Transforme seu projeto em portfólio, visibilidade e novas oportunidades.</h1>
             <p>
-              O Envista conecta aprendizado, equipes, projetos, competições e oportunidades em uma jornada única — da primeira ideia ao próximo passo.
+              Publique o que você está construindo, organize sua equipe, mostre evolução real e tenha uma página profissional para compartilhar em processos seletivos, competições e com quem pode ajudar o projeto a crescer.
             </p>
             <div className={styles.heroActions}>
-              <Link className={styles.primary} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
+              <Link className={styles.primary} href="/register">Publicar meu projeto <ArrowRight size={17} aria-hidden="true" /></Link>
               <Link className={styles.secondary} href="/schools">Envista para escolas</Link>
             </div>
             <div className={styles.heroProof} aria-label="Principais áreas do produto">
               <span><CheckCircle2 size={15} aria-hidden="true" /> Projetos</span>
               <span><CheckCircle2 size={15} aria-hidden="true" /> Equipes</span>
-              <span><CheckCircle2 size={15} aria-hidden="true" /> Aprendizado</span>
-              <span><CheckCircle2 size={15} aria-hidden="true" /> Oportunidades</span>
+              <span><CheckCircle2 size={15} aria-hidden="true" /> Portfólio</span>
+              <span><CheckCircle2 size={15} aria-hidden="true" /> Compartilhamento</span>
             </div>
           </div>
 
@@ -107,12 +107,12 @@ export default function PublicLandingServer() {
             </div>
             <div className={styles.previewHero}>
               <div className={styles.previewIcon}><Rocket size={24} aria-hidden="true" /></div>
-              <div><small>SEU PRÓXIMO PASSO</small><strong>Construa algo que continue.</strong><p>Aprender → equipe → projeto → oportunidade</p></div>
+              <div><small>SEU PROJETO, VISÍVEL</small><strong>Construa algo que continue.</strong><p>Projeto → página pública → feedback → oportunidade</p></div>
             </div>
             <div className={styles.previewGrid}>
               <div><Users size={18} aria-hidden="true" /><strong>Equipe</strong><span>Colabore com contexto.</span></div>
               <div><Trophy size={18} aria-hidden="true" /><strong>Competições</strong><span>Descubra oportunidades.</span></div>
-              <div><Eye size={18} aria-hidden="true" /><strong>Visibilidade</strong><span>Mostre evolução real.</span></div>
+              <div><Eye size={18} aria-hidden="true" /><strong>Portfólio vivo</strong><span>Compartilhe evolução real.</span></div>
               <div><BookOpen size={18} aria-hidden="true" /><strong>Aprender</strong><span>Avance construindo.</span></div>
             </div>
           </div>
@@ -120,8 +120,8 @@ export default function PublicLandingServer() {
 
         <section className={styles.section} aria-labelledby="journey-title">
           <div className={styles.sectionHeading}>
-            <div><span className={styles.kicker}>COMO FUNCIONA</span><h2 id="journey-title">Uma jornada clara para transformar intenção em progresso.</h2></div>
-            <p>Menos ferramentas soltas. Mais continuidade entre aprender, colaborar, construir e encontrar oportunidades.</p>
+            <div><span className={styles.kicker}>COMO FUNCIONA</span><h2 id="journey-title">Do trabalho de aula para um projeto que pode ser mostrado ao mundo.</h2></div>
+            <p>Crie, organize, publique e compartilhe. O valor começa no seu próprio projeto e cresce conforme outras pessoas interagem com ele.</p>
           </div>
           <div className={styles.journeyGrid}>
             {journey.map(({ Icon, title, copy }, index) => (
@@ -140,12 +140,12 @@ export default function PublicLandingServer() {
             <span className={styles.kicker}>UM PRODUTO, NÃO UM ARQUIVO MORTO</span>
             <h2 id="product-title">Seu projeto continua evoluindo depois da apresentação.</h2>
             <p>
-              O Envista organiza o que normalmente fica espalhado: quem está construindo, o que mudou, o que falta aprender e qual oportunidade faz sentido agora.
+              O Envista reúne problema, solução, equipe, links, estágio e evolução em uma página pública que você pode usar como portfólio e atualizar conforme o projeto cresce.
             </p>
             <ul>
               {productSignals.map((signal) => <li key={signal}><CheckCircle2 size={17} aria-hidden="true" /> {signal}</li>)}
             </ul>
-            <Link className={styles.textLink} href="/register">Criar meu espaço no Envista <ArrowRight size={16} aria-hidden="true" /></Link>
+            <Link className={styles.textLink} href="/register">Publicar meu primeiro projeto <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
           <div className={styles.workflowCard}>
             <div className={styles.workflowHead}><span>Projeto em evolução</span><span className={styles.stage}>Em validação</span></div>
@@ -168,27 +168,27 @@ export default function PublicLandingServer() {
           <div className={styles.audienceGrid}>
             <article>
               <div className={styles.audienceIcon}><School size={22} aria-hidden="true" /></div>
-              <span>PARTICIPANTES E ESCOLAS</span>
+              <span>ESTUDANTES, EQUIPES E ESCOLAS</span>
               <h3>Aprendizado que vira projeto.</h3>
-              <p>Organize equipes, construa portfólio e acompanhe a evolução sem perder o contexto entre uma etapa e outra.</p>
+              <p>Transforme trabalhos, challenges e projetos autorais em páginas profissionais, portfólio e histórico de evolução.</p>
               <Link href="/schools">Conhecer a experiência educacional <ArrowRight size={16} aria-hidden="true" /></Link>
             </article>
             <article>
               <div className={styles.audienceIcon}><BriefcaseBusiness size={22} aria-hidden="true" /></div>
-              <span>INVESTIDORES</span>
-              <h3>Descoberta com contexto, não só um pitch.</h3>
-              <p>Entenda problema, solução, estágio, equipe e progresso antes de decidir acompanhar ou demonstrar interesse.</p>
-              <Link href="/login">Acessar como investidor <ArrowRight size={16} aria-hidden="true" /></Link>
+              <span>EMPRESAS, MENTORES E INVESTIDORES</span>
+              <h3>Descubra projetos e talentos com contexto.</h3>
+              <p>Veja problema, solução, estágio, equipe e progresso antes de acompanhar, dar feedback ou demonstrar interesse.</p>
+              <Link href="/login">Explorar o ecossistema <ArrowRight size={16} aria-hidden="true" /></Link>
             </article>
           </div>
         </section>
 
         <section className={styles.finalCta}>
           <span className={styles.kicker}>ENVISTA</span>
-          <h2>Existe uma ideia esperando pelo próximo passo.</h2>
-          <p>Comece com o que você já tem. O Envista ajuda a organizar o que vem depois.</p>
+          <h2>Seu próximo projeto já pode começar como portfólio.</h2>
+          <p>Publique o que você já construiu, compartilhe uma página profissional e continue evoluindo depois da entrega.</p>
           <div className={styles.heroActions}>
-            <Link className={styles.primary} href="/register">Criar conta <ArrowRight size={17} aria-hidden="true" /></Link>
+            <Link className={styles.primary} href="/register">Publicar meu projeto <ArrowRight size={17} aria-hidden="true" /></Link>
             <Link className={styles.secondary} href="/login">Já tenho uma conta</Link>
           </div>
         </section>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import ShareProjectButton from "@/components/public/ShareProjectButton";
 import styles from "./public-project.module.css";
 
 type ProjectShare = {
@@ -77,8 +78,9 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
         <h1>{project.title}</h1>
         <p className={styles.lead}>{project.short_description || "Projeto publicado no Envista."}</p>
         <div className={styles.tags}>{tags.map((tag)=><span key={tag}>{tag}</span>)}</div>
-        <div className={styles.actions}>{projectLinks.map(([href,label])=><a className={styles.secondary} href={href} target="_blank" rel="noreferrer" key={label}>{label} <ExternalLink size={15}/></a>)}<Link className={styles.primary} href="/register">Conhecer o Envista <ArrowRight size={16}/></Link></div>
+        <div className={styles.actions}>{projectLinks.map(([href,label])=><a className={styles.secondary} href={href} target="_blank" rel="noreferrer" key={label}>{label} <ExternalLink size={15}/></a>)}<ShareProjectButton className={styles.secondary} title={project.title} href={`/p/${project.slug}`} /><Link className={styles.primary} href="/register">Publique seu projeto <ArrowRight size={16}/></Link></div>
       </article>
+      <section className={styles.sharePitch} aria-label="Sobre páginas públicas no Envista"><strong>Este projeto tem uma página pública no Envista.</strong><span>Crie a sua para usar como portfólio, compartilhar em processos seletivos e continuar registrando a evolução depois da entrega.</span><Link href="/register">Criar minha página de projeto <ArrowRight size={15} aria-hidden="true" /></Link></section>
       <section className={styles.content}>
         <div><h2>Sobre o projeto</h2><p>{project.description || project.short_description || "A equipe ainda não adicionou uma descrição detalhada."}</p></div>
         <aside>
