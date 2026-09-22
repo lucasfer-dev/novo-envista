@@ -90,7 +90,6 @@ function Header() {
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Navegação principal">
-          <Link href="/projects">Projetos</Link>
           <a href="#como-funciona">Como funciona</a>
           <Link href="/schools">Para escolas</Link>
           <Link href="/login">Entrar</Link>
@@ -100,7 +99,6 @@ function Header() {
         <details className={styles.mobileNav}>
           <summary aria-label="Abrir navegação"><Menu size={20} aria-hidden="true" /></summary>
           <nav aria-label="Navegação principal no celular">
-            <Link href="/projects">Projetos</Link>
             <a href="#como-funciona">Como funciona</a>
             <Link href="/schools">Para escolas</Link>
             <Link href="/login">Entrar</Link>
