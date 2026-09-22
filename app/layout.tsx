@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/' },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    google: '4YkmCMOntxpRbRRMb4DgSN2OELdhAKqiAHCt7UtCbn0',
   },
   icons: {
     icon: [{ url: '/brand/envista-symbol-gradient.svg', type: 'image/svg+xml' }],
