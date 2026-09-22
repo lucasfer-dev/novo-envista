@@ -93,6 +93,11 @@ function Avatar({ name }: { name: string }) {
 export default function LegacySocialShell({ user, role, pathname: activePath, children }: { user: User; role: ProductRole; pathname?: string; children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = activePath ?? (role === "investor" ? "/investor/social" : "/social");
+  const normalizedPathname = role === "participant" && pathname.startsWith("/app/")
+    ? pathname.slice(4)
+    : pathname === "/app"
+      ? "/home"
+      : pathname;
   const nav = role === "investor" ? investorNav : participantNav;
   const mobileNav = role === "investor" ? investorMobileNav : participantMobileNav;
   const prefix: "" | "/investor" = role === "investor" ? "/investor" : "";
@@ -121,7 +126,7 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
 
         <nav aria-label="Seções do produto">
           {nav.map(([href, Icon, label]) => {
-            const active = isNavItemActive(pathname, href);
+            const active = isNavItemActive(normalizedPathname, href);
             return (
               <Link
                 key={href}
@@ -139,10 +144,25 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
 
         <div className="side-section">
           <span>Conta</span>
-          <Link href={profile} onClick={closeMobile}><CircleUserRound size={18} aria-hidden="true" /> Perfil</Link>
-          <Link href="/account/settings" onClick={closeMobile}><Settings size={18} aria-hidden="true" /> Configurações</Link>
-          <Link href={`${prefix}/activity`} onClick={closeMobile}><Bell size={18} aria-hidden="true" /> Central de atividade</Link>
-          <Link href="/account/feedback" onClick={closeMobile}><LifeBuoy size={18} aria-hidden="true" /> Feedback e suporte</Link>
+          {[
+            [profile, CircleUserRound, "Perfil"],
+            ["/account/settings", Settings, "Configurações"],
+            [`${prefix}/activity`, Bell, "Central de atividade"],
+            ["/account/feedback", LifeBuoy, "Feedback e suporte"],
+          ].map(([href, Icon, label]) => {
+            const active = isNavItemActive(normalizedPathname, href as string);
+            return (
+              <Link
+                key={href as string}
+                href={href as string}
+                onClick={closeMobile}
+                className={cx(active && "active")}
+                aria-current={active ? "page" : undefined}
+              >
+                <Icon size={18} aria-hidden="true" /> {label as string}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="side-bottom">
@@ -171,7 +191,7 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
 
       <nav className="bottom-nav" aria-label="Navegação móvel">
         {mobileNav.map(([href, Icon, label]) => {
-          const active = isNavItemActive(pathname, href);
+          const active = isNavItemActive(normalizedPathname, href);
           return (
             <Link key={href} href={href} onClick={closeMobile} className={cx(active && "active")} aria-current={active ? "page" : undefined}>
               <Icon size={19} aria-hidden="true" />
@@ -179,7 +199,7 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
             </Link>
           );
         })}
-        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(pathname, href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation"><MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span></button>
+        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(normalizedPathname, href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation"><MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span></button>
       </nav>
     </div>
   );
