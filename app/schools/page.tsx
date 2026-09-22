@@ -61,7 +61,7 @@ function Header() {
 
 export default function SchoolsPage() {
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-envista-public-shell>
       <a className={styles.skipLink} href="#conteudo">Pular para o conteúdo</a>
       <Header />
       <div id="conteudo">

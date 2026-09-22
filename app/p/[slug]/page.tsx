@@ -124,7 +124,7 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
   };
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-envista-public-shell>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}

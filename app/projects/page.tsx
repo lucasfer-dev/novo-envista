@@ -76,7 +76,7 @@ export default async function ProjectsPage() {
   const projects = (data ?? []) as PublicProject[];
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-envista-public-shell>
       <a className={styles.skipLink} href="#projetos">Pular para os projetos</a>
       <Header />
 

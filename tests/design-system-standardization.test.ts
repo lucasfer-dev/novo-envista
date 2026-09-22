@@ -5,6 +5,12 @@ const designSystem = readFileSync("app/design-system.css", "utf8");
 const brandIdentity = readFileSync("app/brand-identity.css", "utf8");
 const productShell = readFileSync("components/social/LegacySocialShell.tsx", "utf8");
 const accountShell = readFileSync("components/account/AccountProductShell.tsx", "utf8");
+const publicSurfaces = [
+  "components/public/PublicLandingServer.tsx",
+  "app/projects/page.tsx",
+  "app/p/[slug]/page.tsx",
+  "app/schools/page.tsx",
+].map((path) => readFileSync(path, "utf8"));
 
 const accountPages = [
   "app/account/settings/page.tsx",
@@ -27,6 +33,14 @@ describe("Envista visual identity standardization", () => {
     expect(productShell).toContain("data-envista-product-shell");
     expect(brandIdentity).toContain('[class*="__primary"]');
     expect(brandIdentity).toContain('[class*="__secondary"]');
+  });
+
+  it("uses the brand gradient as the canonical standard action button", () => {
+    expect(brandIdentity).toContain("--ev-primary-bg: var(--envista-gradient)");
+    expect(brandIdentity).toContain('[class*="__ghost"]');
+    expect(brandIdentity).toContain('[class*="__headerCta"]');
+    expect(brandIdentity).toContain("[data-envista-public-shell]");
+    for (const page of publicSurfaces) expect(page).toContain("data-envista-public-shell");
   });
 
   it("keeps account management inside the authenticated product experience", () => {
