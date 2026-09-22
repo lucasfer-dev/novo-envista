@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./projects.module.css";
@@ -28,6 +29,12 @@ type PublicProject = {
 
 export default async function ProjectsPage() {
   const supabase = await createClient();
+  const { data: authData } = await supabase.auth.getUser();
+
+  // `/projects` is the public SEO showcase for visitors. If an authenticated
+  // participant reaches it through an old/stale navigation link, send them
+  // back into the product shell so "Meus projetos" keeps the sidebar.
+  if (authData.user) redirect("/app/projects");
   const { data } = await supabase
     .from("projects")
     .select("slug,title,short_description,stage,category,tags,updated_at")
