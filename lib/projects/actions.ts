@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 
 const stages = new Set(["Ideia", "Validação", "Protótipo", "MVP", "Projeto ativo"]);
-const PROJECTS_BASE = "/projects";
+const PROJECTS_BASE = "/app/projects";
 
 function text(formData: FormData, name: string, max: number) {
   const value = formData.get(name);

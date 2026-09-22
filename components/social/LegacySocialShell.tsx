@@ -38,7 +38,7 @@ const participantNav = [
   ["/home", Home, "Início"],
   ["/social", Activity, "Social"],
   ["/explore", Compass, "Explorar"],
-  ["/projects", FolderKanban, "Meus projetos"],
+  ["/app/projects", FolderKanban, "Meus projetos"],
   ["/teams", Users, "Minhas equipes"],
   ["/workspace", PanelsTopLeft, "Workspace"],
   ["/insights", BarChart3, "Insights"],
@@ -67,7 +67,7 @@ const investorNav = [
 const participantMobileNav = [
   ["/home", Home, "Início"],
   ["/explore", Compass, "Explorar"],
-  ["/projects", FolderKanban, "Projetos"],
+  ["/app/projects", FolderKanban, "Projetos"],
   ["/messages", MessageCircle, "Mensagens"],
 ] as const;
 
@@ -126,7 +126,8 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
 
         <nav aria-label="Seções do produto">
           {nav.map(([href, Icon, label]) => {
-            const active = isNavItemActive(normalizedPathname, href);
+            const activeHref = role === "participant" && href.startsWith("/app/") ? href.slice(4) : href;
+            const active = isNavItemActive(normalizedPathname, activeHref);
             return (
               <Link
                 key={href}
@@ -191,7 +192,8 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
 
       <nav className="bottom-nav" aria-label="Navegação móvel">
         {mobileNav.map(([href, Icon, label]) => {
-          const active = isNavItemActive(normalizedPathname, href);
+          const activeHref = role === "participant" && href.startsWith("/app/") ? href.slice(4) : href;
+          const active = isNavItemActive(normalizedPathname, activeHref);
           return (
             <Link key={href} href={href} onClick={closeMobile} className={cx(active && "active")} aria-current={active ? "page" : undefined}>
               <Icon size={19} aria-hidden="true" />
@@ -199,7 +201,7 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
             </Link>
           );
         })}
-        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(normalizedPathname, href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation"><MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span></button>
+        <button onClick={() => setMobileOpen(true)} className={cx(!mobileNav.some(([href]) => isNavItemActive(normalizedPathname, role === "participant" && href.startsWith("/app/") ? href.slice(4) : href)) && "active")} aria-label="Abrir mais destinos" aria-expanded={mobileOpen} aria-controls="app-navigation"><MoreHorizontal size={19} aria-hidden="true" /><span>Mais</span></button>
       </nav>
     </div>
   );

@@ -23,7 +23,7 @@ export default function ProductShell({ user, children, title = "Envista", varian
   const nav: NavItem[] = user.role === "investor" ? [
     [home, "Início", Home], [`${prefix}/activity`, "Atividade", Activity], [`${prefix}/explore`, "Explorar", Compass], [`${prefix}/projects`, "Meus projetos", FolderKanban], [`${prefix}/teams`, "Minhas equipes", Users], [`${prefix}/competitions`, "Competições", Trophy], [`${prefix}/calendar`, "Calendário", CalendarDays], [`${prefix}/saved`, "Projetos salvos", Bookmark], [`${prefix}/following`, "Seguindo", Eye], [`${prefix}/messages`, "Mensagens", MessageCircle],
   ] : [
-    [home, "Início", Home], ["/activity", "Atividade", Activity], ["/explore", "Explorar", Compass], ["/projects", "Meus projetos", FolderKanban], ["/teams", "Minhas equipes", Users], ["/workspace", "Workspace", PanelsTopLeft], ["/insights", "Insights", BarChart3], ["/competitions", "Competições", Trophy], ["/calendar", "Calendário", CalendarDays], ["/learn", "Aprender", GraduationCap], ["/messages", "Mensagens", MessageCircle],
+    [home, "Início", Home], ["/activity", "Atividade", Activity], ["/explore", "Explorar", Compass], ["/app/projects", "Meus projetos", FolderKanban], ["/teams", "Minhas equipes", Users], ["/workspace", "Workspace", PanelsTopLeft], ["/insights", "Insights", BarChart3], ["/competitions", "Competições", Trophy], ["/calendar", "Calendário", CalendarDays], ["/learn", "Aprender", GraduationCap], ["/messages", "Mensagens", MessageCircle],
   ];
 
   async function logout() { await fetch("/auth/signout", { method: "POST", credentials: "same-origin" }); window.location.assign("/login"); }
