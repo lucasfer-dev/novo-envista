@@ -179,7 +179,7 @@ export default async function PublicLandingServer() {
   };
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} data-envista-public-shell>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <a className={styles.skipLink} href="#conteudo">Pular para o conteúdo</a>
       <Header />
