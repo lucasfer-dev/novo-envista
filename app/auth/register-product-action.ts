@@ -36,11 +36,16 @@ async function wait(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function authFailureCode(error: { code?: string; status?: number } | null) {
+function authFailureCode(error: { code?: string; status?: number; message?: string } | null) {
   if (!error) return "invalid";
   const code = error.code?.toLowerCase() ?? "";
+  const message = error.message?.toLowerCase() ?? "";
   if (code.includes("captcha")) return "captcha";
   if (error.status === 429 || code.includes("rate_limit") || code.includes("rate-limit")) return "rate";
+  if (code === "user_already_exists" || message.includes("signup identifier already exists") || message.includes("duplicate key")) return "exists";
+  if (message.includes("invalid signup identifier") || message.includes("signup identifier required")) return "document";
+  if (message.includes("invalid signup birth date") || message.includes("missing derived signup age band")) return "birth-date";
+  if (message.includes("legal acknowledgement required") || message.includes("missing legal signup versions")) return "legal";
   if (error.status && error.status >= 500) return "temporary";
   return "invalid";
 }
@@ -91,10 +96,12 @@ export async function registerProductAction(formData: FormData) {
   };
 
   let { data, error } = await supabase.auth.signUp(signupPayload);
+  let retried = false;
 
   // A short retry absorbs transient gateway/Auth outages without retrying
   // validation failures, rate limits, or database-trigger errors.
   if (isRetryableAuthFailure(error)) {
+    retried = true;
     await wait(650);
     ({ data, error } = await supabase.auth.signUp(signupPayload));
   }
@@ -104,11 +111,10 @@ export async function registerProductAction(formData: FormData) {
     logServerEvent(code === "temporary" ? "error" : "warn", "auth.signup_failed", {
       auth_status: error.status ?? null,
       failure_class: code,
-      retried: isRetryableAuthFailure(error),
+      retried,
     });
-    if (code === "captcha" || code === "rate" || code === "temporary") redirect(errorPath(code));
+    if (code === "captcha" || code === "rate" || code === "temporary" || code === "exists" || code === "document" || code === "birth-date" || code === "legal") redirect(errorPath(code));
     if (error.code === "weak_password") redirect(errorPath("password"));
-    if (error.code === "user_already_exists") redirect(errorPath("exists"));
     redirect(errorPath("invalid"));
   }
 
