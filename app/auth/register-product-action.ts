@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { createClient } from "@/lib/supabase/server";
+import { logServerEvent } from "@/lib/observability/logger";
 import {
   INTERNAL_PRIVACY_VERSION,
   INTERNAL_TERMS_VERSION,
@@ -100,6 +101,11 @@ export async function registerProductAction(formData: FormData) {
 
   if (error) {
     const code = authFailureCode(error);
+    logServerEvent(code === "temporary" ? "error" : "warn", "auth.signup_failed", {
+      auth_status: error.status ?? null,
+      failure_class: code,
+      retried: isRetryableAuthFailure(error),
+    });
     if (code === "captcha" || code === "rate" || code === "temporary") redirect(errorPath(code));
     if (error.code === "weak_password") redirect(errorPath("password"));
     if (error.code === "user_already_exists") redirect(errorPath("exists"));
