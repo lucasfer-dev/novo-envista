@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { logServerEvent } from "@/lib/observability/logger";
 
 type Bucket = {
   count: number;
@@ -106,7 +107,10 @@ export function guardUnsafeRequest(request: NextRequest) {
   const isProtectedGet = method === "GET" && protectedGetPaths.has(request.nextUrl.pathname);
 
   if (!isUnsafe && !isProtectedGet) return null;
-  if (isUnsafe && !sameOrigin(request)) return denied(403);
+  if (isUnsafe && !sameOrigin(request)) {
+    logServerEvent("warn", "security.request.origin_denied", { method, path: request.nextUrl.pathname });
+    return denied(403);
+  }
 
   const policy = policyForRequest(request);
   const now = Date.now();
@@ -121,6 +125,7 @@ export function guardUnsafeRequest(request: NextRequest) {
 
   current.lastSeen = now;
   if (current.count >= policy.limit) {
+    logServerEvent("warn", "security.request.rate_limited", { method, path: request.nextUrl.pathname, scope: policy.scope });
     const retryAfter = Math.max(1, Math.ceil((current.windowStart + policy.windowMs - now) / 1_000));
     return denied(429, retryAfter);
   }
