@@ -27,6 +27,14 @@ function errorPath(code: string) {
 function captchaConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim());
 }
+function isRetryableAuthFailure(error: { status?: number } | null) {
+  return error?.status === 502 || error?.status === 503 || error?.status === 504;
+}
+
+async function wait(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function authFailureCode(error: { code?: string; status?: number } | null) {
   if (!error) return "invalid";
   const code = error.code?.toLowerCase() ?? "";
@@ -62,7 +70,7 @@ export async function registerProductAction(formData: FormData) {
 
   const privateIdentifier = { [documentKind]: normalizedDocument };
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
+  const signupPayload = {
     email,
     password,
     options: {
@@ -79,7 +87,16 @@ export async function registerProductAction(formData: FormData) {
       emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
       ...(captchaToken ? { captchaToken } : {}),
     },
-  });
+  };
+
+  let { data, error } = await supabase.auth.signUp(signupPayload);
+
+  // A short retry absorbs transient gateway/Auth outages without retrying
+  // validation failures, rate limits, or database-trigger errors.
+  if (isRetryableAuthFailure(error)) {
+    await wait(650);
+    ({ data, error } = await supabase.auth.signUp(signupPayload));
+  }
 
   if (error) {
     const code = authFailureCode(error);
