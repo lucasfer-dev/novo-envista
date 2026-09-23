@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import styles from "./AdminViews.module.css";
 
 const MAX_BYTES = 100 * 1024 * 1024;
+// Executable/container formats (ZIP/DOC/PPT) are intentionally excluded. They are
+// difficult to inspect safely in-browser and can carry active/malicious content.
 const allowed = new Set([
   "video/mp4",
   "video/webm",
@@ -13,11 +15,6 @@ const allowed = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
-  "application/zip",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-powerpoint",
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ]);
 
 function safeName(name: string) {
@@ -81,12 +78,12 @@ export default function CourseAssetUploader({ lessonId, userId }: { lessonId: st
     <div className={styles.uploadBox}>
       <div>
         <strong>Vídeos e materiais da aula</strong>
-        <p className={styles.muted}>MP4/WebM, PDF, DOC/DOCX, PPT/PPTX, ZIP, TXT e imagens. Até 100 MB por arquivo.</p>
+        <p className={styles.muted}>MP4/WebM, PDF, TXT e imagens. Até 100 MB por arquivo.</p>
       </div>
       <input
         className={styles.fileInput}
         type="file"
-        accept="video/mp4,video/webm,application/pdf,.doc,.docx,.ppt,.pptx,.zip,text/plain,image/jpeg,image/png,image/webp"
+        accept="video/mp4,video/webm,application/pdf,text/plain,image/jpeg,image/png,image/webp"
         onChange={(event) => setFile(event.target.files?.[0] ?? null)}
       />
       <button type="button" className={styles.secondary} disabled={!file || busy} onClick={upload}>
