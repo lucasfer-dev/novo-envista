@@ -74,3 +74,5 @@ Antes de uma abertura pública ou mudança importante, use os runbooks em `docs/
 - `docs/` — decisões operacionais, privacidade, segurança e arquitetura
 
 Consulte `SECURITY.md` para as práticas de segurança do projeto.
+
+<!-- production redeploy trigger: signup diagnostics 2026-09-23 -->
