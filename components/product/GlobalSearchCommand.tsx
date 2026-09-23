@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search, X, FolderKanban, Users, CircleUserRound, GraduationCap } from "lucide-react";
 import styles from "./GlobalSearchCommand.module.css";
@@ -33,6 +34,7 @@ export default function GlobalSearchCommand({
   label?: string;
 }) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<SearchItem[]>([]);
@@ -41,6 +43,10 @@ export default function GlobalSearchCommand({
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const wasOpenRef = useRef(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -53,6 +59,15 @@ export default function GlobalSearchCommand({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -126,6 +141,80 @@ export default function GlobalSearchCommand({
 
   const trimmedQuery = query.trim();
 
+  const overlay = open ? (
+    <div className={styles.backdrop} role="presentation" onMouseDown={() => setOpen(false)}>
+      <section
+        className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="global-search-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <span id="global-search-title" className={styles.srOnly}>Busca global do Envista</span>
+        <div className={styles.inputRow}>
+          <Search size={19} aria-hidden="true" />
+          <input
+            ref={inputRef}
+            className={styles.searchInput}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={onInputKeyDown}
+            placeholder="Projetos, equipes, pessoas ou cursos..."
+            autoComplete="off"
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="global-search-results"
+            aria-autocomplete="list"
+            aria-activedescendant={activeIndex >= 0 ? `global-search-result-${activeIndex}` : undefined}
+          />
+          <button type="button" onClick={() => setOpen(false)} aria-label="Fechar busca"><X size={18} /></button>
+        </div>
+        <div className={styles.results} id="global-search-results" role="listbox" aria-label="Resultados da busca">
+          {trimmedQuery.length < 2 && !loading && !items.length ? (
+            <div className={styles.emptyState}>
+              <Search size={22} aria-hidden="true" />
+              <strong>Encontre qualquer coisa no Envista</strong>
+              <span>Comece por uma sugestão de perfil ou digite pelo menos 2 caracteres para buscar tudo.</span>
+            </div>
+          ) : null}
+          {trimmedQuery.length < 2 && items.length ? <p className={styles.hint}>Perfis sugeridos para você</p> : null}
+          {loading ? <p className={styles.hint} role="status" aria-live="polite">Buscando no Envista...</p> : null}
+          {!loading && trimmedQuery.length >= 2 && !items.length ? (
+            <div className={styles.emptyState} role="status" aria-live="polite">
+              <Search size={22} aria-hidden="true" />
+              <strong>Nenhum resultado para “{trimmedQuery}”</strong>
+              <span>Tente outro nome, tema ou palavra-chave.</span>
+            </div>
+          ) : null}
+          {items.map((item, index) => {
+            const Icon = icons[item.type];
+            const active = index === activeIndex;
+            return (
+              <button
+                id={`global-search-result-${index}`}
+                key={`${item.type}:${item.id}`}
+                type="button"
+                role="option"
+                aria-selected={active}
+                className={`${styles.result} ${active ? styles.resultActive : ""}`}
+                onMouseEnter={() => setActiveIndex(index)}
+                onClick={() => go(item.href)}
+              >
+                <span className={styles.icon}><Icon size={18} aria-hidden="true" /></span>
+                <span><strong>{item.title}</strong><small>{item.subtitle}</small></span>
+                <em>{typeLabel[item.type]}</em>
+              </button>
+            );
+          })}
+        </div>
+        <footer>
+          <span><kbd>↑</kbd> <kbd>↓</kbd> navegar · <kbd>Enter</kbd> abrir</span>
+          <span><kbd>Esc</kbd> fechar</span>
+        </footer>
+      </section>
+    </div>
+  ) : null;
+
   return (
     <>
       <button
@@ -139,78 +228,7 @@ export default function GlobalSearchCommand({
         <span>{label}</span>
         <kbd>Ctrl K</kbd>
       </button>
-      {open ? (
-        <div className={styles.backdrop} role="presentation" onMouseDown={() => setOpen(false)}>
-          <section
-            className={styles.dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="global-search-title"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <span id="global-search-title" className={styles.srOnly}>Busca global do Envista</span>
-            <div className={styles.inputRow}>
-              <Search size={19} aria-hidden="true" />
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                onKeyDown={onInputKeyDown}
-                placeholder="Projetos, equipes, pessoas ou cursos..."
-                autoComplete="off"
-                role="combobox"
-                aria-expanded="true"
-                aria-controls="global-search-results"
-                aria-autocomplete="list"
-                aria-activedescendant={activeIndex >= 0 ? `global-search-result-${activeIndex}` : undefined}
-              />
-              <button type="button" onClick={() => setOpen(false)} aria-label="Fechar busca"><X size={18} /></button>
-            </div>
-            <div className={styles.results} id="global-search-results" role="listbox" aria-label="Resultados da busca">
-              {trimmedQuery.length < 2 && !loading && !items.length ? (
-                <div className={styles.emptyState}>
-                  <Search size={22} aria-hidden="true" />
-                  <strong>Encontre qualquer coisa no Envista</strong>
-                  <span>Comece por uma sugestão de perfil ou digite pelo menos 2 caracteres para buscar tudo.</span>
-                </div>
-              ) : null}
-              {trimmedQuery.length < 2 && items.length ? <p className={styles.hint}>Perfis sugeridos para você</p> : null}
-              {loading ? <p className={styles.hint} role="status" aria-live="polite">Buscando no Envista...</p> : null}
-              {!loading && trimmedQuery.length >= 2 && !items.length ? (
-                <div className={styles.emptyState} role="status" aria-live="polite">
-                  <Search size={22} aria-hidden="true" />
-                  <strong>Nenhum resultado para “{trimmedQuery}”</strong>
-                  <span>Tente outro nome, tema ou palavra-chave.</span>
-                </div>
-              ) : null}
-              {items.map((item, index) => {
-                const Icon = icons[item.type];
-                const active = index === activeIndex;
-                return (
-                  <button
-                    id={`global-search-result-${index}`}
-                    key={`${item.type}:${item.id}`}
-                    type="button"
-                    role="option"
-                    aria-selected={active}
-                    className={`${styles.result} ${active ? styles.resultActive : ""}`}
-                    onMouseEnter={() => setActiveIndex(index)}
-                    onClick={() => go(item.href)}
-                  >
-                    <span className={styles.icon}><Icon size={18} aria-hidden="true" /></span>
-                    <span><strong>{item.title}</strong><small>{item.subtitle}</small></span>
-                    <em>{typeLabel[item.type]}</em>
-                  </button>
-                );
-              })}
-            </div>
-            <footer>
-              <span><kbd>↑</kbd> <kbd>↓</kbd> navegar · <kbd>Enter</kbd> abrir</span>
-              <span><kbd>Esc</kbd> fechar</span>
-            </footer>
-          </section>
-        </div>
-      ) : null}
+      {mounted && overlay ? createPortal(overlay, document.body) : null}
     </>
   );
 }
