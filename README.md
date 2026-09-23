@@ -76,3 +76,4 @@ Antes de uma abertura pública ou mudança importante, use os runbooks em `docs/
 Consulte `SECURITY.md` para as práticas de segurança do projeto.
 
 <!-- production redeploy trigger: signup diagnostics 2026-09-23 -->
+<!-- production redeploy trigger: signup fix 2026-09-23 -->
