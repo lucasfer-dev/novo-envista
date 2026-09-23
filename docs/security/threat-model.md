@@ -71,3 +71,12 @@ Atualizar este threat model sempre que entrar:
 - analytics/trackers;
 - API pública;
 - fluxo específico para crianças/adolescentes.
+
+
+## Hardening review — 2026-09-22
+
+- Leaked Password Protection must be enabled in the Supabase Auth dashboard before production sign-off. This provider-side control is not safely toggled by an application migration.
+- The in-memory request limiter is intentionally a burst-control layer only; authoritative abuse controls must remain in Supabase/Auth or atomic database limits.
+- Security-relevant 403 origin rejections and 429 edge limits are emitted as structured operational events without IPs, emails, tokens, cookies, or request bodies.
+- Course uploads intentionally exclude ZIP, DOC/DOCX and PPT/PPTX until a server-side content inspection/antimalware pipeline exists. Private buckets, MIME allowlists and size limits remain mandatory.
+- CSP keeps `style-src 'unsafe-inline'` temporarily for Next.js/UI compatibility. Removing it requires a dedicated compatibility pass; script execution remains nonce-protected.
