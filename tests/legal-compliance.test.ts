@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const validation = readFileSync("lib/auth/validation.ts", "utf8");
 const authActions = readFileSync("app/auth/actions.ts", "utf8");
+const registerProductAction = readFileSync("app/auth/register-product-action.ts", "utf8");
 const guardianActions = readFileSync("app/guardian/actions.ts", "utf8");
 const guardianChoice = readFileSync("app/guardian-choice/page.tsx", "utf8");
 const guardianPage = readFileSync("app/guardian/page.tsx", "utf8");
@@ -12,9 +13,18 @@ const socialPage = readFileSync("components/social/LegacySocialServerPage.tsx", 
 const messagesPage = readFileSync("components/real/MessagesServerPages.tsx", "utf8");
 const privacy = readFileSync("app/privacy/page.tsx", "utf8");
 const terms = readFileSync("app/terms/page.tsx", "utf8");
+const proxy = readFileSync("proxy.ts", "utf8");
 const signupBirthDateMigration = readFileSync("supabase/migrations/20260921190000_signup_birthdate_required.sql", "utf8");
 const guardianMigration = readFileSync("supabase/migrations/20260925115853_guardian_protected_mode.sql", "utf8");
 const legalV6Migration = readFileSync("supabase/migrations/20260925120514_publish_guardian_protected_mode_legal_v6.sql", "utf8");
+const minorSignupRepairMigration = readFileSync(
+  "supabase/migrations/20260925232810_repair_minor_signup_guardian_functions.sql",
+  "utf8",
+);
+const identifierPrivacyMigration = readFileSync(
+  "supabase/migrations/20260925203100_remove_public_signup_identifier_probe.sql",
+  "utf8",
+);
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
 const privacyContact = readFileSync("app/privacy/contact/page.tsx", "utf8");
 const adminPrivacy = readFileSync("app/admin/privacy/page.tsx", "utf8");
@@ -29,13 +39,38 @@ describe("legal and minor-account compliance", () => {
     expect(legalV6Migration).toContain("'privacy', '2026-09-25-v6'");
   });
 
-  it("derives age during signup, discards the exact birth date, and derives guardian requirement", () => {
+  it("derives age during signup, discards the exact birth date, and protects every minor", () => {
     expect(signupBirthDateMigration).toContain("birth_date");
     expect(signupBirthDateMigration).toContain("derived_age_band");
     expect(signupBirthDateMigration).toContain("- 'birth_date'");
-    expect(guardianMigration).toContain("derived_guardian_required := calculated_age <= 16");
+    expect(minorSignupRepairMigration).toContain("derived_guardian_required := calculated_age < 18");
+    expect(minorSignupRepairMigration).toContain("age_band = 'adolescent'::public.age_band");
     expect(guardianMigration).toContain("'signup_guardian_required'");
     expect(guardianMigration).toContain("- 'signup_guardian_required'");
+  });
+
+  it("keeps CPF/CNPJ availability private and fixes the signup trigger regression", () => {
+    expect(registerProductAction).not.toContain('rpc("signup_identifier_available"');
+    expect(identifierPrivacyMigration).toContain(
+      "revoke all on function public.signup_identifier_available(text,text)",
+    );
+    expect(identifierPrivacyMigration).toContain("from public, anon, authenticated");
+    expect(minorSignupRepairMigration).toContain("terms_accepted boolean := coalesce(");
+    expect(minorSignupRepairMigration).not.toContain("pg_catalog.coalesce");
+    expect(minorSignupRepairMigration).not.toContain("pg_catalog.nullif");
+    expect(minorSignupRepairMigration).toContain("public.start_protected_minor_mode");
+    expect(minorSignupRepairMigration).toContain("public.confirm_guardian_verification");
+    expect(minorSignupRepairMigration).toContain("public.handle_new_user");
+    expect(minorSignupRepairMigration).toContain(
+      "raw_birth_date !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'",
+    );
+  });
+
+  it("prevents guardian confirmation tokens from leaking through referrers or caches", () => {
+    expect(proxy).toContain('pathname === "/guardian/confirm"');
+    expect(proxy).toContain('pathname === "/guardian/pending"');
+    expect(proxy).toContain('response.headers.set("Referrer-Policy", "no-referrer")');
+    expect(proxy).toContain('response.headers.set("Cache-Control", "private, no-store, max-age=0")');
   });
 
   it("allows adolescents to choose protected mode while keeping children behind guardian confirmation", () => {
