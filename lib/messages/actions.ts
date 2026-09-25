@@ -18,9 +18,14 @@ function canonicalPair(a: string, b: string): [string, string] {
   return a < b ? [a, b] : [b, a];
 }
 
+function requireMessageAccess(guardianLocked: boolean, destination: string): void {
+  if (guardianLocked) redirect(`/guardian?next=${encodeURIComponent(destination)}`);
+}
+
 export async function startConversationAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const base = root(role);
+  requireMessageAccess(compliance.guardian_locked, base);
   const username = text(formData, "username", 50).replace(/^@/, "");
   if (!username) redirect(`${base}?error=user`);
 
@@ -78,8 +83,9 @@ export async function startConversationAction(formData: FormData) {
 }
 
 export async function sendMessageAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const base = root(role);
+  requireMessageAccess(compliance.guardian_locked, base);
   const conversationId = text(formData, "conversation_id", 80);
   const body = text(formData, "body", 4000);
   const returnTo = safeInternalPath(formData.get("return_to"), conversationId ? `${base}/${conversationId}` : base);
@@ -96,8 +102,9 @@ export async function sendMessageAction(formData: FormData) {
 }
 
 export async function blockUserAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const base = root(role);
+  requireMessageAccess(compliance.guardian_locked, base);
   const blockedId = text(formData, "blocked_id", 80);
   if (!blockedId || blockedId === userId) redirect(`${base}?error=block`);
   const { data: block, error } = await supabase
@@ -111,8 +118,9 @@ export async function blockUserAction(formData: FormData) {
 }
 
 export async function unblockUserAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const base = root(role);
+  requireMessageAccess(compliance.guardian_locked, base);
   const blockedId = text(formData, "blocked_id", 80);
   if (!blockedId) redirect(`${base}?error=unblock`);
   const { error } = await supabase.from("user_blocks").delete().eq("blocker_id", userId).eq("blocked_id", blockedId);
@@ -122,8 +130,9 @@ export async function unblockUserAction(formData: FormData) {
 }
 
 export async function reportMessageAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const base = root(role);
+  requireMessageAccess(compliance.guardian_locked, base);
   const conversationId = text(formData, "conversation_id", 80);
   const messageId = text(formData, "message_id", 80);
   const reason = text(formData, "reason", 80);
