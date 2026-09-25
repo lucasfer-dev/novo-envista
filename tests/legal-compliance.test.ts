@@ -22,7 +22,7 @@ const minorSignupRepairMigration = readFileSync(
   "utf8",
 );
 const identifierPrivacyMigration = readFileSync(
-  "supabase/migrations/20260925203100_remove_public_signup_identifier_probe.sql",
+  "supabase/migrations/20260925233113_remove_public_signup_identifier_probe.sql",
   "utf8",
 );
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
