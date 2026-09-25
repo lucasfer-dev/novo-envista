@@ -74,6 +74,6 @@ describe("legal and minor-account compliance", () => {
     expect(privacyContact).toContain("Privacidade e seus direitos");
     expect(privacyChannelMigration).toContain("privacy_contact_requests");
     expect(adminPrivacy).toContain("Canal público");
-    expect(terms).toContain("Menores de idade");
+    expect(terms).toContain("Crianças e adolescentes");
   });
 });
