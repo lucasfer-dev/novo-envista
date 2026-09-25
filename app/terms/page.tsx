@@ -9,7 +9,7 @@ export default function TermsPage() {
     <AuthShell
       wide
       title="Termos de Uso"
-      description="Versão 2026-09-21-v5 · Vigente a partir de 21 de setembro de 2026."
+      description="Versão 2026-09-25-v6 · Vigente a partir de 25 de setembro de 2026."
     >
       <div className={styles.legal}>
         <p>Estes Termos regulam o acesso e o uso do Envista. Ao criar ou utilizar uma conta, o usuário concorda em respeitar estas regras, a legislação brasileira e os direitos de terceiros. O <Link href="/privacy">Aviso de Privacidade</Link> integra este conjunto de regras.</p>
@@ -62,7 +62,7 @@ export default function TermsPage() {
         <h2>15. Lei aplicável e contato</h2>
         <p>Estes Termos são regidos pela legislação brasileira, sem prejuízo de normas obrigatórias aplicáveis ao usuário. O responsável pela operação é {CONTROLLER_NAME}. Dúvidas de suporte podem ser encaminhadas para <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
 
-        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v5.</div>
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-25-v6.</div>
       </div>
     </AuthShell>
   );
