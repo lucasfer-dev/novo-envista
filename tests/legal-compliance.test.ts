@@ -14,19 +14,19 @@ const privacy = readFileSync("app/privacy/page.tsx", "utf8");
 const terms = readFileSync("app/terms/page.tsx", "utf8");
 const signupBirthDateMigration = readFileSync("supabase/migrations/20260921190000_signup_birthdate_required.sql", "utf8");
 const guardianMigration = readFileSync("supabase/migrations/20260925115853_guardian_protected_mode.sql", "utf8");
-const legalV4Migration = readFileSync("supabase/migrations/20260921191000_publish_legal_signup_identity_v4.sql", "utf8");
+const legalV6Migration = readFileSync("supabase/migrations/20260925120514_publish_guardian_protected_mode_legal_v6.sql", "utf8");
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
 const privacyContact = readFileSync("app/privacy/contact/page.tsx", "utf8");
 const adminPrivacy = readFileSync("app/admin/privacy/page.tsx", "utf8");
 
 describe("legal and minor-account compliance", () => {
   it("uses the current public legal document versions", () => {
-    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-21-v5"');
-    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-21-v5"');
-    expect(terms).toContain("2026-09-21-v5");
-    expect(privacy).toContain("2026-09-21-v5");
-    expect(legalV4Migration).toContain("'terms', '2026-09-21-v5'");
-    expect(legalV4Migration).toContain("'privacy', '2026-09-21-v5'");
+    expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-25-v6"');
+    expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-25-v6"');
+    expect(terms).toContain("2026-09-25-v6");
+    expect(privacy).toContain("2026-09-25-v6");
+    expect(legalV6Migration).toContain("'terms', '2026-09-25-v6'");
+    expect(legalV6Migration).toContain("'privacy', '2026-09-25-v6'");
   });
 
   it("derives age during signup, discards the exact birth date, and derives guardian requirement", () => {
