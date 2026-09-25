@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isValidCpf, safeInternalPath } from "@/lib/auth/validation";
 
-export const GUARDIAN_DECLARATION_VERSION = "2026-09-25-v1";
+const GUARDIAN_DECLARATION_VERSION = "2026-09-25-v1";
 
 function value(formData: FormData, name: string, max = 256) {
   const raw = formData.get(name);
