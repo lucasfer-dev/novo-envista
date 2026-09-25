@@ -5,6 +5,7 @@ import LegacySocialFeed, {
   type SocialSuggestion,
 } from "@/components/social/LegacySocialFeed";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
+import ProtectedFeatureGate from "@/components/guardian/ProtectedFeatureGate";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import { entityRoute } from "@/lib/profiles";
 
@@ -62,10 +63,21 @@ export default async function LegacySocialServerPage({
   expectedRole: ProductRole;
   searchParams: SearchParams;
 }) {
-  const { supabase, userId, appUser } = await requireProductUser(expectedRole);
+  const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
+  const path = expectedRole === "investor" ? "/investor/social" : "/social";
+  if (compliance.guardian_locked) {
+    return (
+      <LegacySocialShell user={appUser} role={expectedRole} pathname={path}>
+        <ProtectedFeatureGate
+          feature="social"
+          returnHref={expectedRole === "investor" ? "/investor" : "/home"}
+        />
+      </LegacySocialShell>
+    );
+  }
+
   const query = await searchParams;
   const context = expectedRole === "investor" ? "investor" : "participant";
-  const path = expectedRole === "investor" ? "/investor/social" : "/social";
   const feedMode: FeedMode = first(query.mode) === "following" ? "following" : "for-you";
   const searchQuery = (first(query.q) ?? "").trim().slice(0, 120);
   const page = pageNumber(query.page);
