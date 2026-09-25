@@ -18,7 +18,7 @@ const signupBirthDateMigration = readFileSync("supabase/migrations/2026092119000
 const guardianMigration = readFileSync("supabase/migrations/20260925115853_guardian_protected_mode.sql", "utf8");
 const legalV6Migration = readFileSync("supabase/migrations/20260925120514_publish_guardian_protected_mode_legal_v6.sql", "utf8");
 const minorSignupRepairMigration = readFileSync(
-  "supabase/migrations/20260925203000_repair_minor_signup_guardian_functions.sql",
+  "supabase/migrations/20260925232810_repair_minor_signup_guardian_functions.sql",
   "utf8",
 );
 const identifierPrivacyMigration = readFileSync(
