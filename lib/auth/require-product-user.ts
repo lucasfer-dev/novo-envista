@@ -5,6 +5,14 @@ import type { User } from "@/types";
 
 export type ProductRole = "participant" | "investor";
 
+export type ProductCompliance = {
+  age_band: string | null;
+  guardian_required: boolean;
+  guardian_consent_verified_at: string | null;
+  protected_mode_started_at: string | null;
+  guardian_locked: boolean;
+};
+
 type ProductUserContext = {
   id: string;
   username: string | null;
@@ -18,9 +26,15 @@ type ProductUserContext = {
   organization: string | null;
   organization_type: string | null;
   age_band: string | null;
+  guardian_required: boolean | null;
   guardian_consent_verified_at: string | null;
+  protected_mode_started_at: string | null;
   onboarding_completed: boolean;
 };
+
+export function isGuardianFeatureLocked(compliance: Pick<ProductCompliance, "guardian_required" | "guardian_consent_verified_at">) {
+  return compliance.guardian_required && !compliance.guardian_consent_verified_at;
+}
 
 export async function requireProductUser(expectedRole?: ProductRole) {
   const supabase = await createClient();
@@ -32,10 +46,27 @@ export async function requireProductUser(expectedRole?: ProductRole) {
   if (contextError) redirect("/auth/error?reason=profile-query");
 
   const context = (Array.isArray(contextRows) ? contextRows[0] : null) as ProductUserContext | null;
-  if (!context || !context.age_band || !context.onboarding_completed) redirect("/onboarding");
-  if (context.age_band !== "adult" && !context.guardian_consent_verified_at) {
-    redirect("/guardian-required");
+  if (!context || !context.age_band) redirect("/onboarding");
+
+  const guardianRequired = Boolean(context.guardian_required);
+  const guardianVerified = Boolean(context.guardian_consent_verified_at);
+
+  // Crianças continuam exigindo confirmação antes de usar o produto.
+  if (context.age_band === "child" && guardianRequired && !guardianVerified) {
+    redirect("/guardian");
   }
+
+  // Adolescentes podem escolher verificar agora ou entrar no modo protegido.
+  if (
+    context.age_band === "adolescent" &&
+    guardianRequired &&
+    !guardianVerified &&
+    !context.protected_mode_started_at
+  ) {
+    redirect("/guardian-choice");
+  }
+
+  if (!context.onboarding_completed) redirect("/onboarding");
 
   const parsedRole = parseProductRole(context.role);
   if (parsedRole !== "participant" && parsedRole !== "investor") redirect("/login");
@@ -70,9 +101,12 @@ export async function requireProductUser(expectedRole?: ProductRole) {
     organization_type: context.organization_type,
   };
 
-  const compliance = {
+  const compliance: ProductCompliance = {
     age_band: context.age_band,
+    guardian_required: guardianRequired,
     guardian_consent_verified_at: context.guardian_consent_verified_at,
+    protected_mode_started_at: context.protected_mode_started_at,
+    guardian_locked: guardianRequired && !guardianVerified,
   };
 
   return { supabase, userId, role, profile, compliance, appUser };
