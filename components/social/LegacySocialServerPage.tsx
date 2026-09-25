@@ -70,6 +70,7 @@ export default async function LegacySocialServerPage({
       <LegacySocialShell user={appUser} role={expectedRole} pathname={path}>
         <ProtectedFeatureGate
           feature="social"
+          nextHref={path}
           returnHref={expectedRole === "investor" ? "/investor" : "/home"}
         />
       </LegacySocialShell>
