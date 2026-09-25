@@ -1,10 +1,11 @@
 import { Fingerprint, ShieldCheck, UserRoundCheck } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { continueProtectedModeAction, startGuardianVerificationAction } from "@/app/guardian/actions";
 import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import flowStyles from "@/components/guardian/GuardianFlow.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { homeForRole, parseProductRole, safeInternalPath } from "@/lib/auth/validation";
+import { homeForRole, parseProductRole, pathAllowedForRole, safeInternalPath } from "@/lib/auth/validation";
 
 const errors: Record<string, string> = {
   name: "Informe o nome do responsável.",
@@ -36,10 +37,13 @@ export default async function GuardianPage({
 
   const params = await searchParams;
   const requestedNext = typeof params.next === "string" ? safeInternalPath(params.next, "/onboarding") : "/onboarding";
-  const normalDestination = completion ? homeForRole(parseProductRole(profile.role)) : "/onboarding";
+  const role = parseProductRole(profile.role);
+  const home = homeForRole(role);
+  const safeNext = pathAllowedForRole(requestedNext, role) ? requestedNext : home;
+  const normalDestination = completion ? home : "/onboarding";
 
   if (!compliance.guardian_required || compliance.guardian_consent_verified_at) {
-    redirect(completion ? requestedNext : normalDestination);
+    redirect(completion ? safeNext : normalDestination);
   }
 
   const errorCode = typeof params.error === "string" ? params.error : "";
@@ -106,11 +110,17 @@ export default async function GuardianPage({
       {adolescent ? (
         <>
           <div className={styles.divider} />
-          <form action={continueProtectedModeAction}>
-            <button className={styles.secondary + " " + styles.full} type="submit">
-              Fazer isso depois e continuar protegido
-            </button>
-          </form>
+          {compliance.protected_mode_started_at && completion ? (
+            <Link className={styles.secondary + " " + styles.full} href={home}>
+              Voltar ao Envista no modo protegido
+            </Link>
+          ) : (
+            <form action={continueProtectedModeAction}>
+              <button className={styles.secondary + " " + styles.full} type="submit">
+                Fazer isso depois e continuar protegido
+              </button>
+            </form>
+          )}
         </>
       ) : null}
     </AuthShell>
