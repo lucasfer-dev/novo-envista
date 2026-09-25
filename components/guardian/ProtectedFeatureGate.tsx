@@ -76,13 +76,16 @@ function Preview({ feature }: { feature: Feature }) {
 export default function ProtectedFeatureGate({
   feature,
   returnHref = "/home",
+  nextHref,
 }: {
   feature: Feature;
   returnHref?: string;
+  nextHref?: string;
 }) {
   const item = copy[feature];
   const Icon = item.icon;
-  const verifyHref = `/guardian?next=${encodeURIComponent(feature === "messages" ? "/messages" : "/social")}`;
+  const protectedDestination = nextHref ?? (feature === "messages" ? "/messages" : "/social");
+  const verifyHref = `/guardian?next=${encodeURIComponent(protectedDestination)}`;
 
   return (
     <section className={styles.wrap} aria-labelledby="protected-feature-title">
