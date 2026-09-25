@@ -25,13 +25,13 @@ export default async function GuardianConfirmPage({
 
   if (status === "success") {
     return (
-      <AuthShell title="Confirmação concluída" description="A conta vinculada já pode atualizar o Envista para liberar as áreas protegidas.">
+      <AuthShell title="Confirmação concluída" description="A conta vinculada já pode atualizar o Envista e continuar o fluxo normalmente.">
         <div className={flowStyles.successHero}>
           <div className={flowStyles.successIcon}><CheckCircle2 size={28} /></div>
           <h2>Tudo certo por aqui.</h2>
           <p>A confirmação foi registrada. Você não precisa criar uma conta nem um perfil no Envista.</p>
         </div>
-        <div className={styles.notice}>Esta página pode ser fechada. O adolescente poderá continuar o fluxo no próprio dispositivo.</div>
+        <div className={styles.notice}>Esta página pode ser fechada. A pessoa menor de idade poderá continuar o fluxo no próprio dispositivo.</div>
         <div className={styles.links}><Link href="/">Conhecer o Envista</Link></div>
       </AuthShell>
     );
