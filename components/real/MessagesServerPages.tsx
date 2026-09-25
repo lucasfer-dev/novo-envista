@@ -21,6 +21,7 @@ export async function MessagesServerPage({ expectedRole, searchParams }: { expec
       <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
         <ProtectedFeatureGate
           feature="messages"
+          nextHref={messagesPath(expectedRole)}
           returnHref={expectedRole === "investor" ? "/investor" : "/home"}
         />
       </LegacySocialShell>
@@ -103,6 +104,7 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
       <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
         <ProtectedFeatureGate
           feature="messages"
+          nextHref={messagesPath(expectedRole)}
           returnHref={expectedRole === "investor" ? "/investor" : "/home"}
         />
       </LegacySocialShell>
