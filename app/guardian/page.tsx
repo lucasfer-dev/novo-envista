@@ -53,7 +53,11 @@ export default async function GuardianPage({
     <AuthShell
       wide
       title="Confirmação de responsável"
-      description="Uma etapa curta para liberar as áreas sociais do Envista. O responsável não precisa criar perfil ou participar da plataforma."
+      description={
+        adolescent
+          ? "Uma etapa curta para liberar as áreas sociais do Envista. O responsável não precisa criar perfil ou participar da plataforma."
+          : "Uma etapa curta para liberar o acesso ao Envista. O responsável não precisa criar perfil ou participar da plataforma."
+      }
     >
       {errorCode ? <div className={styles.error} role="alert">{errors[errorCode] || errors.request}</div> : null}
 
