@@ -9,7 +9,7 @@ export default function PrivacyPage() {
     <AuthShell
       wide
       title="Aviso de Privacidade"
-      description="Versão 2026-09-21-v5. Transparência sobre dados pessoais, segurança, direitos e proteção de menores."
+      description="Versão 2026-09-25-v6. Transparência sobre dados pessoais, segurança, direitos e proteção de menores."
     >
       <div className={styles.legal}>
         <p><strong>Controlador:</strong> {CONTROLLER_NAME}. <strong>Canal público de privacidade:</strong> <Link href="/privacy/contact">registrar solicitação</Link>. E-mail complementar: <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.</p>
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
         <p>Alterações relevantes serão publicadas com nova versão e data. Quando necessário, o Envista solicitará nova manifestação do usuário antes da continuidade de determinadas funcionalidades.</p>
 
         <p>Consulte também os <Link href="/terms">Termos de Uso</Link>.</p>
-        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-21-v5.</div>
+        <div className={styles.notice}><strong>Versão vigente:</strong> 2026-09-25-v6.</div>
       </div>
     </AuthShell>
   );
