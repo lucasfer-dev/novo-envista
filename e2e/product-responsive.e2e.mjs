@@ -33,8 +33,8 @@ for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
 
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Transforme seu projeto em portfólio, visibilidade e novas oportunidades." })).toBeVisible();
-    await expect(page.getByRole("link", { name: /publicar meu projeto/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Ideias não precisam morrer depois da apresentação." })).toBeVisible();
+    await expect(page.getByRole("link", { name: /começar um projeto/i }).first()).toBeVisible();
     await expectHealthyViewport(page);
     await expectPageHasNoBrokenImages(page);
 
@@ -57,8 +57,8 @@ test("homepage content is server rendered and useful without client JavaScript",
   const page = await context.newPage();
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Transforme seu projeto em portfólio, visibilidade e novas oportunidades." })).toBeVisible();
-  await expect(page.getByRole("link", { name: /publicar meu projeto/i }).first()).toHaveAttribute("href", "/register");
+  await expect(page.getByRole("heading", { name: "Ideias não precisam morrer depois da apresentação." })).toBeVisible();
+  await expect(page.getByRole("link", { name: /começar um projeto/i }).first()).toHaveAttribute("href", "/register");
   await expect(page.getByRole("navigation", { name: "Links institucionais" })).toBeVisible();
   await expectHealthyViewport(page);
   await context.close();
