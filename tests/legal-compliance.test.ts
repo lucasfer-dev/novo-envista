@@ -18,7 +18,11 @@ const signupBirthDateMigration = readFileSync("supabase/migrations/2026092119000
 const guardianMigration = readFileSync("supabase/migrations/20260925115853_guardian_protected_mode.sql", "utf8");
 const legalV6Migration = readFileSync("supabase/migrations/20260925120514_publish_guardian_protected_mode_legal_v6.sql", "utf8");
 const minorSignupRepairMigration = readFileSync(
-  "supabase/migrations/20260925203000_repair_minor_signup_and_identifier_privacy.sql",
+  "supabase/migrations/20260925203000_repair_minor_signup_guardian_functions.sql",
+  "utf8",
+);
+const identifierPrivacyMigration = readFileSync(
+  "supabase/migrations/20260925203100_remove_public_signup_identifier_probe.sql",
   "utf8",
 );
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
@@ -47,11 +51,16 @@ describe("legal and minor-account compliance", () => {
 
   it("keeps CPF/CNPJ availability private and fixes the signup trigger regression", () => {
     expect(registerProductAction).not.toContain('rpc("signup_identifier_available"');
-    expect(minorSignupRepairMigration).toContain(
-      "revoke all on function public.signup_identifier_available(text,text) from public, anon, authenticated",
+    expect(identifierPrivacyMigration).toContain(
+      "revoke all on function public.signup_identifier_available(text,text)",
     );
+    expect(identifierPrivacyMigration).toContain("from public, anon, authenticated");
     expect(minorSignupRepairMigration).toContain("terms_accepted boolean := coalesce(");
     expect(minorSignupRepairMigration).not.toContain("pg_catalog.coalesce");
+    expect(minorSignupRepairMigration).not.toContain("pg_catalog.nullif");
+    expect(minorSignupRepairMigration).toContain("public.start_protected_minor_mode");
+    expect(minorSignupRepairMigration).toContain("public.confirm_guardian_verification");
+    expect(minorSignupRepairMigration).toContain("public.handle_new_user");
     expect(minorSignupRepairMigration).toContain(
       "raw_birth_date !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'",
     );
