@@ -77,21 +77,6 @@ export async function registerProductAction(formData: FormData) {
   const privateIdentifier = { [documentKind]: normalizedDocument };
   const supabase = await createClient();
 
-  // Check the protected HMAC identifier before entering the Auth transaction.
-  // The database UNIQUE constraints remain the final race-condition guard.
-  const { data: identifierAvailable, error: identifierCheckError } = await supabase.rpc(
-    "signup_identifier_available",
-    { document_kind: documentKind, document_value: normalizedDocument },
-  );
-
-  if (identifierCheckError) {
-    logServerEvent("error", "auth.signup_identifier_check_failed", {
-      db_code: identifierCheckError.code ?? null,
-    });
-    redirect(errorPath("temporary"));
-  }
-  if (!identifierAvailable) redirect(errorPath("exists"));
-
   const signupPayload = {
     email,
     password,
