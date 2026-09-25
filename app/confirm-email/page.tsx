@@ -28,7 +28,7 @@ export default async function ConfirmEmailPage({
           Tudo certo. Seu e-mail está confirmado e sua sessão foi validada com segurança.
         </div>
         <div className={styles.actions}>
-          <Link className={`${styles.primary} ${styles.full}`} href="/onboarding">
+          <Link className={`${styles.primary} ${styles.full}`} href="/guardian-choice">
             Continuar no Envista
           </Link>
         </div>

@@ -80,12 +80,26 @@ async function destinationForSignedInUser(
 ) {
   const [{ data: profile }, { data: compliance }, { data: completion }] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-    supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
+    supabase
+      .from("account_compliance")
+      .select("age_band,guardian_required,guardian_consent_verified_at,protected_mode_started_at")
+      .eq("user_id", userId)
+      .maybeSingle(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
 
   const role = parseProductRole(profile?.role);
-  if (compliance?.age_band && compliance.age_band !== "unknown" && compliance.age_band !== "adult" && !compliance.guardian_consent_verified_at) return "/guardian-required";
+  if (
+    compliance?.age_band === "child" &&
+    compliance.guardian_required &&
+    !compliance.guardian_consent_verified_at
+  ) return "/guardian";
+  if (
+    compliance?.age_band === "adolescent" &&
+    compliance.guardian_required &&
+    !compliance.guardian_consent_verified_at &&
+    !compliance.protected_mode_started_at
+  ) return "/guardian-choice";
   if (!completion) return "/onboarding";
 
   const fallback = homeForRole(role);
@@ -235,7 +249,11 @@ export async function onboardingAction(formData: FormData) {
     .maybeSingle();
   if (profileError || !updatedProfile) redirect(`/onboarding?error=${profileError?.code === "23505" ? "username" : "profile"}`);
 
-  const { data: compliance } = await supabase.from("account_compliance").select("age_band").eq("user_id", userId).single();
+  const { data: compliance } = await supabase
+    .from("account_compliance")
+    .select("age_band,guardian_required,guardian_consent_verified_at,protected_mode_started_at")
+    .eq("user_id", userId)
+    .single();
   if (compliance?.age_band === "unknown") {
     const { error: ageError } = await supabase.from("account_compliance").update({ age_band: ageBand }).eq("user_id", userId);
     if (ageError) redirect("/onboarding?error=age");
@@ -245,7 +263,17 @@ export async function onboardingAction(formData: FormData) {
   const privacyError = await ensureLegalEvent(supabase, userId, "privacy", INTERNAL_PRIVACY_VERSION);
   if (termsError || privacyError) redirect("/onboarding?error=legal");
 
-  if (ageBand !== "adult") redirect("/guardian-required");
+  if (
+    compliance?.age_band === "child" &&
+    compliance.guardian_required &&
+    !compliance.guardian_consent_verified_at
+  ) redirect("/guardian");
+  if (
+    compliance?.age_band === "adolescent" &&
+    compliance.guardian_required &&
+    !compliance.guardian_consent_verified_at &&
+    !compliance.protected_mode_started_at
+  ) redirect("/guardian-choice");
 
   const { data: completion } = await supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle();
   if (!completion) {
@@ -263,14 +291,18 @@ export async function profileUpdateAction(formData: FormData) {
   const displayName = value(formData, "display_name").slice(0, 100);
   if (!displayName || !isValidUsername(username)) redirect("/account/profile?error=invalid");
 
-  const { data: compliance } = await supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).single();
+  const { data: compliance } = await supabase
+    .from("account_compliance")
+    .select("age_band,guardian_required,guardian_consent_verified_at")
+    .eq("user_id", userId)
+    .single();
   if (!compliance || compliance.age_band === "unknown") redirect("/onboarding");
 
   let profileVisibility = formData.get("profile_visibility") === "platform" ? "platform" : "private";
   let allowMessages = formData.get("allow_messages") === "on";
-  if (compliance.age_band !== "adult") {
+  if (compliance.guardian_required && !compliance.guardian_consent_verified_at) {
     allowMessages = false;
-    if (!compliance.guardian_consent_verified_at) profileVisibility = "private";
+    profileVisibility = "private";
   }
 
   const { data: updated, error } = await supabase

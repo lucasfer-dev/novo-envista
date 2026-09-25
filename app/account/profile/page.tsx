@@ -58,7 +58,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
 
   const [profileResult, complianceResult, completionResult] = await Promise.all([
     supabase.from("profiles").select("username,display_name,role,avatar_path,bio,public_city,public_state,public_school,organization,organization_type,interest_tags,profile_visibility,allow_messages").eq("id", userId).maybeSingle(),
-    supabase.from("account_compliance").select("age_band,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
+    supabase.from("account_compliance").select("age_band,guardian_required,guardian_consent_verified_at").eq("user_id", userId).maybeSingle(),
     supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle(),
   ]);
 
@@ -77,14 +77,14 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   if (!profileResult.data) redirect("/onboarding");
 
   const profile = profileResult.data;
-  const compliance = complianceResult.data || { age_band: "adult", guardian_consent_verified_at: null };
-  if (compliance.age_band === "child" && !compliance.guardian_consent_verified_at) redirect("/guardian-required");
+  const compliance = complianceResult.data || { age_band: "adult", guardian_required: false, guardian_consent_verified_at: null };
+  if (compliance.age_band === "child" && compliance.guardian_required && !compliance.guardian_consent_verified_at) redirect("/guardian");
   if (!completionResult.data) redirect("/onboarding");
 
   const params = await searchParams;
   const saved = params.saved === "1";
   const error = typeof params.error === "string" ? params.error : "";
-  const isChild = compliance.age_band === "child";
+  const restrictedMinor = Boolean(compliance.guardian_required && !compliance.guardian_consent_verified_at);
   const productRole = parseProductRole(profile.role);
   const home = homeForRole(productRole);
   const currentTags = new Set<string>(profile.interest_tags || []);
@@ -255,19 +255,19 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
                     <div className={styles.setting}>
                       <div className={styles.settingRow}>
                         <div className={styles.settingCopy}><Globe2 size={17} aria-hidden="true" /><div><strong>Visibilidade do perfil</strong><span>Define se seu perfil aparece para outros usuários autenticados.</span></div></div>
-                        <select className={styles.compactSelect} name="profile_visibility" defaultValue={isChild ? "private" : (profile.profile_visibility || "platform")} disabled={isChild} aria-label="Visibilidade do perfil">
+                        <select className={styles.compactSelect} name="profile_visibility" defaultValue={restrictedMinor ? "private" : (profile.profile_visibility || "platform")} disabled={restrictedMinor} aria-label="Visibilidade do perfil">
                           <option value="private">Somente eu</option>
                           <option value="platform">Usuários do Envista</option>
                         </select>
                       </div>
-                      {isChild ? <span className={styles.helper}>Contas infantis permanecem privadas por segurança.</span> : null}
+                      {restrictedMinor ? <span className={styles.helper}>No modo protegido, o perfil permanece privado até a confirmação do responsável.</span> : null}
                     </div>
-                    {isChild ? <input type="hidden" name="profile_visibility" value="private" /> : null}
+                    {restrictedMinor ? <input type="hidden" name="profile_visibility" value="private" /> : null}
                     <div className={styles.setting}>
                       <div className={styles.settingRow}>
                         <div className={styles.settingCopy}><MessageCircle size={17} aria-hidden="true" /><div><strong>Permitir mensagens</strong><span>Autoriza outros usuários do Envista a iniciarem conversas com você.</span></div></div>
                         <label className={styles.switch} aria-label="Permitir mensagens">
-                          <input type="checkbox" name="allow_messages" defaultChecked={profile.allow_messages !== false} disabled={isChild} />
+                          <input type="checkbox" name="allow_messages" defaultChecked={profile.allow_messages !== false} disabled={restrictedMinor} />
                           <span aria-hidden="true" />
                         </label>
                       </div>

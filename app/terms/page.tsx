@@ -21,9 +21,10 @@ export default function TermsPage() {
         <p>O usuário deve fornecer informações verdadeiras, manter os dados essenciais atualizados e proteger suas credenciais. Para criação da conta, o Envista exige e-mail, nome, CPF ou CNPJ válido, data de nascimento e aceite expresso destes Termos. O CPF ou CNPJ é utilizado como identificador privado e pode também ser usado no login. A data de nascimento é utilizada para determinar a faixa etária e aplicar as proteções correspondentes, conforme detalhado no Aviso de Privacidade. O aceite dos Termos é registrado com a versão vigente e o horário do evento.</p>
         <p>É proibido usar identidade ou documento de terceiros sem autorização, informar deliberadamente idade falsa para contornar proteções, compartilhar conta de modo inseguro, contornar controles de acesso ou tentar obter dados sem permissão.</p>
 
-        <h2>3. Menores de idade</h2>
-        <p>O Envista aplica proteção reforçada a crianças e adolescentes. Contas de menores não são liberadas para uso normal enquanto a verificação aplicável do responsável legal não estiver concluída. Recursos sociais, mensagens, visibilidade e outras funcionalidades podem permanecer bloqueados ou limitados por padrão.</p>
-        <p>O melhor interesse do menor prevalece. O Envista poderá restringir ou suspender funcionalidades quando houver risco à segurança, privacidade ou integridade de crianças e adolescentes.</p>
+        <h2>3. Crianças e adolescentes</h2>
+        <p>O Envista aplica proteção reforçada a crianças e adolescentes. Conforme a faixa etária e as regras aplicáveis à conta, o serviço pode exigir confirmação de responsável antes do acesso normal ou permitir a continuidade em modo protegido enquanto essa confirmação estiver pendente.</p>
+        <p>No modo protegido, o usuário pode acessar funcionalidades centrais de aprendizagem, projetos, equipes e competições, enquanto superfícies sociais sensíveis, incluindo Social e Mensagens, permanecem bloqueadas. O perfil permanece privado e novas mensagens ficam desativadas até a confirmação aplicável do responsável.</p>
+        <p>A confirmação do responsável ocorre em fluxo separado e não exige a criação de perfil social para o responsável. O melhor interesse do menor prevalece, e o Envista poderá restringir funcionalidades adicionais quando houver risco à segurança, privacidade ou integridade de crianças e adolescentes.</p>
 
         <h2>4. Tipos de conta</h2>
         <p>Participantes podem aprender, formar equipes e registrar projetos. Contas de investidor ou organização podem explorar projetos e, após as verificações aplicáveis, manifestar interesse. Verificações internas não constituem certificação profissional, recomendação de investimento ou garantia de idoneidade.</p>

@@ -18,9 +18,14 @@ function withError(path: string, code: string) {
   return `${path}${path.includes("?") ? "&" : "?"}error=${code}`;
 }
 
+function requireSocialAccess(guardianLocked: boolean, destination: string): void {
+  if (guardianLocked) redirect(`/guardian?next=${encodeURIComponent(destination)}`);
+}
+
 export async function createPostAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const fallback = role === "investor" ? "/investor/social" : "/social";
+  requireSocialAccess(compliance.guardian_locked, fallback);
   const returnTo = back(formData, fallback);
   const body = text(formData, "body", 5000);
   if (!body) redirect(withError(returnTo, "post"));
@@ -73,8 +78,9 @@ export async function createPostAction(formData: FormData) {
 }
 
 export async function deletePostAction(formData: FormData) {
-  const { supabase, role } = await requireProductUser();
+  const { supabase, role, compliance } = await requireProductUser();
   const fallback = role === "investor" ? "/investor/social" : "/social";
+  requireSocialAccess(compliance.guardian_locked, fallback);
   const returnTo = back(formData, fallback);
   const postId = text(formData, "post_id", 80);
   if (!postId) redirect(withError(returnTo, "delete-post"));
@@ -85,8 +91,9 @@ export async function deletePostAction(formData: FormData) {
 }
 
 export async function togglePostLikeAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const fallback = role === "investor" ? "/investor/social" : "/social";
+  requireSocialAccess(compliance.guardian_locked, fallback);
   const returnTo = back(formData, fallback);
   const postId = text(formData, "post_id", 80);
   if (!postId) redirect(withError(returnTo, "like"));
@@ -106,8 +113,9 @@ export async function togglePostLikeAction(formData: FormData) {
 }
 
 export async function addPostCommentAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const fallback = role === "investor" ? "/investor/social" : "/social";
+  requireSocialAccess(compliance.guardian_locked, fallback);
   const returnTo = back(formData, fallback);
   const postId = text(formData, "post_id", 80);
   const parentCommentId = text(formData, "parent_comment_id", 80) || null;
@@ -136,8 +144,9 @@ export async function addPostCommentAction(formData: FormData) {
 }
 
 export async function deletePostCommentAction(formData: FormData) {
-  const { supabase, role } = await requireProductUser();
+  const { supabase, role, compliance } = await requireProductUser();
   const fallback = role === "investor" ? "/investor/social" : "/social";
+  requireSocialAccess(compliance.guardian_locked, fallback);
   const returnTo = back(formData, fallback);
   const id = text(formData, "comment_id", 80);
   if (!id) redirect(withError(returnTo, "delete-comment"));
@@ -148,8 +157,9 @@ export async function deletePostCommentAction(formData: FormData) {
 }
 
 export async function toggleFollowAction(formData: FormData) {
-  const { supabase, userId, role } = await requireProductUser();
+  const { supabase, userId, role, compliance } = await requireProductUser();
   const fallback = role === "investor" ? "/investor" : "/home";
+  requireSocialAccess(compliance.guardian_locked, role === "investor" ? "/investor/social" : "/social");
   const returnTo = back(formData, fallback);
   const type = text(formData, "target_type", 20);
   const id = text(formData, "target_id", 80);

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
+import ProtectedFeatureGate from "@/components/guardian/ProtectedFeatureGate";
 import { ConversationView, MessagesIndexView } from "@/components/real/MessagesViews";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 
@@ -14,7 +15,19 @@ function cursor(value: string | undefined) {
 function messagesPath(role: ProductRole) { return role === "investor" ? "/investor/messages" : "/messages"; }
 
 export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
-  const { supabase, userId, appUser } = await requireProductUser(expectedRole);
+  const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
+  if (compliance.guardian_locked) {
+    return (
+      <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
+        <ProtectedFeatureGate
+          feature="messages"
+          nextHref={messagesPath(expectedRole)}
+          returnHref={expectedRole === "investor" ? "/investor" : "/home"}
+        />
+      </LegacySocialShell>
+    );
+  }
+
   const query = await searchParams;
 
   const [{ data: summaries, error: summaryError }, { data: suggestionRows }] = await Promise.all([
@@ -85,7 +98,19 @@ export async function MessagesServerPage({ expectedRole, searchParams }: { expec
 }
 
 export async function ConversationServerPage({ expectedRole, conversationId, searchParams }: { expectedRole: ProductRole; conversationId: string; searchParams: Search }) {
-  const { supabase, userId, appUser } = await requireProductUser(expectedRole);
+  const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
+  if (compliance.guardian_locked) {
+    return (
+      <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
+        <ProtectedFeatureGate
+          feature="messages"
+          nextHref={messagesPath(expectedRole)}
+          returnHref={expectedRole === "investor" ? "/investor" : "/home"}
+        />
+      </LegacySocialShell>
+    );
+  }
+
   const query = await searchParams;
   const before = cursor(first(query.before));
   const base = messagesPath(expectedRole);

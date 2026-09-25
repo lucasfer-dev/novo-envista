@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { logServerEvent } from "@/lib/observability/logger";
+import { logServerEvent } from "../observability/logger";
 
 type Bucket = {
   count: number;

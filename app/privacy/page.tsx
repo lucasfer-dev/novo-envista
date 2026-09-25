@@ -23,6 +23,7 @@ export default function PrivacyPage() {
           <li>CPF ou CNPJ, exigido no cadastro para identificação e login. O número completo não é exibido no perfil e o Envista mantém apenas uma representação criptográfica não reversível para localizar a conta;</li>
           <li>data de nascimento no momento do cadastro, utilizada para calcular a faixa etária. A data completa é removida durante a criação da conta e não é persistida; permanece somente a faixa etária necessária às proteções do produto;</li>
           <li>dados mínimos de conformidade, como faixa etária e registros relacionados à proteção de menores;</li>
+          <li>quando houver confirmação de responsável, nome declarado, vínculo, registro do evento e representação criptográfica do CPF do responsável; o CPF completo não é exibido no perfil e o token bruto de confirmação não é persistido;</li>
           <li>dados opcionais de perfil, como cidade, estado, escola, organização, bio, imagem e interesses;</li>
           <li>conteúdo criado ou enviado pelo usuário, como projetos, equipes, arquivos, posts, comentários, progresso em cursos e inscrições;</li>
           <li>mensagens, denúncias, bloqueios, notificações e registros necessários à segurança, prevenção de abuso e moderação;</li>
@@ -34,7 +35,9 @@ export default function PrivacyPage() {
         <p>Quando um dado for condição necessária para criação ou uso da conta, essa exigência é apresentada de forma destacada no fluxo correspondente. No cadastro, o usuário confirma separadamente que leu este Aviso; essa ciência é registrada com a versão vigente e não é tratada como consentimento genérico para toda finalidade.</p>
 
         <h2>4. Crianças e adolescentes</h2>
-        <p>O Envista adota proteção reforçada para menores de idade. A faixa etária é calculada a partir da data de nascimento informada no cadastro, sem retenção da data completa. Contas de menores permanecem privadas, com comunicação restrita e sem acesso normal ao produto até a verificação aplicável do responsável legal. O melhor interesse da criança e do adolescente prevalece sobre objetivos comerciais ou de crescimento da plataforma.</p>
+        <p>O Envista adota proteção reforçada para crianças e adolescentes. A faixa etária e a necessidade de confirmação de responsável são calculadas a partir da data de nascimento informada no cadastro. A data completa é descartada durante a criação da conta e não é mantida no perfil.</p>
+        <p>Quando a conta puder continuar em modo protegido antes da confirmação do responsável, ela permanece privada, com mensagens desativadas e sem acesso às superfícies sociais protegidas. O núcleo de aprendizagem, projetos, equipes e competições pode continuar disponível conforme as regras da conta.</p>
+        <p>A confirmação do responsável é registrada separadamente do perfil social. O Envista mantém apenas os dados necessários para validar e auditar o evento, incluindo representação protegida do identificador utilizado no fluxo. O melhor interesse da criança e do adolescente prevalece sobre objetivos comerciais ou de crescimento da plataforma.</p>
         <p>O Envista não utiliza dados de crianças ou adolescentes para publicidade comportamental ou perfilamento publicitário. Recursos de interação podem ser limitados ou desativados por padrão para esse público.</p>
 
         <h2>5. Dados públicos e visibilidade</h2>
