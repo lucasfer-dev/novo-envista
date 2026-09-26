@@ -8,6 +8,7 @@ import flowStyles from "@/components/guardian/GuardianFlow.module.css";
 import { homeForRole, parseProductRole, pathAllowedForRole, safeInternalPath } from "@/lib/auth/validation";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { createClient } from "@/lib/supabase/server";
+import { logServerEvent } from "@/lib/observability/logger";
 
 export default async function GuardianPendingPage({
   searchParams,
@@ -41,6 +42,18 @@ export default async function GuardianPendingPage({
 
   if (!compliance.guardian_required || compliance.guardian_consent_verified_at) {
     redirect(completion ? next : "/onboarding");
+  }
+
+  const { data: verificationRows, error: verificationError } = await supabase.rpc(
+    "get_guardian_verification_request",
+    { confirmation_token: token },
+  );
+  const verificationRequest = Array.isArray(verificationRows) ? verificationRows[0] : verificationRows;
+  if (verificationError || !verificationRequest) {
+    logServerEvent("warn", "guardian.pending_token_unresolvable", {
+      db_code: verificationError?.code ?? null,
+    });
+    redirect("/guardian?error=request&next=" + encodeURIComponent(requestedNext));
   }
 
   const confirmUrl = resolveSiteUrl() + "/guardian/confirm?token=" + encodeURIComponent(token);

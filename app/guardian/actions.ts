@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isValidCpf, safeInternalPath } from "@/lib/auth/validation";
+import { logServerEvent } from "@/lib/observability/logger";
 
 const GUARDIAN_DECLARATION_VERSION = "2026-09-25-v1";
 
@@ -23,7 +24,12 @@ async function authenticatedUser() {
 export async function continueProtectedModeAction() {
   const { supabase } = await authenticatedUser();
   const { error } = await supabase.rpc("start_protected_minor_mode");
-  if (error) redirect("/guardian-choice?error=protected-mode");
+  if (error) {
+    logServerEvent("warn", "guardian.protected_mode_failed", {
+      db_code: error.code ?? null,
+    });
+    redirect("/guardian-choice?error=protected-mode");
+  }
   redirect("/onboarding");
 }
 
@@ -48,7 +54,14 @@ export async function startGuardianVerificationAction(formData: FormData) {
     confirmation_token: token,
   });
 
-  if (error) redirect(`/guardian?error=request&next=${encodeURIComponent(next)}`);
+  if (error) {
+    logServerEvent("warn", "guardian.request_failed", {
+      db_code: error.code ?? null,
+    });
+    redirect(`/guardian?error=request&next=${encodeURIComponent(next)}`);
+  }
+
+  logServerEvent("info", "guardian.request_created");
   redirect(`/guardian/pending?token=${encodeURIComponent(token)}&next=${encodeURIComponent(next)}`);
 }
 
@@ -69,8 +82,13 @@ export async function confirmGuardianVerificationAction(formData: FormData) {
   });
 
   if (error || !data) {
+    logServerEvent("warn", "guardian.confirm_failed", {
+      db_code: error?.code ?? null,
+      returned_false: !data,
+    });
     redirect(`/guardian/confirm?token=${encodeURIComponent(token)}&error=invalid`);
   }
 
+  logServerEvent("info", "guardian.confirmed");
   redirect("/guardian/confirm?status=success");
 }
