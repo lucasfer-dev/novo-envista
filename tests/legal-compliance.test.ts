@@ -7,6 +7,7 @@ const registerProductAction = readFileSync("app/auth/register-product-action.ts"
 const guardianActions = readFileSync("app/guardian/actions.ts", "utf8");
 const guardianChoice = readFileSync("app/guardian-choice/page.tsx", "utf8");
 const guardianPage = readFileSync("app/guardian/page.tsx", "utf8");
+const guardianPending = readFileSync("app/guardian/pending/page.tsx", "utf8");
 const requireProductUser = readFileSync("lib/auth/require-product-user.ts", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const socialPage = readFileSync("components/social/LegacySocialServerPage.tsx", "utf8");
@@ -23,6 +24,10 @@ const minorSignupRepairMigration = readFileSync(
 );
 const identifierPrivacyMigration = readFileSync(
   "supabase/migrations/20260925233113_remove_public_signup_identifier_probe.sql",
+  "utf8",
+);
+const rlsGuardRepairMigration = readFileSync(
+  "supabase/migrations/20260926200357_restore_rls_guard_helpers.sql",
   "utf8",
 );
 const privacyChannelMigration = readFileSync("supabase/migrations/20260921150500_public_privacy_contact_channel.sql", "utf8");
@@ -81,6 +86,29 @@ describe("legal and minor-account compliance", () => {
     expect(requireProductUser).toContain("context.protected_mode_started_at");
     expect(onboarding).toContain("Modo protegido ativo");
     expect(authActions).toContain('return "/guardian-choice"');
+  });
+
+  it("keeps RLS helper functions executable for authenticated policy evaluation", () => {
+    expect(rlsGuardRepairMigration).toContain(
+      "grant execute on function private.has_product_access() to authenticated",
+    );
+    expect(rlsGuardRepairMigration).toContain(
+      "grant execute on function private.has_social_access(uuid) to authenticated",
+    );
+    expect(rlsGuardRepairMigration).toContain(
+      "grant execute on function private.is_participant(uuid) to authenticated",
+    );
+    expect(rlsGuardRepairMigration).toContain(
+      "revoke all on function private.has_social_access(uuid) from public, anon",
+    );
+  });
+
+  it("never shares a guardian confirmation link before the token resolves", () => {
+    expect(guardianPending).toContain('rpc(');
+    expect(guardianPending).toContain('"get_guardian_verification_request"');
+    expect(guardianPending).toContain("guardian.pending_token_unresolvable");
+    expect(guardianActions).toContain("guardian.request_failed");
+    expect(guardianActions).toContain("guardian.confirm_failed");
   });
 
   it("keeps social and direct messages locked until guardian confirmation", () => {
