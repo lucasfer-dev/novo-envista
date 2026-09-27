@@ -122,3 +122,35 @@ export async function registerProductAction(formData: FormData) {
   if (data.session) redirect("/onboarding");
   redirect("/register?status=check-email");
 }
+
+
+export async function resendSignupConfirmationAction(formData: FormData) {
+  const email = value(formData, "email").toLowerCase();
+
+  // Keep the response intentionally generic to avoid revealing whether an
+  // address is already registered.
+  if (!isValidEmail(email)) redirect("/register?status=resent");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
+    },
+  });
+
+  if (error) {
+    const code = authFailureCode(error);
+    logServerEvent(code === "temporary" ? "error" : "warn", "auth.signup_confirmation_resend_failed", {
+      auth_status: error.status ?? null,
+      failure_class: code,
+    });
+    if (code === "rate") redirect("/register?status=resend-rate");
+    if (code === "temporary") redirect("/register?status=resend-temporary");
+  } else {
+    logServerEvent("info", "auth.signup_confirmation_resent");
+  }
+
+  redirect("/register?status=resent");
+}
