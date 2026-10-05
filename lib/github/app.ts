@@ -126,12 +126,14 @@ export async function getInstallationToken(installationId: number) {
 }
 
 export async function githubJson<T>(token: string, url: string, init: RequestInit = {}) {
+  const headers = new Headers(githubHeaders(token));
+  if (init.headers) {
+    new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+  }
+
   const response = await fetch(url, {
     ...init,
-    headers: {
-      ...githubHeaders(token),
-      ...(init.headers || {}),
-    },
+    headers,
     cache: "no-store",
   });
   if (!response.ok) throw new Error(await readGitHubError(response));
