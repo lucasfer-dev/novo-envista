@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Building2, ExternalLink, GitCommitHorizontal, Github, GitFork, MapPin, MessageCircle, School, Star } from "lucide-react";
+import { Building2, ExternalLink, GitCommitHorizontal, GitBranch, GitFork, MapPin, MessageCircle, School, Star } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
 import ReportContentForm from "@/components/moderation/ReportContentForm";
@@ -21,10 +21,12 @@ export async function LegacyPublicProfileServerPage({ expectedRole, username, pa
 
   if (!profile || (profile.id !== userId && profile.profile_visibility !== "platform")) notFound();
 
-  const [{ data: posts }, { data: projects }, { data: memberships }] = await Promise.all([
+  const [{ data: posts }, { data: projects }, { data: memberships }, { data: githubRepos }, { data: githubEvents }] = await Promise.all([
     supabase.from("posts").select("id,body,created_at").eq("author_user_id", profile.id).eq("visibility", "platform").order("created_at", { ascending: false }).limit(20),
     supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("owner_user_id", profile.id).eq("visibility", "platform").order("updated_at", { ascending: false }).limit(20),
     supabase.from("team_members").select("role_label,teams(id,slug,name,description,category,city,tags,visibility)").eq("user_id", profile.id).order("joined_at", { ascending: false }),
+    supabase.from("github_repositories").select("github_repo_id,name,full_name,description,html_url,language,stargazers_count,forks_count").eq("user_id", profile.id).eq("private", false).eq("display_on_profile", true).order("github_updated_at", { ascending: false }).limit(8),
+    supabase.from("github_events").select("id,event_type,title,summary,repository_full_name,event_html_url,occurred_at").eq("user_id", profile.id).eq("is_public", true).order("occurred_at", { ascending: false }).limit(8),
   ]);
 
   const teams = (memberships ?? []).map((membership: any) => Array.isArray(membership.teams) ? membership.teams[0] : membership.teams).filter((team: any) => team?.visibility === "platform");
@@ -49,7 +51,7 @@ export async function LegacyPublicProfileServerPage({ expectedRole, username, pa
           </div>
           {skills.length ? <div className={styles.readinessList}>{skills.slice(0, 12).map((skill: string) => <span key={skill} data-done="true">{skill}</span>)}</div> : null}
           <div className={styles.links} style={{ marginTop: 12 }}>
-            {profile.github_url ? <a className={styles.linkChip} href={profile.github_url} target="_blank" rel="noreferrer"><Github size={14}/> GitHub{(githubRepos ?? []).length ? " conectado" : ""}</a> : null}
+            {profile.github_url ? <a className={styles.linkChip} href={profile.github_url} target="_blank" rel="noreferrer"><GitBranch size={14}/> GitHub{(githubRepos ?? []).length ? " conectado" : ""}</a> : null}
             {profile.linkedin_url ? <a className={styles.linkChip} href={profile.linkedin_url} target="_blank" rel="noreferrer"><ExternalLink size={14}/> LinkedIn</a> : null}
             {profile.website_url ? <a className={styles.linkChip} href={profile.website_url} target="_blank" rel="noreferrer"><ExternalLink size={14}/> Portfólio</a> : null}
           </div>
@@ -62,7 +64,7 @@ export async function LegacyPublicProfileServerPage({ expectedRole, username, pa
       <section className="section-block"><div className="section-row"><div><h2>Projetos</h2><p>Projetos públicos vinculados a este perfil.</p></div></div>{(projects ?? []).length ? <div className="project-grid">{(projects ?? []).map((project: any) => <article className="project-card" key={project.id}><div className="project-cover"><span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span><span className="stage">{project.stage}</span></div><div className="card-body"><div className="card-meta"><span>{project.category || "Projeto"}</span><span>{project.location || "Envista"}</span></div><h3><Link href={`${base}/projects/${project.slug}?from=explore`}>{project.title}</Link></h3><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips compact">{(project.tags || []).slice(0, 3).map((tag: string) => <span key={tag}>{tag}</span>)}</div>{!own ? <ReportContentForm targetType="project" targetId={project.id} returnTo={pathname} /> : null}</div></article>)}</div> : <div className="panel" style={{ padding: 18 }}><p>Nenhum projeto público ainda.</p></div>}</section>
 
       {(githubRepos ?? []).length || (githubEvents ?? []).length ? <section className="section-block">
-        <div className="section-row"><div><h2><Github size={18} style={{ verticalAlign: "-3px" }} /> GitHub</h2><p>Repositórios públicos e atividade técnica conectados ao Envista.</p></div>{own ? <Link className="secondary" href="/integrations/github">Gerenciar integração</Link> : null}</div>
+        <div className="section-row"><div><h2><GitBranch size={18} style={{ verticalAlign: "-3px" }} /> GitHub</h2><p>Repositórios públicos e atividade técnica conectados ao Envista.</p></div>{own ? <Link className="secondary" href="/integrations/github">Gerenciar integração</Link> : null}</div>
         {(githubRepos ?? []).length ? <div className="project-grid">{(githubRepos ?? []).map((repo: any) => <article className="project-card" key={repo.github_repo_id}><div className="card-body"><div className="card-meta"><span>{repo.language || "Código"}</span><span>GitHub verificado</span></div><h3><a href={repo.html_url} target="_blank" rel="noreferrer">{repo.name} <ExternalLink size={13} style={{ verticalAlign: "-2px" }} /></a></h3><p>{repo.description || "Repositório conectado ao perfil Envista."}</p><div className="chips compact"><span><Star size={12} /> {repo.stargazers_count || 0}</span><span><GitFork size={12} /> {repo.forks_count || 0}</span></div></div></article>)}</div> : null}
         {(githubEvents ?? []).length ? <div className={styles.activityList} style={{ marginTop: 14 }}>{(githubEvents ?? []).map((event: any) => <a className={styles.activityItem} key={event.id} href={event.event_html_url || "#"} target={event.event_html_url ? "_blank" : undefined} rel="noreferrer"><span className={styles.activityDot} /><span><strong><GitCommitHorizontal size={13} style={{ verticalAlign: "-2px", marginRight: 5 }} />{event.title}</strong><small>{event.summary || event.repository_full_name || "Atividade sincronizada do GitHub."}</small></span><time>{new Date(event.occurred_at).toLocaleDateString("pt-BR")}</time></a>)}</div> : null}
       </section> : null}
