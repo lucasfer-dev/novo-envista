@@ -1,3 +1,4 @@
+import VisualProjectCard from "@/components/projects/ProjectCard";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -130,23 +131,7 @@ export default async function ProjectsPage() {
 
         {projects.length ? (
           <div className={styles.grid} aria-label="Projetos públicos">
-            {projects.map((project) => (
-              <Link className={styles.card} href={`/p/${project.slug}`} key={project.slug}>
-                <div className={styles.cardTopline}>
-                  <span>{project.stage || "Projeto em evolução"}</span>
-                  <ArrowRight size={16} aria-hidden="true" />
-                </div>
-                <h3>{project.title}</h3>
-                <p>{project.short_description || "Projeto publicado no Envista."}</p>
-                <div className={styles.cardFooter}>
-                  <div className={styles.meta}>
-                    {project.category ? <span>{project.category}</span> : null}
-                    {project.tags?.slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}
-                  </div>
-                  <span className={styles.openLabel}>Ver projeto</span>
-                </div>
-              </Link>
-            ))}
+            {projects.map(project => <VisualProjectCard key={project.slug} project={project} href={`/p/${project.slug}`} />)}
           </div>
         ) : (
           <div className={styles.empty}>

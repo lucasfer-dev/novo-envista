@@ -1,3 +1,6 @@
+import ProjectCover from "@/components/projects/ProjectCover";
+import ProjectStory from "@/components/projects/ProjectStory";
+import { loadProjectMedia } from "@/lib/projects/media";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bookmark, Building2, MapPin } from "lucide-react";
@@ -37,7 +40,7 @@ export async function InvestorPublicProjectServerPage({
   const query = await searchParams;
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,stage,category,location,tags,readme,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+    .select("id,slug,title,short_description,problem,solution,stage,category,location,tags,readme,repository_url,demo_url,design_url,updated_at,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
     .eq("slug", slug)
     .eq("visibility", "platform")
     .maybeSingle();
@@ -48,6 +51,7 @@ export async function InvestorPublicProjectServerPage({
     supabase.from("project_interests").select("id,message,status,updated_at").eq("investor_id", userId).eq("project_id", project.id).maybeSingle(),
   ]);
 
+  const media = await loadProjectMedia(supabase, [project.id]);
   const ownerUser = one<any>(project.owner_user);
   const ownerTeam = one<any>(project.owner_team);
   const ownerLabel = ownerTeam?.name ? `Equipe ${ownerTeam.name}` : ownerUser?.display_name || ownerUser?.username || "Projeto Envista";
@@ -58,6 +62,7 @@ export async function InvestorPublicProjectServerPage({
   return (
     <LegacySocialShell user={appUser} role="investor" pathname={pathname}>
       <Link className="back" href={backHref}>← Voltar</Link>
+      <ProjectCover title={project.title} category={project.category} src={media.get(project.id)?.[0]?.url} large />
       <div className="project-hero panel">
         <div>
           <div className="project-icon">{initials(project.title)}</div>
@@ -86,16 +91,9 @@ export async function InvestorPublicProjectServerPage({
       {error === "interest" ? <div className="form-error">Não foi possível registrar seu interesse.</div> : null}
       {error === "save" ? <div className="form-error">Não foi possível atualizar seus projetos salvos.</div> : null}
 
+      <ProjectStory project={project} role="investor" owner={ownerLabel} canEdit={false} />
       <div className="detail-grid">
         <section className="panel prose">
-          <h2>Sobre o projeto</h2>
-          <p>{project.short_description || "Ainda não descrito."}</p>
-          <h3>Problema</h3>
-          <p>{project.problem || "Ainda não descrito."}</p>
-          <h3>Solução</h3>
-          <p>{project.solution || "Ainda não descrita."}</p>
-          <h3>README</h3>
-          <p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
           <h3>Arquivos públicos</h3>
           <ProjectFilesPanel projectId={project.id} slug={project.slug} canEdit={false} />
         </section>

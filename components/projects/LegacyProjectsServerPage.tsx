@@ -1,3 +1,8 @@
+import VisualProjectCard from "@/components/projects/ProjectCard";
+import ProjectCover from "@/components/projects/ProjectCover";
+import ProjectStory from "@/components/projects/ProjectStory";
+import ContextNav from "@/components/layout/ContextNav";
+import { loadProjectMedia } from "@/lib/projects/media";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, FolderKanban, MapPin, Plus } from "lucide-react";
@@ -21,6 +26,10 @@ type ProjectRow = {
   location: string;
   tags: string[];
   readme: string;
+  repository_url: string;
+  demo_url: string;
+  design_url: string;
+  updated_at: string;
   visibility: "private" | "platform";
   owner_user_id: string | null;
   owner_team_id: string | null;
@@ -29,7 +38,7 @@ type ProjectRow = {
   owner_team?: unknown;
 };
 
-const projectFields = "id,slug,title,short_description,problem,solution,stage,category,location,tags,readme,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)";
+const projectFields = "id,slug,title,short_description,problem,solution,stage,category,location,tags,readme,repository_url,demo_url,design_url,updated_at,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)";
 
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -56,7 +65,7 @@ function initials(name: string) {
 
 function statusMessage(status?: string) {
   if (status === "created") return "Projeto criado e salvo no Envista.";
-  if (status === "saved") return "Projeto atualizado. Seguidores verão a nova atualização no Social.";
+  if (status === "saved") return "Projeto atualizado. Seguidores verão a nova atualização no Início.";
   if (status === "deleted") return "Projeto excluído.";
   return null;
 }
@@ -99,6 +108,7 @@ export async function LegacyProjectsIndexPage({
   const unique = new Map<string, ProjectRow>();
   for (const project of [...((personal ?? []) as ProjectRow[]), ...((teamProjects ?? []) as ProjectRow[])]) unique.set(project.id, project);
   const projects = [...unique.values()];
+  const media = await loadProjectMedia(supabase, projects.map(p => p.id));
   const projectBase = base(expectedRole);
   const notice = statusMessage(first(query.status));
   const failure = errorMessage(first(query.error));
@@ -107,43 +117,25 @@ export async function LegacyProjectsIndexPage({
     <LegacySocialShell user={appUser} role={expectedRole} pathname={pathname}>
       <div className="page-head">
         <div>
-          <h1>Meus Projetos</h1>
-          <p>Seu portfólio vivo de construção e evolução, agora salvo no Supabase.</p>
+          <h1>Seus projetos, em evolução.</h1>
+          <p>Organize o que você está construindo e compartilhe cada próximo passo.</p>
         </div>
         <div className="actions">
           <Link className="primary" href={`${projectBase}/new`}><Plus size={16} /> Novo projeto</Link>
         </div>
       </div>
 
+      <ContextNav label="Organizar projetos" links={[{ href: "/teams", label: "Equipes" }, { href: "/workspace", label: "Workspace" }, { href: "/insights", label: "Insights" }, { href: "/interests", label: "Interesses recebidos" }]} />
       {notice && <Notice message={notice} />}
       {failure && <Notice message={failure} error />}
 
       <div className="project-grid section-block">
-        {projects.map((project) => (
-          <Link className="project-card" href={`${projectBase}/${project.slug}`} key={project.id}>
-            <div className="project-cover">
-              <span className="project-initial">{initials(project.title)}</span>
-              <span className="stage">{project.stage}</span>
-            </div>
-            <div className="card-body">
-              <div className="card-meta">
-                <span>{project.category || "Projeto"}</span>
-                <span>{project.location?.split(",")[0] || "Envista"}</span>
-              </div>
-              <h3>{project.title}</h3>
-              <p>{project.short_description || "Sem descrição curta."}</p>
-              <small>{ownerLabel(project)}</small>
-              <div className="chips compact">
-                {project.tags.slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}
-              </div>
-            </div>
-          </Link>
-        ))}
+        {projects.map(project => <VisualProjectCard key={project.id} project={project} href={`${projectBase}/${project.slug}`} cover={media.get(project.id)?.[0]?.url} owner={ownerLabel(project)} />)}
         {projects.length === 0 && (
           <div className="empty">
             <div><FolderKanban size={20} /></div>
             <h3>Nenhum projeto ainda</h3>
-            <p>Crie o primeiro projeto. Ele ficará ligado à sua conta real e poderá aparecer no Social.</p>
+            <p>Crie o primeiro projeto. Ele ficará ligado à sua conta real e poderá aparecer no Início.</p>
             <Link className="primary" href={`${projectBase}/new`}>Criar primeiro projeto</Link>
           </div>
         )}
@@ -235,6 +227,7 @@ export async function LegacyProjectDetailPage({
   const { data: raw } = await supabase.from("projects").select(projectFields).eq("slug", slug).maybeSingle();
   if (!raw) notFound();
   const project = raw as ProjectRow;
+  const media = await loadProjectMedia(supabase, [project.id]);
 
   let canEdit = project.owner_user_id === userId;
   let canDelete = canEdit;
@@ -256,6 +249,7 @@ export async function LegacyProjectDetailPage({
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={pathname}>
       <Link className="back" href={backHref}><ArrowLeft size={16} /> Voltar</Link>
+      <ProjectCover title={project.title} category={project.category} src={media.get(project.id)?.[0]?.url} large />
       <div className="project-hero panel">
         <div>
           <div className="project-icon">{initials(project.title)}</div>
@@ -274,23 +268,16 @@ export async function LegacyProjectDetailPage({
           {publicView && project.visibility === "platform" && project.owner_user_id !== userId && (
             <FollowEntityButton targetType="project" targetId={project.id} returnTo={pathname} />
           )}
-          {canEdit && <Link className="secondary" href={`${projectBase}/${project.slug}#editar`}>Editar projeto</Link>}
+          {canEdit && <><Link className="primary" href={`/app/projects/${project.slug}/cockpit`}>Gerenciar evolução</Link><Link className="secondary" href={`${projectBase}/${project.slug}#editar`}>Editar projeto</Link></>}
         </div>
       </div>
 
       {notice && <Notice message={notice} />}
       {failure && <Notice message={failure} error />}
 
+      <ProjectStory project={project} role={expectedRole} owner={ownerLabel(project)} canEdit={canEdit} />
       <div className="detail-grid">
         <section className="panel prose">
-          <h2>Sobre o projeto</h2>
-          <p>{project.short_description || "Ainda não descrito."}</p>
-          <h3>Problema</h3>
-          <p>{project.problem || "Ainda não descrito."}</p>
-          <h3>Solução</h3>
-          <p>{project.solution || "Ainda não descrita."}</p>
-          <h3>README</h3>
-          <p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
           <h3>Arquivos</h3>
           <ProjectFilesPanel projectId={project.id} slug={project.slug} canEdit={canEdit} />
         </section>

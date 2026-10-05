@@ -1,3 +1,6 @@
+import VisualProjectCard from "@/components/projects/ProjectCard";
+import { loadProjectMedia } from "@/lib/projects/media";
+import ContextNav from "@/components/layout/ContextNav";
 import Link from "next/link";
 import { Bookmark, Eye, FolderKanban, GraduationCap, MessageCircle, Trophy, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -41,23 +44,8 @@ function one<T>(value: T | T[] | null | undefined): T | null {
   return Array.isArray(value) ? value[0] ?? null : value;
 }
 
-function ProjectCard({ project, role, action }: { project: ProjectCardRow; role: ProductRole; action?: React.ReactNode }) {
-  const base = root(role);
-  return (
-    <article className="project-card">
-      <div className="project-cover">
-        <span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span>
-        <span className="stage">{project.stage}</span>
-      </div>
-      <div className="card-body">
-        <div className="card-meta"><span>{project.category || "Projeto"}</span><span>{project.location || "Envista"}</span></div>
-        <h3><Link href={`${base}/projects/${encodeURIComponent(project.slug)}?from=explore`}>{project.title}</Link></h3>
-        <p>{project.short_description || "Projeto publicado no Envista."}</p>
-        <div className="chips compact">{(project.tags || []).slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
-        {action ? <div className="actions" style={{ marginTop: 12 }}>{action}</div> : null}
-      </div>
-    </article>
-  );
+function ProjectCard({ project, role, action, cover }: { project: ProjectCardRow; role: ProductRole; action?: React.ReactNode; cover?: string }) {
+  return <VisualProjectCard project={project} href={`${root(role)}/projects/${encodeURIComponent(project.slug)}?from=explore`} cover={cover} action={action} />;
 }
 
 function TeamCard({ team, role }: { team: TeamCardRow; role: ProductRole }) {
@@ -215,13 +203,15 @@ export async function InvestorSavedServerPage({ pathname, searchParams }: { path
   const { data: projects } = ids.length
     ? await supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").in("id", ids).eq("visibility", "platform")
     : { data: [] as ProjectCardRow[] };
+  const media = await loadProjectMedia(supabase, ids);
   const order = new Map(ids.map((id: string, index: number) => [id, index]));
   const sorted = [...(projects ?? [])].sort((a: any, b: any) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
   return (
     <LegacySocialShell user={appUser} role="investor" pathname={pathname}>
+      <ContextNav label="Acompanhar projetos" links={[{ href: "/investor/interests", label: "Interesses enviados" }, { href: "/investor/following", label: "Seguindo" }, { href: "/investor/explore", label: "Descobrir projetos" }]} />
       <div className="page-head"><div><h1>Projetos salvos</h1><p>Sua lista privada de projetos para revisar depois.</p></div></div>
       {first(query.error) === "save" ? <div className="form-error">Não foi possível atualizar o projeto salvo.</div> : null}
-      {sorted.length ? <div className="project-grid section-block">{sorted.map((project: any) => <ProjectCard key={project.id} project={project} role="investor" action={<form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value="/investor/saved" /><button className="secondary" type="submit">Remover dos salvos</button></form>} />)}</div> : <div className="empty"><div><Bookmark /></div><h3>Nenhum projeto salvo</h3><p>Salve projetos durante a descoberta para encontrá-los aqui.</p><Link className="secondary" href="/investor/explore">Explorar projetos</Link></div>}
+      {sorted.length ? <div className="project-grid section-block">{sorted.map((project: any) => <ProjectCard key={project.id} project={project} cover={media.get(project.id)?.[0]?.url} role="investor" action={<form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value="/investor/saved" /><button className="secondary" type="submit">Remover dos salvos</button></form>} />)}</div> : <div className="empty"><div><Bookmark /></div><h3>Nenhum projeto salvo</h3><p>Salve projetos durante a descoberta para encontrá-los aqui.</p><Link className="secondary" href="/investor/explore">Explorar projetos</Link></div>}
     </LegacySocialShell>
   );
 }

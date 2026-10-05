@@ -2,39 +2,7 @@
    Official palette supplied in the 2026-09 visual identity:
    #0086a7 · #00a99d · #22b573 · #0f1923. */
 
-:root {
-  --envista-blue: var(--ev-brand-blue);
-  --envista-teal: var(--ev-brand-teal);
-  --envista-green: var(--ev-brand-green);
-  --envista-ink: var(--ev-brand-ink);
-  --envista-gradient: var(--ev-brand-gradient);
-  --bg: var(--ev-brand-ink);
-  --bg2: #132130;
-  --surface: #162535;
-  --surface2: #1a2b3d;
-  --surface3: #203348;
-  --green: var(--envista-teal);
-  --turq: var(--envista-teal);
-  --cyan: var(--envista-blue);
-  --ev-bg: var(--ev-brand-ink);
-  --ev-bg-subtle: #12202d;
-  --ev-sidebar: #0b151e;
-  --ev-surface: #162535;
-  --ev-surface-raised: #1a2b3d;
-  --ev-surface-hover: #203348;
-  --ev-accent: var(--envista-teal);
-  --ev-accent-hover: #18b8aa;
-  --ev-accent-secondary: var(--envista-blue);
-  --ev-accent-tertiary: var(--envista-green);
-  --ev-accent-soft: rgba(0, 169, 157, 0.11);
-  --ev-focus: 0 0 0 3px rgba(0, 169, 157, 0.18);
-  --ev-primary-bg: var(--envista-gradient);
-  --ev-primary-bg-hover: var(--envista-gradient);
-  --ev-primary-fg: #061916;
-  --ev-primary-height: 44px;
-  --ev-primary-radius: var(--ev-radius-control);
-  --ev-primary-padding-x: 16px;
-}
+
 
 html, body { background: var(--envista-ink); }
 ::selection { background: rgba(0,169,157,.3); color:#fff; }
@@ -558,29 +526,22 @@ html, body { background: var(--envista-ink); }
 
 
 /* Canonical Envista action button.
-   Standard text actions use the exact brand-gradient button shown in the
-   product reference. Navigation, icon-only controls and destructive actions
+   Primary actions use solid teal; secondary actions keep a quieter outline. Navigation, icon-only controls and destructive actions
    keep their own semantics. */
-.app-shell :is(a,button,input):is(.primary,.secondary,.ghost),
-.legacyDark :is(a,button,input):is(.primary,.secondary,.ghost),
+.app-shell :is(a,button,input):is(.primary),
+.legacyDark :is(a,button,input):is(.primary),
 [data-envista-product-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ),
 [data-envista-admin-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ),
 .envista-auth-page :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"]
+  [class*="_primary_"],[class*="__primary"]
 ),
 [data-envista-public-shell] :is(a,button,input):is(
   [class*="_primary_"],[class*="__primary"],
   [class*="_primaryDark_"],[class*="__primaryDark"],
-  [class*="_secondary_"],[class*="__secondary"],
   [class*="_ghost_"],[class*="__ghost"],
   [class*="_headerCta_"],[class*="__headerCta"],
   [class*="_darkCta_"],[class*="__darkCta"]
@@ -607,26 +568,20 @@ html, body { background: var(--envista-ink); }
   transition:filter 150ms ease,transform 150ms ease,box-shadow 150ms ease!important;
 }
 
-.app-shell :is(a,button,input):is(.primary,.secondary,.ghost):hover:not(:disabled),
-.legacyDark :is(a,button,input):is(.primary,.secondary,.ghost):hover:not(:disabled),
+.app-shell :is(a,button,input):is(.primary):hover:not(:disabled),
+.legacyDark :is(a,button,input):is(.primary):hover:not(:disabled),
 [data-envista-product-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):hover:not(:disabled),
 [data-envista-admin-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):hover:not(:disabled),
 .envista-auth-page :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"]
+  [class*="_primary_"],[class*="__primary"]
 ):hover:not(:disabled),
 [data-envista-public-shell] :is(a,button,input):is(
   [class*="_primary_"],[class*="__primary"],
   [class*="_primaryDark_"],[class*="__primaryDark"],
-  [class*="_secondary_"],[class*="__secondary"],
   [class*="_ghost_"],[class*="__ghost"],
   [class*="_headerCta_"],[class*="__headerCta"],
   [class*="_darkCta_"],[class*="__darkCta"]
@@ -638,26 +593,20 @@ html, body { background: var(--envista-ink); }
   box-shadow:0 10px 26px rgba(0,169,157,.18)!important;
 }
 
-.app-shell :is(a,button,input):is(.primary,.secondary,.ghost):active:not(:disabled),
-.legacyDark :is(a,button,input):is(.primary,.secondary,.ghost):active:not(:disabled),
+.app-shell :is(a,button,input):is(.primary):active:not(:disabled),
+.legacyDark :is(a,button,input):is(.primary):active:not(:disabled),
 [data-envista-product-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):active:not(:disabled),
 [data-envista-admin-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):active:not(:disabled),
 .envista-auth-page :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"]
+  [class*="_primary_"],[class*="__primary"]
 ):active:not(:disabled),
 [data-envista-public-shell] :is(a,button,input):is(
   [class*="_primary_"],[class*="__primary"],
   [class*="_primaryDark_"],[class*="__primaryDark"],
-  [class*="_secondary_"],[class*="__secondary"],
   [class*="_ghost_"],[class*="__ghost"],
   [class*="_headerCta_"],[class*="__headerCta"],
   [class*="_darkCta_"],[class*="__darkCta"]
@@ -667,26 +616,20 @@ html, body { background: var(--envista-ink); }
   box-shadow:0 5px 14px rgba(0,169,157,.12)!important;
 }
 
-.app-shell :is(a,button,input):is(.primary,.secondary,.ghost):focus-visible,
-.legacyDark :is(a,button,input):is(.primary,.secondary,.ghost):focus-visible,
+.app-shell :is(a,button,input):is(.primary):focus-visible,
+.legacyDark :is(a,button,input):is(.primary):focus-visible,
 [data-envista-product-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):focus-visible,
 [data-envista-admin-shell] :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):focus-visible,
 .envista-auth-page :is(a,button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"]
+  [class*="_primary_"],[class*="__primary"]
 ):focus-visible,
 [data-envista-public-shell] :is(a,button,input):is(
   [class*="_primary_"],[class*="__primary"],
   [class*="_primaryDark_"],[class*="__primaryDark"],
-  [class*="_secondary_"],[class*="__secondary"],
   [class*="_ghost_"],[class*="__ghost"],
   [class*="_headerCta_"],[class*="__headerCta"],
   [class*="_darkCta_"],[class*="__darkCta"]
@@ -697,18 +640,13 @@ html, body { background: var(--envista-ink); }
 }
 
 [data-envista-product-shell] :is(button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):disabled,
 [data-envista-admin-shell] :is(button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"],
-  [class*="_ghost_"],[class*="__ghost"]
+  [class*="_primary_"],[class*="__primary"]
 ):disabled,
 .envista-auth-page :is(button,input):is(
-  [class*="_primary_"],[class*="__primary"],
-  [class*="_secondary_"],[class*="__secondary"]
+  [class*="_primary_"],[class*="__primary"]
 ):disabled {
   opacity:.55!important;
   cursor:not-allowed!important;

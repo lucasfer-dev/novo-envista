@@ -1,3 +1,4 @@
+import ProjectCover from "@/components/projects/ProjectCover";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -130,6 +131,7 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <header className={styles.header}><Link href="/"><img src="/brand/envista-symbol-gradient.svg" alt=""/><strong>Envista</strong></Link><div><Link href="/projects">Explorar projetos</Link><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Criar conta</Link></div></header>
+      <div className={styles.coverWrap}><ProjectCover title={project.title} category={project.category} large /></div>
       <article className={styles.hero}>
         <div className={styles.eyebrow}><span>{project.stage || "Projeto"}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div>
         <h1>{project.title}</h1>
@@ -138,10 +140,11 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
         <div className={styles.actions}>{projectLinks.map(([href,label])=><a className={styles.secondary} href={href} target="_blank" rel="noreferrer" key={label}>{label} <ExternalLink size={15}/></a>)}<ShareProjectButton className={styles.secondary} title={project.title} href={`/p/${project.slug}`} /><Link className={styles.primary} href="/register">Publique seu projeto <ArrowRight size={16}/></Link></div>
       </article>
       <section className={styles.sharePitch} aria-label="Sobre páginas públicas no Envista"><strong>Este projeto tem uma página pública no Envista.</strong><span>Crie a sua para usar como portfólio, compartilhar em processos seletivos e continuar registrando a evolução depois da entrega.</span><Link href="/register">Criar minha página de projeto <ArrowRight size={15} aria-hidden="true" /></Link></section>
+      <nav className={styles.sectionNav} aria-label="Conteúdo do projeto"><a href="#sobre">Visão geral</a><a href="#autoria">Autoria</a>{project.repository_url ? <a href={project.repository_url} target="_blank" rel="noreferrer">GitHub <ExternalLink size={14} /></a> : null}</nav>
       <section className={styles.content}>
-        <div><h2>Sobre o projeto</h2><p>{project.description || project.short_description || "A equipe ainda não adicionou uma descrição detalhada."}</p></div>
-        <aside>
-          <h3>Publicado por</h3>
+        <div id="sobre"><h2>Sobre o projeto</h2><p>{project.description || project.short_description || "A equipe ainda não adicionou uma descrição detalhada."}</p></div>
+        <aside id="autoria">
+          <h3>Construído por</h3>
           {project.team?.name ? <p><strong>{project.team.name}</strong><br/><span>Equipe no Envista</span></p> : project.owner?.name ? <p><strong>{project.owner.name}</strong><br/><span>{project.owner.headline || (project.owner.username ? `@${project.owner.username}` : "Participante do Envista")}</span></p> : <p>Comunidade Envista</p>}
           {project.updated_at ? <small>Atualizado em {new Date(project.updated_at).toLocaleDateString("pt-BR")}</small> : null}
         </aside>

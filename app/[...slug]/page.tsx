@@ -5,7 +5,7 @@ import { CompetitionDetailServerPage, CompetitionsServerPage } from "@/component
 import { LegacyProjectDetailPage, LegacyProjectsIndexPage } from "@/components/projects/LegacyProjectsServerPage";
 import { ProjectCreateServerPage } from "@/components/projects/ProjectCreateServerPage";
 import { LegacyNewTeamPage, LegacyTeamDetailPage, LegacyTeamsIndexPage } from "@/components/teams/LegacyTeamsServerPage";
-import { FollowingServerPage, InvestorSavedServerPage, RealHomeServerPage } from "@/components/real/LegacyDashboardServerPages";
+import { FollowingServerPage, InvestorSavedServerPage } from "@/components/real/LegacyDashboardServerPages";
 import { LegacyPublicProfileServerPage } from "@/components/real/LegacyProfileServerPage";
 import { InvestorPublicProjectServerPage } from "@/components/investor/InvestorProjectServerPage";
 import { CourseServerPage, LearnServerPage, LessonServerPage } from "@/components/real/CoursesServerPages";
@@ -39,8 +39,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
 
   if (!isProtectedProductPath(pathname)) notFound();
 
-  if (pathname === "/app") return <RealHomeServerPage expectedRole="participant" pathname="/home" />;
-  if (pathname === "/investor") return <RealHomeServerPage expectedRole="investor" pathname={pathname} />;
+  if (pathname === "/app") return <LegacySocialServerPage expectedRole="participant" searchParams={searchParams} home />;
+  if (pathname === "/investor") return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} home />;
 
   if (pathname === "/app/social") return <LegacySocialServerPage expectedRole="participant" searchParams={searchParams} />;
   if (pathname === "/investor/social") return <LegacySocialServerPage expectedRole="investor" searchParams={searchParams} />;

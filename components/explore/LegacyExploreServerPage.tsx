@@ -1,3 +1,6 @@
+import VisualProjectCard from "@/components/projects/ProjectCard";
+import { loadProjectMedia } from "@/lib/projects/media";
+import ContextNav from "@/components/layout/ContextNav";
 import Link from "next/link";
 import { ArrowUpRight, Compass, MapPin, SearchX, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -12,6 +15,7 @@ const PAGE_SIZE = 12;
 
 type ExploreProject = {
   key: string;
+  id: string;
   title: string;
   slug: string;
   description: string;
@@ -75,11 +79,12 @@ function taxonomyHref(base: string, value: string, kind: "q" | "stage" = "q") {
   return `${base}?${params.toString()}`;
 }
 
-function pageHref(base: string, q: string, stage: string, pages: PageState, key: PageKey, nextPage: number) {
+function pageHref(base: string, q: string, stage: string, pages: PageState, key: PageKey, nextPage: number, view: string) {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (stage !== "Todos") params.set("stage", stage);
 
+  params.set("view", view);
   const next = { ...pages, [key]: nextPage };
   for (const [pageKey, value] of Object.entries(next)) {
     if (value > 1) params.set(pageKey, String(value));
@@ -96,12 +101,14 @@ function Pagination({
   pages,
   pageKey,
   total,
+  view,
 }: {
   base: string;
   q: string;
   stage: string;
   pages: PageState;
   pageKey: PageKey;
+  view: string;
   total: number;
 }) {
   const current = pages[pageKey];
@@ -110,9 +117,9 @@ function Pagination({
 
   return (
     <nav className="actions" aria-label="Paginação" style={{ marginTop: 16, alignItems: "center", justifyContent: "flex-end" }}>
-      {current > 1 ? <Link className="secondary" href={pageHref(base, q, stage, pages, pageKey, current - 1)}>← Anterior</Link> : null}
+      {current > 1 ? <Link className="secondary" href={pageHref(base, q, stage, pages, pageKey, current - 1, view)}>← Anterior</Link> : null}
       <span style={{ color: "#98a6b8", fontSize: 12 }}>Página {Math.min(current, pageCount)} de {pageCount}</span>
-      {current < pageCount ? <Link className="secondary" href={pageHref(base, q, stage, pages, pageKey, current + 1)}>Próxima →</Link> : null}
+      {current < pageCount ? <Link className="secondary" href={pageHref(base, q, stage, pages, pageKey, current + 1, view)}>Próxima →</Link> : null}
     </nav>
   );
 }
@@ -197,6 +204,7 @@ export default async function LegacyExploreServerPage({
 
   projects = projectPayload.items.map((project: any) => ({
     key: `real:${project.id}`,
+    id: project.id,
     title: project.title,
     slug: project.slug,
     description: project.short_description || "Projeto publicado no Envista.",
@@ -229,6 +237,8 @@ export default async function LegacyExploreServerPage({
     subtitle: profile.subtitle || `@${profile.username}`,
   }));
 
+  const media = await loadProjectMedia(auth.supabase, projects.map(p => p.id));
+  const view = ["projects", "people", "teams"].includes(first(params.view)) ? first(params.view) : "projects";
   const total = projectTotal + teamTotal + profileTotal;
 
   return (
@@ -240,7 +250,8 @@ export default async function LegacyExploreServerPage({
         </div>
       </div>
 
-      <ExploreFiltersClient key={`${q}::${stage}`} base={base} initialQuery={q} initialStage={stage} />
+      <ContextNav label="Recursos de descoberta" links={[{ href: `${expectedRole === "investor" ? "/investor" : ""}/competitions`, label: "Descobrir competições" }, { href: expectedRole === "investor" ? "/investor/following" : "/learn", label: expectedRole === "investor" ? "Seguindo" : "Aprender" }]} />
+      <ExploreFiltersClient key={`${q}::${stage}`} base={base} initialQuery={q} initialStage={stage} view={view} />
 
       {loadError ? <div className="form-error" role="alert" style={{ marginBottom: 18 }}>Parte dos resultados não pôde ser carregada. Tente novamente.</div> : null}
 
@@ -250,7 +261,8 @@ export default async function LegacyExploreServerPage({
         {stage !== "Todos" && <span>Estágio: {stage}</span>}
       </div>
 
-      <section className="section-block">
+      <nav className="discovery-tabs" aria-label="Tipo de descoberta">{[["projects", "Projetos", projectTotal], ["people", "Pessoas", profileTotal], ["teams", "Equipes", teamTotal]].map(([key, label, count]) => { const filters = new URLSearchParams(); if (q) filters.set("q", q); if (stage !== "Todos") filters.set("stage", stage); filters.set("view", String(key)); return <Link key={key} href={`${base}?${filters}`} aria-current={view === key ? "page" : undefined}>{label}<span>{count}</span></Link>; })}</nav>
+      <section className="section-block" hidden={view !== "projects"}>
         <div className="section-row">
           <div>
             <h2>Projetos</h2>
@@ -266,31 +278,16 @@ export default async function LegacyExploreServerPage({
                 : entityRoute({ type: "project", id: project.slug, source: "explore", context });
 
               return (
-                <article className="project-card" key={project.key}>
-                  <Link className="card-hit-target" href={href} aria-label={`Abrir projeto ${project.title}`} />
-                  <span className="interactive-card-arrow" aria-hidden="true"><ArrowUpRight size={15} /></span>
-                  <div className="project-cover">
-                    <span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span>
-                    <Link className="stage" href={taxonomyHref(base, project.stage, "stage")}>{project.stage}</Link>
-                  </div>
-                  <div className="card-body">
-                    <div className="card-meta"><span>{project.category || "Projeto"}</span><span>{project.location || project.owner}</span></div>
-                    <h3>{project.title}</h3>
-                    <p>{project.description}</p>
-                    <div className="chips compact">
-                      {project.tags.slice(0, 4).map((tag) => <span key={tag}><Link href={taxonomyHref(base, tag)}>{tag}</Link></span>)}
-                    </div>
-                  </div>
-                </article>
+                <VisualProjectCard key={project.key} project={{ title: project.title, short_description: project.description, stage: project.stage, category: project.category, tags: project.tags, location: project.location }} href={href} owner={project.owner} cover={media.get(project.id)?.[0]?.url} />
               );
             })}
           </div>
         ) : <EmptyExploreState label="projeto" />}
 
-        <Pagination base={base} q={q} stage={stage} pages={pages} pageKey="projects_page" total={projectTotal} />
+        <Pagination view={view} base={base} q={q} stage={stage} pages={pages} pageKey="projects_page" total={projectTotal} />
       </section>
 
-      <section className="section-block">
+      <section className="section-block" hidden={view !== "teams"}>
         <div className="section-row">
           <div>
             <h2>Equipes</h2>
@@ -322,10 +319,10 @@ export default async function LegacyExploreServerPage({
           </div>
         ) : <EmptyExploreState label="equipe" />}
 
-        <Pagination base={base} q={q} stage={stage} pages={pages} pageKey="teams_page" total={teamTotal} />
+        <Pagination view={view} base={base} q={q} stage={stage} pages={pages} pageKey="teams_page" total={teamTotal} />
       </section>
 
-      <section className="section-block">
+      <section className="section-block" hidden={view !== "people"}>
         <div className="section-row">
           <div>
             <h2>Pessoas</h2>
@@ -354,11 +351,11 @@ export default async function LegacyExploreServerPage({
           </div>
         ) : <EmptyExploreState label="perfil" />}
 
-        <Pagination base={base} q={q} stage={stage} pages={pages} pageKey="people_page" total={profileTotal} />
+        <Pagination view={view} base={base} q={q} stage={stage} pages={pages} pageKey="people_page" total={profileTotal} />
       </section>
 
       <div className="meta-row" style={{ marginTop: 28 }}>
-        <span><MapPin size={14} /> Busca e paginação executadas no banco sobre dados reais disponíveis para a sua conta.</span>
+        <span><MapPin size={14} /> Descubra pessoas e projetos para construir seu próximo passo.</span>
       </div>
     </LegacySocialShell>
   );

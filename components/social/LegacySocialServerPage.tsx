@@ -1,3 +1,6 @@
+import type { ReactNode } from "react";
+import HomeProjectRail from "@/components/projects/HomeProjectRail";
+import { loadProjectMedia } from "@/lib/projects/media";
 import LegacySocialFeed, {
   type SocialFeedItem,
   type SocialPostFeedItem,
@@ -59,15 +62,21 @@ function feedPayload(data: unknown): { refs: FeedRef[]; total: number } {
 export default async function LegacySocialServerPage({
   expectedRole,
   searchParams,
+  home = false,
+  intro,
 }: {
+  home?: boolean;
+  intro?: ReactNode;
   expectedRole: ProductRole;
   searchParams: SearchParams;
 }) {
   const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
-  const path = expectedRole === "investor" ? "/investor/social" : "/social";
+  const path = home ? (expectedRole === "investor" ? "/investor" : "/home") : expectedRole === "investor" ? "/investor/social" : "/social";
   if (compliance.guardian_locked) {
     return (
       <LegacySocialShell user={appUser} role={expectedRole} pathname={path}>
+        {home ? <HomeProjectRail role={expectedRole} /> : null}
+      {intro}
         <ProtectedFeatureGate
           feature="social"
           nextHref={path}
@@ -162,6 +171,7 @@ export default async function LegacySocialServerPage({
       : empty,
   ]);
 
+  const media = await loadProjectMedia(supabase, projectIds);
   const refsByKey = new Map(refs.map((ref) => [`${ref.kind}:${ref.id}`, ref]));
   const likes = likesResult.data ?? [];
   const comments = commentsResult.data ?? [];
@@ -243,6 +253,7 @@ export default async function LegacySocialServerPage({
       id: `project-update:${row.id}:${row.updated_at}`,
       createdAt: row.updated_at || row.created_at,
       title: row.title,
+      cover: media.get(row.id)?.[0]?.url,
       description: row.short_description || "O projeto recebeu uma nova atualização.",
       stage: row.stage,
       href: entityRoute({ type: "project", id: row.slug, source: "social", context }),
@@ -344,7 +355,9 @@ export default async function LegacySocialServerPage({
   }
 
   return (
-    <LegacySocialShell user={appUser} role={expectedRole}>
+    <LegacySocialShell user={appUser} role={expectedRole} pathname={path}>
+      {home ? <HomeProjectRail role={expectedRole} /> : null}
+      {intro}
       <LegacySocialFeed
         userId={userId}
         userName={appUser.name}
