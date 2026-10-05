@@ -23,12 +23,12 @@ export default function TaxonomyNavigationEnhancer() {
   const router = useRouter();
 
   useEffect(() => {
-    const base = pathname.startsWith("/investor") ? "/investor" : "";
+    const base = pathname.startsWith("/investor") ? "/investor" : "/app";
 
     const mark = () => {
       document.querySelectorAll<HTMLElement>(SELECTOR).forEach((element) => {
         const value = clean(element.textContent);
-        if (!value || element.closest("a") || element.querySelector("a")) return;
+        if (!value) return;
         element.dataset.envistaTaxonomyLink = "true";
         element.setAttribute("role", "link");
         element.tabIndex = 0;

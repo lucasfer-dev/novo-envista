@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
-const designSystem = readFileSync("app/tokens.css", "utf8");
+const designSystem = readFileSync("app/design-system.css", "utf8");
 const brandIdentity = readFileSync("app/brand-identity.css", "utf8");
-const productShell = readFileSync("components/layout/AppShell.tsx", "utf8");
+const productShell = readFileSync("components/social/LegacySocialShell.tsx", "utf8");
 const accountShell = readFileSync("components/account/AccountProductShell.tsx", "utf8");
 const publicSurfaces = [
   "components/public/PublicLandingServer.tsx",
@@ -29,15 +29,15 @@ describe("Envista visual identity standardization", () => {
     expect(designSystem).toContain("--ev-brand-gradient:");
   });
 
-  it("marks the shared AppShell as the canonical product shell", () => {
+  it("marks the legacy authenticated shell as the canonical product shell", () => {
     expect(productShell).toContain("data-envista-product-shell");
     expect(brandIdentity).toContain('[class*="__primary"]');
-    expect(brandIdentity).not.toContain(':is(.primary,.secondary,.ghost)');
+    expect(brandIdentity).toContain('[class*="__secondary"]');
   });
 
-  it("uses the brand teal for standard actions and reserves the gradient for the brand", () => {
-    expect(designSystem).toContain("--ev-primary-bg: var(--envista-teal)");
-    expect(designSystem).toContain("--ev-surface-raised: #192b3b");
+  it("uses the brand gradient as the canonical standard action button", () => {
+    expect(brandIdentity).toContain("--ev-primary-bg: var(--envista-gradient)");
+    expect(brandIdentity).toContain('[class*="__ghost"]');
     expect(brandIdentity).toContain('[class*="__headerCta"]');
     expect(brandIdentity).toContain("[data-envista-public-shell]");
     for (const page of publicSurfaces) expect(page).toContain("data-envista-public-shell");

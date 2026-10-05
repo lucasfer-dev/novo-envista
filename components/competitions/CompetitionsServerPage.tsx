@@ -1,4 +1,3 @@
-import ContextNav from "@/components/layout/ContextNav";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import { CompetitionDetailClient, CompetitionsBrowser } from "@/components/competitions/CompetitionsClient";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
@@ -70,7 +69,7 @@ export async function CompetitionsServerPage({ expectedRole }: { expectedRole: P
   const recommendationContext = await loadRecommendationContext(supabase, userId, role);
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={basePath}>
-      <ContextNav label="Competições e prazos" links={[{ href: expectedRole === "investor" ? "/investor/calendar" : "/calendar", label: "Calendário e prazos" }]} /><CompetitionsBrowser basePath={basePath} recommendationContext={recommendationContext} />
+      <CompetitionsBrowser basePath={basePath} recommendationContext={recommendationContext} />
     </LegacySocialShell>
   );
 }

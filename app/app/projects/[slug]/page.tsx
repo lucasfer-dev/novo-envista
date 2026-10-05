@@ -1,6 +1,3 @@
-import ProjectCover from "@/components/projects/ProjectCover";
-import ProjectStory from "@/components/projects/ProjectStory";
-import { loadProjectMedia } from "@/lib/projects/media";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -22,7 +19,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   const { supabase, userId, appUser } = await requireProductUser("participant");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,demo_url,design_url,updated_at,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
+    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
     .eq("slug", slug)
     .maybeSingle();
   if (!project) notFound();
@@ -46,7 +43,6 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
       ])
     : [{ data: null } as any, { count: null } as any];
 
-  const media = await loadProjectMedia(supabase, [project.id]);
   const ownerUser = one<any>(project.owner_user);
   const ownerTeam = one<any>(project.owner_team);
   const ownerLabel = ownerTeam?.name ? `Equipe ${ownerTeam.name}` : ownerUser?.display_name || ownerUser?.username || "Projeto Envista";
@@ -56,10 +52,9 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   return (
     <LegacySocialShell user={appUser} role="participant" pathname={`/app/projects/${slug}`}>
       <Link className="back" href="/app/projects">← Voltar aos projetos</Link>
-      <ProjectCover title={project.title} category={project.category} src={media.get(project.id)?.[0]?.url} large />
       <div className="project-hero panel">
         <div><div className="project-icon">{project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto em construção."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
-        <div className="actions">{!canEdit && project.visibility === "platform" ? <FollowEntityButton targetType="project" targetId={project.id} returnTo={`/app/projects/${slug}`} /> : null}{canEdit && project.visibility === "platform" ? <><Link className="secondary" href={`/p/${project.slug}`} target="_blank">Ver página pública</Link><ShareProjectButton className="secondary" title={project.title} href={`/p/${project.slug}`} /></> : null}{canEdit ? <><Link className="primary" href={`/app/projects/${project.slug}/cockpit`}>Gerenciar evolução</Link><a className="secondary" href="#editar">Editar projeto</a></> : null}</div>
+        <div className="actions">{!canEdit && project.visibility === "platform" ? <FollowEntityButton targetType="project" targetId={project.id} returnTo={`/app/projects/${slug}`} /> : null}{canEdit && project.visibility === "platform" ? <><Link className="secondary" href={`/p/${project.slug}`} target="_blank">Ver página pública</Link><ShareProjectButton className="secondary" title={project.title} href={`/p/${project.slug}`} /></> : null}{canEdit ? <a className="secondary" href="#editar">Editar projeto</a> : null}</div>
       </div>
 
       {status === "created" ? <div className="form-feedback">Projeto criado. Complete as evidências conforme ele evolui.</div> : null}
@@ -75,12 +70,14 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
         </div>
       ) : null}
 
-      <ProjectStory project={project} role="participant" owner={ownerLabel} canEdit={canEdit} />
       <div className="detail-grid">
         <section className="panel prose">
+          <h2>Problema</h2><p>{project.problem || "Ainda não descrito."}</p>
+          <h2>Solução</h2><p>{project.solution || "Ainda não descrita."}</p>
           <h2>Impacto e evidências</h2><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
           <h2>O que o projeto precisa agora</h2>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h2>Links</h2><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
+          <h2>Descrição completa</h2><p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
           <h2>Arquivos</h2><ProjectFilesPanel projectId={project.id} slug={project.slug} canEdit={canEdit} />
         </section>
 
