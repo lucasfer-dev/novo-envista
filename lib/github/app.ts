@@ -162,6 +162,64 @@ export async function githubGraphql<T>(
   return data.data;
 }
 
+export async function createGitHubDiscussion(
+  token: string,
+  repositoryFullName: string,
+  title: string,
+  body: string,
+) {
+  const [owner, name] = repositoryFullName.split("/");
+  if (!owner || !name) throw new Error("Repositório do GitHub inválido.");
+
+  const query = `
+    query EnvistaDiscussionTarget($owner: String!, $name: String!) {
+      repository(owner: $owner, name: $name) {
+        id
+        discussionCategories(first: 20) {
+          nodes { id name }
+        }
+      }
+    }
+  `;
+
+  const target = await githubGraphql<{
+    repository: { id: string; discussionCategories: { nodes: Array<{ id: string; name: string }> } } | null;
+  }>(token, query, { owner, name });
+
+  const categories = target.repository?.discussionCategories.nodes ?? [];
+  const category =
+    categories.find((item) => /announcement|general|anúncio|geral/i.test(item.name)) ??
+    categories[0];
+
+  if (!target.repository || !category) {
+    throw new Error("Este repositório não possui GitHub Discussions habilitado.");
+  }
+
+  const mutation = `
+    mutation EnvistaCreateDiscussion($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+      createDiscussion(input: {
+        repositoryId: $repositoryId,
+        categoryId: $categoryId,
+        title: $title,
+        body: $body
+      }) {
+        discussion { url }
+      }
+    }
+  `;
+
+  const created = await githubGraphql<{
+    createDiscussion: { discussion: { url: string } };
+  }>(token, mutation, {
+    repositoryId: target.repository.id,
+    categoryId: category.id,
+    title,
+    body,
+  });
+
+  return created.createDiscussion.discussion.url;
+}
+
 export async function syncGitHubRepositories(
   supabase: SupabaseClient,
   userId: string,
