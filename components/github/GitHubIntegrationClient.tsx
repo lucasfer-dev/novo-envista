@@ -25,7 +25,6 @@ import {
   Star,
   Tag,
   Unplug,
-  UsersRound,
   X,
 } from "lucide-react";
 import styles from "./GitHubIntegration.module.css";
