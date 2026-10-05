@@ -14,6 +14,7 @@ import {
   Compass,
   Eye,
   FolderKanban,
+  GitBranch,
   GraduationCap,
   Home,
   LifeBuoy,
@@ -147,6 +148,7 @@ export default function LegacySocialShell({ user, role, pathname: activePath, ch
           <span>Conta</span>
           {[
             [profile, CircleUserRound, "Perfil"],
+            ["/integrations/github", GitBranch, "Integrações"],
             ["/account/settings", Settings, "Configurações"],
             [`${prefix}/activity`, Bell, "Central de atividade"],
             ["/account/feedback", LifeBuoy, "Feedback e suporte"],
