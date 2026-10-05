@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { safeInternalPath } from "@/lib/auth/validation";
+import { createGitHubDiscussion, getInstallationToken } from "@/lib/github/app";
 
 function text(formData: FormData, name: string, max: number) {
   const value = formData.get(name);
@@ -73,8 +74,58 @@ export async function createPostAction(formData: FormData) {
     visibility,
   }).select("id").single();
   if (error || !created) redirect(withError(returnTo, "post"));
+
+  const githubRepositoryId = text(formData, "github_repository_id", 32);
+  let status = "posted";
+
+  if (githubRepositoryId && visibility === "platform") {
+    try {
+      const [{ data: connection }, { data: repository }] = await Promise.all([
+        supabase
+          .from("github_connections")
+          .select("installation_id")
+          .eq("user_id", userId)
+          .maybeSingle(),
+        supabase
+          .from("github_repositories")
+          .select("github_repo_id,full_name,html_url,private")
+          .eq("user_id", userId)
+          .eq("github_repo_id", githubRepositoryId)
+          .maybeSingle(),
+      ]);
+
+      if (!connection || !repository) throw new Error("Conexão ou repositório do GitHub não encontrado.");
+
+      const token = await getInstallationToken(Number(connection.installation_id));
+      const firstLine = body.split(/\r?\n/).find((line) => line.trim())?.trim() || "Atualização no Envista";
+      const discussionTitle = firstLine.length > 110 ? `${firstLine.slice(0, 107)}...` : firstLine;
+      const discussionBody = `${body}\n\n---\n_Publicado também pelo Envista._`;
+      const discussionUrl = await createGitHubDiscussion(token, repository.full_name, discussionTitle, discussionBody);
+
+      await supabase.from("github_events").insert({
+        user_id: userId,
+        event_type: "envista_publish",
+        event_action: "discussion",
+        title: discussionTitle,
+        summary: body.slice(0, 240),
+        repository_full_name: repository.full_name,
+        repository_html_url: repository.html_url,
+        event_html_url: discussionUrl,
+        is_public: !repository.private,
+        occurred_at: new Date().toISOString(),
+      });
+
+      status = "posted-github";
+    } catch (githubError) {
+      console.error("social.github_publish_failed", githubError);
+      status = "posted-github-error";
+    }
+  } else if (githubRepositoryId) {
+    status = "posted-github-skipped";
+  }
+
   revalidatePath(returnTo.split("?")[0]);
-  redirect(`${returnTo}${returnTo.includes("?") ? "&" : "?"}status=posted`);
+  redirect(`${returnTo}${returnTo.includes("?") ? "&" : "?"}status=${status}`);
 }
 
 export async function deletePostAction(formData: FormData) {
