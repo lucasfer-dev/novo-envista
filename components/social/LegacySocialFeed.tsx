@@ -230,7 +230,7 @@ export default function LegacySocialFeed({
       {status === "posted-github" && <div className={styles.notice}>Publicação criada no Envista e enviada ao GitHub como Discussion.</div>}
       {status === "posted-github-error" && <div className={styles.error}>A publicação entrou no Envista, mas não foi possível enviá-la ao GitHub. Você pode tentar novamente em Integrações.</div>}
       {status === "posted-github-skipped" && <div className={styles.notice}>Publicação criada. A sincronização com GitHub foi ignorada porque o post está privado.</div>}
-      {errorMessage && <div className={styles.error}>{errorMessage}</div>
+      {errorMessage && <div className={styles.error}>{errorMessage}</div>}
 
       <div className={styles.socialLayout}>
         <section className={styles.mainColumn}>
