@@ -39,7 +39,7 @@ create table if not exists public.github_repositories (
 create table if not exists public.github_events (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.github_connections(user_id) on delete cascade,
-  github_delivery_id text,
+  github_delivery_id text unique,
   event_type text not null,
   event_action text,
   title text not null,
@@ -52,9 +52,6 @@ create table if not exists public.github_events (
   created_at timestamptz not null default now()
 );
 
-create unique index if not exists github_events_delivery_unique
-  on public.github_events (github_delivery_id)
-  where github_delivery_id is not null;
 
 create index if not exists github_repositories_profile_idx
   on public.github_repositories (user_id, display_on_profile, private);
