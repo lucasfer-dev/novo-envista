@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import HomeProjectRail from "@/components/projects/HomeProjectRail";
 import { loadProjectMedia } from "@/lib/projects/media";
 import LegacySocialFeed, {
@@ -62,8 +63,10 @@ export default async function LegacySocialServerPage({
   expectedRole,
   searchParams,
   home = false,
+  intro,
 }: {
   home?: boolean;
+  intro?: ReactNode;
   expectedRole: ProductRole;
   searchParams: SearchParams;
 }) {
@@ -73,6 +76,7 @@ export default async function LegacySocialServerPage({
     return (
       <LegacySocialShell user={appUser} role={expectedRole} pathname={path}>
         {home ? <HomeProjectRail role={expectedRole} /> : null}
+      {intro}
         <ProtectedFeatureGate
           feature="social"
           nextHref={path}
@@ -353,6 +357,7 @@ export default async function LegacySocialServerPage({
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={path}>
       {home ? <HomeProjectRail role={expectedRole} /> : null}
+      {intro}
       <LegacySocialFeed
         userId={userId}
         userName={appUser.name}
