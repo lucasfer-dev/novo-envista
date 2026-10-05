@@ -10,7 +10,7 @@ import {
   EyeOff,
   GitCommitHorizontal,
   GitFork,
-  Github,
+  GitBranch,
   GitPullRequest,
   Globe2,
   Loader2,
@@ -299,7 +299,7 @@ export default function GitHubIntegrationClient({
       ) : null}
 
       <section className={styles.connectionCard}>
-        <div className={styles.connectionIcon}><Github size={28} /></div>
+        <div className={styles.connectionIcon}><GitBranch size={28} /></div>
         <div className={styles.connectionCopy}>
           <div className={styles.connectionTitleRow}>
             <h2>Integração com GitHub</h2>
@@ -308,7 +308,7 @@ export default function GitHubIntegrationClient({
           <p>Importe repositórios, acompanhe atividade e leve atualizações do Envista para Discussions, Releases e Issues.</p>
           {connection ? (
             <a className={styles.accountIdentity} href={connection.github_html_url} target="_blank" rel="noreferrer">
-              {connection.github_avatar_url ? <img src={connection.github_avatar_url} alt="" /> : <span><Github size={15} /></span>}
+              {connection.github_avatar_url ? <img src={connection.github_avatar_url} alt="" /> : <span><GitBranch size={15} /></span>}
               <b>@{connection.github_login}</b>
               <small>{connection.github_account_type || "GitHub"}</small>
               <ExternalLink size={13} />
@@ -338,7 +338,7 @@ export default function GitHubIntegrationClient({
                 }
               }}
             >
-              <Github size={17} />
+              <GitBranch size={17} />
               Conectar GitHub
             </a>
           )}
@@ -399,7 +399,7 @@ export default function GitHubIntegrationClient({
                 </div>
               ) : (
                 <div className={styles.emptyState}>
-                  <Github size={30} />
+                  <GitBranch size={30} />
                   <h3>Nenhum repositório encontrado.</h3>
                   <p>Sincronize novamente ou ajuste sua busca.</p>
                 </div>
@@ -495,7 +495,7 @@ export default function GitHubIntegrationClient({
       ) : (
         <section className={styles.onboardingGrid}>
           <article>
-            <Github size={24} />
+            <GitBranch size={24} />
             <h3>1. Conecte</h3>
             <p>Instale o GitHub App e escolha quais repositórios o Envista pode acessar.</p>
           </article>
@@ -514,7 +514,7 @@ export default function GitHubIntegrationClient({
 
       {!configured ? (
         <section className={styles.configNotice} id="config">
-          <Github size={19} />
+          <GitBranch size={19} />
           <div>
             <b>Configuração necessária para ativar em produção</b>
             <p>Defina GITHUB_APP_ID, GITHUB_APP_SLUG e a chave privada em base64. Webhooks também usam GITHUB_APP_WEBHOOK_SECRET e SUPABASE_SERVICE_ROLE_KEY.</p>
