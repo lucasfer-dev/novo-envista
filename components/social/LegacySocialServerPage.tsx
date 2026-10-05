@@ -120,7 +120,7 @@ export default async function LegacySocialServerPage({
       .select("github_repo_id,full_name,private")
       .eq("user_id", userId)
       .order("github_updated_at", { ascending: false })
-      .limit(100),
+      .limit(50),
   ]);
 
   const feed = feedPayload(feedResult.data);
