@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { getGitHubAppConfig } from "@/lib/github/app";
 
 export const runtime = "nodejs";
@@ -13,13 +14,13 @@ export async function GET() {
   const userId = claimsData?.claims?.sub;
 
   if (error || !userId) {
-    return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"));
+    return NextResponse.redirect(new URL("/login", resolveSiteUrl()));
   }
 
   const config = getGitHubAppConfig();
   if (!config) {
     return NextResponse.redirect(
-      new URL("/integrations/github?error=not_configured", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+      new URL("/integrations/github?error=not_configured", resolveSiteUrl()),
     );
   }
 
