@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { summarizeGitHubEvent } from "@/lib/github/app";
+import { summarizeGitHubEvent } from "./app";
 
 describe("summarizeGitHubEvent", () => {
   it("summarizes push events without persisting the raw payload", () => {
