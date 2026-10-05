@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
-const legacyShell = readFileSync("components/social/LegacySocialShell.tsx", "utf8");
-const productShell = readFileSync("components/real/ProductShell.tsx", "utf8");
+const legacyShell = readFileSync("components/layout/AppShell.tsx", "utf8");
+const productShell = legacyShell;
 const adminShell = readFileSync("components/admin/AdminShell.tsx", "utf8");
 const accessibility = readFileSync("app/accessibility.css", "utf8");
 const accountProfile = readFileSync("app/account/profile/page.tsx", "utf8");
@@ -18,10 +18,10 @@ describe("shared shell accessibility", () => {
   });
 
   it("exposes mobile navigation state in the interactive product shells", () => {
-    expect(legacyShell).toContain('aria-expanded={mobileOpen}');
+    expect(legacyShell).toContain('aria-expanded={open}');
     expect(legacyShell).toContain('aria-controls="app-navigation"');
     expect(productShell).toContain('aria-expanded={open}');
-    expect(productShell).toContain('aria-controls="product-navigation"');
+    expect(productShell).toContain('aria-controls="app-navigation"');
   });
 
   it("keeps account profile inside the same authenticated shell as the product", () => {

@@ -1,5 +1,7 @@
 "use client";
 
+import ProjectCover from "@/components/projects/ProjectCover";
+
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -51,6 +53,7 @@ export type SocialPostFeedItem = {
 
 export type SocialProjectUpdateFeedItem = {
   kind: "project-update";
+  cover?: string;
   id: string;
   createdAt: string;
   title: string;
@@ -218,8 +221,8 @@ export default function LegacySocialFeed({
     <div className={styles.socialPage}>
       <div className={styles.feedHeader}>
         <div>
-          <h1>Social</h1>
-          <p>Veja o que pessoas, investidores, equipes e projetos estão construindo no Envista.</p>
+          <h1>O que está sendo construído</h1>
+          <p>Acompanhe projetos, compartilhe avanços e converse com quem está construindo.</p>
         </div>
         <span className={styles.feedBadge}>
           <Activity size={14} /> {followingCount} seguindo
@@ -352,6 +355,7 @@ export default function LegacySocialFeed({
                     </div>
 
                     <Link className={styles.projectUpdateBody} href={item.href}>
+                      <ProjectCover title={item.title} src={item.cover} />
                       <div className={styles.updateTitle}>
                         <strong>{item.title}</strong>
                         <span className="stage">{item.stage}</span>

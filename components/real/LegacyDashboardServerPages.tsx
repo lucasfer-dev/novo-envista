@@ -1,3 +1,4 @@
+import ContextNav from "@/components/layout/ContextNav";
 import Link from "next/link";
 import { Bookmark, Eye, FolderKanban, GraduationCap, MessageCircle, Trophy, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -219,6 +220,7 @@ export async function InvestorSavedServerPage({ pathname, searchParams }: { path
   const sorted = [...(projects ?? [])].sort((a: any, b: any) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
   return (
     <LegacySocialShell user={appUser} role="investor" pathname={pathname}>
+      <ContextNav label="Acompanhar projetos" links={[{ href: "/investor/interests", label: "Interesses enviados" }, { href: "/investor/following", label: "Seguindo" }, { href: "/investor/explore", label: "Descobrir projetos" }]} />
       <div className="page-head"><div><h1>Projetos salvos</h1><p>Sua lista privada de projetos para revisar depois.</p></div></div>
       {first(query.error) === "save" ? <div className="form-error">Não foi possível atualizar o projeto salvo.</div> : null}
       {sorted.length ? <div className="project-grid section-block">{sorted.map((project: any) => <ProjectCard key={project.id} project={project} role="investor" action={<form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value="/investor/saved" /><button className="secondary" type="submit">Remover dos salvos</button></form>} />)}</div> : <div className="empty"><div><Bookmark /></div><h3>Nenhum projeto salvo</h3><p>Salve projetos durante a descoberta para encontrá-los aqui.</p><Link className="secondary" href="/investor/explore">Explorar projetos</Link></div>}

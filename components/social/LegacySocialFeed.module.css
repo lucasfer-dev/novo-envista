@@ -132,7 +132,7 @@
   gap: 6px;
   min-width: 0;
   color: #7f91a5;
-  font-size: 10.5px;
+  font-size:12px;
   font-weight: 760;
   letter-spacing: 0.015em;
 }
@@ -325,7 +325,7 @@
   display: block;
   margin-top: 3px;
   color: #72859a;
-  font-size: 11.5px;
+  font-size:12px;
 }
 
 .authorKind {
@@ -337,7 +337,7 @@
   border-radius: 999px;
   color: #91a2b4;
   background: rgba(148, 163, 184, 0.035);
-  font-size: 9.5px;
+  font-size:12px;
   font-weight: 740;
 }
 
@@ -350,7 +350,7 @@
 
 .followingLabel {
   color: #55d7c6;
-  font-size: 11px;
+  font-size:12px;
   font-weight: 750;
   white-space: nowrap;
 }
@@ -362,7 +362,7 @@
   border-radius: 7px;
   background: transparent;
   color: #d98594;
-  font-size: 11px;
+  font-size:12px;
 }
 
 .postBody {
@@ -455,7 +455,7 @@
   justify-content: center;
   background: #24394c;
   color: #cfe7e3;
-  font-size: 9px;
+  font-size:12px;
   font-weight: 800;
 }
 
@@ -466,7 +466,7 @@
 }
 
 .commentRow strong {
-  font-size: 11px;
+  font-size:12px;
 }
 
 .commentRow p {
@@ -481,7 +481,7 @@
   background: none;
   color: #c77988;
   padding: 5px 0 0;
-  font-size: 10px;
+  font-size:12px;
 }
 
 .commentComposer {
@@ -532,7 +532,7 @@
   background: none;
   padding: 4px 0 0;
   color: #77dacc;
-  font-size: 10px;
+  font-size:12px;
   cursor: pointer;
 }
 
@@ -677,7 +677,7 @@
 .sideCard > p {
   margin: 0 0 14px;
   color: #8395a9;
-  font-size: 11.5px;
+  font-size:12px;
   line-height: 1.6;
 }
 
@@ -721,7 +721,7 @@
 .suggestionIdentity small {
   margin-top: 2px;
   color: #718296;
-  font-size: 10.5px;
+  font-size:12px;
 }
 
 .followButton {
@@ -731,7 +731,7 @@
   border-radius: 8px;
   background: rgba(0, 169, 157, 0.05);
   color: #7fe2d5;
-  font-size: 10.5px;
+  font-size:12px;
   font-weight: 750;
   display: inline-flex;
   align-items: center;
@@ -855,7 +855,7 @@
   }
 
   .postActions button span {
-    font-size: 11px;
+    font-size:12px;
   }
 
   .feedPagination {
@@ -886,3 +886,5 @@
     min-height: 30px;
   }
 }
+
+.projectUpdateBody>div:first-child { border-radius:10px; margin-bottom:18px; }.feedHeader h1 { font-size:24px; }

@@ -1,3 +1,4 @@
+import VisualProjectCard from "@/components/projects/ProjectCard";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -110,22 +111,6 @@ function Header() {
   );
 }
 
-function ProjectCard({ project }: { project: PublicProject }) {
-  return (
-    <Link className={styles.projectCard} href={`/p/${project.slug}`}>
-      <div className={styles.projectTopline}>
-        <span>{project.stage || "Projeto em evolução"}</span>
-        <ArrowRight size={16} aria-hidden="true" />
-      </div>
-      <h3>{project.title}</h3>
-      <p>{project.short_description || "Projeto publicado no Envista."}</p>
-      <div className={styles.projectMeta}>
-        {project.category ? <span>{project.category}</span> : null}
-        {(project.tags || []).slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}
-      </div>
-    </Link>
-  );
-}
 
 export default async function PublicLandingServer() {
   let projects: PublicProject[] = [];
@@ -245,7 +230,7 @@ export default async function PublicLandingServer() {
 
           {projects.length ? (
             <div className={styles.projectsGrid}>
-              {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
+              {projects.map(project => <VisualProjectCard key={project.slug} project={project} href={`/p/${project.slug}`} />)}
             </div>
           ) : (
             <div className={styles.emptyProjects}>

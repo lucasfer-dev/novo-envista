@@ -4,8 +4,9 @@ import { FormEvent, useState } from "react";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-function hrefFor(base: string, query: string, stage: string) {
+function hrefFor(base: string, query: string, stage: string, view: string) {
   const params = new URLSearchParams();
+  params.set("view", view);
   const cleanQuery = query.trim();
   if (cleanQuery) params.set("q", cleanQuery);
   if (stage && stage !== "Todos") params.set("stage", stage);
@@ -17,10 +18,12 @@ export default function ExploreFiltersClient({
   base,
   initialQuery,
   initialStage,
+  view = "projects",
 }: {
   base: string;
   initialQuery: string;
   initialStage: string;
+  view?: string;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
@@ -28,13 +31,13 @@ export default function ExploreFiltersClient({
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(hrefFor(base, query, stage), { scroll: false });
+    router.push(hrefFor(base, query, stage, view), { scroll: false });
   };
 
   const clear = () => {
     setQuery("");
     setStage("Todos");
-    router.push(base, { scroll: false });
+    router.push(hrefFor(base, "", "Todos", view), { scroll: false });
   };
 
   const hasFilters = Boolean(query.trim()) || stage !== "Todos";
