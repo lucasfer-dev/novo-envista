@@ -68,29 +68,29 @@ create policy github_connections_owner_select
   on public.github_connections
   for select
   to authenticated
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 drop policy if exists github_connections_owner_insert on public.github_connections;
 create policy github_connections_owner_insert
   on public.github_connections
   for insert
   to authenticated
-  with check (auth.uid() = user_id);
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists github_connections_owner_update on public.github_connections;
 create policy github_connections_owner_update
   on public.github_connections
   for update
   to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists github_connections_owner_delete on public.github_connections;
 create policy github_connections_owner_delete
   on public.github_connections
   for delete
   to authenticated
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 drop policy if exists github_repositories_owner_or_public_select on public.github_repositories;
 create policy github_repositories_owner_or_public_select
@@ -98,7 +98,7 @@ create policy github_repositories_owner_or_public_select
   for select
   to authenticated
   using (
-    auth.uid() = user_id
+    (select auth.uid()) = user_id
     or (
       display_on_profile = true
       and private = false
@@ -116,22 +116,22 @@ create policy github_repositories_owner_insert
   on public.github_repositories
   for insert
   to authenticated
-  with check (auth.uid() = user_id);
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists github_repositories_owner_update on public.github_repositories;
 create policy github_repositories_owner_update
   on public.github_repositories
   for update
   to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists github_repositories_owner_delete on public.github_repositories;
 create policy github_repositories_owner_delete
   on public.github_repositories
   for delete
   to authenticated
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 drop policy if exists github_events_owner_or_public_select on public.github_events;
 create policy github_events_owner_or_public_select
@@ -139,7 +139,7 @@ create policy github_events_owner_or_public_select
   for select
   to authenticated
   using (
-    auth.uid() = user_id
+    (select auth.uid()) = user_id
     or (
       is_public = true
       and exists (
@@ -156,22 +156,22 @@ create policy github_events_owner_insert
   on public.github_events
   for insert
   to authenticated
-  with check (auth.uid() = user_id);
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists github_events_owner_update on public.github_events;
 create policy github_events_owner_update
   on public.github_events
   for update
   to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists github_events_owner_delete on public.github_events;
 create policy github_events_owner_delete
   on public.github_events
   for delete
   to authenticated
-  using (auth.uid() = user_id);
+  using ((select auth.uid()) = user_id);
 
 grant select, insert, update, delete on public.github_connections to authenticated;
 grant select, insert, update, delete on public.github_repositories to authenticated;
