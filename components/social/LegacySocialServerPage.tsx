@@ -84,7 +84,7 @@ export default async function LegacySocialServerPage({
   const page = pageNumber(query.page);
   const returnTo = socialHref(path, feedMode, searchQuery, page);
 
-  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult] = await Promise.all([
+  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult, githubRepositoriesResult] = await Promise.all([
     supabase.rpc("get_social_feed_refs", {
       feed_mode: feedMode,
       search_query: searchQuery,
@@ -115,6 +115,12 @@ export default async function LegacySocialServerPage({
       .eq("visibility", "platform")
       .order("updated_at", { ascending: false })
       .limit(24),
+    supabase
+      .from("github_repositories")
+      .select("github_repo_id,full_name,private")
+      .eq("user_id", userId)
+      .order("github_updated_at", { ascending: false })
+      .limit(50),
   ]);
 
   const feed = feedPayload(feedResult.data);
@@ -346,6 +352,11 @@ export default async function LegacySocialServerPage({
         returnTo={returnTo}
         teams={teamOptions}
         projects={projectOptions}
+        githubRepositories={(githubRepositoriesResult.data ?? []).map((repo: any) => ({
+          id: String(repo.github_repo_id),
+          fullName: repo.full_name,
+          private: Boolean(repo.private),
+        }))}
         items={items}
         suggestions={suggestions}
         followingCount={followingCountResult.count ?? 0}

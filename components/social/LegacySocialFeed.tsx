@@ -27,6 +27,7 @@ import styles from "./LegacySocialFeed.module.css";
 
 export type SocialTeamOption = { id: string; name: string };
 export type SocialProjectOption = { id: string; title: string; slug: string };
+export type SocialGitHubRepositoryOption = { id: string; fullName: string; private: boolean };
 export type SocialCommentView = { id: string; body: string; userId: string; authorLabel: string; authorHref: string; parentCommentId: string | null };
 export type SocialAuthorKind = "participant" | "investor" | "team";
 
@@ -141,6 +142,7 @@ export default function LegacySocialFeed({
   returnTo,
   teams,
   projects,
+  githubRepositories,
   items,
   suggestions,
   followingCount,
@@ -158,6 +160,7 @@ export default function LegacySocialFeed({
   returnTo: string;
   teams: SocialTeamOption[];
   projects: SocialProjectOption[];
+  githubRepositories: SocialGitHubRepositoryOption[];
   items: SocialFeedItem[];
   suggestions: SocialSuggestion[];
   followingCount: number;
@@ -224,6 +227,9 @@ export default function LegacySocialFeed({
       </div>
 
       {status === "posted" && <div className={styles.notice}>Publicação criada.</div>}
+      {status === "posted-github" && <div className={styles.notice}>Publicação criada no Envista e enviada ao GitHub como Discussion.</div>}
+      {status === "posted-github-error" && <div className={styles.error}>A publicação entrou no Envista, mas não foi possível enviá-la ao GitHub. Você pode tentar novamente em Integrações.</div>}
+      {status === "posted-github-skipped" && <div className={styles.notice}>Publicação criada. A sincronização com GitHub foi ignorada porque o post está privado.</div>}
       {errorMessage && <div className={styles.error}>{errorMessage}</div>}
 
       <div className={styles.socialLayout}>
@@ -261,6 +267,20 @@ export default function LegacySocialFeed({
                     ))}
                   </select>
                 </label>
+                {githubRepositories.length ? (
+                  <label>
+                    GitHub
+                    <select name="github_repository_id" defaultValue="">
+                      <option value="">Não sincronizar</option>
+                      {githubRepositories.map((repository) => (
+                        <option key={repository.id} value={repository.id}>
+                          {repository.fullName}{repository.private ? " · privado" : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <small>Post público → GitHub Discussion</small>
+                  </label>
+                ) : null}
                 <label>
                   Visibilidade
                   <select name="visibility" defaultValue="private">
