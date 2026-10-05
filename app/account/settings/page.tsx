@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bell, CalendarDays, CircleUserRound, Database, LifeBuoy, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
+import { Bell, CalendarDays, CircleUserRound, Database, Github, LifeBuoy, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import AccountProductShell from "@/components/account/AccountProductShell";
 import { authStyles as styles } from "@/components/auth/AuthShell";
 import suite from "@/components/product/ProfessionalSuite.module.css";
@@ -37,7 +37,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       <div className={suite.settingsGrid}>
         <Link className={suite.settingCard} href="/account/profile"><CircleUserRound size={20} /><h3>Perfil</h3><p>Nome, bio, avatar, localização e visibilidade.</p></Link>
         <Link className={suite.settingCard} href="/account/security"><LockKeyhole size={20} /><h3>Login e segurança</h3><p>E-mail, senha e dispositivos conectados à sua conta.</p></Link>
-        <Link className={suite.settingCard} href="/account/professional"><Sparkles size={20} /><h3>Perfil profissional</h3><p>Headline, skills, GitHub, LinkedIn e site pessoal.</p></Link>
+        <Link className={suite.settingCard} href="/account/professional"><Sparkles size={20} /><h3>Perfil profissional</h3><p>Headline, skills, GitHub, LinkedIn e site pessoal.</p></Link>\n        <Link className={suite.settingCard} href="/integrations/github"><Github size={20} /><h3>Integrações</h3><p>Conecte o GitHub, importe repositórios e publique sem sair do Envista.</p></Link>
         <Link className={suite.settingCard} href="/account/privacy"><ShieldCheck size={20} /><h3>Privacidade e dados</h3><p>Exportação, visibilidade e controles de dados.</p></Link>
         <Link className={suite.settingCard} href="/account/feedback"><LifeBuoy size={20} /><h3>Suporte e feedback</h3><p>Reporte problemas, envie ideias e acompanhe solicitações.</p></Link>
       </div>
