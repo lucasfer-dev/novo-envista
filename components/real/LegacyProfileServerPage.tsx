@@ -1,3 +1,4 @@
+import Image from "next/image";
 import VisualProjectCard from "@/components/projects/ProjectCard";
 import ContentTabs from "@/components/ui/ContentTabs";
 import { loadProjectMedia } from "@/lib/projects/media";
@@ -41,7 +42,7 @@ export async function LegacyPublicProfileServerPage({ expectedRole, username, pa
 
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={pathname}>
-      <div className={profileStyles.cover} aria-hidden="true"><img src="/brand/envista-symbol-white.svg" alt="" /></div>
+      <div className={profileStyles.cover} aria-hidden="true"><Image src="/brand/envista-symbol-white.svg" alt="" width={270} height={360} /></div>
       <div className={`profile-head panel ${profileStyles.header}`}>
         <span className="avatar" style={{ width: 76, height: 76, fontSize: 20 }}>{initials(profile.display_name)}</span>
         <div className="profile-main">
