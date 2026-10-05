@@ -1,4 +1,4 @@
-import ProductShell from "@/components/real/ProductShell";
+import LegacySocialShell from "@/components/social/LegacySocialShell";
 import GitHubIntegrationClient from "@/components/github/GitHubIntegrationClient";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { getGitHubAppConfig } from "@/lib/github/app";
@@ -10,7 +10,7 @@ export default async function GitHubIntegrationPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { supabase, userId, appUser } = await requireProductUser();
+  const { supabase, userId, role, appUser } = await requireProductUser();
   const params = await searchParams;
 
   const [connectionResult, repositoriesResult, eventsResult] = await Promise.all([
@@ -37,7 +37,7 @@ export default async function GitHubIntegrationPage({
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
 
   return (
-    <ProductShell user={appUser} title="Integrações" variant="legacyDark">
+    <LegacySocialShell user={appUser} role={role} pathname="/integrations/github">
       <GitHubIntegrationClient
         configured={Boolean(getGitHubAppConfig())}
         connection={connectionResult.data ?? null}
@@ -46,6 +46,6 @@ export default async function GitHubIntegrationPage({
         initialStatus={status || null}
         initialError={error || null}
       />
-    </ProductShell>
+    </LegacySocialShell>
   );
 }
