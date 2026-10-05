@@ -1,4 +1,3 @@
-import { productNavigation } from "../product-navigation";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -17,11 +16,13 @@ describe("product role boundaries", () => {
   });
 
   it("keeps owned-content destinations out of investor navigation", () => {
-    const destinations = productNavigation("investor").map(item => item.href);
-    expect(destinations).not.toContain("/investor/projects");
-    expect(destinations).not.toContain("/investor/teams");
-    expect(destinations).toContain("/investor/explore");
-    expect(destinations).toContain("/investor/saved");
+    const shell = read("components/social/LegacySocialShell.tsx");
+    const investorNav = shell.split("const investorNav = [")[1]?.split("] as const;")[0] ?? "";
+
+    expect(investorNav).not.toContain('/investor/projects"');
+    expect(investorNav).not.toContain('/investor/teams"');
+    expect(investorNav).toContain('/investor/explore"');
+    expect(investorNav).toContain('/investor/saved"');
   });
 
   it("enforces participant ownership in database policies", () => {
