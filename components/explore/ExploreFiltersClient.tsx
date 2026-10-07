@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import styles from "./Explore.module.css";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -40,14 +41,14 @@ export default function ExploreFiltersClient({
   const hasFilters = Boolean(query.trim()) || stage !== "Todos";
 
   return (
-    <form className="filters explore-filters" onSubmit={submit} data-envista-server-explore="true">
-      <label className="search-field">
+    <form className={styles.filters} onSubmit={submit} data-envista-server-explore="true">
+      <label className={styles.search}>
         <Search size={18} />
         <input
           aria-label="Buscar projetos, pessoas ou equipes"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Buscar projetos, pessoas ou equipes..."
+          placeholder="Busque por nome, tema ou habilidade"
           autoComplete="off"
         />
       </label>
@@ -63,7 +64,7 @@ export default function ExploreFiltersClient({
         <option value="MVP">MVP</option>
         <option value="Projeto ativo">Projeto ativo</option>
       </select>
-      <button className="primary" type="submit">Filtrar</button>
+      <button className="primary" type="submit">Buscar</button>
       {hasFilters && <button className="secondary" type="button" onClick={clear}>Limpar</button>}
     </form>
   );
