@@ -87,20 +87,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   const restrictedMinor = Boolean(compliance.guardian_required && !compliance.guardian_consent_verified_at);
   const productRole = parseProductRole(profile.role);
   const home = homeForRole(productRole);
-  const currentTags = new Set<string>(profile.interest_tags || []);
-  const customTags = [...currentTags].filter((tag) => !TAG_OPTIONS.includes(tag)).join(", ");
   const displayName = profile.display_name || profile.username || "Usuário Envista";
-  const location = [profile.public_city, profile.public_state].filter(Boolean).join(", ");
-  const institution = profile.role === "participant" ? profile.public_school : profile.organization;
-  const completionSignals = [
-    Boolean(profile.display_name),
-    Boolean(profile.username),
-    Boolean(profile.bio),
-    Boolean(profile.public_city && profile.public_state),
-    Boolean(institution),
-    currentTags.size > 0,
-  ];
-  const completionPercent = Math.round((completionSignals.filter(Boolean).length / completionSignals.length) * 100);
 
   const shellUser: User = {
     id: userId,
@@ -119,14 +106,40 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
 
   return (
     <LegacySocialShell user={shellUser} role={productRole} pathname="/account/profile">
+      <AccountProfileView profile={profile} userId={userId} restrictedMinor={restrictedMinor} saved={saved} error={error} home={home} />
+    </LegacySocialShell>
+  );
+}
+type AccountProfileData = {
+ username:string|null;display_name:string|null;role:string;avatar_path:string|null;
+ bio:string|null;public_city:string|null;public_state:string|null;public_school:string|null;
+ organization:string|null;organization_type:string|null;interest_tags:string[]|null;
+ profile_visibility:string|null;allow_messages:boolean|null;
+};
+
+function AccountProfileView({profile,userId,restrictedMinor,saved,error,home}:{profile:AccountProfileData;userId:string;restrictedMinor:boolean;saved:boolean;error:string;home:string}) {
+  const currentTags = new Set<string>(profile.interest_tags || []);
+  const customTags = [...currentTags].filter((tag) => !TAG_OPTIONS.includes(tag)).join(", ");
+  const displayName = profile.display_name || profile.username || "Usuário Envista";
+  const location = [profile.public_city, profile.public_state].filter(Boolean).join(", ");
+  const institution = profile.role === "participant" ? profile.public_school : profile.organization;
+  const completionSignals = [
+    Boolean(profile.display_name),
+    Boolean(profile.username),
+    Boolean(profile.bio),
+    Boolean(profile.public_city && profile.public_state),
+    Boolean(institution),
+    currentTags.size > 0,
+  ];
+  const completionPercent = Math.round((completionSignals.filter(Boolean).length / completionSignals.length) * 100);
+
+  return (
       <div className={styles.page}>
         <header className={`page-head ${styles.hero}`}>
           <div>
-            <span className={styles.eyebrow}><UserRound size={14} aria-hidden="true" /> Conta e identidade</span>
             <h1>Meu perfil</h1>
             <p>Atualize suas informações e escolha como você aparece para a comunidade Envista.</p>
           </div>
-          <p className={styles.heroNote}>Um perfil completo ajuda pessoas, equipes e oportunidades relevantes a encontrarem você.</p>
         </header>
 
         {saved ? <div className={styles.notice} role="status">Perfil atualizado com sucesso.</div> : null}
@@ -134,6 +147,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
 
         <div className={styles.layout}>
           <aside className={styles.summary} aria-label="Resumo do perfil">
+            <div className={styles.summaryMain}>
             <div className={styles.identity}>
               <div className={styles.avatar} aria-hidden="true">{initials(displayName)}</div>
               <div>
@@ -155,6 +169,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
               <div className={styles.progressTrack} aria-hidden="true"><div className={styles.progressFill} style={{ width: `${completionPercent}%` }} /></div>
             </div>
 
+            </div>
             <div className={styles.uploadWrap}>
               <AvatarUploader userId={userId} currentPath={profile.avatar_path} />
             </div>
@@ -306,6 +321,5 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
           </section>
         </div>
       </div>
-    </LegacySocialShell>
   );
 }
