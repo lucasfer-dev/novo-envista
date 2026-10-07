@@ -1,3 +1,4 @@
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -132,7 +133,7 @@ export default async function PublicProjectPage({ params }: { params: Promise<{ 
       <header className={styles.header}><Link href="/"><img src="/brand/envista-symbol-gradient.svg" alt=""/><strong>Envista</strong></Link><div><Link href="/projects">Explorar projetos</Link><Link href="/login">Entrar</Link><Link className={styles.primary} href="/register">Criar conta</Link></div></header>
       <article className={styles.hero}>
         <div className={styles.eyebrow}><span>{project.stage || "Projeto"}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div>
-        <h1>{project.title}</h1>
+        <div className="project-card-artwork"><ProjectArtwork title={project.title} category={project.category} large /><h1>{project.title}</h1></div>
         <p className={styles.lead}>{project.short_description || "Projeto publicado no Envista."}</p>
         <div className={styles.tags}>{tags.map((tag)=><span key={tag}>{tag}</span>)}</div>
         <div className={styles.actions}>{projectLinks.map(([href,label])=><a className={styles.secondary} href={href} target="_blank" rel="noreferrer" key={label}>{label} <ExternalLink size={15}/></a>)}<ShareProjectButton className={styles.secondary} title={project.title} href={`/p/${project.slug}`} /><Link className={styles.primary} href="/register">Publique seu projeto <ArrowRight size={16}/></Link></div>

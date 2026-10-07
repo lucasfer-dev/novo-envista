@@ -4,6 +4,7 @@ export default function NotFound() {
   return (
     <main className={styles.page}>
       <section className={styles.card}>
+        <img className={styles.brandMark} src="/brand/envista-symbol-gradient.svg" alt="Envista" width="44" height="58" />
         <p className={styles.eyebrow}>Erro 404</p>
         <h1 className={styles.title}>Essa página não existe.</h1>
         <p className={styles.text}>

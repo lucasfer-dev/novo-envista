@@ -20,6 +20,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
       <body>
         <main className={styles.page}>
           <section className={styles.card} role="alert">
+            <img className={styles.brandMark} src="/brand/envista-symbol-gradient.svg" alt="Envista" width="44" height="58" />
             <p className={styles.eyebrow}>Envista</p>
             <h1 className={styles.title}>Algo inesperado aconteceu.</h1>
             <p className={styles.text}>

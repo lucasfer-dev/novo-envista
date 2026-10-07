@@ -1,3 +1,4 @@
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import Link from "next/link";
 import { ArrowUpRight, Compass, MapPin, SearchX, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -270,7 +271,7 @@ export default async function LegacyExploreServerPage({
                   <Link className="card-hit-target" href={href} aria-label={`Abrir projeto ${project.title}`} />
                   <span className="interactive-card-arrow" aria-hidden="true"><ArrowUpRight size={15} /></span>
                   <div className="project-cover">
-                    <span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span>
+                    <ProjectArtwork title={project.title || "Projeto"} category={project.category || ""} />
                     <Link className="stage" href={taxonomyHref(base, project.stage, "stage")}>{project.stage}</Link>
                   </div>
                   <div className="card-body">
