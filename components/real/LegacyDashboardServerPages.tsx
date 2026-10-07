@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ProjectArtwork from "@/components/product/ProjectArtwork";
 import HomeDashboard from "@/components/product/HomeDashboard";
-import { Bookmark, Eye, FolderKanban, GraduationCap, MessageCircle, Trophy, Users } from "lucide-react";
+import { ArrowUpRight, Bookmark, Eye, FolderKanban, GraduationCap, MessageCircle, Trophy, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
 import { toggleProjectSaveAction } from "@/lib/projects/investor-actions";
@@ -45,18 +45,21 @@ function one<T>(value: T | T[] | null | undefined): T | null {
 
 function ProjectCard({ project, role, action }: { project: ProjectCardRow; role: ProductRole; action?: React.ReactNode }) {
   const base = root(role);
+  const href = `${base}/projects/${encodeURIComponent(project.slug)}?from=explore`;
   return (
-    <article className="project-card">
+    <article className="project-card" data-clickable="true">
+      <Link className="card-hit-target" href={href} aria-label={`Abrir projeto ${project.title}`} />
+      <span className="card-open-indicator" aria-hidden="true"><ArrowUpRight size={15} /></span>
       <div className="project-cover">
         <ProjectArtwork title={project.title} category={project.category} />
         <span className="stage">{project.stage}</span>
       </div>
       <div className="card-body">
         <div className="card-meta"><span>{project.category || "Projeto"}</span><span>{project.location || "Envista"}</span></div>
-        <h3><Link href={`${base}/projects/${encodeURIComponent(project.slug)}?from=explore`}>{project.title}</Link></h3>
+        <h3>{project.title}</h3>
         <p>{project.short_description || "Projeto publicado no Envista."}</p>
         <div className="chips compact">{(project.tags || []).slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
-        {action ? <div className="actions" style={{ marginTop: 12 }}>{action}</div> : null}
+        {action ? <div className="actions card-actions" style={{ marginTop: 12 }}>{action}</div> : null}
       </div>
     </article>
   );
@@ -65,13 +68,18 @@ function ProjectCard({ project, role, action }: { project: ProjectCardRow; role:
 function TeamCard({ team, role }: { team: TeamCardRow; role: ProductRole }) {
   const base = root(role);
   return (
-    <article className="team-card">
+    <Link
+      className="team-card"
+      href={`${base}/teams/${encodeURIComponent(team.slug)}?from=explore`}
+      aria-label={`Abrir equipe ${team.name}`}
+    >
       <span className="avatar">{team.name.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
-      <h3><Link href={`${base}/teams/${encodeURIComponent(team.slug)}?from=explore`}>{team.name}</Link></h3>
+      <h3>{team.name}</h3>
       <p>{team.description || "Equipe do ecossistema Envista."}</p>
       <div className="chips compact">{(team.tags || []).slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
       <small>{team.city || team.category || "Envista"}</small>
-    </article>
+      <ArrowUpRight className="card-open-indicator" size={15} aria-hidden="true" />
+    </Link>
   );
 }
 
@@ -214,7 +222,7 @@ export async function FollowingServerPage({ expectedRole, pathname }: { expected
       <div className="page-head"><div><h1>Seguindo</h1><p>Pessoas, equipes e projetos que você acompanha de verdade no Envista.</p></div></div>
       {(projectsResult.data ?? []).length ? <section className="section-block"><h2>Projetos</h2><div className="project-grid">{(projectsResult.data ?? []).map((project: any) => <ProjectCard key={project.id} project={project} role={expectedRole} action={<FollowEntityButton targetType="project" targetId={project.id} returnTo={`${base}/following`} />} />)}</div></section> : null}
       {(teamsResult.data ?? []).length ? <section className="section-block"><h2>Equipes</h2><div className="team-row">{(teamsResult.data ?? []).map((team: any) => <TeamCard key={team.id} team={team} role={expectedRole} />)}</div></section> : null}
-      {(profilesResult.data ?? []).length ? <section className="section-block"><h2>Pessoas</h2><div className="team-row">{(profilesResult.data ?? []).map((profile: any) => <article className="team-card" key={profile.id}><span className="avatar">{profile.display_name.split(" ").slice(0, 2).map((part: string) => part[0]).join("").toUpperCase()}</span><h3><Link href={`${base}/${profile.role === "investor" ? "investors" : "participants"}/${profile.username}`}>{profile.display_name}</Link></h3><p>{profile.bio || profile.organization || "Perfil Envista"}</p><small>@{profile.username}</small><div className="actions" style={{ marginTop: 10 }}><FollowEntityButton targetType="profile" targetId={profile.id} returnTo={`${base}/following`} /></div></article>)}</div></section> : null}
+      {(profilesResult.data ?? []).length ? <section className="section-block"><h2>Pessoas</h2><div className="team-row">{(profilesResult.data ?? []).map((profile: any) => <article className="team-card" data-clickable="true" key={profile.id}><Link className="card-hit-target" href={`${base}/${profile.role === "investor" ? "investors" : "participants"}/${profile.username}`} aria-label={`Abrir perfil de ${profile.display_name}`} /><span className="card-open-indicator" aria-hidden="true"><ArrowUpRight size={15} /></span><span className="avatar">{profile.display_name.split(" ").slice(0, 2).map((part: string) => part[0]).join("").toUpperCase()}</span><h3>{profile.display_name}</h3><p>{profile.bio || profile.organization || "Perfil Envista"}</p><small>@{profile.username}</small><div className="actions card-actions" style={{ marginTop: 10 }}><FollowEntityButton targetType="profile" targetId={profile.id} returnTo={`${base}/following`} /></div></article>)}</div></section> : null}
       {!(projectsResult.data ?? []).length && !(teamsResult.data ?? []).length && !(profilesResult.data ?? []).length ? <div className="empty"><div><Eye /></div><h3>Você ainda não segue ninguém</h3><p>Use o Social ou o Explorar para acompanhar projetos, equipes e pessoas.</p><Link className="secondary" href={`${base}/explore`}>Explorar</Link></div> : null}
     </LegacySocialShell>
   );
