@@ -3,6 +3,8 @@ import ProjectArtwork from "./ProjectArtwork";
 import HomeOpportunities from "./HomeOpportunities";
 import {
   ArrowRight,
+  BookOpen,
+  CheckCircle2,
   FolderKanban,
   MessageCircle,
   Plus,
@@ -75,15 +77,19 @@ export default function HomeDashboard({
   const firstSteps = [
     {
       done: projects.length > 0,
-      label: "Criar primeiro projeto",
+      label: "Seu primeiro projeto",
+      description: "Mostre uma ideia ou algo que já construiu.",
+      icon: FolderKanban,
       href: "/projects/new",
     },
     {
       done: teams.length > 0,
-      label: "Entrar ou criar uma equipe",
+      label: "Sua equipe",
+      description: "Encontre pessoas para construir junto.",
+      icon: Users,
       href: "/teams",
     },
-    { done: Boolean(course), label: "Começar uma trilha", href: "/learn" },
+    { done: Boolean(course), label: "Uma nova habilidade", description: "Escolha uma trilha e coloque em prática.", icon: BookOpen, href: "/learn" },
   ];
   const completedSteps = firstSteps.filter((step) => step.done).length;
   return (
@@ -115,23 +121,22 @@ export default function HomeDashboard({
         </Link>
       </div>
       {completedSteps < firstSteps.length ? (
-        <details className="dashboard-first-steps">
-          <summary>
-            Primeiros passos{" "}
-            <span>
-              {completedSteps}/{firstSteps.length} concluídos
-            </span>
-          </summary>
-          <div>
-            {firstSteps.map((step) => (
-              <Link href={step.href} key={step.href}>
-                <span aria-hidden="true">{step.done ? "✓" : "○"}</span>
-                {step.label}
-                <small>{step.done ? "Concluído" : "Começar"}</small>
-              </Link>
-            ))}
+        <section className="dashboard-first-steps" aria-labelledby="first-steps-title">
+          <div className="dashboard-first-steps-heading">
+            <div><h2 id="first-steps-title">Primeiros passos</h2><p>Construa seu espaço no Envista, no seu ritmo.</p></div>
+            <span>{completedSteps} de {firstSteps.length} concluídos</span>
           </div>
-        </details>
+          <div className="dashboard-first-steps-list">
+            {firstSteps.map((step) => {
+              const Icon = step.done ? CheckCircle2 : step.icon;
+              return <Link href={step.href} key={step.href} data-complete={step.done}>
+                <span className="dashboard-step-icon"><Icon size={19} aria-hidden="true" /></span>
+                <div><b>{step.label}</b><small>{step.done ? "Concluído" : step.description}</small></div>
+                <ArrowRight className="dashboard-step-arrow" size={16} aria-hidden="true" />
+              </Link>;
+            })}
+          </div>
+        </section>
       ) : null}
       <div className="dashboard-focus-grid">
         <section
