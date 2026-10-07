@@ -79,7 +79,7 @@
   padding: 18px;
   overflow: hidden;
   border-radius: 16px !important;
-  background: #132131 !important;
+  background: var(--ev-surface) !important;
   box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12);
 }
 
@@ -114,7 +114,7 @@
 }
 
 .composerHead textarea::placeholder {
-  color: #708195 !important;
+  color: var(--ev-muted) !important;
 }
 
 .composerMeta {
@@ -124,14 +124,14 @@
   align-items: end;
   margin-top: 13px;
   padding: 14px 0 0 52px;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid var(--ev-border);
 }
 
 .composerMeta label {
   display: grid;
   gap: 6px;
   min-width: 0;
-  color: #7f91a5;
+  color: var(--ev-muted);
   font-size: 10.5px;
   font-weight: 760;
   letter-spacing: 0.015em;
@@ -160,7 +160,7 @@
   min-height: 56px;
   margin-bottom: 10px;
   padding: 6px 2px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.11);
+  border-bottom: 1px solid var(--ev-border);
   background: rgba(11, 20, 31, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -180,7 +180,7 @@
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #8191a4;
+  color: var(--ev-muted);
   font-weight: 730;
 }
 
@@ -212,10 +212,10 @@
   align-items: center;
   gap: 7px;
   padding: 0 10px;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid var(--ev-border);
   border-radius: 9px;
-  background: #0f1c29;
-  color: #748599;
+  background: var(--ev-bg-subtle);
+  color: var(--ev-muted);
 }
 
 .feedSearch:focus-within {
@@ -240,7 +240,7 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #8999aa;
+  color: var(--ev-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -258,9 +258,9 @@
 .timelinePost,
 .timelineUpdate {
   padding: 17px 18px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid var(--ev-border);
   border-radius: 14px;
-  background: #121f2e;
+  background: var(--ev-surface-gradient);
   transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
 }
 
@@ -287,7 +287,7 @@
   align-items: center;
   justify-content: center;
   background: #263b50;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid var(--ev-border);
   color: #dff9f4;
   font-size: 12px;
   font-weight: 800;
@@ -324,7 +324,7 @@
 .identityText small {
   display: block;
   margin-top: 3px;
-  color: #72859a;
+  color: var(--ev-muted);
   font-size: 11.5px;
 }
 
@@ -333,9 +333,9 @@
   align-items: center;
   min-height: 20px;
   padding: 0 7px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid var(--ev-border);
   border-radius: 999px;
-  color: #91a2b4;
+  color: var(--ev-muted);
   background: rgba(148, 163, 184, 0.035);
   font-size: 9.5px;
   font-weight: 740;
@@ -392,7 +392,7 @@
 }
 
 .projectReference small {
-  color: #71899b;
+  color: var(--ev-muted);
 }
 
 .postActions {
@@ -418,7 +418,7 @@
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #8191a4;
+  color: var(--ev-muted);
   font-size: 12px;
 }
 
@@ -462,7 +462,7 @@
 .commentRow > div {
   padding: 9px 11px;
   border-radius: 4px 11px 11px 11px;
-  background: #0f1c29;
+  background: var(--ev-bg-subtle);
 }
 
 .commentRow strong {
@@ -580,7 +580,7 @@
 
 .projectUpdateBody p {
   margin: 8px 0 11px;
-  color: #9daebe;
+  color: var(--ev-muted);
   line-height: 1.55;
 }
 
@@ -595,7 +595,7 @@
 
 .emptyFeed {
   padding: 54px 24px;
-  border: 1px dashed rgba(148, 163, 184, 0.16);
+  border: 1px dashed var(--ev-border);
   border-radius: 14px;
   background: rgba(148, 163, 184, 0.018);
   text-align: center;
@@ -613,7 +613,7 @@
 .emptyFeed p {
   max-width: 500px;
   margin: 0 auto;
-  color: #8496aa;
+  color: var(--ev-muted);
   line-height: 1.55;
 }
 
@@ -623,7 +623,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 10px;
-  color: #718296;
+  color: var(--ev-muted);
   font-size: 12px;
 }
 
@@ -640,9 +640,9 @@
   padding: 0 11px;
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid var(--ev-border);
   border-radius: 8px;
-  background: #111f2e;
+  background: var(--ev-surface);
   color: #cbd6e0;
   font-size: 12px;
   font-weight: 700;
@@ -662,7 +662,7 @@
 .sideCard {
   padding: 17px;
   border-radius: 13px !important;
-  background: #111f2e !important;
+  background: var(--ev-surface-gradient);
 }
 
 .sideCard + .sideCard {
@@ -676,7 +676,7 @@
 
 .sideCard > p {
   margin: 0 0 14px;
-  color: #8395a9;
+  color: var(--ev-muted);
   font-size: 11.5px;
   line-height: 1.6;
 }
@@ -720,7 +720,7 @@
 
 .suggestionIdentity small {
   margin-top: 2px;
-  color: #718296;
+  color: var(--ev-muted);
   font-size: 10.5px;
 }
 
@@ -744,7 +744,7 @@
 
 .searchResultLabel {
   margin: 13px 0 0;
-  color: #718296;
+  color: var(--ev-muted);
   font-size: 12px;
 }
 

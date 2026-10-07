@@ -138,10 +138,10 @@ export function CompetitionsBrowser({
   const lastResult = Math.min(safePage * PAGE_SIZE, filtered.length);
 
   return <div className={styles.page}>
-    <div className={styles.head}>
+    <div className={`page-head ${styles.head}`}>
       <div>
         <h1>Competições</h1>
-        <p>O Envista combina consultas a páginas oficiais com um catálogo curado de competições verificadas para ampliar a cobertura de inscrições, datas, modalidades e regulamentos.</p>
+        <p>Encontre competições para seu projeto. Confira inscrições, datas e regulamentos nas fontes oficiais.</p>
       </div>
       <div className={styles.liveActions}>
         <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))} · atualização automática a cada 5 min` : "Consultando fontes oficiais…"}</span>
@@ -178,7 +178,7 @@ export function CompetitionsBrowser({
 
     <div className={styles.grid}>
       {paginated.map(({ item, recommendation }) => <Link prefetch={false} className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
-        <div className={styles.banner}><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
+        <div className={styles.banner}><img className={styles.bannerArtwork} src={/ciência|cient|mostratec/i.test(`${item.name} ${item.type}`) ? "/brand/opportunity-science.svg" : "/brand/opportunity-challenge.svg"} alt="" width="320" height="200" loading="lazy" /><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
         <div className={styles.body}>
           {(recommendation.project || recommendation.team) && <div className={styles.matchStack}>
             {recommendation.project && <MatchBadge match={recommendation.project} />}

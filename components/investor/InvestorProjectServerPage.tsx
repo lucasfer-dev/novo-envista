@@ -1,3 +1,4 @@
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bookmark, Building2, MapPin } from "lucide-react";
@@ -60,7 +61,7 @@ export async function InvestorPublicProjectServerPage({
       <Link className="back" href={backHref}>← Voltar</Link>
       <div className="project-hero panel">
         <div>
-          <div className="project-icon">{initials(project.title)}</div>
+          <ProjectArtwork title={project.title} category={project.category} large />
           <div>
             <div className="meta-row">
               <span className="stage">{project.stage}</span>

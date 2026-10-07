@@ -216,7 +216,7 @@ export default function LegacySocialFeed({
 
   return (
     <div className={styles.socialPage}>
-      <div className={styles.feedHeader}>
+      <div className={`page-head ${styles.feedHeader}`}>
         <div>
           <h1>Social</h1>
           <p>Veja o que pessoas, investidores, equipes e projetos estão construindo no Envista.</p>

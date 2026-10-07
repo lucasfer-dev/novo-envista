@@ -1,3 +1,4 @@
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, FolderKanban, MapPin, Plus } from "lucide-react";
@@ -122,7 +123,7 @@ export async function LegacyProjectsIndexPage({
         {projects.map((project) => (
           <Link className="project-card" href={`${projectBase}/${project.slug}`} key={project.id}>
             <div className="project-cover">
-              <span className="project-initial">{initials(project.title)}</span>
+              <ProjectArtwork title={project.title || "Projeto"} category={project.category || ""} />
               <span className="stage">{project.stage}</span>
             </div>
             <div className="card-body">
@@ -258,7 +259,7 @@ export async function LegacyProjectDetailPage({
       <Link className="back" href={backHref}><ArrowLeft size={16} /> Voltar</Link>
       <div className="project-hero panel">
         <div>
-          <div className="project-icon">{initials(project.title)}</div>
+          <ProjectArtwork title={project.title} category={project.category} large />
           <div>
             <div className="meta-row">
               <span className="stage">{project.stage}</span>

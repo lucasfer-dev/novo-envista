@@ -106,7 +106,7 @@ export function TeamsIndex({ role, memberships, invitations, status, error }: { 
   const failure = errorMessage(error);
   return (
     <>
-      <div className={styles.head}>
+      <div className={`page-head ${styles.head}`}>
         <div><h1>Minhas equipes</h1><p className={styles.muted}>Equipes ligadas à sua conta real no Envista.</p></div>
         <Link className={styles.primary} href={`${base}/new`}>Criar equipe</Link>
       </div>
@@ -167,7 +167,7 @@ export function NewTeamView({ role, error }: { role: Role; error?: string }) {
   const failure = errorMessage(error);
   return (
     <>
-      <div className={styles.head}><div><h1>Criar equipe</h1><p className={styles.muted}>A equipe será persistida no Supabase e você será o responsável inicial.</p></div><Link className={styles.secondary} href={base}>Voltar</Link></div>
+      <div className={`page-head ${styles.head}`}><div><h1>Criar equipe</h1><p className={styles.muted}>Reúna pessoas em torno de uma ideia. Você será o responsável inicial pela equipe.</p></div><Link className={styles.secondary} href={base}>Voltar</Link></div>
       {failure && <div className={styles.error}>{failure}</div>}
       <form className={`${styles.card} ${styles.form}`} action={createTeamAction}>
         <label>Nome<input required minLength={2} maxLength={120} name="name" placeholder="Ex.: Equipe Atlas"/></label>
@@ -190,7 +190,7 @@ export function TeamDetailView({ role, user, team, members, invitations, canMana
   const isOwner = team.owner_id === user.id;
   return (
     <>
-      <div className={styles.head}>
+      <div className={`page-head ${styles.head}`}>
         <div><Link className={styles.code} href={base}>← Minhas equipes</Link><h1>{team.name}</h1><p className={styles.muted}>{team.description || "Sem descrição."}</p></div>
         <span className={styles.pill}>{team.visibility === "private" ? "Privada" : "Na plataforma"}</span>
       </div>

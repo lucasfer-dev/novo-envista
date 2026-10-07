@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ProjectArtwork from "@/components/product/ProjectArtwork";
+import HomeDashboard from "@/components/product/HomeDashboard";
 import { Bookmark, Eye, FolderKanban, GraduationCap, MessageCircle, Trophy, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
@@ -46,7 +48,7 @@ function ProjectCard({ project, role, action }: { project: ProjectCardRow; role:
   return (
     <article className="project-card">
       <div className="project-cover">
-        <span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span>
+        <ProjectArtwork title={project.title} category={project.category} />
         <span className="stage">{project.stage}</span>
       </div>
       <div className="card-body">
@@ -133,41 +135,10 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       courseProgress = lessonIds.length ? Math.round(lessonIds.filter((id: string) => done.has(id)).length / lessonIds.length * 100) : 0;
     }
 
-    const firstSteps = [
-      { done: projects.size > 0, label: "Crie seu primeiro projeto", description: "Registre algo que você está construindo.", href: "/projects/new", Icon: FolderKanban },
-      { done: teams.length > 0, label: "Entre ou crie uma equipe", description: "Organize pessoas em torno de um projeto.", href: "/teams", Icon: Users },
-      { done: Boolean(course), label: "Comece um curso", description: "Escolha uma trilha e salve seu progresso.", href: "/learn", Icon: GraduationCap },
-    ];
-
     return (
       <LegacySocialShell user={appUser} role="participant" pathname={pathname}>
-        <div className="page-head"><div><h1>Olá, {appUser.name.split(" ")[0]}.</h1><p>Continue construindo a partir do que está salvo na sua conta.</p></div></div>
-        <FirstRunChecklist title="Primeiros passos" steps={firstSteps} />
-        <div className="home-grid">
-          <section className="panel continue-card">
-            <div className="panel-title"><span>Continuar aprendendo</span><GraduationCap size={18} /></div>
-            {course ? <div><h2>{course.title}</h2><p>{course.description || "Curso em andamento."}</p><div className="progress"><i style={{ width: `${courseProgress}%` }} /></div><small>{courseProgress}% concluído</small><div className="actions" style={{ marginTop: 14 }}><Link className="primary" href={`/learn/${course.slug}`}>Continuar curso</Link></div></div> : <div><h2>Comece uma trilha</h2><p>Seus cursos e progresso ficam vinculados à sua conta.</p><Link className="primary" href="/learn">Ver cursos</Link></div>}
-          </section>
-          <section className="panel opportunity">
-            <div className="panel-title"><span>Competições</span><Trophy size={18} /></div>
-            <h2>Encontre a próxima oportunidade</h2><p>O catálogo é verificado em fontes oficiais e cruza oportunidades com seus projetos e equipes.</p><Link className="secondary" href="/competitions">Ver competições</Link>
-          </section>
-        </div>
-
-        <section className="section-block">
-          <div className="section-row"><div><h2>Meus projetos</h2><p>Projetos pessoais e das suas equipes.</p></div><Link className="text-btn" href="/projects">Ver todos</Link></div>
-          {[...projects.values()].length ? <div className="project-grid">{[...projects.values()].slice(0, 6).map((project) => <ProjectCard key={project.id} project={project} role="participant" />)}</div> : <div className="empty"><div><FolderKanban /></div><h3>Seu primeiro projeto começa aqui</h3><p>Crie um projeto para organizar a ideia, montar uma equipe e compartilhar evolução.</p><Link className="secondary" href="/projects/new">Criar projeto</Link></div>}
-        </section>
-
-        <section className="section-block">
-          <div className="section-row"><div><h2>Minhas equipes</h2><p>Equipes das quais você realmente faz parte.</p></div><Link className="text-btn" href="/teams">Gerenciar equipes</Link></div>
-          {teams.length ? <div className="team-row">{teams.slice(0, 6).map((team) => <TeamCard key={team.id} team={team} role="participant" />)}</div> : <div className="empty"><div><Users /></div><h3>Você ainda não está em uma equipe</h3><p>Crie uma equipe para colaborar ou explore o ecossistema para conhecer outros projetos.</p><div className="actions"><Link className="secondary" href="/teams/new">Criar equipe</Link><Link className="secondary" href="/explore">Explorar</Link></div></div>}
-        </section>
-
-        <section className="panel activity">
-          <div className="panel-title"><span>Atividade recente</span></div>
-          {(notificationsResult.data ?? []).length ? (notificationsResult.data ?? []).map((notification: any) => <Link className="activity-item" href={notification.href || "/notifications"} key={notification.id}><i><MessageCircle /></i><div><b>{notification.title}</b><small>{notification.body || new Date(notification.created_at).toLocaleString("pt-BR")}</small></div></Link>) : <div><p>Nenhuma notificação recente.</p><Link className="secondary" href="/explore">Explorar o Envista</Link></div>}
-        </section>
+        <HomeDashboard name={appUser.name} projects={[...projects.values()]} teams={teams}
+          notifications={notificationsResult.data ?? []} course={course} courseProgress={courseProgress} />
       </LegacySocialShell>
     );
   }
@@ -196,7 +167,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       </div>
       <FirstRunChecklist title="Comece por aqui" steps={firstSteps} />
       <section className="section-block">
-        <div className="section-row"><div><h2>Projetos recentes</h2><p>Conteúdo público salvo no Supabase.</p></div><Link className="text-btn" href="/investor/explore">Explorar tudo</Link></div>
+        <div className="section-row"><div><h2>Projetos recentes</h2><p>Projetos publicados pela comunidade Envista.</p></div><Link className="text-btn" href="/investor/explore">Explorar tudo</Link></div>
         {(projectsResult.data ?? []).length ? <div className="project-grid">{(projectsResult.data ?? []).map((project: any) => <ProjectCard key={project.id} project={project} role="investor" action={<><form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value="/investor" /><button className="secondary" type="submit"><Bookmark size={15} /> {savedIds.has(project.id) ? "Salvo" : "Salvar"}</button></form><FollowEntityButton targetType="project" targetId={project.id} returnTo="/investor" /></>} />)}</div> : <div className="empty"><div><FolderKanban /></div><h3>Nenhum projeto público ainda</h3><p>Quando projetos forem publicados, eles aparecerão aqui.</p><Link className="secondary" href="/investor/explore">Abrir descoberta</Link></div>}
       </section>
       <section className="section-block">

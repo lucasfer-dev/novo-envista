@@ -1,3 +1,4 @@
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -136,7 +137,7 @@ export default async function ProjectsPage() {
                   <span>{project.stage || "Projeto em evolução"}</span>
                   <ArrowRight size={16} aria-hidden="true" />
                 </div>
-                <h3>{project.title}</h3>
+                <div className="project-card-artwork"><ProjectArtwork title={project.title} category={project.category} /><h3>{project.title}</h3></div>
                 <p>{project.short_description || "Projeto publicado no Envista."}</p>
                 <div className={styles.cardFooter}>
                   <div className={styles.meta}>

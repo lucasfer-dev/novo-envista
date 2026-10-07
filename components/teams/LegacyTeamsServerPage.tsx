@@ -1,3 +1,4 @@
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Building2, MapPin, Plus, Users } from "lucide-react";
@@ -316,7 +317,7 @@ export async function LegacyTeamDetailPage({
           <div className="project-grid">
             {(projects ?? []).map((project: any) => (
               <Link className="project-card" href={`${projectBase}/${project.slug}`} key={project.id}>
-                <div className="project-cover"><span className="project-initial">{project.title?.slice(0, 1)?.toUpperCase() || "P"}</span><span className="stage">{project.stage}</span></div>
+                <div className="project-cover"><ProjectArtwork title={project.title || "Projeto"} category={project.category || ""} /><span className="stage">{project.stage}</span></div>
                 <div className="card-body"><h3>{project.title}</h3><p>{project.short_description || "Sem descrição."}</p><div className="chips compact">{project.category && <span>{project.category}</span>}</div></div>
               </Link>
             ))}

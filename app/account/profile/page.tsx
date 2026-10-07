@@ -120,7 +120,7 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
   return (
     <LegacySocialShell user={shellUser} role={productRole} pathname="/account/profile">
       <div className={styles.page}>
-        <header className={styles.hero}>
+        <header className={`page-head ${styles.hero}`}>
           <div>
             <span className={styles.eyebrow}><UserRound size={14} aria-hidden="true" /> Conta e identidade</span>
             <h1>Meu perfil</h1>

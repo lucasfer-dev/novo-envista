@@ -35,9 +35,11 @@ describe("Envista visual identity standardization", () => {
     expect(brandIdentity).toContain('[class*="__secondary"]');
   });
 
-  it("uses the brand gradient as the canonical standard action button", () => {
+  it("uses the brand gradient for primary actions and outlines secondary actions", () => {
     expect(brandIdentity).toContain("--ev-primary-bg: var(--envista-gradient)");
     expect(brandIdentity).toContain('[class*="__ghost"]');
+    expect(brandIdentity).toContain('background: var(--ev-secondary-bg) !important');
+    expect(brandIdentity).toContain('border: 1px solid var(--ev-secondary-border) !important');
     expect(brandIdentity).toContain('[class*="__headerCta"]');
     expect(brandIdentity).toContain("[data-envista-public-shell]");
     for (const page of publicSurfaces) expect(page).toContain("data-envista-public-shell");
@@ -54,7 +56,7 @@ describe("Envista visual identity standardization", () => {
 
   it("keeps authentication branding separate from account management", () => {
     expect(brandIdentity).toContain(".envista-auth-page");
-    expect(brandIdentity).toContain("envista-texture-green.svg");
+    expect(brandIdentity).toContain("envista-texture-original.png");
     expect(brandIdentity).toContain("Account workspace: account management belongs to the authenticated product");
   });
 });

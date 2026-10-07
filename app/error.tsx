@@ -18,6 +18,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
   return (
     <main className={styles.page}>
       <section className={styles.card} role="alert">
+        <img className={styles.brandMark} src="/brand/envista-symbol-gradient.svg" alt="Envista" width="44" height="58" />
         <p className={styles.eyebrow}>Envista</p>
         <h1 className={styles.title}>Não conseguimos carregar esta área.</h1>
         <p className={styles.text}>
