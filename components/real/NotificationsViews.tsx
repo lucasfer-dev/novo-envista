@@ -9,7 +9,7 @@ export function NotificationsView({notifications,status,unreadTotal,page,pageCou
  const totalLabel=total===1?"1 notificação":`${total} notificações`;
  const returnTo=href(basePath,page);
  return <>
-  <div className={styles.head}>
+  <div className={`page-head ${styles.head}`}>
     <div><h1>Notificações</h1><p className={styles.muted}>{unreadTotal?`${unreadTotal} não lida${unreadTotal===1?"":"s"}.`:`${totalLabel} · tudo em dia.`}</p></div>
     {unreadTotal>0?<form action={markAllNotificationsReadAction}><button className={styles.secondary}>Marcar todas como lidas</button></form>:null}
   </div>

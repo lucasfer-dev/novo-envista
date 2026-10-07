@@ -138,7 +138,7 @@ export function CompetitionsBrowser({
   const lastResult = Math.min(safePage * PAGE_SIZE, filtered.length);
 
   return <div className={styles.page}>
-    <div className={styles.head}>
+    <div className={`page-head ${styles.head}`}>
       <div>
         <h1>Competições</h1>
         <p>O Envista combina consultas a páginas oficiais com um catálogo curado de competições verificadas para ampliar a cobertura de inscrições, datas, modalidades e regulamentos.</p>

@@ -40,7 +40,7 @@ export function MessagesIndexView({ role, threads, suggestions = [], initialUser
   };
 
   return <div className={styles.page}>
-    <header className={styles.pageHeader}>
+    <header className={`page-head ${styles.pageHeader}`}>
       <div>
         <span className={styles.eyebrow}>Caixa de entrada</span>
         <h1>Mensagens</h1>
