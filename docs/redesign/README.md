@@ -27,7 +27,7 @@ As capturas abaixo usam os componentes de produção com **dados de exemplo loca
 - Estilos calculados confirmam diferença entre ação principal preenchida e ação secundária contornada.
 - Home também revisada com conta vazia.
 
-**Limite:** sem credenciais de uma conta de teste, os fluxos autenticados com dados reais (publicar, conversar, vincular GitHub, editar perfil e tarefas) precisam de smoke test no preview conectado ao ambiente antes do merge. A revisão local não comprova esses fluxos fim a fim.
+**Limite:** sem credenciais de uma conta de teste, os fluxos autenticados com dados reais (publicar, conversar, vincular GitHub, editar perfil e tarefas) não foram testados de ponta a ponta nesta revisão. A revisão local não comprova esses fluxos fim a fim.
 
 ## Refinamento com imagens
 
@@ -47,3 +47,7 @@ Capturas adicionais com componentes reais e dados de exemplo:
 - [GitHub desktop](./github-desktop.svg) / [celular](./github-mobile.svg)
 
 A revisão de regras passou por 20 combinações (4 telas × 5 larguras), com imagens carregadas, sem overflow horizontal do documento e sem erros de JavaScript. As capturas de celular de competições e GitHub foram refinadas após detectar texto cortado e excesso de altura no cabeçalho.
+
+## Cobertura final
+
+O padrão foi ampliado para as demais famílias de páginas. Veja [page-coverage.md](./page-coverage.md) para escopo e verificação. A auditoria do CI exigiu também correções compatíveis no lockfile: `sharp` 0.35.5 e `source-map-js` 1.2.2, sem nova dependência direta.
