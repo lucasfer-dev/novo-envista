@@ -266,17 +266,16 @@ export default function HomeDashboard({
         {projects.length ? (
           <div className="dashboard-project-grid">
             {projects.slice(0, 6).map((project) => (
-              <article className="panel dashboard-project" key={project.id}>
+              <Link
+                className="panel dashboard-project"
+                href={`/projects/${encodeURIComponent(project.slug)}`}
+                key={project.id}
+                aria-label={`Abrir projeto ${project.title}`}
+              >
                 <ProjectArtwork title={project.title} category={project.category} />
                 <div className="grow">
                   <div className="dashboard-project-title">
-                    <h3>
-                      <Link
-                        href={`/projects/${encodeURIComponent(project.slug)}`}
-                      >
-                        {project.title}
-                      </Link>
-                    </h3>
+                    <h3>{project.title}</h3>
                     <span className="stage">{project.stage}</span>
                   </div>
                   <p>
@@ -288,7 +287,8 @@ export default function HomeDashboard({
                     {project.location ? ` · ${project.location}` : ""}
                   </small>
                 </div>
-              </article>
+                <ArrowRight className="dashboard-card-arrow" size={16} aria-hidden="true" />
+              </Link>
             ))}
           </div>
         ) : (
