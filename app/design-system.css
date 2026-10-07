@@ -10,6 +10,17 @@
   --ev-brand-ink: #0f1923;
   --ev-brand-gradient: linear-gradient(135deg, var(--ev-brand-green) 0%, var(--ev-brand-teal) 50%, var(--ev-brand-blue) 100%);
 
+  /* Product rhythm: four-pixel increments; 16px units inside cards. */
+  --ev-space-1: 4px;
+  --ev-space-2: 8px;
+  --ev-space-3: 12px;
+  --ev-space-4: 16px;
+  --ev-space-5: 20px;
+  --ev-space-6: 24px;
+  --ev-space-8: 32px;
+  --ev-font-page: clamp(28px, 2.4vw, 36px);
+  --ev-font-section: 18px;
+  --ev-font-card: 15px;
   --ev-bg: #07141e;
   --ev-bg-subtle: #12202d;
   --ev-sidebar: #081720;
@@ -99,7 +110,7 @@
 .legacyDark .section-row h2 {
   margin: 0;
   color: var(--ev-text);
-  font-size: 20px;
+  font-size: var(--ev-font-section);
   letter-spacing: -0.02em;
 }
 

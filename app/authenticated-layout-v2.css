@@ -1,9 +1,9 @@
 /* Dashboard composition uses real account data; no invented progress or counts. */
 .app-shell .dashboard-welcome {
-  min-height: 146px;
+  min-height: 96px;
 }
-.app-shell .dashboard-welcome h1 {
-  font-size: clamp(32px, 3.4vw, 46px);
+.app-shell .page-head.dashboard-welcome h1 {
+  font-size: clamp(30px, 3vw, 42px);
 }
 .app-shell .dashboard-welcome h1 span {
   color: #35d9c7;
@@ -12,7 +12,7 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin: -8px 0 24px;
+  margin: -8px 0 var(--ev-space-5);
 }
 .dashboard-summary a {
   display: inline-flex;
@@ -34,11 +34,11 @@
 .dashboard-focus-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
-  gap: 18px;
+  gap: var(--ev-space-4);
 }
 .dashboard-focus-grid > .panel {
   min-width: 0;
-  padding: 22px;
+  padding: var(--ev-space-5);
 }
 .dashboard-featured {
   display: flex;
@@ -46,13 +46,13 @@
 }
 .dashboard-featured .actions {
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: var(--ev-space-4);
 }
 .dashboard-featured-body {
   display: flex;
-  gap: 22px;
+  gap: var(--ev-space-5);
   align-items: center;
-  padding: 20px 0;
+  padding: var(--ev-space-3) 0;
 }
 .dashboard-featured-title,
 .dashboard-project-title {
@@ -91,9 +91,9 @@
   letter-spacing: -0.04em;
 }
 .dashboard-project-mark.large {
-  width: 116px;
-  height: 126px;
-  flex-basis: 116px;
+  width: 104px;
+  height: 116px;
+  flex-basis: 104px;
   font-size: 45px;
   border-radius: 17px;
 }
@@ -121,8 +121,10 @@
   gap: 12px;
 }
 .dashboard-activity .activity-item {
+  align-items: flex-start;
   text-decoration: none;
-  padding: 13px 0;
+  padding: 10px 0;
+  border-radius: 0;
   margin: 0;
   border-bottom: 1px solid var(--ev-border);
 }
@@ -135,9 +137,9 @@
   background: rgba(0, 169, 157, 0.14);
   color: #30dfcc;
   border: 1px solid rgba(0, 169, 157, 0.24);
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
   border-radius: 50%;
 }
 .dashboard-activity .activity-item b {
@@ -163,13 +165,13 @@
 .dashboard-project-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--ev-space-4);
 }
 .dashboard-project {
   display: flex;
   gap: 15px;
   align-items: flex-start;
-  padding: 17px;
+  padding: var(--ev-space-4);
 }
 .dashboard-project h3 {
   font-size: 15px;
@@ -199,8 +201,8 @@
   display: flex;
   gap: 20px;
   align-items: center;
-  margin-top: 24px;
-  padding: 23px;
+  margin-top: var(--ev-space-6);
+  padding: var(--ev-space-5);
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -245,10 +247,10 @@
 .dashboard-team-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--ev-space-4);
 }
 .dashboard-team {
-  padding: 18px;
+  padding: var(--ev-space-4);
   display: flex;
   gap: 12px;
   align-items: center;
@@ -316,7 +318,7 @@
     grid-template-columns: 1fr;
   }
   .dashboard-focus-grid > .panel {
-    padding: 18px;
+    padding: var(--ev-space-4);
   }
   .dashboard-summary a {
     font-size: 11px;
@@ -414,21 +416,21 @@
 .dashboard-project-mark > img[src*="envista-symbol"] { object-fit: contain; padding: 16%; }
 .dashboard-project-mark > span { position: absolute; bottom: 5px; right: 6px; font-size: 10px; letter-spacing: .02em; background: #07141ee6; color: #baf9ee; border: 1px solid #00a99d55; padding: 3px 5px; border-radius: 5px; }
 .dashboard-project-mark.large > span { font-size: 12px; bottom: 8px; right: 8px; }
-.project-card-artwork { margin: -8px -8px 18px; padding: 20px; border-radius: 12px; background: radial-gradient(ellipse at 80% 10%, #0086a72e, transparent 70%), url('/brand/envista-pattern-original.png') center/300px, #0a1e2b; }
-.project-card-artwork .dashboard-project-mark { width: 100%; height: 124px; }
-.project-card-artwork .dashboard-project-mark > img { object-fit: contain; }
+.project-card-artwork { margin-bottom: var(--ev-space-4); display: flex; align-items: center; gap: var(--ev-space-3); }
+.project-card-artwork .dashboard-project-mark { width: 64px; height: 64px; flex-basis: 64px; }
+.project-card-artwork h2 { font-size: var(--ev-font-card); }
 .dashboard-learning-art { width: 140px; height: 96px; flex: 0 0 140px; object-fit: cover; border-radius: 12px; border: 1px solid #00a99d55; }
 .dashboard-opportunity-art { width: 100px; height: 80px; object-fit: cover; border-radius: 12px; }
 .dashboard-opportunity-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.app-shell .dashboard-opportunity-card { display: flex; gap: 14px; padding: 16px; text-decoration: none; background: radial-gradient(ellipse at 90% 0, #0086a720, transparent 75%), var(--ev-bg-card) !important; }
-.dashboard-opportunity-card > img { flex: 0 0 72px; width: 72px; height: 84px; object-fit: cover; border: 1px solid #00a99d44; border-radius: 11px; }
+.app-shell .dashboard-opportunity-card { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: var(--ev-space-3); padding: var(--ev-space-4); text-decoration: none; background: radial-gradient(ellipse at 90% 0, #0086a720, transparent 75%), var(--ev-bg-card) !important; }
+.dashboard-opportunity-card > img { width: 60px; height: 64px; object-fit: cover; border: 1px solid #00a99d44; border-radius: 11px; }
 .dashboard-opportunity-card > div { min-width: 0; }
 .dashboard-opportunity-card h3 { font-size: 14px; line-height: 1.4; margin: 10px 0 7px; }
 .dashboard-opportunity-card p { color: var(--ev-muted); font-size: 12px; margin: 0 0 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .dashboard-opportunity-card small { color: var(--ev-muted); font-size: 10px; }
 .dashboard-opportunity-card .stage { font-size: 10px; white-space: normal; }
-.dashboard-opportunity-card [data-status="UPCOMING"] { color: #f8ce80; border-color: #b7843544; background: #b7843518; }
-.dashboard-opportunity-card [data-status="UNKNOWN"] { color: var(--ev-muted); }
+.dashboard-opportunity-card .stage[data-status="UPCOMING"] { color: #f8ce80; border-color: #b7843544; background: #b7843518; }
+.dashboard-opportunity-card .stage[data-status="UNKNOWN"] { color: var(--ev-muted); }
 .dashboard-opportunity-cta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #67e9d8; margin-top: 13px; }
 .dashboard-opportunity-card:hover { border-color: #00a99d !important; }
 @media (max-width: 1200px) { .dashboard-opportunity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -438,3 +440,11 @@
   .dashboard-learning .grow { flex-basis: calc(100% - 100px); }
   .dashboard-opportunity-art { width: 64px; height: 76px; }
 }
+
+.dashboard-opportunity-details { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: var(--ev-space-2); border-top: 1px solid var(--ev-border); padding-top: var(--ev-space-3); }
+.dashboard-opportunity-details small { display: flex; align-items: center; gap: 6px; }
+.dashboard-opportunity-details .dashboard-opportunity-cta { margin: 0; }
+.dashboard-activity .activity-item > div { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; }
+.dashboard-activity .activity-item small { grid-column: 1 / -1; margin-top: 0; }
+.dashboard-activity time { grid-column: 2; grid-row: 1; color: var(--ev-muted); font-size: 10px; align-self: center; }
+@media (max-width: 650px) { .dashboard-activity .activity-item > div { grid-template-columns: 1fr; } .dashboard-activity time { grid-column: 1; grid-row: auto; } }

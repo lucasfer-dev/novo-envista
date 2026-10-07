@@ -7,6 +7,7 @@ import {
   MessageCircle,
   Plus,
   Sparkles,
+  Trophy,
   Users,
   Zap,
 } from "lucide-react";
@@ -45,6 +46,20 @@ type Props = {
   course: { slug: string; title: string; description: string | null } | null;
   courseProgress: number;
 };
+
+function activityIcon(title: string) {
+  if (/equipe|convite|integrante/i.test(title)) return Users;
+  if (/competição|oportunidade/i.test(title)) return Trophy;
+  if (/projeto|tarefa/i.test(title)) return FolderKanban;
+  return MessageCircle;
+}
+
+function notificationDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo",
+  }).format(date);
+}
 
 export default function HomeDashboard({
   name,
@@ -96,7 +111,7 @@ export default function HomeDashboard({
         </Link>
         <Link href="/notifications">
           <MessageCircle size={17} aria-hidden="true" />
-          <b>{unread}</b> notificações recentes não lidas
+          <b>{unread}</b> {unread === 1 ? "notificação não lida" : "notificações não lidas"}
         </Link>
       </div>
       {completedSteps < firstSteps.length ? (
@@ -198,23 +213,27 @@ export default function HomeDashboard({
             </Link>
           </div>
           {notifications.length ? (
-            notifications.map((item) => (
+            notifications.map((item) => {
+              const Icon = activityIcon(item.title);
+              const timestamp = notificationDate(item.created_at);
+              return (
               <Link
                 className="activity-item"
                 href={item.href || "/notifications"}
                 key={item.id}
               >
                 <i aria-hidden="true">
-                  <MessageCircle size={18} />
+                  <Icon size={18} />
                 </i>
                 <div>
                   <b>{item.title}</b>
                   <small>
                     {item.body || "Confira essa atualização na sua conta."}
                   </small>
+                  {timestamp && <time dateTime={item.created_at}>{timestamp}</time>}
                 </div>
               </Link>
-            ))
+            );})
           ) : (
             <div className="dashboard-activity-empty">
               <MessageCircle size={27} aria-hidden="true" />

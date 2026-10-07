@@ -282,7 +282,7 @@ export default function GitHubIntegrationClient({
         </div>
         <div className={styles.heroCopy}>
           <span className={styles.kicker}>ENVISTA × GITHUB</span>
-          <h1>Seu código também conta a sua história.</h1>
+          <h1>Integração com GitHub</h1>
           <p>Conecte seus repositórios, transforme atividade técnica em portfólio e publique no GitHub sem sair do Envista.</p>
         </div>
         <div className={styles.heroBadge}>
@@ -302,7 +302,7 @@ export default function GitHubIntegrationClient({
         <div className={styles.connectionIcon}><GitBranch size={28} /></div>
         <div className={styles.connectionCopy}>
           <div className={styles.connectionTitleRow}>
-            <h2>Integração com GitHub</h2>
+            <h2>Sua conexão</h2>
             {connection ? <span className={styles.connected}><i /> Conectado</span> : <span className={styles.disconnected}>Desconectado</span>}
           </div>
           <p>Importe repositórios, acompanhe atividade e leve atualizações do Envista para Discussions, Releases e Issues.</p>

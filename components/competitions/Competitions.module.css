@@ -1,9 +1,9 @@
 .page{display:flex;flex-direction:column;color:#f7f9fb}
 .head{display:flex;justify-content:space-between;gap:25px;align-items:flex-end;margin-bottom:24px}
-.head h1{margin:0 0 8px;font-size:32px;line-height:1.13;letter-spacing:-.035em}
+.head h1{margin:0 0 8px;font-size:var(--ev-font-page);line-height:1.13;letter-spacing:-.035em}
 .head p{margin:0;color: var(--ev-muted);max-width:760px;line-height:1.65}
 .liveActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-.live{font-size:12px;color: var(--ev-muted);white-space:nowrap}
+.live{font-size:12px;color:var(--ev-muted);white-space:normal;line-height:1.5;overflow-wrap:anywhere}
 .refreshButton{min-height:36px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#61dec6;border-radius:8px;padding:0 12px;font-weight:650;cursor:pointer}
 .refreshButton:hover:not(:disabled){background:rgba(0,169,157,.08);border-color:rgba(0,169,157,.35)}
 .refreshButton:disabled{opacity:.55;cursor:wait}
@@ -17,8 +17,8 @@
 .recommendationIntro span,.recommendationPanel span{font-size:12px;color: var(--ev-muted)}
 .recommendationIntro label{display:flex;gap:8px;align-items:center;color:#cbd6e2;font-size:12px;white-space:nowrap}
 .recommendationIntro input{accent-color:var(--ev-brand-teal)}
-.tabs{display:flex;gap:3px;border-bottom:1px solid rgba(255,255,255,.08);overflow:auto;margin-bottom:22px}
-.tabs button{padding:10px 11px;border:0;border-bottom:2px solid transparent;background:none;color: var(--ev-muted);white-space:nowrap;border-radius:0}
+.tabs{display:flex;flex-wrap:wrap;gap:3px;border-bottom:1px solid rgba(255,255,255,.08);overflow:auto;margin-bottom:22px}
+.tabs button{padding:10px 8px;border:0;border-bottom:2px solid transparent;background:none;color: var(--ev-muted);white-space:nowrap;border-radius:0}
 .tabs button:hover{color:#cbd6e2}
 .tabs button[data-active="true"]{background:none;border-color:var(--ev-brand-teal);color:#fff}
 .tabs button b{font-size:11px;color: var(--ev-muted);margin-left:3px}
@@ -69,7 +69,7 @@
 .recommendationPanel .matchStack{min-width:300px}
 .detail{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
 .panel{border:1px solid rgba(255,255,255,.08);background: var(--ev-surface-gradient);border-radius:12px;padding:22px}
-.panel h1{margin:8px 0;font-size:28px;letter-spacing:-.03em}
+.panel h1{margin:8px 0;font-size:var(--ev-font-page);letter-spacing:-.03em}
 .panel h2{margin:24px 0 10px;font-size:18px}
 .panel p{color: var(--ev-muted);line-height:1.65}
 .facts{display:flex;flex-direction:column;gap:0}

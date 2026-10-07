@@ -24,12 +24,7 @@
   --ev-primary-height: 44px;
   --ev-primary-radius: 11px;
   --ev-primary-padding-x: 18px;
-  --ev-surface-gradient: linear-gradient(
-    135deg,
-    #102a38 0%,
-    #0d202e 58%,
-    #0b1b28 100%
-  );
+  --ev-surface-gradient: linear-gradient(145deg, #0e2432, #0b1b28);
   --ev-secondary-bg: rgba(9, 26, 38, 0.75);
   --ev-secondary-fg: #e1edf5;
   --ev-secondary-border: rgba(107, 176, 200, 0.42);
@@ -161,18 +156,19 @@ body {
 }
 .app-shell .page-wrap {
   width: min(100%, 1420px);
-  padding: 28px 32px 76px;
+  max-width: none;
+  padding: var(--ev-space-6) var(--ev-space-8) 76px;
 }
 .app-shell .page-head {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 26px 28px;
+  padding: var(--ev-space-4) 0;
   align-items: center;
-  border: 1px solid var(--ev-border);
-  border-radius: 16px;
-  margin-bottom: 24px;
-  background: var(--ev-header-bg), #0b202d;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: var(--ev-space-6);
+  background: transparent;
 }
 .app-shell .page-head::before {
   content: "";
@@ -182,7 +178,7 @@ body {
   z-index: -1;
   background: url("/brand/envista-texture-original.png") right center/cover
     no-repeat;
-  opacity: 0.2;
+  opacity: 0.32;
   mask-image: linear-gradient(to left, #000, transparent 75%);
 }
 .app-shell .page-head::after {
@@ -199,7 +195,7 @@ body {
 }
 .app-shell .page-head h1 {
   color: #f4fbff;
-  font-size: clamp(28px, 2.8vw, 40px);
+  font-size: var(--ev-font-page);
   font-weight: 800;
 }
 .app-shell .page-head p {
@@ -442,7 +438,7 @@ body {
 }
 @media (max-width: 650px) {
   .app-shell .page-head {
-    padding: 20px;
+    padding: var(--ev-space-3) 0;
     align-items: flex-start;
     gap: 18px;
     flex-direction: column;

@@ -14,9 +14,9 @@ A aplicação autenticada passa a usar a mesma navegação em todas as abas. A h
 
 As capturas abaixo usam os componentes de produção com **dados de exemplo locais** para revisão visual. Os dados de exemplo e a rota temporária de inspeção não fazem parte da aplicação publicada. A home real mantém suas consultas existentes e consulta a API já existente de competições, inclusive estados vazios e progresso real de cursos; não inventa percentuais de projetos ou oportunidades.
 
-![Home desktop](./home-desktop.png)
+![Home desktop](./home-desktop.svg)
 
-![Home mobile](./home-mobile.png)
+![Home mobile](./home-mobile.svg)
 
 ## Validação
 
@@ -35,3 +35,15 @@ As capturas abaixo usam os componentes de produção com **dados de exemplo loca
 - A home exibe até três oportunidades não encerradas pela API existente, preservando o estado real de inscrições e uma saída útil para carregamento, vazio e falha.
 - A mesma linguagem de imagens aparece nas listas de projetos e competições. Sem dependências, imagens externas ou migrações adicionais.
 - Refinamento inspecionado em 1586, 980, 768, 390 e 320px: sem overflow horizontal, imagens carregadas e sem erros JS. Estados vazio e erro da API também verificados.
+
+## Pesquisa e regras consolidadas
+
+A revisão de composição e densidade foi baseada em fontes primárias de Linear, Atlassian e GitHub/Primer. Diagnóstico, decisões e contrato visual estão em [design-rules.md](./design-rules.md).
+
+Capturas adicionais com componentes reais e dados de exemplo:
+
+- [Projetos desktop](./projects-desktop.svg) / [celular](./projects-mobile.svg)
+- [Competições desktop](./competitions-desktop.svg) / [celular](./competitions-mobile.svg)
+- [GitHub desktop](./github-desktop.svg) / [celular](./github-mobile.svg)
+
+A revisão de regras passou por 20 combinações (4 telas × 5 larguras), com imagens carregadas, sem overflow horizontal do documento e sem erros de JavaScript. As capturas de celular de competições e GitHub foram refinadas após detectar texto cortado e excesso de altura no cabeçalho.
