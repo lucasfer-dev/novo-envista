@@ -178,7 +178,7 @@ export function CompetitionsBrowser({
 
     <div className={styles.grid}>
       {paginated.map(({ item, recommendation }) => <Link prefetch={false} className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
-        <div className={styles.banner}><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
+        <div className={styles.banner}><img className={styles.bannerArtwork} src={/ciência|cient|mostratec/i.test(`${item.name} ${item.type}`) ? "/brand/opportunity-science.svg" : "/brand/opportunity-challenge.svg"} alt="" width="320" height="200" loading="lazy" /><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
         <div className={styles.body}>
           {(recommendation.project || recommendation.team) && <div className={styles.matchStack}>
             {recommendation.project && <MatchBadge match={recommendation.project} />}

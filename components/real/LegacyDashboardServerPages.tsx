@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 import HomeDashboard from "@/components/product/HomeDashboard";
 import { Bookmark, Eye, FolderKanban, GraduationCap, MessageCircle, Trophy, Users } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -47,7 +48,7 @@ function ProjectCard({ project, role, action }: { project: ProjectCardRow; role:
   return (
     <article className="project-card">
       <div className="project-cover">
-        <span className="project-initial">{project.title.slice(0, 1).toUpperCase()}</span>
+        <ProjectArtwork title={project.title} category={project.category} />
         <span className="stage">{project.stage}</span>
       </div>
       <div className="card-body">

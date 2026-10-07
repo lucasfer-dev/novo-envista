@@ -1,12 +1,12 @@
 import Link from "next/link";
+import ProjectArtwork from "./ProjectArtwork";
+import HomeOpportunities from "./HomeOpportunities";
 import {
   ArrowRight,
   FolderKanban,
-  GraduationCap,
   MessageCircle,
   Plus,
   Sparkles,
-  Trophy,
   Users,
   Zap,
 } from "lucide-react";
@@ -45,23 +45,6 @@ type Props = {
   course: { slug: string; title: string; description: string | null } | null;
   courseProgress: number;
 };
-
-function ProjectMark({
-  title,
-  large = false,
-}: {
-  title: string;
-  large?: boolean;
-}) {
-  return (
-    <span
-      className={`dashboard-project-mark${large ? " large" : ""}`}
-      aria-hidden="true"
-    >
-      {title.slice(0, 2).toUpperCase()}
-    </span>
-  );
-}
 
 export default function HomeDashboard({
   name,
@@ -151,7 +134,7 @@ export default function HomeDashboard({
           {featured ? (
             <>
               <div className="dashboard-featured-body">
-                <ProjectMark title={featured.title} large />
+                <ProjectArtwork title={featured.title} category={featured.category} large />
                 <div className="grow">
                   <div className="dashboard-featured-title">
                     <h3>{featured.title}</h3>
@@ -260,7 +243,7 @@ export default function HomeDashboard({
           <div className="dashboard-project-grid">
             {projects.slice(0, 6).map((project) => (
               <article className="panel dashboard-project" key={project.id}>
-                <ProjectMark title={project.title} />
+                <ProjectArtwork title={project.title} category={project.category} />
                 <div className="grow">
                   <div className="dashboard-project-title">
                     <h3>
@@ -298,25 +281,7 @@ export default function HomeDashboard({
           </div>
         )}
       </section>
-      <section
-        className="panel dashboard-opportunity"
-        aria-labelledby="opportunity-title"
-      >
-        <span className="dashboard-opportunity-icon">
-          <Trophy size={29} aria-hidden="true" />
-        </span>
-        <div className="grow">
-          <h2 id="opportunity-title">Seu projeto pode ir mais longe.</h2>
-          <p>
-            Encontre competições e oportunidades para transformar ideias em
-            impacto.
-          </p>
-        </div>
-        <Link className="secondary" href="/competitions">
-          Explorar oportunidades
-          <ArrowRight size={17} aria-hidden="true" />
-        </Link>
-      </section>
+      <HomeOpportunities />
       <section className="section-block" aria-labelledby="teams-title">
         <div className="section-row">
           <h2 id="teams-title">
@@ -370,9 +335,7 @@ export default function HomeDashboard({
         className="panel dashboard-learning"
         aria-labelledby="learning-title"
       >
-        <span className="dashboard-learning-icon">
-          <GraduationCap size={29} aria-hidden="true" />
-        </span>
+        <img className="dashboard-learning-art" src="/brand/learning-books.svg" alt="" width="320" height="200" loading="lazy" />
         <div className="grow">
           <span className="dashboard-learning-label">
             {course ? "Continue aprendendo" : "Aprenda e coloque em prática"}

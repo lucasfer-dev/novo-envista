@@ -12,7 +12,7 @@ A aplicação autenticada passa a usar a mesma navegação em todas as abas. A h
 
 ## Capturas de referência
 
-As capturas abaixo usam os componentes de produção com **dados de exemplo locais** para revisão visual. Os dados de exemplo e a rota temporária de inspeção não fazem parte da aplicação publicada. A home real mantém suas consultas existentes, inclusive estados vazios e progresso real de cursos; não inventa percentuais de projetos ou oportunidades.
+As capturas abaixo usam os componentes de produção com **dados de exemplo locais** para revisão visual. Os dados de exemplo e a rota temporária de inspeção não fazem parte da aplicação publicada. A home real mantém suas consultas existentes e consulta a API já existente de competições, inclusive estados vazios e progresso real de cursos; não inventa percentuais de projetos ou oportunidades.
 
 ![Home desktop](./home-desktop.png)
 
@@ -28,3 +28,10 @@ As capturas abaixo usam os componentes de produção com **dados de exemplo loca
 - Home também revisada com conta vazia.
 
 **Limite:** sem credenciais de uma conta de teste, os fluxos autenticados com dados reais (publicar, conversar, vincular GitHub, editar perfil e tarefas) precisam de smoke test no preview conectado ao ambiente antes do merge. A revisão local não comprova esses fluxos fim a fim.
+
+## Refinamento com imagens
+
+- Artes SVG locais e leves: desenvolvimento, impacto social, voz, ciência, competições e livros. Os projetos usam uma arte por tema com suas iniciais; o projeto Envista usa o símbolo oficial. As artes são ilustrativas, não logotipos oficiais de competições.
+- A home exibe até três oportunidades não encerradas pela API existente, preservando o estado real de inscrições e uma saída útil para carregamento, vazio e falha.
+- A mesma linguagem de imagens aparece nas listas de projetos e competições. Sem dependências, imagens externas ou migrações adicionais.
+- Refinamento inspecionado em 1586, 980, 768, 390 e 320px: sem overflow horizontal, imagens carregadas e sem erros JS. Estados vazio e erro da API também verificados.

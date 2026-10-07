@@ -407,3 +407,34 @@
   color: var(--ev-muted);
   margin-left: auto;
 }
+
+/* Illustrated tiles keep the brand present even before a project has a logo. */
+.dashboard-project-mark { position: relative; overflow: hidden; box-shadow: 0 6px 24px rgba(0, 134, 167, .13); }
+.dashboard-project-mark > img { width: 100%; height: 100%; object-fit: cover; }
+.dashboard-project-mark > img[src*="envista-symbol"] { object-fit: contain; padding: 16%; }
+.dashboard-project-mark > span { position: absolute; bottom: 5px; right: 6px; font-size: 10px; letter-spacing: .02em; background: #07141ee6; color: #baf9ee; border: 1px solid #00a99d55; padding: 3px 5px; border-radius: 5px; }
+.dashboard-project-mark.large > span { font-size: 12px; bottom: 8px; right: 8px; }
+.project-card-artwork { margin: -8px -8px 18px; padding: 20px; border-radius: 12px; background: radial-gradient(ellipse at 80% 10%, #0086a72e, transparent 70%), url('/brand/envista-pattern-original.png') center/300px, #0a1e2b; }
+.project-card-artwork .dashboard-project-mark { width: 100%; height: 124px; }
+.project-card-artwork .dashboard-project-mark > img { object-fit: contain; }
+.dashboard-learning-art { width: 140px; height: 96px; flex: 0 0 140px; object-fit: cover; border-radius: 12px; border: 1px solid #00a99d55; }
+.dashboard-opportunity-art { width: 100px; height: 80px; object-fit: cover; border-radius: 12px; }
+.dashboard-opportunity-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.app-shell .dashboard-opportunity-card { display: flex; gap: 14px; padding: 16px; text-decoration: none; background: radial-gradient(ellipse at 90% 0, #0086a720, transparent 75%), var(--ev-bg-card) !important; }
+.dashboard-opportunity-card > img { flex: 0 0 72px; width: 72px; height: 84px; object-fit: cover; border: 1px solid #00a99d44; border-radius: 11px; }
+.dashboard-opportunity-card > div { min-width: 0; }
+.dashboard-opportunity-card h3 { font-size: 14px; line-height: 1.4; margin: 10px 0 7px; }
+.dashboard-opportunity-card p { color: var(--ev-muted); font-size: 12px; margin: 0 0 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.dashboard-opportunity-card small { color: var(--ev-muted); font-size: 10px; }
+.dashboard-opportunity-card .stage { font-size: 10px; white-space: normal; }
+.dashboard-opportunity-card [data-status="UPCOMING"] { color: #f8ce80; border-color: #b7843544; background: #b7843518; }
+.dashboard-opportunity-card [data-status="UNKNOWN"] { color: var(--ev-muted); }
+.dashboard-opportunity-cta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #67e9d8; margin-top: 13px; }
+.dashboard-opportunity-card:hover { border-color: #00a99d !important; }
+@media (max-width: 1200px) { .dashboard-opportunity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) {
+  .dashboard-opportunity-grid { grid-template-columns: 1fr; }
+  .dashboard-learning-art { width: 80px; height: 80px; flex-basis: 80px; }
+  .dashboard-learning .grow { flex-basis: calc(100% - 100px); }
+  .dashboard-opportunity-art { width: 64px; height: 76px; }
+}
