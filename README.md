@@ -2,78 +2,143 @@
 
 Plataforma web para participantes, equipes, projetos, aprendizado e conexão com investidores.
 
+> Este repositório é apresentado como um case de engenharia full stack. A documentação separa explicitamente o caminho de produção, superfícies históricas e protótipos para que nenhuma funcionalidade seja considerada existente apenas por estar descrita no README.
+
+[Aplicação publicada](https://novo-envista.vercel.app/) · [Arquitetura](docs/ARCHITECTURE.md) · [Política de segurança](SECURITY.md)
+
+## O problema
+
+O Envista organiza diferentes perfis e fluxos de uma plataforma de inovação em uma aplicação única:
+
+- participantes acompanham projetos, aprendizado e conexões;
+- equipes organizam iniciativas e colaboração;
+- investidores visualizam informações autorizadas;
+- o sistema precisa manter isolamento de dados entre usuários e perfis.
+
+O objetivo técnico é manter uma experiência web simples sem transferir a responsabilidade de segurança para o frontend.
+
+## O que está comprovado no repositório
+
+- Aplicação Next.js com React e TypeScript.
+- Autenticação real via Supabase Auth.
+- PostgreSQL com migrations versionadas.
+- Autorização de dados reforçada por Row Level Security, funções e triggers.
+- Supabase Storage para arquivos.
+- Organização por rotas, componentes, serviços, utilitários e tipos.
+- Testes unitários, fluxos E2E e verificações de segurança configuradas no projeto.
+- Build de produção e deploy na Vercel.
+- Pull requests públicos com evolução incremental do produto.
+
 ## Arquitetura em produção
 
-O produto publicado hoje é uma aplicação **Next.js 16 + React 19 + TypeScript** conectada diretamente ao **Supabase Auth, PostgreSQL e Storage**. As regras de autorização de dados são reforçadas por RLS, funções e triggers versionadas em `supabase/migrations/`.
+```text
+Browser
+  │
+  ▼
+Next.js App Router
+  ├── Server Components / Server Actions
+  ├── autenticação e sessão
+  ├── regras de mutação
+  └── componentes React/TypeScript
+        │
+        ├── Supabase Auth
+        ├── PostgreSQL + RLS + functions + triggers
+        └── Supabase Storage
 
-O diretório `backend/` contém um protótipo histórico em Java/Spring Boot. Ele **não faz parte do deploy atual, não atende as rotas de produção e não é a fonte de verdade das regras do produto**. Foi mantido apenas como referência para uma possível separação futura de serviços.
+Deploy: Vercel
+```
 
-O login público não oferece mais contas demo completas: participante e investidor entram apenas por autenticação real do Supabase.
+A fonte autoritativa de autorização é o banco, por meio das policies e objetos versionados em `supabase/migrations/`. O frontend não deve ser tratado como uma barreira de segurança.
 
-Consulte `docs/ARCHITECTURE.md` para os limites entre produção, superfícies históricas e protótipos.
+O diretório `backend/` contém um protótipo histórico em Java/Spring Boot. Ele não participa do deploy atual, não atende as rotas de produção e não é a fonte de verdade das regras do produto. Ele permanece documentado para evitar confusão arquitetural.
 
-## Stack ativa
+## Fluxos principais para demonstração
+
+Ao apresentar o projeto, valide estes fluxos em uma instância configurada:
+
+1. autenticar um usuário real;
+2. acessar uma área protegida conforme o papel do usuário;
+3. criar ou atualizar uma entidade permitida;
+4. confirmar que um usuário sem autorização não consegue acessar dados de outro;
+5. executar os testes e o build de produção.
+
+As telas públicas históricas e fixtures em `data/` não representam uma sessão real nem substituem o caminho persistido.
+
+## Stack
 
 - Next.js 16
 - React 19
 - TypeScript
 - Supabase Auth
-- PostgreSQL + Row Level Security
+- PostgreSQL
+- Row Level Security
 - Supabase Storage
+- Vitest
+- Playwright
 - Vercel
 
-## Desenvolvimento
+## Desenvolvimento local
 
-Instale as dependências e inicie a aplicação:
+Requisitos: Node.js 22.x.
 
 ```bash
 npm install
 npm run dev
 ```
 
-A aplicação fica disponível em `http://localhost:3000`.
+A aplicação fica disponível em [http://localhost:3000](http://localhost:3000).
 
-## Variáveis de ambiente
+Crie `.env.local` a partir de `.env.example`. Nunca coloque `service_role`, senhas de banco ou tokens privados em variáveis `NEXT_PUBLIC_*`.
 
-Crie `.env.local` a partir de `.env.example` e configure as variáveis do ambiente utilizado.
-
-Credenciais privilegiadas, como `service_role`, senhas de banco e chaves secretas, não devem ser adicionadas ao repositório nem expostas em variáveis `NEXT_PUBLIC_*`.
-
-## Testes e segurança
+## Verificação local
 
 ```bash
+npm run typecheck
 npm test
 npm run security:scan
-```
-
-Pull requests também passam pelo build de produção e pelos fluxos críticos em navegador real.
-
-## Build
-
-```bash
 npm run build
 ```
 
+Os comandos acima verificam, respectivamente, tipagem, testes, regras de segurança e build de produção. Os fluxos de navegador e os checks de pull request devem ser considerados a validação final dos caminhos críticos.
+
 ## Operação e release
 
-Antes de uma abertura pública ou mudança importante, use os runbooks em `docs/operations/`:
+Antes de uma abertura pública ou mudança importante, use os runbooks:
 
-- `RELEASE.md` — gates, smoke tests, go/no-go e rollback;
-- `BACKUP_RECOVERY.md` — backup, restauração de banco e cuidados com Storage;
-- `INCIDENT_RESPONSE.md` — triagem e resposta a incidentes.
+- [Release](docs/operations/RELEASE.md): gates, smoke tests, go/no-go e rollback;
+- [Backup e recuperação](docs/operations/BACKUP_RECOVERY.md): banco e Storage;
+- [Resposta a incidentes](docs/operations/INCIDENT_RESPONSE.md): triagem e contenção.
 
-## Estrutura principal
+## Estrutura
 
-- `app/` — rotas e páginas Next.js
-- `components/real/` — superfícies persistidas do produto
-- `components/` — componentes compartilhados e shell visual histórico ainda em migração
-- `lib/` — autenticação, regras de servidor, integrações e utilitários
-- `supabase/` — migrations e configuração autoritativa de dados/RLS
-- `data/` — fixtures ainda usadas por superfícies públicas/históricas em migração
-- `backend/` — protótipo Java/Spring Boot não utilizado em produção
-- `docs/` — decisões operacionais, privacidade, segurança e arquitetura
+- `app/`: rotas e páginas Next.js;
+- `components/`: componentes compartilhados e superfícies em migração;
+- `lib/`: autenticação, regras de servidor, integrações e utilitários;
+- `services/`: integrações e serviços de domínio;
+- `supabase/`: migrations e configuração autoritativa de dados/RLS;
+- `tests/` e `e2e/`: verificações automatizadas;
+- `types/`: contratos TypeScript;
+- `docs/`: arquitetura, segurança e operação;
+- `backend/`: protótipo Java não produtivo.
 
-Consulte `SECURITY.md` para as práticas de segurança do projeto.
+## Limitações conhecidas
 
-<!-- production redeploy trigger: signup diagnostics 2026-09-23 -->
-<!-- production redeploy trigger: signup fix 2026-09-23 -->
+Este projeto ainda possui superfícies históricas em migração. Por isso, uma funcionalidade só deve ser considerada pronta quando estiver no caminho persistido, protegida por autorização, coberta por testes relevantes e validada em build/deploy.
+
+O projeto não declara métricas de usuários, disponibilidade ou escala que não estejam instrumentadas e verificadas.
+
+## Uso de IA no desenvolvimento
+
+IA pode ser utilizada para acelerar implementação, mas cada mudança deve ser revisada com:
+
+- requisito e comportamento esperado;
+- análise de autorização e dados;
+- testes positivos e negativos;
+- typecheck, build e validação E2E;
+- revisão do diff e das consequências de manutenção.
+
+O critério de aceitação é o comportamento verificável do sistema, não a quantidade de código gerado.
+
+## Licença e segurança
+
+Consulte [SECURITY.md](SECURITY.md) para práticas de segurança e relato responsável de vulnerabilidades.
