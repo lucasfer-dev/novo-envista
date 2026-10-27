@@ -1,3 +1,4 @@
+const OPPORTUNITIES = new Set(["developer", "designer", "mentor", "investor", "tester", "partner", "community"]);
 const PROJECT_TYPES = new Set(["personal", "startup", "academic", "social", "research", "other"]);
 
 function field(formData: FormData, name: string, maxLength: number): string {
@@ -30,6 +31,7 @@ export function projectProfileFields(formData: FormData) {
     team_description: field(formData, "team_description", 2000),
     challenges: field(formData, "challenges", 4000),
     technologies: list(field(formData, "technologies", 1800), 20),
+    collaboration_roles: Array.from(new Set(formData.getAll("collaboration_roles").filter((value): value is string => typeof value === "string" && OPPORTUNITIES.has(value)))).slice(0, 10),
     seeking_investment: seekingInvestment,
     business_model: seekingInvestment ? field(formData, "business_model", 2000) : "",
     target_market: seekingInvestment ? field(formData, "target_market", 2000) : "",
