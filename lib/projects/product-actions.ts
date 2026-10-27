@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireProductUser } from "@/lib/auth/require-product-user";
+import { readProjectDetails } from "@/lib/projects/project-details";
 
 const stages = new Set(["Ideia", "Validação", "Protótipo", "MVP", "Projeto ativo"]);
 const BASE = "/app/projects";
@@ -67,7 +68,8 @@ export async function createProductProjectAction(formData: FormData) {
     website_url: safeUrl(website),
     repository_url: safeUrl(repository),
     readme: text(formData, "readme", 20000),
-    visibility: formData.get("visibility") === "private" ? "private" : "platform",
+    details: readProjectDetails(formData),
+    visibility: formData.get("publication_intent") === "draft" || formData.get("visibility") === "private" ? "private" : "platform",
     ...owner,
     created_by: userId,
   }).select("id").single();
@@ -103,6 +105,7 @@ export async function updateProductProjectAction(formData: FormData) {
     website_url: safeUrl(website),
     repository_url: safeUrl(repository),
     readme: text(formData, "readme", 20000),
+    details: readProjectDetails(formData),
     visibility: formData.get("visibility") === "private" ? "private" : "platform",
   }).eq("id", id).select("id").maybeSingle();
 

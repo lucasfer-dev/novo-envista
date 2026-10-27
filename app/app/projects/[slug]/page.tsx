@@ -6,6 +6,7 @@ import ProjectFilesPanel from "@/components/storage/ProjectFilesPanel";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { updateProductProjectAction } from "@/lib/projects/product-actions";
+import { ProjectIdentityExtraFields, ProjectDevelopmentExtraFields, ProjectOpportunityExtraFields, ProjectExtendedDescription } from "@/components/projects/ProjectExtraFields";
 import { deleteProjectAction } from "@/lib/projects/actions";
 
 function one<T>(value: T | T[] | null | undefined): T | null {
@@ -19,7 +20,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   const { supabase, userId, appUser } = await requireProductUser("participant");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
+    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,details,website_url,repository_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
     .eq("slug", slug)
     .maybeSingle();
   if (!project) notFound();
@@ -74,7 +75,8 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
         <section className="panel prose">
           <h2>Problema</h2><p>{project.problem || "Ainda não descrito."}</p>
           <h2>Solução</h2><p>{project.solution || "Ainda não descrita."}</p>
-          <h2>Impacto e evidências</h2><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
+          <ProjectExtendedDescription details={project.details} />
+          <h2>Impacto esperado</h2><p>{project.impact || "Ainda não informado."}</p>
           <h2>O que o projeto precisa agora</h2>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h2>Links</h2><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
           <h2>Descrição completa</h2><p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
@@ -89,14 +91,22 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
 
       {canEdit ? (
         <section className="panel section-block" id="editar" style={{ padding: 20 }}>
-          <h2>Editar projeto</h2>
+          <div className="section-row"><h2>Editar projeto</h2><Link className="secondary" href={`/app/projects/${project.slug}/cockpit`}>Prontidão e próximos passos</Link></div>
           <form className="form-page" style={{ padding: 0 }} action={updateProductProjectAction}>
             <input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="slug" value={project.slug} />
             <div className="form-grid"><label>Título<input required name="title" defaultValue={project.title} maxLength={140} /></label><label>Estágio<select name="stage" defaultValue={project.stage}><option>Ideia</option><option>Validação</option><option>Protótipo</option><option>MVP</option><option>Projeto ativo</option></select></label></div>
             <label>Descrição curta<textarea name="short_description" defaultValue={project.short_description} maxLength={320} /></label>
             <label>Problema<textarea name="problem" defaultValue={project.problem} maxLength={4000} /></label>
             <label>Solução<textarea name="solution" defaultValue={project.solution} maxLength={4000} /></label>
-            <label>Impacto / validação<textarea name="impact" defaultValue={project.impact} maxLength={4000} /></label>
+            <label>Impacto esperado<textarea name="impact" defaultValue={project.impact} maxLength={4000} /></label>
+            <details style={{ border: "1px solid var(--ev-border)", borderRadius: 10, padding: 14 }}>
+              <summary style={{ cursor: "pointer", fontWeight: 700 }}>Mais informações: tipo, público, diferencial, validação e oportunidades</summary>
+              <div className="form-page" style={{ padding: 0, marginTop: 16 }}>
+                <ProjectIdentityExtraFields details={project.details} />
+                <ProjectDevelopmentExtraFields details={project.details} />
+                <ProjectOpportunityExtraFields details={project.details} />
+              </div>
+            </details>
             <label>Necessidades<input name="needs" defaultValue={(project.needs || []).join(", ")} maxLength={1200} /></label>
             <div className="form-grid"><label>Categoria<input name="category" defaultValue={project.category} maxLength={100} /></label><label>Localização<input name="location" defaultValue={project.location} maxLength={160} /></label></div>
             <label>Tags<input name="tags" defaultValue={(project.tags || []).join(", ")} maxLength={700} /></label>
