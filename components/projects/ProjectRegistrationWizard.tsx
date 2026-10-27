@@ -26,14 +26,21 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
   const [investment, setInvestment] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function next() {
     if (step === 0 && !titleRef.current?.reportValidity()) return;
+    const section = formRef.current?.querySelectorAll("section")[step];
+    const elements = section?.querySelectorAll("input,textarea,select");
+    if (elements) for (const element of Array.from(elements)) {
+      const control = element as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+      if (!control.checkValidity()) { control.reportValidity(); return; }
+    }
     setStep((current) => Math.min(current + 1, 3));
   }
 
   return (
-    <form className={"form-page panel " + styles.wizard} action={createProductProjectAction} onSubmit={() => setSubmitting(true)}>
+    <form ref={formRef} className={"form-page panel " + styles.wizard} action={createProductProjectAction} onSubmit={() => setSubmitting(true)}>
       <div className={styles.progressHeader}>
         <span>Etapa {step + 1} de 4</span>
         <strong>{labels[step]}</strong>
@@ -89,6 +96,15 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
         <label>Equipe atual<textarea name="team_description" maxLength={2000} placeholder="Pessoas e funções envolvidas. Para autoria em equipe, selecione a equipe na etapa 1." /></label>
         <label>Do que o projeto precisa agora?<input name="needs" maxLength={1200} placeholder="Ex.: Mentoria, Desenvolvedores, Designers, Testadores" /></label>
         <p className={styles.note}>Separe as necessidades por vírgulas. Elas poderão orientar futuras conexões na plataforma.</p>
+        <fieldset className={styles.roles}><legend>Oportunidades de colaboração</legend>
+          <label><input type="checkbox" name="collaboration_roles" value="developer" /> Desenvolvedores</label>
+          <label><input type="checkbox" name="collaboration_roles" value="designer" /> Designers</label>
+          <label><input type="checkbox" name="collaboration_roles" value="mentor" /> Mentores</label>
+          <label><input type="checkbox" name="collaboration_roles" value="investor" /> Investidores</label>
+          <label><input type="checkbox" name="collaboration_roles" value="tester" /> Pessoas para testar</label>
+          <label><input type="checkbox" name="collaboration_roles" value="partner" /> Parceiros</label>
+          <label><input type="checkbox" name="collaboration_roles" value="community" /> Divulgação / comunidade</label>
+        </fieldset>
         <label className={styles.check}><input type="checkbox" name="seeking_investment" checked={investment} onChange={(event) => setInvestment(event.target.checked)} /> Busca investimento</label>
         {investment ? <div className={styles.investment}>
           <h3>Informações para investidores</h3>
