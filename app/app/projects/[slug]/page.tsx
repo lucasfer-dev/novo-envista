@@ -19,10 +19,14 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   const { supabase, userId, appUser } = await requireProductUser("participant");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
+    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
     .eq("slug", slug)
     .maybeSingle();
   if (!project) notFound();
+  const { data: signedCover } = project.cover_path
+    ? await supabase.storage.from("project-assets").createSignedUrl(project.cover_path, 900)
+    : { data: null };
+  const coverUrl = signedCover?.signedUrl ?? null;
 
   let canEdit = project.owner_user_id === userId;
   let canDelete = canEdit;
@@ -53,7 +57,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
     <LegacySocialShell user={appUser} role="participant" pathname={`/app/projects/${slug}`}>
       <Link className="back" href="/app/projects">← Voltar aos projetos</Link>
       <div className="project-hero panel">
-        <div><div className="project-icon">{project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto em construção."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
+        <div><div className="project-icon">{coverUrl ? <img src={coverUrl} alt={"Capa de " + project.title} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} /> : project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto em construção."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
         <div className="actions">{!canEdit && project.visibility === "platform" ? <FollowEntityButton targetType="project" targetId={project.id} returnTo={`/app/projects/${slug}`} /> : null}{canEdit && project.visibility === "platform" ? <><Link className="secondary" href={`/p/${project.slug}`} target="_blank">Ver página pública</Link><ShareProjectButton className="secondary" title={project.title} href={`/p/${project.slug}`} /></> : null}{canEdit ? <a className="secondary" href="#editar">Editar projeto</a> : null}</div>
       </div>
 
