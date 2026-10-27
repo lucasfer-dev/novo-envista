@@ -17,11 +17,15 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
   const { supabase, userId, appUser } = await requireProductUser("investor");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
     .eq("slug", slug)
     .eq("visibility", "platform")
     .maybeSingle();
   if (!project) notFound();
+  const { data: signedCover } = project.cover_path
+    ? await supabase.storage.from("project-assets").createSignedUrl(project.cover_path, 900)
+    : { data: null };
+  const coverUrl = signedCover?.signedUrl ?? null;
 
   await supabase.from("project_view_events").insert({ project_id: project.id, viewer_id: userId, source: "investor_project" }).then(() => undefined);
 
@@ -43,7 +47,7 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
     <LegacySocialShell user={appUser} role="investor" pathname={`/investor/projects/${slug}`}>
       <Link className="back" href="/investor/explore">← Voltar ao Radar</Link>
       <div className="project-hero panel">
-        <div><div className="project-icon">{project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
+        <div><div className="project-icon">{coverUrl ? <img src={coverUrl} alt={"Capa de " + project.title} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} /> : project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
         <div className="actions">
           <form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value={returnTo} /><button className="secondary" type="submit">{saved ? "Salvo" : "Salvar projeto"}</button></form>
           <FollowEntityButton targetType="project" targetId={project.id} returnTo={returnTo} />
