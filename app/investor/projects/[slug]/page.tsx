@@ -17,7 +17,7 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
   const { supabase, userId, appUser } = await requireProductUser("investor");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
     .eq("slug", slug)
     .eq("visibility", "platform")
     .maybeSingle();
@@ -58,9 +58,23 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
           <h2>Resumo executivo</h2>
           <h3>Problema</h3><p>{project.problem || "Ainda não descrito."}</p>
           <h3>Solução</h3><p>{project.solution || "Ainda não descrita."}</p>
+          {project.objective ? <><h3>Objetivo principal</h3><p>{project.objective}</p></> : null}
+          {project.target_audience ? <><h3>Público-alvo</h3><p>{project.target_audience}</p></> : null}
+          {project.differentiator ? <><h3>Diferencial</h3><p>{project.differentiator}</p></> : null}
+          {project.team_description ? <><h3>Equipe</h3><p>{project.team_description}</p></> : null}
+          {project.technologies?.length ? <><h3>Tecnologias</h3><div className="chips">{project.technologies.map((item: string) => <span key={item}>{item}</span>)}</div></> : null}
+          {project.challenges ? <><h3>Principais desafios</h3><p>{project.challenges}</p></> : null}
           <h3>Impacto e evidências</h3><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
           <h3>Necessidade atual</h3>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h3>Links verificáveis</h3><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
+          {project.seeking_investment ? <><h3>Informações para investidores</h3>
+            {project.business_model ? <p><b>Modelo de negócio:</b> {project.business_model}</p> : null}
+            {project.target_market ? <p><b>Mercado:</b> {project.target_market}</p> : null}
+            {project.traction ? <p><b>Tração:</b> {project.traction}</p> : null}
+            {project.investment_amount ? <p><b>Investimento desejado:</b> {project.investment_amount}</p> : null}
+            {project.use_of_funds ? <p><b>Destinação dos recursos:</b> {project.use_of_funds}</p> : null}
+            {project.pitch_deck_url ? <a className="secondary" href={project.pitch_deck_url} target="_blank" rel="noopener noreferrer">Ver pitch deck</a> : null}
+          </> : null}
           <h3>Descrição completa</h3><p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
           <h3>Arquivos públicos</h3><ProjectFilesPanel projectId={project.id} slug={project.slug} canEdit={false} />
         </section>
