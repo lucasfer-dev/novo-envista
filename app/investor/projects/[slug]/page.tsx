@@ -6,6 +6,8 @@ import FollowEntityButton from "@/components/real/FollowEntityButton";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { sendProjectInterestAction, toggleProjectSaveAction } from "@/lib/projects/investor-actions";
 
+const opportunityNames: Record<string, string> = { developer: "Desenvolvedores", designer: "Designers", mentor: "Mentores", investor: "Investidores", tester: "Pessoas para testar", partner: "Parceiros", community: "Divulgação e comunidade" };
+
 function one<T>(value: T | T[] | null | undefined): T | null {
   if (!value) return null;
   return Array.isArray(value) ? value[0] ?? null : value;
@@ -17,7 +19,7 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
   const { supabase, userId, appUser } = await requireProductUser("investor");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,collaboration_roles,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
     .eq("slug", slug)
     .eq("visibility", "platform")
     .maybeSingle();
@@ -69,6 +71,7 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
           {project.technologies?.length ? <><h3>Tecnologias</h3><div className="chips">{project.technologies.map((item: string) => <span key={item}>{item}</span>)}</div></> : null}
           {project.challenges ? <><h3>Principais desafios</h3><p>{project.challenges}</p></> : null}
           <h3>Impacto e evidências</h3><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
+          {project.collaboration_roles?.length ? <><h3>Oportunidades de colaboração</h3><div className="chips">{project.collaboration_roles.map((role: string) => <span key={role}>{opportunityNames[role] || role}</span>)}</div></> : null}
           <h3>Necessidade atual</h3>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h3>Links verificáveis</h3><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
           {project.seeking_investment ? <><h3>Informações para investidores</h3>
