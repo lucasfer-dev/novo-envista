@@ -19,7 +19,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   const { supabase, userId, appUser } = await requireProductUser("participant");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
+    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
     .eq("slug", slug)
     .maybeSingle();
   if (!project) notFound();
@@ -74,9 +74,23 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
         <section className="panel prose">
           <h2>Problema</h2><p>{project.problem || "Ainda não descrito."}</p>
           <h2>Solução</h2><p>{project.solution || "Ainda não descrita."}</p>
+          {project.objective ? <><h2>Objetivo principal</h2><p>{project.objective}</p></> : null}
+          {project.target_audience ? <><h2>Público-alvo</h2><p>{project.target_audience}</p></> : null}
+          {project.differentiator ? <><h2>Diferencial competitivo</h2><p>{project.differentiator}</p></> : null}
+          {project.technologies?.length ? <><h2>Tecnologias</h2><div className="chips">{project.technologies.map((tech: string) => <span key={tech}>{tech}</span>)}</div></> : null}
+          {project.challenges ? <><h2>Principais desafios</h2><p>{project.challenges}</p></> : null}
+          {project.team_description ? <><h2>Equipe atual</h2><p>{project.team_description}</p></> : null}
           <h2>Impacto e evidências</h2><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
           <h2>O que o projeto precisa agora</h2>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h2>Links</h2><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
+          {project.seeking_investment ? <><h2>Oportunidade para investidores</h2>
+            {project.business_model ? <p><strong>Modelo de negócio:</strong> {project.business_model}</p> : null}
+            {project.target_market ? <p><strong>Mercado:</strong> {project.target_market}</p> : null}
+            {project.traction ? <p><strong>Tração:</strong> {project.traction}</p> : null}
+            {project.investment_amount ? <p><strong>Investimento desejado:</strong> {project.investment_amount}</p> : null}
+            {project.use_of_funds ? <p><strong>Uso dos recursos:</strong> {project.use_of_funds}</p> : null}
+            {project.pitch_deck_url ? <a className="secondary" href={project.pitch_deck_url} target="_blank" rel="noopener noreferrer">Ver pitch deck</a> : null}
+          </> : null}
           <h2>Descrição completa</h2><p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
           <h2>Arquivos</h2><ProjectFilesPanel projectId={project.id} slug={project.slug} canEdit={canEdit} />
         </section>
@@ -93,15 +107,32 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
           <form className="form-page" style={{ padding: 0 }} action={updateProductProjectAction}>
             <input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="slug" value={project.slug} />
             <div className="form-grid"><label>Título<input required name="title" defaultValue={project.title} maxLength={140} /></label><label>Estágio<select name="stage" defaultValue={project.stage}><option>Ideia</option><option>Validação</option><option>Protótipo</option><option>MVP</option><option>Projeto ativo</option></select></label></div>
+            <div className="form-grid">
+              <label>Tipo de projeto<select name="project_type" defaultValue={project.project_type || "personal"}><option value="personal">Projeto pessoal</option><option value="startup">Startup</option><option value="academic">Acadêmico</option><option value="social">Impacto social</option><option value="research">Pesquisa</option><option value="other">Outro</option></select></label>
+              <label>Tecnologias utilizadas<input name="technologies" defaultValue={(project.technologies || []).join(", ")} maxLength={1800} /></label>
+            </div>
             <label>Descrição curta<textarea name="short_description" defaultValue={project.short_description} maxLength={320} /></label>
             <label>Problema<textarea name="problem" defaultValue={project.problem} maxLength={4000} /></label>
             <label>Solução<textarea name="solution" defaultValue={project.solution} maxLength={4000} /></label>
+            <label>Objetivo principal<textarea name="objective" defaultValue={project.objective || ""} maxLength={2000} /></label>
+            <label>Público-alvo<textarea name="target_audience" defaultValue={project.target_audience || ""} maxLength={2000} /></label>
+            <label>Diferencial competitivo<textarea name="differentiator" defaultValue={project.differentiator || ""} maxLength={4000} /></label>
+            <label>Principais desafios<textarea name="challenges" defaultValue={project.challenges || ""} maxLength={4000} /></label>
+            <label>Equipe atual<textarea name="team_description" defaultValue={project.team_description || ""} maxLength={2000} /></label>
             <label>Impacto / validação<textarea name="impact" defaultValue={project.impact} maxLength={4000} /></label>
             <label>Necessidades<input name="needs" defaultValue={(project.needs || []).join(", ")} maxLength={1200} /></label>
             <div className="form-grid"><label>Categoria<input name="category" defaultValue={project.category} maxLength={100} /></label><label>Localização<input name="location" defaultValue={project.location} maxLength={160} /></label></div>
             <label>Tags<input name="tags" defaultValue={(project.tags || []).join(", ")} maxLength={700} /></label>
             <div className="form-grid"><label>Site / demo<input type="url" name="website_url" defaultValue={project.website_url} maxLength={500} /></label><label>Repositório<input type="url" name="repository_url" defaultValue={project.repository_url} maxLength={500} /></label></div>
             <label>Descrição completa / README<textarea name="readme" defaultValue={project.readme} maxLength={20000} /></label>
+            <h3>Informações para investidores (opcionais)</h3>
+            <label style={{ display: "flex", alignItems: "center", gap: 10 }}><input type="checkbox" name="seeking_investment" defaultChecked={project.seeking_investment} style={{ width: 18 }} /> Busca investimento</label>
+            <label>Modelo de negócio<textarea name="business_model" defaultValue={project.business_model || ""} maxLength={2000} /></label>
+            <label>Mercado de atuação<textarea name="target_market" defaultValue={project.target_market || ""} maxLength={2000} /></label>
+            <label>Tração<textarea name="traction" defaultValue={project.traction || ""} maxLength={2000} /></label>
+            <label>Investimento desejado<input name="investment_amount" defaultValue={project.investment_amount || ""} maxLength={100} /></label>
+            <label>Destinação dos recursos<textarea name="use_of_funds" defaultValue={project.use_of_funds || ""} maxLength={2000} /></label>
+            <label>Pitch deck (URL HTTPS)<input type="url" name="pitch_deck_url" defaultValue={project.pitch_deck_url || ""} maxLength={500} /></label>
             <label>Visibilidade<select name="visibility" defaultValue={project.visibility}><option value="platform">Visível no Envista</option><option value="private">Privado</option></select></label>
             <button className="primary" type="submit">Salvar alterações</button>
           </form>
