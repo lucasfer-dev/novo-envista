@@ -8,6 +8,8 @@ import { requireProductUser } from "@/lib/auth/require-product-user";
 import { updateProductProjectAction } from "@/lib/projects/product-actions";
 import { deleteProjectAction } from "@/lib/projects/actions";
 
+const opportunityNames: Record<string, string> = { developer: "Desenvolvedores", designer: "Designers", mentor: "Mentores", investor: "Investidores", tester: "Pessoas para testar", partner: "Parceiros", community: "Divulgação e comunidade" };
+
 function one<T>(value: T | T[] | null | undefined): T | null {
   if (!value) return null;
   return Array.isArray(value) ? value[0] ?? null : value;
@@ -19,7 +21,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
   const { supabase, userId, appUser } = await requireProductUser("participant");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
+    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,collaboration_roles,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,created_by,owner_user:profiles!projects_owner_user_id_fkey(display_name,username),owner_team:teams!projects_owner_team_id_fkey(name,slug)")
     .eq("slug", slug)
     .maybeSingle();
   if (!project) notFound();
@@ -85,6 +87,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
           {project.challenges ? <><h2>Principais desafios</h2><p>{project.challenges}</p></> : null}
           {project.team_description ? <><h2>Equipe atual</h2><p>{project.team_description}</p></> : null}
           <h2>Impacto e evidências</h2><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
+          {project.collaboration_roles?.length ? <><h2>Oportunidades de colaboração</h2><div className="chips">{project.collaboration_roles.map((role: string) => <span key={role}>{opportunityNames[role] || role}</span>)}</div></> : null}
           <h2>O que o projeto precisa agora</h2>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h2>Links</h2><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
           {project.seeking_investment ? <><h2>Oportunidade para investidores</h2>
@@ -125,6 +128,12 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
             <label>Equipe atual<textarea name="team_description" defaultValue={project.team_description || ""} maxLength={2000} /></label>
             <label>Impacto / validação<textarea name="impact" defaultValue={project.impact} maxLength={4000} /></label>
             <label>Necessidades<input name="needs" defaultValue={(project.needs || []).join(", ")} maxLength={1200} /></label>
+            <fieldset style={{ border: "1px solid #274452", borderRadius: 10, padding: 14 }}>
+              <legend>Oportunidades de colaboração</legend>
+              {Object.entries(opportunityNames).map(([key,label]) => <label key={key} style={{ display: "inline-flex", gap: 8, alignItems: "center", margin: 8 }}>
+                <input type="checkbox" name="collaboration_roles" value={key} defaultChecked={(project.collaboration_roles || []).includes(key)} style={{ width: 18 }} /> {label}
+              </label>)}
+            </fieldset>
             <div className="form-grid"><label>Categoria<input name="category" defaultValue={project.category} maxLength={100} /></label><label>Localização<input name="location" defaultValue={project.location} maxLength={160} /></label></div>
             <label>Tags<input name="tags" defaultValue={(project.tags || []).join(", ")} maxLength={700} /></label>
             <div className="form-grid"><label>Site / demo<input type="url" name="website_url" defaultValue={project.website_url} maxLength={500} /></label><label>Repositório<input type="url" name="repository_url" defaultValue={project.repository_url} maxLength={500} /></label></div>
