@@ -6,6 +6,8 @@ import FollowEntityButton from "@/components/real/FollowEntityButton";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { sendProjectInterestAction, toggleProjectSaveAction } from "@/lib/projects/investor-actions";
 
+const opportunityNames: Record<string, string> = { developer: "Desenvolvedores", designer: "Designers", mentor: "Mentores", investor: "Investidores", tester: "Pessoas para testar", partner: "Parceiros", community: "Divulgação e comunidade" };
+
 function one<T>(value: T | T[] | null | undefined): T | null {
   if (!value) return null;
   return Array.isArray(value) ? value[0] ?? null : value;
@@ -17,11 +19,15 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
   const { supabase, userId, appUser } = await requireProductUser("investor");
   const { data: project } = await supabase
     .from("projects")
-    .select("id,slug,title,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+    .select("id,slug,title,cover_path,short_description,problem,solution,impact,needs,stage,category,location,tags,readme,website_url,repository_url,project_type,target_audience,differentiator,objective,team_description,challenges,technologies,collaboration_roles,seeking_investment,business_model,target_market,traction,investment_amount,use_of_funds,pitch_deck_url,visibility,owner_user_id,owner_team_id,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
     .eq("slug", slug)
     .eq("visibility", "platform")
     .maybeSingle();
   if (!project) notFound();
+  const { data: signedCover } = project.cover_path
+    ? await supabase.storage.from("project-assets").createSignedUrl(project.cover_path, 900)
+    : { data: null };
+  const coverUrl = signedCover?.signedUrl ?? null;
 
   await supabase.from("project_view_events").insert({ project_id: project.id, viewer_id: userId, source: "investor_project" }).then(() => undefined);
 
@@ -43,7 +49,7 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
     <LegacySocialShell user={appUser} role="investor" pathname={`/investor/projects/${slug}`}>
       <Link className="back" href="/investor/explore">← Voltar ao Radar</Link>
       <div className="project-hero panel">
-        <div><div className="project-icon">{project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
+        <div><div className="project-icon">{coverUrl ? <img src={coverUrl} alt={"Capa de " + project.title} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} /> : project.title.slice(0, 1).toUpperCase()}</div><div><div className="meta-row"><span className="stage">{project.stage}</span>{project.category ? <span>{project.category}</span> : null}{project.location ? <span>{project.location}</span> : null}</div><h1>{project.title}</h1><p>{project.short_description || "Projeto publicado no Envista."}</p><div className="chips">{(project.tags || []).map((tag: string) => <span key={tag}>{tag}</span>)}</div></div></div>
         <div className="actions">
           <form action={toggleProjectSaveAction}><input type="hidden" name="project_id" value={project.id} /><input type="hidden" name="return_to" value={returnTo} /><button className="secondary" type="submit">{saved ? "Salvo" : "Salvar projeto"}</button></form>
           <FollowEntityButton targetType="project" targetId={project.id} returnTo={returnTo} />
@@ -58,9 +64,24 @@ export default async function InvestorProjectPage({ params, searchParams }: { pa
           <h2>Resumo executivo</h2>
           <h3>Problema</h3><p>{project.problem || "Ainda não descrito."}</p>
           <h3>Solução</h3><p>{project.solution || "Ainda não descrita."}</p>
+          {project.objective ? <><h3>Objetivo principal</h3><p>{project.objective}</p></> : null}
+          {project.target_audience ? <><h3>Público-alvo</h3><p>{project.target_audience}</p></> : null}
+          {project.differentiator ? <><h3>Diferencial</h3><p>{project.differentiator}</p></> : null}
+          {project.team_description ? <><h3>Equipe</h3><p>{project.team_description}</p></> : null}
+          {project.technologies?.length ? <><h3>Tecnologias</h3><div className="chips">{project.technologies.map((item: string) => <span key={item}>{item}</span>)}</div></> : null}
+          {project.challenges ? <><h3>Principais desafios</h3><p>{project.challenges}</p></> : null}
           <h3>Impacto e evidências</h3><p>{project.impact || "A equipe ainda não registrou evidências de validação."}</p>
+          {project.collaboration_roles?.length ? <><h3>Oportunidades de colaboração</h3><div className="chips">{project.collaboration_roles.map((role: string) => <span key={role}>{opportunityNames[role] || role}</span>)}</div></> : null}
           <h3>Necessidade atual</h3>{project.needs?.length ? <div className="chips">{project.needs.map((need: string) => <span key={need}>{need}</span>)}</div> : <p>Nenhuma necessidade informada.</p>}
           {(project.website_url || project.repository_url) ? <><h3>Links verificáveis</h3><div className="actions">{project.website_url ? <a className="primary" href={project.website_url} target="_blank" rel="noreferrer">Abrir site / demo</a> : null}{project.repository_url ? <a className="secondary" href={project.repository_url} target="_blank" rel="noreferrer">Ver repositório</a> : null}</div></> : null}
+          {project.seeking_investment ? <><h3>Informações para investidores</h3>
+            {project.business_model ? <p><b>Modelo de negócio:</b> {project.business_model}</p> : null}
+            {project.target_market ? <p><b>Mercado:</b> {project.target_market}</p> : null}
+            {project.traction ? <p><b>Tração:</b> {project.traction}</p> : null}
+            {project.investment_amount ? <p><b>Investimento desejado:</b> {project.investment_amount}</p> : null}
+            {project.use_of_funds ? <p><b>Destinação dos recursos:</b> {project.use_of_funds}</p> : null}
+            {project.pitch_deck_url ? <a className="secondary" href={project.pitch_deck_url} target="_blank" rel="noopener noreferrer">Ver pitch deck</a> : null}
+          </> : null}
           <h3>Descrição completa</h3><p style={{ whiteSpace: "pre-wrap" }}>{project.readme || "Sem descrição completa."}</p>
           <h3>Arquivos públicos</h3><ProjectFilesPanel projectId={project.id} slug={project.slug} canEdit={false} />
         </section>
