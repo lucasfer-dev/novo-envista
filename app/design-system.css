@@ -189,27 +189,90 @@
 
 .app-shell a.panel,
 .app-shell button.panel,
-.app-shell .project-card,
-.app-shell .team-card,
+.app-shell a.project-card,
+.app-shell button.project-card,
+.app-shell .project-card[data-clickable="true"],
+.app-shell a.team-card,
+.app-shell button.team-card,
+.app-shell .team-card[data-clickable="true"],
 .legacyDark a.panel,
 .legacyDark button.panel,
-.legacyDark .project-card,
-.legacyDark .team-card {
+.legacyDark a.project-card,
+.legacyDark button.project-card,
+.legacyDark .project-card[data-clickable="true"],
+.legacyDark a.team-card,
+.legacyDark button.team-card,
+.legacyDark .team-card[data-clickable="true"] {
   transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
 .app-shell a.panel:hover,
 .app-shell button.panel:hover,
-.app-shell .project-card:hover,
-.app-shell .team-card:hover,
+.app-shell a.project-card:hover,
+.app-shell button.project-card:hover,
+.app-shell .project-card[data-clickable="true"]:hover,
+.app-shell a.team-card:hover,
+.app-shell button.team-card:hover,
+.app-shell .team-card[data-clickable="true"]:hover,
 .legacyDark a.panel:hover,
 .legacyDark button.panel:hover,
-.legacyDark .project-card:hover,
-.legacyDark .team-card:hover {
+.legacyDark a.project-card:hover,
+.legacyDark button.project-card:hover,
+.legacyDark .project-card[data-clickable="true"]:hover,
+.legacyDark a.team-card:hover,
+.legacyDark button.team-card:hover,
+.legacyDark .team-card[data-clickable="true"]:hover {
   background: var(--ev-surface-raised) !important;
   border-color: var(--ev-border-strong) !important;
   transform: translateY(-1px);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.14);
+}
+
+.app-shell .project-card[data-clickable="true"],
+.app-shell .team-card[data-clickable="true"],
+.legacyDark .project-card[data-clickable="true"],
+.legacyDark .team-card[data-clickable="true"] {
+  position: relative;
+}
+
+.app-shell .card-hit-target,
+.legacyDark .card-hit-target {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.app-shell .card-open-indicator,
+.legacyDark .card-open-indicator {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--ev-muted);
+  pointer-events: none;
+}
+
+.app-shell .project-card[data-clickable="true"] .card-open-indicator,
+.app-shell .team-card[data-clickable="true"] .card-open-indicator,
+.legacyDark .project-card[data-clickable="true"] .card-open-indicator,
+.legacyDark .team-card[data-clickable="true"] .card-open-indicator {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.app-shell .card-actions,
+.legacyDark .card-actions {
+  position: relative;
+  z-index: 3;
+}
+
+.app-shell :is(.project-card, .team-card):has(.card-hit-target):hover .card-open-indicator,
+.legacyDark :is(.project-card, .team-card):has(.card-hit-target):hover .card-open-indicator,
+.app-shell :is(a.project-card, a.team-card):hover .card-open-indicator,
+.legacyDark :is(a.project-card, a.team-card):hover .card-open-indicator {
+  color: var(--ev-accent);
 }
 
 .app-shell .panel-title,
@@ -395,9 +458,46 @@
 }
 
 .app-shell .chips span,
+.legacyDark .chips span {
+  border: 0 !important;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.045) !important;
+  color: #9fb0c0;
+  cursor: default;
+  box-shadow: none;
+}
+
+.app-shell .chips .chip-link,
+.legacyDark .chips .chip-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 9px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.055);
+  color: #c4d2de;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 12px;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.app-shell .chips.compact .chip-link,
+.legacyDark .chips.compact .chip-link {
+  min-height: 24px;
+  padding: 3px 7px;
+}
+
+.app-shell .chips .chip-link:hover,
+.legacyDark .chips .chip-link:hover {
+  border-color: rgba(0, 169, 157, 0.42);
+  background: rgba(0, 169, 157, 0.11);
+  color: #dffffa;
+}
+
 .app-shell .stage,
 .app-shell .pill,
-.legacyDark .chips span,
 .legacyDark .stage,
 .legacyDark .pill {
   border: 1px solid rgba(148, 163, 184, 0.11);
@@ -410,6 +510,23 @@
   border-color: rgba(0, 169, 157, 0.18);
   background: rgba(0, 169, 157, 0.09);
   color: #7ce5d7;
+}
+
+.app-shell span.stage,
+.legacyDark span.stage {
+  cursor: default;
+}
+
+.app-shell a.stage,
+.legacyDark a.stage {
+  cursor: pointer;
+}
+
+.app-shell a.stage:hover,
+.legacyDark a.stage:hover {
+  border-color: rgba(0, 169, 157, 0.48);
+  background: rgba(0, 169, 157, 0.15);
+  color: #dffffa;
 }
 
 /* Empty/error/loading surfaces */

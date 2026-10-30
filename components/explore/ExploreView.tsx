@@ -156,7 +156,7 @@ export function ExploreView({expectedRole,base,q,stage,pages,projects,teams,prof
                     <h3>{project.title}</h3>
                     <p>{project.description}</p>
                     <div className="chips compact">
-                      {project.tags.slice(0, 4).map((tag) => <span key={tag}><Link href={taxonomyHref(base, tag)}>{tag}</Link></span>)}
+                      {project.tags.slice(0, 4).map((tag) => <Link className="chip-link" href={taxonomyHref(base, tag)} key={tag}>{tag}</Link>)}
                     </div>
                   </div>
                 </article>
@@ -191,7 +191,7 @@ export function ExploreView({expectedRole,base,q,stage,pages,projects,teams,prof
                   <h3>{team.name}</h3>
                   <p>{team.description}</p>
                   <div className="chips compact">
-                    {team.tags.slice(0, 3).map((tag) => <span key={tag}><Link href={taxonomyHref(base, tag)}>{tag}</Link></span>)}
+                    {team.tags.slice(0, 3).map((tag) => <Link className="chip-link" href={taxonomyHref(base, tag)} key={tag}>{tag}</Link>)}
                   </div>
                   <small>{team.city || team.institution || team.category}</small>
                 </article>
