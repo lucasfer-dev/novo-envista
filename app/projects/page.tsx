@@ -35,7 +35,6 @@ function Header() {
       <div className={styles.headerInner}>
         <Link className={styles.brand} href="/" aria-label="Envista — página inicial">
           <Image src="/brand/envista-symbol-gradient.svg" alt="" width={30} height={30} priority />
-          <span>Envista</span>
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Navegação principal">
@@ -175,7 +174,7 @@ export default async function ProjectsPage() {
         <div>
           <Link className={styles.brand} href="/">
             <Image src="/brand/envista-symbol-gradient.svg" alt="" width={26} height={26} />
-            <span>Envista</span>
+            <span className="sr-only">Página inicial do Envista</span>
           </Link>
           <p>Projetos que continuam depois da entrega.</p>
         </div>

@@ -15,6 +15,7 @@ const labels = [
 const kinds = [
   ["personal", "Projeto pessoal"],
   ["startup", "Startup"],
+  ["business", "Negócio"],
   ["academic", "Projeto acadêmico"],
   ["social", "Impacto social"],
   ["research", "Pesquisa"],
@@ -87,7 +88,7 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
         <label>Tecnologias utilizadas<input name="technologies" maxLength={1800} placeholder="Ex.: React, Python, Arduino (separadas por vírgula)" /></label>
         <label>Impacto e validação<textarea name="impact" maxLength={4000} placeholder="Testes, feedback, protótipo, resultados ou impacto esperado" /></label>
         <label>Principais desafios<textarea name="challenges" maxLength={4000} placeholder="Quais obstáculos precisam ser superados?" /></label>
-        <label>Próximos objetivos / detalhes<textarea name="readme" maxLength={20000} placeholder="Próximos passos, plano de desenvolvimento e informações técnicas." /></label>
+        <label>Próximos objetivos<textarea name="next_goals" maxLength={2000} placeholder="Quais são as próximas metas e etapas do projeto?" /></label>
         <p className={styles.note}>Marcos, prazos e histórico de atualizações podem ser organizados depois no cockpit do projeto.</p>
       </section>
 
@@ -132,7 +133,8 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
           <option value="platform">Visível para usuários do Envista</option>
           <option value="private">Privado</option>
         </select></label>
-        <p className={styles.note}>Galeria de imagens, capa e arquivos podem ser adicionados na página do projeto após a criação. O rascunho fica privado até que você o publique.</p>
+        <label>Descrição completa / README<textarea name="readme" maxLength={20000} placeholder="Contexto, funcionalidades, evolução e detalhes técnicos." /></label>
+        <p className={styles.note}>Você poderá escolher uma imagem de capa e adicionar arquivos na página do projeto após a criação. O rascunho fica privado até que você o publique.</p>
       </section>
 
       <div className={styles.actions}>

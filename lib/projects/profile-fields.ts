@@ -24,7 +24,7 @@ export function projectProfileFields(formData: FormData) {
   const projectType = field(formData, "project_type", 30);
   const seekingInvestment = formData.get("seeking_investment") === "on";
   return {
-    project_type: PROJECT_TYPES.has(projectType) ? projectType : "personal",
+    project_type: PROJECT_TYPES.has(projectType) ? projectType : projectType === "business" ? "other" : "personal",
     target_audience: field(formData, "target_audience", 2000),
     differentiator: field(formData, "differentiator", 4000),
     objective: field(formData, "objective", 2000),

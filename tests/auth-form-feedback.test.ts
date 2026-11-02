@@ -52,10 +52,11 @@ describe("auth form feedback", () => {
     expect(signoutRoute).toContain('signOut({ scope: "local" })');
   });
 
-  it("keeps Envista branding visible on auth pages", () => {
+  it("keeps the Envista symbol as accessible branding on auth pages", () => {
     expect(authShell).toContain('src="/brand/envista-symbol-white.svg"');
     expect(authShell).toContain('src="/brand/envista-symbol-gradient.svg"');
-    expect(authShell).toContain("<strong>Envista</strong>");
+    expect(authShell).toContain('aria-label="Ir para a página inicial do Envista"');
+    expect(authShell).not.toContain("<strong>Envista</strong>");
   });
 
   it("makes institution-related onboarding fields visibly optional", () => {

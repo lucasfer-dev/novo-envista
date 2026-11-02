@@ -25,7 +25,7 @@ export default async function NewProjectPage({ searchParams }: { searchParams: P
         <div><h1>Novo projeto</h1><p>Compartilhe sua ideia em quatro etapas. Preencha só o essencial e complemente depois.</p></div>
         <Link className="secondary" href="/app/projects">Cancelar</Link>
       </div>
-      {error ? <div className="form-error" role="alert">{error === "url" ? "Use somente links HTTPS válidos." : error === "owner" ? "Você não pode publicar por essa equipe." : error === "title" ? "Informe um nome válido." : "Não foi possível criar o projeto."}</div> : null}
+      {error ? <div className="form-error" role="alert">{error === "url" ? "Use apenas links HTTPS válidos." : error === "owner" ? "Você não pode publicar por essa equipe." : error === "title" ? "Informe um nome válido." : "Não foi possível criar o projeto. Revise os campos e tente novamente."}</div> : null}
       <ProjectRegistrationWizard name={appUser.name} teams={teams} />
     </LegacySocialShell>
   );
