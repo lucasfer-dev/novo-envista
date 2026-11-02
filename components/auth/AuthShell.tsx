@@ -12,7 +12,6 @@ export function AuthShell({ title, description, children, wide = false }: { titl
         <aside className={`${styles.brandPanel} envista-auth-brand`}>
           <Link className={`${styles.brand} envista-brand-lockup`} href="/" aria-label="Ir para a página inicial do Envista">
             <Image src="/brand/envista-symbol-white.svg" alt="" width={31} height={42} priority />
-            <strong>Envista</strong>
           </Link>
           <div className={styles.brandCopy}>
             <span className={styles.brandKicker}>IDEIAS QUE CONTINUAM</span>
@@ -25,7 +24,6 @@ export function AuthShell({ title, description, children, wide = false }: { titl
         <section className={styles.formPanel}>
           <Link className={`${styles.mobileBrand} envista-auth-mobile-brand envista-brand-lockup`} href="/" aria-label="Ir para a página inicial do Envista">
             <Image src="/brand/envista-symbol-gradient.svg" alt="" width={25} height={34} />
-            <strong>Envista</strong>
           </Link>
           <div className={styles.card}>
             <div className={styles.cardAccent} />

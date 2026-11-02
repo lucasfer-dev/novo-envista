@@ -1,0 +1,8 @@
+.tabs{min-width:0}
+.list{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;border-bottom:1px solid var(--ev-border,rgba(255,255,255,.1));scrollbar-width:thin}
+.tab,.active{flex:0 0 auto;min-height:40px;padding:0 14px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--ev-muted,#9aa9b1);font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}
+.tab:hover{background:rgba(255,255,255,.05);color:#fff}
+.active{border-color:rgba(0,169,157,.24);background:rgba(0,169,157,.1);color:#78e0cc}
+.panel{padding-top:18px}
+.panel:focus-visible{outline:2px solid #57dec5;outline-offset:3px;border-radius:8px}
+@media(max-width:600px){.list{margin-inline:-2px;padding-inline:2px}.tab,.active{min-height:42px;padding-inline:12px;font-size:12px}}

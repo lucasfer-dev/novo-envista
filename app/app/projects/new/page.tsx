@@ -1,6 +1,6 @@
 import Link from "next/link";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
-import ProjectCreationWizard from "@/components/projects/ProjectCreationWizard";
+import ProjectRegistrationWizard from "@/components/projects/ProjectRegistrationWizard";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 
 function one<T>(value: T | T[] | null | undefined): T | null {
@@ -22,11 +22,11 @@ export default async function NewProjectPage({ searchParams }: { searchParams: P
   return (
     <LegacySocialShell user={appUser} role="participant" pathname="/app/projects/new">
       <div className="page-head">
-        <div><h1>Novo projeto</h1><p>Publique sua ideia com poucos dados e complete o projeto ao longo do tempo.</p></div>
-        <Link className="secondary" href="/app/projects">Meus projetos</Link>
+        <div><h1>Novo projeto</h1><p>Compartilhe sua ideia em quatro etapas. Preencha só o essencial e complemente depois.</p></div>
+        <Link className="secondary" href="/app/projects">Cancelar</Link>
       </div>
       {error ? <div className="form-error" role="alert">{error === "url" ? "Use apenas links HTTPS válidos." : error === "owner" ? "Você não pode publicar por essa equipe." : error === "title" ? "Informe um nome válido." : "Não foi possível criar o projeto. Revise os campos e tente novamente."}</div> : null}
-      <ProjectCreationWizard name={appUser.name} teams={teams} />
+      <ProjectRegistrationWizard name={appUser.name} teams={teams} />
     </LegacySocialShell>
   );
 }

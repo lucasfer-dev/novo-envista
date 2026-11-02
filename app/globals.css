@@ -959,6 +959,20 @@ h3 {
   flex: 1;
   min-width: 0;
 }
+.project-cover-wrap {
+  width: 100%;
+  margin: 0 0 16px;
+  overflow: hidden;
+  border: 1px solid var(--ev-border, rgba(255,255,255,.1));
+  border-radius: 16px;
+  background: var(--surface, #14222e);
+}
+.project-cover-banner {
+  display: block;
+  width: 100%;
+  height: clamp(180px, 28vw, 320px);
+  object-fit: cover;
+}
 .team-hero-main {
   display: flex;
   gap: 14px;

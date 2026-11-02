@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { readProjectDetails } from "@/lib/projects/project-details";
+import { projectProfileFields } from "@/lib/projects/profile-fields";
 
 const stages = new Set(["Ideia", "Validação", "Protótipo", "MVP", "Projeto ativo"]);
 const BASE = "/app/projects";
@@ -60,6 +61,7 @@ export async function createProductProjectAction(formData: FormData) {
     problem: text(formData, "problem", 4000),
     solution: text(formData, "solution", 4000),
     impact: text(formData, "impact", 4000),
+    ...projectProfileFields(formData),
     needs: list(text(formData, "needs", 1200), 10),
     stage: stage(formData),
     category: text(formData, "category", 100),
@@ -69,7 +71,7 @@ export async function createProductProjectAction(formData: FormData) {
     repository_url: safeUrl(repository),
     readme: text(formData, "readme", 20000),
     details: readProjectDetails(formData),
-    visibility: formData.get("publication_intent") === "draft" || formData.get("visibility") === "private" ? "private" : "platform",
+    visibility: formData.get("submission_intent") === "draft" || formData.get("publication_intent") === "draft" || formData.get("visibility") === "private" ? "private" : "platform",
     ...owner,
     created_by: userId,
   }).select("id").single();
@@ -97,6 +99,7 @@ export async function updateProductProjectAction(formData: FormData) {
     problem: text(formData, "problem", 4000),
     solution: text(formData, "solution", 4000),
     impact: text(formData, "impact", 4000),
+    ...projectProfileFields(formData),
     needs: list(text(formData, "needs", 1200), 10),
     stage: stage(formData),
     category: text(formData, "category", 100),

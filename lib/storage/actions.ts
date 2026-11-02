@@ -11,5 +11,9 @@ export async function deleteProjectAttachmentAction(formData:FormData){
  if(!attachment)redirect(`${base}/${slug}?error=file`);
  const {error:storageError}=await supabase.storage.from("project-assets").remove([attachment.path]); if(storageError)redirect(`${base}/${slug}?error=file`);
  const {error:metadataError}=await supabase.from("project_attachments").delete().eq("id",id); if(metadataError)redirect(`${base}/${slug}?error=file`);
+ const {data:project}=await supabase.from("projects").select("id,cover_path").eq("slug",slug).maybeSingle();
+ if(project && project.cover_path===attachment.path){
+   await supabase.from("projects").update({cover_path:null}).eq("id",project.id);
+ }
  revalidatePath(`${base}/${slug}`);redirect(`${base}/${slug}?status=file-deleted`);
 }

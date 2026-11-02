@@ -18,8 +18,7 @@ export default async function AdminMfaPage() {
         <aside className={styles.aside}>
           <div>
             <div className={styles.brand}>
-              <img src="/envista-logo.png" alt="" />
-              <strong>Envista</strong>
+              <img src="/brand/envista-symbol-gradient.svg" alt="" />
             </div>
 
             <div style={{ marginTop: 54 }}>

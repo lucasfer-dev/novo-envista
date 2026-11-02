@@ -26,7 +26,7 @@ export default async function AdminLoginPage({
   return (
     <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#f7f9fb", padding: 24 }}>
       <section style={{ maxWidth: 520, background: "white", border: "1px solid #e4e7ec", borderRadius: 18, padding: 28 }}>
-        <img src="/envista-logo.png" alt="" style={{ width: 44 }} />
+        <img src="/brand/envista-symbol-gradient.svg" alt="" style={{ width: 44 }} />
         <h1>Acesso administrativo</h1>
         <p>Esta conta está autenticada, mas não possui uma associação administrativa válida no banco.</p>
         <p style={{ color: "#667085" }}>

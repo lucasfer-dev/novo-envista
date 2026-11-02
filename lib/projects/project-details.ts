@@ -35,11 +35,11 @@ export function readProjectDetails(formData: FormData): ProjectDetails {
   const rawType = getText(formData, "project_type", 40);
   return {
     project_type: projectTypes.has(rawType) ? rawType : "",
-    main_goal: getText(formData, "main_goal", 2000),
+    main_goal: getText(formData, "main_goal", 2000) || getText(formData, "objective", 2000),
     target_audience: getText(formData, "target_audience", 1200),
-    competitive_edge: getText(formData, "competitive_edge", 2000),
+    competitive_edge: getText(formData, "competitive_edge", 2000) || getText(formData, "differentiator", 4000),
     technologies: uniqueList(getText(formData, "technologies", 1200)),
-    validation: getText(formData, "validation", 4000),
+    validation: getText(formData, "validation", 4000) || getText(formData, "impact", 4000),
     challenges: getText(formData, "challenges", 2000),
     next_goals: getText(formData, "next_goals", 2000),
     seeking_investment: formData.get("seeking_investment") === "on",

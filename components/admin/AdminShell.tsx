@@ -75,9 +75,9 @@ export default function AdminShell({ profile, title, children }: Props) {
       <a className="a11y-skip-link" href="#main-content">Pular para o conteúdo</a>
 
       <aside className={styles.side} aria-label="Navegação administrativa">
-        <Link className={styles.brand} href="/admin">
+        <Link className={styles.brand} href="/admin" aria-label="Console administrativa do Envista">
           <span className={styles.brandMark}><img src="/brand/envista-symbol-gradient.svg" alt="" /></span>
-          <span><b>Envista</b><small>Admin Console</small></span>
+          <span><small>Console administrativa</small></span>
         </Link>
 
         <div className={styles.securityCard}>

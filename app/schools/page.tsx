@@ -37,7 +37,6 @@ function Header() {
       <div className={styles.headerInner}>
         <Link className={styles.brand} href="/" aria-label="Envista — página inicial">
           <Image src="/brand/envista-symbol-gradient.svg" alt="" width={30} height={30} priority />
-          <span className={styles.brandWord}>Envista</span>
         </Link>
         <nav className={styles.desktopNav} aria-label="Navegação principal">
           <Link href="/projects">Projetos</Link>
@@ -133,7 +132,7 @@ export default function SchoolsPage() {
 
       <footer className={styles.footer}>
         <div>
-          <Link className={styles.brand} href="/"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={26} height={26} /><span className={styles.brandWord}>Envista</span></Link>
+          <Link className={styles.brand} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={26} height={26} /></Link>
           <p>Projetos que continuam depois da entrega.</p>
         </div>
         <nav aria-label="Links institucionais"><Link href="/projects">Projetos</Link><Link href="/privacy">Privacidade</Link><Link href="/terms">Termos</Link><Link href="/login">Entrar</Link></nav>

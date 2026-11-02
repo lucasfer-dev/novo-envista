@@ -202,7 +202,6 @@ export default function LegacySocialShell({
           aria-label="Ir para o início do Envista"
         >
           <img src="/brand/envista-symbol-gradient.svg" alt="" />
-          <b>Envista</b>
         </Link>
 
         <nav aria-label="Seções do produto">
