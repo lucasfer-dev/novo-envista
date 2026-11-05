@@ -215,7 +215,7 @@ export async function updatePasswordAction(formData: FormData) {
  * those paths intentionally leave onboarding incomplete until approval.
  */
 export async function onboardingAction(formData: FormData) {
-  const { supabase } = await getVerifiedUser();
+  const { supabase, userId } = await getVerifiedUser();
   const username = normalizeUsername(formData.get("username"));
   const displayName = value(formData, "display_name").slice(0, 100);
   const ageBand = parseAgeBand(formData.get("age_band"));
@@ -257,7 +257,7 @@ export async function onboardingAction(formData: FormData) {
     redirect("/onboarding?error=" + (known.has(String(status)) ? status : "invalid"));
   }
 
-  const { data: profile } = await supabase.from("profiles").select("role").single();
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
   redirect(homeForRole(parseProductRole(profile?.role)));
 }
 
