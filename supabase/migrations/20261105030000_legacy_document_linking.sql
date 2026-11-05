@@ -36,7 +36,9 @@ declare
   limit_status jsonb;
   inserted_id uuid;
 begin
-  if target_user_id is null or document_kind not in ('cpf', 'cnpj') then
+  if target_user_id is null
+     or document_value is null
+     or coalesce(document_kind, '') not in ('cpf', 'cnpj') then
     return 'unavailable';
   end if;
 

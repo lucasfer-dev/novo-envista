@@ -22,6 +22,7 @@ describe("private login identifiers for legacy accounts", () => {
     expect(action).toContain("passwordCheck.user?.id !== user.id");
     expect(action).toContain('formData.get("document_declaration") === "on"');
     expect(action).toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(action).toContain("captchaToken");
   });
 
   it("only shows the link form when the verified user has no mapping", () => {

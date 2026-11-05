@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { KeyRound, Mail, MonitorSmartphone, ShieldCheck } from "lucide-react";
 import AccountProductShell from "@/components/account/AccountProductShell";
 import { authStyles as styles } from "@/components/auth/AuthShell";
+import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
+import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import suite from "@/components/product/ProfessionalSuite.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { signOutEverywhereAction } from "@/lib/account/professional-actions";
@@ -86,6 +88,7 @@ function errorMessage(error: string) {
     case "password-update": return "Não foi possível alterar a senha. Confira a senha atual e os requisitos de segurança.";
     case "signout-others": return "Não foi possível encerrar as outras sessões.";
     case "document-invalid": return "Informe um CPF ou CNPJ válido.";
+    case "document-captcha": return "Conclua a verificação de segurança e tente novamente.";
     case "document-declaration": return "Confirme que o documento informado pertence a você.";
     case "document-password": return "Não foi possível confirmar sua senha atual.";
     case "document-unverified": return "Confirme seu e-mail para vincular um documento.";
@@ -168,8 +171,9 @@ export default async function AccountSecurityPage({
                 <input name="document_declaration" type="checkbox" required />
                 <span>Declaro que este documento é meu e autorizo seu uso como identificador privado de acesso.</span>
               </label>
+              <div className={styles.captcha}><AuthCaptcha action="document-link" /></div>
               <div className={styles.actions}>
-                <button className={styles.secondary} type="submit">Vincular documento</button>
+                <AuthSubmitButton className={styles.secondary} pendingText="Vinculando...">Vincular documento</AuthSubmitButton>
               </div>
             </form>
           </>

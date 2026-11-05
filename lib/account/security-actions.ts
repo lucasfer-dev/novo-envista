@@ -83,8 +83,12 @@ export async function linkLoginDocumentAction(formData: FormData) {
   const passwordField = formData.get("current_password");
   const currentPassword = typeof passwordField === "string" ? passwordField : "";
   const isOwner = formData.get("document_declaration") === "on";
+  const captchaToken = text(formData, "cf-turnstile-response", 4096);
 
   if (!kind) redirect("/account/security?error=document-invalid");
+  if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+    redirect("/account/security?error=document-captcha");
+  }
   if (!isOwner) redirect("/account/security?error=document-declaration");
   if (!currentPassword || currentPassword.length > 128) {
     redirect("/account/security?error=document-password");
@@ -105,9 +109,19 @@ export async function linkLoginDocumentAction(formData: FormData) {
   const { data: passwordCheck, error: passwordError } = await verifier.auth.signInWithPassword({
     email: user.email,
     password: currentPassword,
+    options: captchaToken ? { captchaToken } : undefined,
   });
   if (passwordError || passwordCheck.user?.id !== user.id) {
     if (passwordCheck.session) await verifier.auth.signOut({ scope: "local" });
+    if (passwordError?.code?.toLowerCase().includes("captcha")) {
+      redirect("/account/security?error=document-captcha");
+    }
+    if (passwordError?.status === 429) {
+      redirect("/account/security?error=document-rate");
+    }
+    if (passwordError?.status && passwordError.status >= 500) {
+      redirect("/account/security?error=document-temporary");
+    }
     redirect("/account/security?error=document-password");
   }
 
