@@ -66,12 +66,12 @@ begin
   update public.profiles set
     username=v_username,
     display_name=v_name,
-    bio=pg_catalog.nullif(payload ->> 'bio',''),
-    public_city=pg_catalog.nullif(payload ->> 'public_city',''),
-    public_state=pg_catalog.nullif(payload ->> 'public_state',''),
-    public_school=pg_catalog.nullif(payload ->> 'public_school',''),
-    organization=pg_catalog.nullif(payload ->> 'organization',''),
-    organization_type=pg_catalog.nullif(payload ->> 'organization_type',''),
+    bio=nullif(payload ->> 'bio',''),
+    public_city=nullif(payload ->> 'public_city',''),
+    public_state=nullif(payload ->> 'public_state',''),
+    public_school=nullif(payload ->> 'public_school',''),
+    organization=nullif(payload ->> 'organization',''),
+    organization_type=nullif(payload ->> 'organization_type',''),
     interest_tags=v_tags,
     profile_visibility='private',
     allow_messages=false
