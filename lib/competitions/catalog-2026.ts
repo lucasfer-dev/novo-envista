@@ -1,11 +1,12 @@
 import type { LiveCompetition } from "@/lib/competitions/types";
+import { normalizeCompetitionStatus } from "@/lib/competitions/status-validation";
 
 function slugFromId(id: string) {
   return Buffer.from(id, "utf8").toString("base64url");
 }
 
 function item(value: Omit<LiveCompetition, "slug">): LiveCompetition {
-  return { ...value, slug: slugFromId(value.id) };
+  return normalizeCompetitionStatus({ ...value, slug: slugFromId(value.id) });
 }
 
 export const VERIFIED_COMPETITION_CATALOG_2026: LiveCompetition[] = [
