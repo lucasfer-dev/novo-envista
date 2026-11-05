@@ -34,14 +34,19 @@ function policyForRequest(request: NextRequest): Policy {
   if (request.method === "GET" && pathname === "/api/competitions") {
     return { scope: "competitions-read", limit: 60, windowMs: 60_000 };
   }
-  if (pathname === "/login" || pathname === "/admin/login") {
-    return { scope: "login", limit: 10, windowMs: 60_000 };
+  // These are burst shields, not the authoritative password/identifier limits.
+  // Shared school and lab networks often have dozens of people behind one IP.
+  if (pathname === "/admin/login") {
+    return { scope: "admin-login", limit: 10, windowMs: 60_000 };
+  }
+  if (pathname === "/login") {
+    return { scope: "login", limit: 120, windowMs: 60_000 };
   }
   if (pathname === "/register") {
-    return { scope: "register", limit: 5, windowMs: 10 * 60_000 };
+    return { scope: "register", limit: 100, windowMs: 10 * 60_000 };
   }
   if (pathname === "/forgot-password") {
-    return { scope: "password-reset", limit: 5, windowMs: 15 * 60_000 };
+    return { scope: "password-reset", limit: 20, windowMs: 15 * 60_000 };
   }
   return { scope: "unsafe", limit: 120, windowMs: 60_000 };
 }
@@ -74,7 +79,21 @@ function sameOrigin(request: NextRequest) {
   }
 }
 
-function denied(status: 403 | 429, retryAfter?: number) {
+function denied(status: 403 | 429, request: NextRequest, retryAfter?: number) {
+  // Auth forms use Next.js Server Actions. A JSON response here is interpreted
+  // as a broken submission; send users back to the form with a useful message.
+  const authPaths = new Set(["/login", "/register", "/forgot-password"]);
+  if (status === 429 && request.method.toUpperCase() === "POST" &&
+      authPaths.has(request.nextUrl.pathname)) {
+    const destination = request.nextUrl.clone();
+    destination.search = "";
+    destination.searchParams.set("error", "rate");
+    const response = NextResponse.redirect(destination, 303);
+    response.headers.set("Cache-Control", "no-store");
+    if (retryAfter) response.headers.set("Retry-After", String(retryAfter));
+    return response;
+  }
+
   const headers: Record<string, string> = {
     "Cache-Control": "no-store",
     "Content-Type": "application/json; charset=utf-8",
@@ -109,7 +128,7 @@ export function guardUnsafeRequest(request: NextRequest) {
   if (!isUnsafe && !isProtectedGet) return null;
   if (isUnsafe && !sameOrigin(request)) {
     logServerEvent("warn", "security.request.origin_denied", { method, path: request.nextUrl.pathname });
-    return denied(403);
+    return denied(403, request);
   }
 
   const policy = policyForRequest(request);
@@ -127,7 +146,7 @@ export function guardUnsafeRequest(request: NextRequest) {
   if (current.count >= policy.limit) {
     logServerEvent("warn", "security.request.rate_limited", { method, path: request.nextUrl.pathname, scope: policy.scope });
     const retryAfter = Math.max(1, Math.ceil((current.windowStart + policy.windowMs - now) / 1_000));
-    return denied(429, retryAfter);
+    return denied(429, request, retryAfter);
   }
 
   current.count += 1;

@@ -116,6 +116,8 @@ describe("auth email links", () => {
     expect(emailActions).toContain('/confirm-email?status=confirmed');
     expect(confirmPage).toContain('params.status === "confirmed"');
     expect(confirmPage).toContain("E-mail confirmado");
+    expect(confirmPage).toContain('href="/onboarding"');
+    expect(confirmPage).not.toContain('href="/guardian-choice"');
   });
 
   it("accepts old PKCE codes while token-hash templates remain primary", () => {

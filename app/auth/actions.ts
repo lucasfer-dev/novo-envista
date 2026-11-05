@@ -6,6 +6,8 @@ import { updateRecoveryPasswordAction } from "@/app/auth/email-actions";
 import { resolveSiteUrl } from "@/lib/auth/site-url";
 import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
 import { createClient } from "@/lib/supabase/server";
+import { classifyDocumentLoginFailure } from "@/lib/auth/document-login-error";
+import { logServerEvent } from "@/lib/observability/logger";
 import {
   homeForRole,
   INTERNAL_PRIVACY_VERSION,
@@ -117,7 +119,7 @@ export async function loginAction(formData: FormData) {
   if ((!isValidEmail(email) && !documentKind) || !password) redirect(authErrorPath("/login", "invalid"));
   const captchaToken = getCaptchaToken(formData, "/login");
 
-  const supabase = await createClient();
+  const supabase = await createClient({ requireCookieWrites: true });
   if (isValidEmail(email)) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -135,7 +137,13 @@ export async function loginAction(formData: FormData) {
         ...(captchaToken ? { captchaToken } : {}),
       },
     });
-    if (error || !data?.access_token || !data?.refresh_token) redirect(authErrorPath("/login", "invalid"));
+    if (error || !data?.access_token || !data?.refresh_token) {
+      const failure = await classifyDocumentLoginFailure(error, data);
+      logServerEvent(failure === "temporary" ? "error" : "warn", "auth.document_login_failed", {
+        failure_class: failure,
+      });
+      redirect(authErrorPath("/login", failure));
+    }
     const { error: sessionError } = await supabase.auth.setSession({
       access_token: String(data.access_token),
       refresh_token: String(data.refresh_token),
