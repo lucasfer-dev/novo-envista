@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { signOutEverywhereAction } from "@/lib/account/professional-actions";
 import {
   signOutOtherDevicesAction,
+  linkLoginDocumentAction,
   updateAccountEmailAction,
   updateAccountPasswordAction,
 } from "@/lib/account/security-actions";
@@ -65,6 +66,8 @@ function statusMessage(status: string) {
       return "Solicitação enviada. Confirme a alteração pelos e-mails enviados pelo Envista antes que o novo endereço passe a valer.";
     case "password-updated":
       return "Senha atualizada com sucesso.";
+    case "document-linked":
+      return "CPF/CNPJ vinculado com segurança. Agora você também pode entrar com esse documento.";
     case "other-sessions-ended":
       return "As outras sessões foram encerradas. Este dispositivo continua conectado.";
     default:
@@ -82,6 +85,13 @@ function errorMessage(error: string) {
     case "current-password": return "Informe sua senha atual.";
     case "password-update": return "Não foi possível alterar a senha. Confira a senha atual e os requisitos de segurança.";
     case "signout-others": return "Não foi possível encerrar as outras sessões.";
+    case "document-invalid": return "Informe um CPF ou CNPJ válido.";
+    case "document-declaration": return "Confirme que o documento informado pertence a você.";
+    case "document-password": return "Não foi possível confirmar sua senha atual.";
+    case "document-unverified": return "Confirme seu e-mail para vincular um documento.";
+    case "document-rate": return "Muitas tentativas de vinculação. Aguarde uma hora e tente novamente.";
+    case "document-unavailable": return "Não foi possível vincular esse documento. Confira os dados ou contate o suporte.";
+    case "document-temporary": return "A vinculação está indisponível no momento. Tente novamente mais tarde.";
     default: return "Não foi possível concluir a alteração.";
   }
 }
@@ -96,10 +106,11 @@ export default async function AccountSecurityPage({
   const userId = claimsData?.claims?.sub;
   if (claimsError || !userId) redirect("/login?error=session");
 
-  const [{ data: userData, error: userError }, { data: sessionsData, error: sessionsError }, { data: profile }] = await Promise.all([
+  const [{ data: userData, error: userError }, { data: sessionsData, error: sessionsError }, { data: profile }, { data: hasLoginDocument, error: documentStatusError }] = await Promise.all([
     supabase.auth.getUser(),
     supabase.rpc("list_my_auth_sessions"),
     supabase.from("profiles").select("username,display_name,role,avatar_path").eq("id", userId).maybeSingle(),
+    supabase.rpc("has_my_login_document"),
   ]);
 
   if (userError || !userData.user) redirect("/login?error=session");
@@ -130,6 +141,39 @@ export default async function AccountSecurityPage({
           <div className={styles.actions}><button className={styles.primary} type="submit">Alterar e-mail</button></div>
         </form>
         <p className={styles.muted}>Por segurança, a alteração pode exigir confirmação no endereço atual e no novo endereço.</p>
+      </div>
+
+      <div className={styles.divider} />
+
+      <div className={styles.formSection}>
+        <div className={styles.sectionHeading}><ShieldCheck size={18} /><strong>Login por CPF ou CNPJ</strong></div>
+        {documentStatusError ? (
+          <div className={styles.notice}>Não foi possível verificar o vínculo do documento agora. Seu login por e-mail continua disponível.</div>
+        ) : hasLoginDocument ? (
+          <p className={styles.muted}>Seu documento de acesso já está vinculado à conta. Por privacidade, o número não é exibido aqui.</p>
+        ) : (
+          <>
+            <p className={styles.muted}>
+              Se sua conta é antiga, vincule seu próprio CPF ou CNPJ para também conseguir entrar por documento.
+              O número será convertido em hash protegido e não aparecerá no perfil.
+            </p>
+            <form action={linkLoginDocumentAction} className={styles.form}>
+              <label>Seu CPF ou CNPJ
+                <input name="document" type="text" inputMode="numeric" autoComplete="off" maxLength={18} required placeholder="CPF ou CNPJ" />
+              </label>
+              <label>Confirme sua senha atual
+                <input name="current_password" type="password" autoComplete="current-password" maxLength={128} required />
+              </label>
+              <label className={styles.check}>
+                <input name="document_declaration" type="checkbox" required />
+                <span>Declaro que este documento é meu e autorizo seu uso como identificador privado de acesso.</span>
+              </label>
+              <div className={styles.actions}>
+                <button className={styles.secondary} type="submit">Vincular documento</button>
+              </div>
+            </form>
+          </>
+        )}
       </div>
 
       <div className={styles.divider} />
