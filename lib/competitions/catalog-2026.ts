@@ -1,5 +1,5 @@
 import type { LiveCompetition } from "@/lib/competitions/types";
-import { normalizeCompetitionStatus } from "@/lib/competitions/status-validation";
+import { normalizeCompetitionStatus } from "./status-validation";
 
 function slugFromId(id: string) {
   return Buffer.from(id, "utf8").toString("base64url");
