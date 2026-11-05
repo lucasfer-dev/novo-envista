@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  CheckCircle2,
   Compass,
   FolderKanban,
   GraduationCap,
@@ -86,7 +85,7 @@ function Header() {
       <div className={`${styles.headerInner || ""} ev-headerInner`}>
         <Link className={`${styles.brand || ""} ev-brand`} href="/" aria-label="Envista — página inicial">
           <Image src="/brand/envista-symbol-gradient.svg" alt="" width={31} height={42} priority />
-          <span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA<span className={`${styles.brandPeriod || ""} ev-brandPeriod`}>.</span></span>
+          <span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA</span>
         </Link>
 
         <nav className={`${styles.desktopNav || ""} ev-desktopNav`} aria-label="Navegação principal">
@@ -375,7 +374,7 @@ export default async function PublicLandingServer() {
 
       <footer className={`${styles.footer || ""} ev-footer`}>
         <div>
-          <Link className={`${styles.brand || ""} ev-brand`} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={27} height={36} /><span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA<span className={`${styles.brandPeriod || ""} ev-brandPeriod`}>.</span></span></Link>
+          <Link className={`${styles.brand || ""} ev-brand`} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={27} height={36} /><span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA</span></Link>
           <p>Projetos que continuam depois da entrega.</p>
         </div>
         <nav aria-label="Links institucionais">
