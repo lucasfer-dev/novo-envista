@@ -1,0 +1,38 @@
+
+.ev-page{--eg:linear-gradient(110deg,#22b573,#00a99d 52%,#0086a7);background:#091720;color:#f5fcfa;isolation:isolate}
+.ev-page .ev-header{background:rgba(8,22,31,.94);border-bottom:1px solid rgba(185,235,222,.13);backdrop-filter:blur(22px)}
+.ev-page .ev-header:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:var(--eg)}
+.ev-headerInner{height:80px;max-width:1380px;padding-inline:clamp(20px,4vw,65px)}
+.ev-brand{gap:12px;display:inline-flex;align-items:center}
+.ev-brand img{height:42px;width:31px;object-fit:contain;border-radius:0}
+.ev-brandName{font-size:21px;font-weight:820;letter-spacing:.09em;color:#f9fcfb;line-height:1}
+.ev-brandPeriod{color:#22b573}
+.ev-desktopNav{gap:16px}
+.ev-desktopNav>a{color:#b7cbd0;font-size:13px;font-weight:650}
+.ev-desktopNav .ev-headerCta{background:var(--eg);min-height:44px;padding-inline:21px;color:#06292e;border-radius:6px}
+.ev-hero{position:relative;max-width:1400px;min-height:740px;padding:80px clamp(24px,4.5vw,68px) 95px;grid-template-columns:minmax(0,1.08fr) minmax(420px,.92fr);gap:clamp(34px,4.4vw,68px);align-items:center;isolation:isolate}
+.ev-page .ev-hero:before{content:"";inset:0 calc(50% - 50vw) -65px;opacity:1;z-index:-2;background:radial-gradient(ellipse at 15% 42%,rgba(0,169,157,.13),transparent 43%),radial-gradient(ellipse at 84% 18%,rgba(0,134,167,.16),transparent 39%),linear-gradient(115deg,#0b1b25,#0a1a25 62%,#0d2631);mask-image:none}
+.ev-page .ev-hero:after{content:"";inset:0 calc(50% - 50vw) -65px;opacity:.17;z-index:-1;background:url("/brand/envista-pattern-original.png") center/470px repeat;mask-image:linear-gradient(90deg,transparent,#000 55%);pointer-events:none}
+.ev-heroCopy{max-width:710px;padding-bottom:12px}
+.ev-heroMeta{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:34px}
+.ev-hero .ev-kicker{display:inline-flex;gap:12px;align-items:center;margin:0;color:#7ce2c3;font-size:11px;letter-spacing:.2em;font-weight:850}
+.ev-hero .ev-kicker:before{content:"";height:7px;width:7px;border-radius:50%;background:#22b573;box-shadow:0 0 0 5px rgba(34,181,115,.12)}
+.ev-heroEdition{border-left:1px solid rgba(198,238,225,.25);padding-left:20px;color:#7798a4;font-size:10px;letter-spacing:.13em}
+.ev-page .ev-heroCopy h1{max-width:790px;margin:0;color:#f7fbfa;font-size:clamp(66px,6.8vw,99px);font-weight:830;letter-spacing:-.078em;line-height:1.02}
+.ev-heroAccent{display:inline-block;background:var(--eg);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding-right:.08em}
+.ev-page .ev-heroCopy>p{max-width:515px;margin:29px 0 0;color:#aec4cd;font-size:16px;line-height:1.82}
+.ev-heroActions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:34px}
+.ev-editorialCta,.ev-editorialOutline,.ev-lightCta{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:19px;padding:0 24px;border-radius:6px;font-size:13px;font-weight:830;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease}
+.ev-editorialCta{background:var(--eg);color:#072931;box-shadow:0 16px 40px rgba(0,169,157,.18)}
+.ev-editorialOutline{border:1px solid rgba(169,234,223,.3);background:rgba(8,36,47,.44);color:#eaf8f5}
+.ev-editorialCta:hover,.ev-editorialOutline:hover{transform:translateY(-3px)}
+.ev-editorialOutline:hover{background:rgba(24,80,80,.32)}
+.ev-heroSignals{display:flex;gap:13px 25px;flex-wrap:wrap;border-top:1px solid rgba(187,231,226,.14);margin-top:56px;padding-top:19px}
+.ev-heroSignals>span{display:inline-flex;align-items:center;gap:9px;color:#9bb8bd;font-size:11px;font-weight:680}
+.ev-signalDot{width:5px;height:5px;display:inline-block;border-radius:50%;background:#28c69d}
+.ev-manifestoStrip{min-height:78px;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px 20px;padding:16px 30px;background:var(--eg);color:#092e36}
+.ev-manifestoStrip span{font-size:clamp(12px,1.35vw,17px);font-weight:850;letter-spacing:.12em}
+.ev-manifestoStrip b{font-weight:500;opacity:.42}
+
+/* Keep off-grid decorative elements from widening the mobile viewport. */
+.ev-page{overflow-x:clip;max-width:100%}

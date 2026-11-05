@@ -1,0 +1,39 @@
+
+.ev-heroVisual{position:relative;min-height:610px;width:100%;display:flex;align-items:center;justify-content:center;isolation:isolate}
+.ev-heroVisual:before{content:"";position:absolute;z-index:-1;inset:0 -10%;background:radial-gradient(ellipse at 52% 46%,rgba(0,169,157,.25),transparent 58%),radial-gradient(ellipse at 79% 75%,rgba(0,134,167,.2),transparent 48%)}
+.ev-heroVisualPattern{position:absolute;inset:7% -9% 3%;z-index:-1;background:url("/brand/envista-pattern-original.png") center/410px repeat;opacity:.32;mask-image:radial-gradient(ellipse at center,#000,transparent 77%)}
+.ev-heroVisualSignature{position:absolute;right:-2%;top:0;opacity:.12;transform:rotate(12deg)}
+.ev-heroVisualSignature img{width:185px;height:auto}
+.ev-heroVisualCaption{position:absolute;top:20px;left:8%;display:flex;gap:14px;color:#83a7ac;font-size:9px;letter-spacing:.12em;font-weight:800}
+.ev-heroVisualCaption span+span:before{content:"/";margin-right:14px;color:#4cc8ac}
+.ev-showcaseWindow{position:relative;width:min(465px,92%);margin-left:16px;overflow:hidden;background:#f4f8f6;border:1px solid #f5fffa;border-radius:13px;color:#102d34;box-shadow:0 40px 105px rgba(0,7,14,.50),17px 19px 0 -8px rgba(0,169,157,.13),30px 31px 0 -15px rgba(0,134,167,.10);transform:rotate(3deg);transition:transform .35s ease,box-shadow .35s ease}
+.ev-showcaseWindow:hover{transform:rotate(0deg) translateY(-7px);box-shadow:0 48px 115px rgba(0,7,14,.55)}
+.ev-showcaseChrome{height:47px;padding:0 19px;display:flex;justify-content:space-between;align-items:center;color:#6d858e;background:#f6fbf9;letter-spacing:.13em;font-size:10px;font-weight:820}
+.ev-showcaseChromeDots{display:flex;gap:5px}
+.ev-showcaseChromeDots i{height:6px;width:6px;border-radius:50%;background:#bfd2cd}
+.ev-showcaseChromeDots i:first-child{background:#22b573}
+.ev-showcaseChromeArrow{font-size:18px;color:#0086a7}
+.ev-showcaseCover{position:relative;min-height:211px;padding:22px 25px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;background:linear-gradient(115deg,rgba(4,58,59,.26),rgba(0,79,78,.06)),url("/brand/envista-texture-original.png") center/cover,linear-gradient(120deg,#22b573,#00a99d,#0086a7);overflow:hidden}
+.ev-showcaseCover:after{position:absolute;content:"";inset:-15%;background:radial-gradient(ellipse at center,transparent 24%,rgba(4,38,49,.22));pointer-events:none}
+.ev-showcaseCover>span{position:relative;z-index:2;color:#f7fff9;font-size:9px;font-weight:840;letter-spacing:.17em}
+.ev-showcaseCover>span:last-child{display:flex;align-items:center;justify-content:space-between}
+.ev-showcaseCover>span strong{font-size:20px;font-weight:500}
+.ev-showcaseCoverSymbol{position:absolute;right:30px;top:22px;transform:rotate(-16deg);opacity:.9}
+.ev-showcaseCoverSymbol img{height:118px;width:89px;object-fit:contain}
+.ev-showcaseBody{padding:27px 28px 24px;min-height:236px}
+.ev-showcaseState{display:flex;align-items:center;gap:8px;color:#00847f;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.ev-showcaseStateDot{height:7px;width:7px;background:#22b573;border-radius:50%}
+.ev-page .ev-showcaseBody h2{font-size:clamp(25px,2.4vw,34px);line-height:1.13;letter-spacing:-.048em;font-weight:795;color:#11313b;margin:16px 0 11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-page .ev-showcaseBody p{font-size:12px;line-height:1.67;color:#58717b;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-showcaseChips{display:flex;gap:7px;flex-wrap:wrap;margin-top:22px}
+.ev-showcaseChips span{font-size:10px;color:#446b70;padding:5px 10px;border-radius:4px;border:1px solid #cedfdc;font-weight:700}
+.ev-showcaseBottom{min-height:57px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 28px;border-top:1px solid #e1ebe8;color:#718a90;font-size:9px;font-weight:800;letter-spacing:.1em}
+.ev-showcaseBottom a{height:32px;width:32px;display:grid;place-items:center;border-radius:50%;color:#eafffa;background:#102e38}
+.ev-showcaseBottom a:hover{color:#073138;background:#00a99d}
+.ev-heroVisualStamp{position:absolute;right:-6px;bottom:28px;display:grid;place-items:center;height:104px;width:104px;border:1px solid rgba(185,241,223,.48);border-radius:50%;background:#0e3745;color:#bcf4e1;box-shadow:0 17px 38px rgba(0,0,0,.32);font-size:12px;font-weight:850;line-height:1.6;text-align:center;letter-spacing:.08em;transform:rotate(11deg)}
+@media(max-width:950px){.ev-hero{grid-template-columns:1fr;gap:15px;min-height:0}.ev-page .ev-heroCopy h1{font-size:clamp(62px,9vw,90px)}.ev-heroVisual{min-height:595px}.ev-showcaseWindow{width:min(465px,80%)}.ev-heroVisualCaption{left:12%}}
+@media(max-width:740px){.ev-hero{padding:60px 20px 56px}.ev-hero:before,.ev-hero:after{inset:0 calc(50% - 50vw) 0}.ev-page .ev-heroCopy h1{font-size:clamp(46px,12vw,73px)}.ev-heroVisual{min-height:540px}.ev-showcaseWindow{width:min(445px,88%)}.ev-heroVisualStamp{height:82px;width:82px;font-size:10px;bottom:17px}.ev-heroVisualCaption{left:5%}.ev-heroEdition{display:none}.ev-heroSignals{margin-top:37px}}
+@media(max-width:440px){.ev-hero{padding-inline:17px}.ev-page .ev-heroCopy h1{font-size:clamp(43px,11.4vw,58px)}.ev-heroActions{display:grid;grid-template-columns:1fr}.ev-editorialCta,.ev-editorialOutline{justify-content:space-between;width:100%}.ev-heroVisual{min-height:487px}.ev-showcaseWindow{width:93%;margin-left:0;transform:rotate(2deg)}.ev-showcaseCover{min-height:163px;padding:17px 19px}.ev-showcaseBody{min-height:218px;padding:20px}.ev-page .ev-showcaseBody h2{font-size:24px}.ev-showcaseBottom{padding-inline:20px}.ev-heroVisualStamp{display:none}.ev-heroVisualCaption{left:2%;font-size:7px;gap:6px}.ev-heroVisualCaption span+span:before{margin-right:6px}}
+@media(prefers-reduced-motion:reduce){.ev-showcaseWindow,.ev-editorialCta,.ev-editorialOutline{transition:none!important;transform:none!important}}
+
+@media(max-width:950px){.ev-heroVisualPattern{inset:7% 0 3%}.ev-heroVisualSignature{right:2%}}

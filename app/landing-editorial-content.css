@@ -1,0 +1,46 @@
+
+.ev-featuredProjects,.ev-audienceSection{max-width:1370px;padding:114px clamp(24px,4.5vw,68px) 118px}
+.ev-sectionHeading{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;margin-bottom:41px}
+.ev-sectionHeading h2{max-width:730px;color:#f6fcf9;font-size:clamp(41px,4.5vw,65px);line-height:1.06;letter-spacing:-.063em;font-weight:780}
+.ev-sectionHeading h2 em{color:#5ddac0;font-style:normal}
+.ev-sectionAside{max-width:320px}
+.ev-sectionAside p{color:#91acb6;font-size:14px;line-height:1.72}
+.ev-page .ev-kicker{color:#71dbbe;letter-spacing:.2em;font-weight:830;font-size:10px}
+.ev-page .ev-textLink{color:#90e8d3;font-weight:800;font-size:12px}
+.ev-projectsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.ev-projectCard{position:relative;display:flex;flex-direction:column;min-height:395px;padding:0;border:1px solid rgba(178,232,219,.16);border-radius:8px;overflow:hidden;background:#102a35;box-shadow:none;transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+.ev-projectCard:hover{transform:translateY(-6px);border-color:rgba(38,199,172,.55);box-shadow:0 23px 45px rgba(0,5,11,.25)}
+.ev-projectCard:first-child{grid-column:span 2}
+.ev-projectArtwork{position:relative;flex:none;height:178px;display:flex;justify-content:center;align-items:center;overflow:hidden;background:radial-gradient(ellipse at 80% 10%,rgba(137,247,188,.22),transparent 60%),linear-gradient(120deg,#0b837c,#05778c 65%,#123c60)}
+.ev-projectCard:first-child .ev-projectArtwork{height:250px;background:linear-gradient(105deg,rgba(3,60,60,.3),rgba(8,70,84,.04)),url("/brand/envista-texture-original.png") center/cover,linear-gradient(110deg,#22b573,#00a99d,#0086a7)}
+.ev-projectCard:nth-child(3n) .ev-projectArtwork{background:linear-gradient(145deg,#238767,#0e677e 65%,#0c3a4e)}
+.ev-projectArtwork:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(112deg,transparent 0,transparent 74px,rgba(255,255,255,.024) 74px,rgba(255,255,255,.024) 75px)}
+.ev-projectArtwork img{width:67px;height:90px;object-fit:contain;opacity:.62;transform:rotate(-9deg)}
+.ev-projectCard:first-child .ev-projectArtwork img{width:105px;height:138px}
+.ev-projectArtworkIndex,.ev-projectArtworkLabel{position:absolute;z-index:2;font-size:10px;letter-spacing:.15em;font-weight:820;color:rgba(242,255,251,.78)}
+.ev-projectArtworkIndex{top:20px;left:22px}
+.ev-projectArtworkLabel{bottom:17px;right:22px}
+.ev-projectTopline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 25px 0;padding:0;color:#79e6c8;text-transform:uppercase;letter-spacing:.11em;font-size:10px;font-weight:800}
+.ev-projectCardCopy{padding:14px 25px 26px;flex:1;display:flex;flex-direction:column}
+.ev-page .ev-projectCardCopy h3{color:#f7fdfb;font-size:clamp(21px,2.1vw,29px);font-weight:780;letter-spacing:-.045em;line-height:1.13;margin:0 0 12px}
+.ev-page .ev-projectCardCopy p{color:#9cb7bf;font-size:12px;line-height:1.7;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-projectMeta{margin-top:auto;padding-top:24px}
+.ev-projectMeta span{border-radius:3px;border:1px solid rgba(155,214,206,.16);padding:4px 8px;background:rgba(255,255,255,.026);color:#a0c6c4;font-size:10px}
+.ev-emptyProjects{padding:34px;background:linear-gradient(100deg,#102c37,#0c2635);border:1px solid rgba(138,229,209,.2);border-radius:7px}
+.ev-processSection{position:relative;max-width:none;margin:0;padding:105px max(28px,calc((100vw - 1235px)/2)) 110px;background:#e7f3ef;color:#112f37;overflow:hidden}
+.ev-processSection:before{content:"04 / O PROCESSO";position:absolute;top:31px;right:4%;font-size:clamp(55px,8vw,125px);font-weight:850;letter-spacing:-.085em;white-space:nowrap;color:rgba(0,134,167,.045);pointer-events:none}
+.ev-processSection .ev-kicker{color:#00887b}
+.ev-processSection .ev-sectionHeading h2{color:#102a35}
+.ev-processSection .ev-sectionHeading h2 em{color:#008d88}
+.ev-processSection .ev-sectionAside p{color:#4f6b73}
+.ev-stepsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 66px;margin-top:58px}
+.ev-stepCard{position:relative;min-height:255px;padding:28px 0 30px;border:0;border-top:1px solid rgba(17,83,88,.2);border-radius:0;background:transparent;box-shadow:none}
+.ev-stepCard:nth-child(-n+2){border-top:2px solid #08797a}
+.ev-stepCardTop{display:flex;align-items:flex-start;justify-content:space-between}
+.ev-stepCardTop span{color:#b5d8d0;font-size:72px;font-weight:790;letter-spacing:-.08em;line-height:1}
+.ev-stepCardTop svg{height:44px;width:44px;padding:11px;border-radius:50%;border:1px solid #aed2ce;color:#067f79}
+.ev-page .ev-stepCard h3{margin:23px 0 10px;font-size:26px;line-height:1.15;letter-spacing:-.046em;color:#12323c}
+.ev-page .ev-stepCard p{max-width:400px;font-size:13px;line-height:1.7;color:#486a72}
+@media(max-width:950px){.ev-projectsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ev-projectCard:first-child{grid-column:span 2}.ev-sectionHeading{align-items:flex-start;flex-direction:column;gap:16px}.ev-sectionAside{max-width:620px}}
+@media(max-width:740px){.ev-featuredProjects,.ev-audienceSection{padding:79px 20px 86px}.ev-sectionHeading{margin-bottom:29px}.ev-sectionHeading h2{font-size:clamp(37px,9vw,52px)}.ev-projectsGrid{grid-template-columns:1fr}.ev-projectCard:first-child{grid-column:auto}.ev-projectCard{min-height:0}.ev-projectArtwork,.ev-projectCard:first-child .ev-projectArtwork{height:200px}.ev-processSection{padding:78px 20px}.ev-stepsGrid{grid-template-columns:1fr;gap:0;margin-top:34px}.ev-stepCard,.ev-stepCard:nth-child(-n+2){min-height:0;border-top:1px solid rgba(17,83,88,.2);padding:27px 0}.ev-stepCard:first-child{border-top:2px solid #08797a}.ev-stepCardTop span{font-size:55px}.ev-stepCard h3{margin-top:17px}}
+@media(max-width:440px){.ev-featuredProjects,.ev-audienceSection,.ev-processSection{padding-inline:17px}.ev-sectionHeading h2{font-size:39px}}

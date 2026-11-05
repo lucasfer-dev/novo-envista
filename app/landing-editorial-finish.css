@@ -1,0 +1,47 @@
+
+.ev-ecosystemSection{position:relative;max-width:none;margin:0;padding:118px max(28px,calc((100vw - 1235px)/2));display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:clamp(40px,6vw,95px);border:0;border-radius:0;background:linear-gradient(106deg,rgba(4,58,61,.96),rgba(7,81,78,.93) 53%,rgba(5,95,106,.89)),url("/brand/envista-texture-original.png") center/cover;color:#f8fffb;overflow:hidden}
+.ev-ecosystemSection:before{content:"";position:absolute;bottom:-45px;left:-40px;height:530px;width:360px;transform:rotate(-13deg);background:url("/brand/envista-symbol-white.svg") center/contain no-repeat;opacity:.055;pointer-events:none}
+.ev-ecosystemIntro{position:relative;z-index:1;max-width:620px}
+.ev-ecosystemIntro .ev-kicker{color:#bff4dc}
+.ev-page .ev-ecosystemIntro h2{color:#f8fffc;font-size:clamp(43px,4.7vw,65px);font-weight:790;letter-spacing:-.064em;line-height:1.07}
+.ev-page .ev-ecosystemIntro h2 em{font-style:normal;color:#92efce}
+.ev-page .ev-ecosystemIntro p{max-width:460px;margin:24px 0 31px;color:#bfe7de;font-size:15px;line-height:1.79}
+.ev-lightCta{min-height:53px;background:#f1fdf8;color:#06434d;border:1px solid #f1fdf8;box-shadow:none}
+.ev-lightCta:hover{transform:translateY(-3px);background:#c9f4e1}
+.ev-pillarsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;align-content:center;border:1px solid rgba(241,255,249,.22);background:rgba(241,255,249,.22)}
+.ev-pillarsGrid article{min-height:216px;padding:29px 24px;border:0;border-radius:0;background:rgba(5,47,54,.76)}
+.ev-pillarsGrid article svg{height:27px;width:27px;color:#b9f6d6;margin-bottom:23px}
+.ev-page .ev-pillarsGrid h3{font-size:18px;letter-spacing:-.035em;color:#f7fffb;margin:0 0 10px;line-height:1.2}
+.ev-page .ev-pillarsGrid p{color:#a6d5ce;font-size:12px;line-height:1.68;margin:0}
+.ev-audienceSection{padding-top:116px;padding-bottom:112px}
+.ev-audienceGrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.ev-audienceCard{position:relative;min-height:395px;padding:40px;overflow:hidden;border:1px solid rgba(165,220,210,.16);border-radius:7px;background:linear-gradient(130deg,rgba(14,48,61,.92),rgba(8,34,48,.95)),url("/brand/envista-pattern-original.png") center/490px repeat}
+.ev-audienceCard:nth-child(2){background:linear-gradient(130deg,rgba(0,102,106,.35),rgba(7,42,56,.96)),url("/brand/envista-texture-original.png") center/cover}
+.ev-audienceCard:after{content:"01";position:absolute;top:4px;right:27px;font-size:140px;font-weight:820;letter-spacing:-.12em;line-height:1;color:rgba(169,255,225,.065);pointer-events:none}
+.ev-audienceCard:nth-child(2):after{content:"02"}
+.ev-audienceIcon{height:47px;width:47px;display:grid;place-items:center;margin-bottom:54px;border-radius:50%;background:rgba(0,169,157,.12);border:1px solid rgba(151,243,213,.27);color:#83edcc}
+.ev-audienceCard>span{display:block;color:#73dfcb;font-size:10px;font-weight:820;letter-spacing:.15em}
+.ev-page .ev-audienceCard h3{max-width:410px;margin:16px 0;color:#f7fffc;font-size:clamp(25px,2.55vw,36px);line-height:1.13;letter-spacing:-.047em}
+.ev-page .ev-audienceCard p{max-width:425px;color:#a3c1c6;font-size:13px;line-height:1.71}
+.ev-audienceCard a{display:inline-flex;align-items:center;gap:10px;margin-top:16px;color:#96f0d5;font-size:12px;font-weight:820}
+.ev-audienceCard a:hover{text-decoration:underline;text-underline-offset:4px}
+.ev-opportunityStrip{position:relative;max-width:none;margin:0;padding:78px max(28px,calc((100vw - 1235px)/2));display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:32px;border-radius:0;border:0;color:#082d35;background:linear-gradient(115deg,#008b91,#00a99d 50%,#22b573);overflow:hidden}
+.ev-opportunityStrip:before{content:"";position:absolute;inset:0;background:url("/brand/envista-texture-original.png") center/cover;opacity:.15;pointer-events:none}
+.ev-opportunityStrip>*{position:relative;z-index:1}
+.ev-opportunityIcon{height:73px;width:73px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(9,54,58,.27);background:rgba(235,255,247,.16);color:#073a45}
+.ev-opportunityStrip .ev-kicker{color:#0c5f54}
+.ev-page .ev-opportunityStrip h2{max-width:900px;margin:0 0 14px;color:#083a44;font-size:clamp(29px,3.3vw,45px);line-height:1.1;font-weight:800;letter-spacing:-.054em}
+.ev-page .ev-opportunityStrip h2 em{font-style:normal;color:#effff7}
+.ev-page .ev-opportunityStrip p{margin:0;max-width:545px;color:#0c5654;font-size:13px;line-height:1.7}
+.ev-footer{max-width:none;padding:60px max(28px,calc((100vw - 1235px)/2));display:flex;align-items:flex-start;justify-content:space-between;gap:35px;border-top:1px solid rgba(175,234,224,.1);background:#07121b}
+.ev-footer .ev-brand img{height:36px;width:27px}
+.ev-footer .ev-brandName{font-size:19px}
+.ev-page .ev-footer p{margin:17px 0 0;color:#83a2a9;font-size:12px}
+.ev-footer nav{display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.ev-footer nav a{color:#a0b9bf;font-size:12px}
+.ev-footer nav a:hover{color:#87eed4}
+.ev-page a:focus-visible{outline:2px solid #91f4ce;outline-offset:4px}
+@media(max-width:950px){.ev-ecosystemSection{grid-template-columns:1fr;gap:42px}.ev-pillarsGrid{max-width:800px}.ev-opportunityStrip{grid-template-columns:auto 1fr}.ev-opportunityStrip .ev-lightCta{grid-column:2;justify-self:start}}
+@media(max-width:740px){.ev-headerInner{height:66px;padding-inline:18px}.ev-brandName{font-size:18px}.ev-brand img{height:35px;width:27px}.ev-desktopNav{display:none}.ev-mobileNav{display:block}.ev-ecosystemSection{padding:80px 20px}.ev-page .ev-ecosystemIntro h2{font-size:clamp(40px,9vw,55px)}.ev-audienceGrid{grid-template-columns:1fr}.ev-audienceCard{min-height:365px;padding:29px}.ev-audienceIcon{margin-bottom:48px}.ev-opportunityStrip{padding:65px 20px;grid-template-columns:1fr;gap:20px}.ev-opportunityIcon{height:60px;width:60px}.ev-opportunityStrip .ev-lightCta{grid-column:1;justify-self:start}.ev-footer{padding:46px 20px;flex-direction:column}}
+@media(max-width:440px){.ev-ecosystemSection{padding-inline:17px}.ev-pillarsGrid{grid-template-columns:1fr}.ev-pillarsGrid article{min-height:170px}.ev-audienceCard{padding:23px}.ev-opportunityStrip{padding-inline:17px}.ev-footer{padding-inline:17px}.ev-manifestoStrip{justify-content:center}.ev-manifestoStrip span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.ev-projectCard,.ev-lightCta{transform:none!important;transition:none!important}}
