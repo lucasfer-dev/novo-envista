@@ -6,6 +6,7 @@ import type { CompetitionStatus, LiveCompetition, LiveCompetitionsResponse } fro
 import { VERIFIED_COMPETITION_CATALOG_2026 } from "@/lib/competitions/catalog-2026";
 import { logServerEvent, requestIdFromHeaders, safeErrorName } from "@/lib/observability/logger";
 import { createClient } from "@/lib/supabase/server";
+import { normalizeCompetitionStatus } from "@/lib/competitions/status-validation";
 
 const ROBOCOMP_FALLBACK = "https://robocomp-finder.vercel.app/api/open-competitions";
 
@@ -39,7 +40,8 @@ function normalize(value: string) {
 
 function mergeItems(items: LiveCompetition[]) {
   const map = new Map<string, LiveCompetition>();
-  for (const competition of items) {
+  for (const source of items) {
+    const competition = normalizeCompetitionStatus(source);
     const key = competition.id || normalize(`${competition.name}|${competition.city}|${competition.eventDate || ""}`);
     const current = map.get(key);
     if (!current || competition.confidence > current.confidence) map.set(key, competition);
@@ -111,6 +113,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           ...fallback,
+          items: mergeItems(fallback.items),
           errors: [
             ...result.errors,
             ...(fallback.errors || []),
@@ -152,6 +155,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           ...fallback,
+          items: mergeItems(fallback.items),
           errors: ["Scanner nativo indisponível; usando fallback do RoboComp.", ...(fallback.errors || [])],
           mode: "envista-scan-fallback-robocomp",
         } satisfies LiveCompetitionsResponse,
