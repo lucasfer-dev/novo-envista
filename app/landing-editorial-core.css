@@ -33,3 +33,6 @@
 .ev-manifestoStrip{min-height:78px;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:8px 20px;padding:16px 30px;background:var(--eg);color:#092e36}
 .ev-manifestoStrip span{font-size:clamp(12px,1.35vw,17px);font-weight:850;letter-spacing:.12em}
 .ev-manifestoStrip b{font-weight:500;opacity:.42}
+
+/* Keep off-grid decorative elements from widening the mobile viewport. */
+.ev-page{overflow-x:clip;max-width:100%}
