@@ -82,27 +82,27 @@ const ecosystemPillars = [
 
 function Header() {
   return (
-    <header className={styles.header}>
-      <div className={styles.headerInner}>
-        <Link className={styles.brand} href="/" aria-label="Envista — página inicial">
+    <header className={`${styles.header || ""} ev-header`}>
+      <div className={`${styles.headerInner || ""} ev-headerInner`}>
+        <Link className={`${styles.brand || ""} ev-brand`} href="/" aria-label="Envista — página inicial">
           <Image src="/brand/envista-symbol-gradient.svg" alt="" width={31} height={42} priority />
-          <span className={styles.brandName}>ENVISTA<span className={styles.brandPeriod}>.</span></span>
+          <span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA<span className={`${styles.brandPeriod || ""} ev-brandPeriod`}>.</span></span>
         </Link>
 
-        <nav className={styles.desktopNav} aria-label="Navegação principal">
+        <nav className={`${styles.desktopNav || ""} ev-desktopNav`} aria-label="Navegação principal">
           <a href="#como-funciona">Como funciona</a>
           <Link href="/schools">Para escolas</Link>
           <Link href="/login">Entrar</Link>
-          <Link className={styles.headerCta} href="/register">Começar projeto</Link>
+          <Link className={`${styles.headerCta || ""} ev-headerCta`} href="/register">Começar projeto</Link>
         </nav>
 
-        <details className={styles.mobileNav}>
+        <details className={`${styles.mobileNav || ""} ev-mobileNav`}>
           <summary aria-label="Abrir navegação"><Menu size={20} aria-hidden="true" /></summary>
           <nav aria-label="Navegação principal no celular">
             <a href="#como-funciona">Como funciona</a>
             <Link href="/schools">Para escolas</Link>
             <Link href="/login">Entrar</Link>
-            <Link className={styles.headerCta} href="/register">Começar projeto</Link>
+            <Link className={`${styles.headerCta || ""} ev-headerCta`} href="/register">Começar projeto</Link>
           </nav>
         </details>
       </div>
@@ -112,20 +112,20 @@ function Header() {
 
 function ProjectCard({ project, index }: { project: PublicProject; index: number }) {
   return (
-    <Link className={styles.projectCard} href={`/p/${project.slug}`}>
-      <div className={styles.projectArtwork} aria-hidden="true">
-        <span className={styles.projectArtworkIndex}>{String(index + 1).padStart(2, "0")}</span>
+    <Link className={`${styles.projectCard || ""} ev-projectCard`} href={`/p/${project.slug}`}>
+      <div className={`${styles.projectArtwork || ""} ev-projectArtwork`} aria-hidden="true">
+        <span className={`${styles.projectArtworkIndex || ""} ev-projectArtworkIndex`}>{String(index + 1).padStart(2, "0")}</span>
         <Image src="/brand/envista-symbol-white.svg" alt="" width={88} height={116} />
-        <span className={styles.projectArtworkLabel}>ENVISTA / PROJETOS</span>
+        <span className={`${styles.projectArtworkLabel || ""} ev-projectArtworkLabel`}>ENVISTA / PROJETOS</span>
       </div>
-      <div className={styles.projectTopline}>
+      <div className={`${styles.projectTopline || ""} ev-projectTopline`}>
         <span>{project.stage || "Em desenvolvimento"}</span>
         <ArrowRight size={18} aria-hidden="true" />
       </div>
-      <div className={styles.projectCardCopy}>
+      <div className={`${styles.projectCardCopy || ""} ev-projectCardCopy`}>
         <h3>{project.title}</h3>
         <p>{project.short_description || "Conheça o percurso e os próximos passos deste projeto."}</p>
-        <div className={styles.projectMeta}>
+        <div className={`${styles.projectMeta || ""} ev-projectMeta`}>
           {project.category ? <span>{project.category}</span> : null}
           {(project.tags || []).slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
         </div>
@@ -188,106 +188,106 @@ export default async function PublicLandingServer() {
   };
 
   return (
-    <main className={styles.page} data-envista-public-shell>
+    <main className={`${styles.page || ""} ev-page`} data-envista-public-shell>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <a className={styles.skipLink} href="#conteudo">Pular para o conteúdo</a>
+      <a className={`${styles.skipLink || ""} ev-skipLink`} href="#conteudo">Pular para o conteúdo</a>
       <Header />
 
       <div id="conteudo">
-        <section className={styles.hero} aria-labelledby="hero-title">
-          <div className={styles.heroCopy}>
-            <div className={styles.heroMeta}>
-              <span className={styles.kicker}>INCUBADORA DE PROJETOS / 2026</span>
-              <span className={styles.heroEdition}>IDÉIAS QUE CONTINUAM</span>
+        <section className={`${styles.hero || ""} ev-hero`} aria-labelledby="hero-title">
+          <div className={`${styles.heroCopy || ""} ev-heroCopy`}>
+            <div className={`${styles.heroMeta || ""} ev-heroMeta`}>
+              <span className={`${styles.kicker || ""} ev-kicker`}>INCUBADORA DE PROJETOS / 2026</span>
+              <span className={`${styles.heroEdition || ""} ev-heroEdition`}>IDÉIAS QUE CONTINUAM</span>
             </div>
             <h1 id="hero-title">
               Seu projeto<br />
-              merece ir <span className={styles.heroAccent}>além.</span>
+              merece ir <span className={`${styles.heroAccent || ""} ev-heroAccent`}>além.</span>
             </h1>
             <p>
               Da primeira ideia ao mundo real. Organize sua equipe, dê vida ao seu
               portfólio e encontre oportunidades para o que você está construindo.
             </p>
-            <div className={styles.heroActions}>
-              <Link className={styles.editorialCta} href="/register">
+            <div className={`${styles.heroActions || ""} ev-heroActions`}>
+              <Link className={`${styles.editorialCta || ""} ev-editorialCta`} href="/register">
                 Começar meu projeto <ArrowRight size={18} aria-hidden="true" />
               </Link>
-              <Link className={styles.editorialOutline} href="/projects">
+              <Link className={`${styles.editorialOutline || ""} ev-editorialOutline`} href="/projects">
                 Explorar a comunidade <ArrowRight size={17} aria-hidden="true" />
               </Link>
             </div>
-            <div className={styles.heroSignals} aria-label="O que você encontra no Envista">
-              <span><span className={styles.signalDot} /> Uma ideia</span>
-              <span><span className={styles.signalDot} /> Muitas conexões</span>
-              <span><span className={styles.signalDot} /> Novos caminhos</span>
+            <div className={`${styles.heroSignals || ""} ev-heroSignals`} aria-label="O que você encontra no Envista">
+              <span><span className={`${styles.signalDot || ""} ev-signalDot`} /> Uma ideia</span>
+              <span><span className={`${styles.signalDot || ""} ev-signalDot`} /> Muitas conexões</span>
+              <span><span className={`${styles.signalDot || ""} ev-signalDot`} /> Novos caminhos</span>
             </div>
           </div>
 
-          <div className={styles.heroVisual}>
-            <div className={styles.heroVisualPattern} aria-hidden="true" />
-            <div className={styles.heroVisualSignature} aria-hidden="true">
+          <div className={`${styles.heroVisual || ""} ev-heroVisual`}>
+            <div className={`${styles.heroVisualPattern || ""} ev-heroVisualPattern`} aria-hidden="true" />
+            <div className={`${styles.heroVisualSignature || ""} ev-heroVisualSignature`} aria-hidden="true">
               <Image src="/brand/envista-symbol-gradient.svg" alt="" width={270} height={360} />
             </div>
-            <div className={styles.heroVisualCaption}>
+            <div className={`${styles.heroVisualCaption || ""} ev-heroVisualCaption`}>
               <span>01 / PENSE</span><span>02 / CRIE</span><span>03 / COMPARTILHE</span>
             </div>
 
-            <div className={styles.showcaseWindow}>
-              <div className={styles.showcaseChrome}>
-                <div className={styles.showcaseChromeDots} aria-hidden="true"><i /><i /><i /></div>
+            <div className={`${styles.showcaseWindow || ""} ev-showcaseWindow`}>
+              <div className={`${styles.showcaseChrome || ""} ev-showcaseChrome`}>
+                <div className={`${styles.showcaseChromeDots || ""} ev-showcaseChromeDots`} aria-hidden="true"><i /><i /><i /></div>
                 <span>PORTFÓLIO · ENVISTA</span>
-                <span className={styles.showcaseChromeArrow}>↗</span>
+                <span className={`${styles.showcaseChromeArrow || ""} ev-showcaseChromeArrow`}>↗</span>
               </div>
-              <div className={styles.showcaseCover}>
+              <div className={`${styles.showcaseCover || ""} ev-showcaseCover`}>
                 <span>{spotlight ? "UM PROJETO DA COMUNIDADE" : "PRÉVIA DA EXPERIÊNCIA"}</span>
-                <div className={styles.showcaseCoverSymbol}>
+                <div className={`${styles.showcaseCoverSymbol || ""} ev-showcaseCoverSymbol`}>
                   <Image src="/brand/envista-symbol-white.svg" alt="" width={82} height={110} />
                 </div>
                 <span>DE IDEIA A IMPACTO / <strong>∞</strong></span>
               </div>
-              <div className={styles.showcaseBody}>
-                <div className={styles.showcaseState}><span className={styles.showcaseStateDot} />
+              <div className={`${styles.showcaseBody || ""} ev-showcaseBody`}>
+                <div className={`${styles.showcaseState || ""} ev-showcaseState`}><span className={`${styles.showcaseStateDot || ""} ev-showcaseStateDot`} />
                   {spotlight?.stage || "Seu próximo capítulo"}
                 </div>
                 <h2>{spotlight?.title || "O futuro começa com o que você cria."}</h2>
                 <p>{spotlight?.short_description || "Crie um espaço para mostrar a evolução do seu trabalho e conectá-lo a novas oportunidades."}</p>
-                <div className={styles.showcaseChips}>
+                <div className={`${styles.showcaseChips || ""} ev-showcaseChips`}>
                   <span>Projeto</span><span>Equipe</span><span>Portfólio</span>
                 </div>
               </div>
-              <div className={styles.showcaseBottom}>
+              <div className={`${styles.showcaseBottom || ""} ev-showcaseBottom`}>
                 <span>UM PROJETO. INFINITAS POSSIBILIDADES.</span>
                 <Link href={spotlight ? `/p/${spotlight.slug}` : "/projects"} aria-label={spotlight ? "Abrir projeto em destaque" : "Explorar projetos"}>
                   <ArrowRight size={18} aria-hidden="true" />
                 </Link>
               </div>
             </div>
-            <div className={styles.heroVisualStamp} aria-hidden="true">FEITO PARA<br />IR ALÉM ↗</div>
+            <div className={`${styles.heroVisualStamp || ""} ev-heroVisualStamp`} aria-hidden="true">FEITO PARA<br />IR ALÉM ↗</div>
           </div>
         </section>
 
-        <div className={styles.manifestoStrip} aria-label="Da ideia às oportunidades">
+        <div className={`${styles.manifestoStrip || ""} ev-manifestoStrip`} aria-label="Da ideia às oportunidades">
           <span>IDEIAS</span><b>✳</b><span>PROJETOS</span><b>✳</b><span>CONEXÕES</span><b>✳</b><span>OPORTUNIDADES</span>
         </div>
 
-        <section className={styles.featuredProjects} aria-labelledby="featured-title">
-          <div className={styles.sectionHeading}>
+        <section className={`${styles.featuredProjects || ""} ev-featuredProjects`} aria-labelledby="featured-title">
+          <div className={`${styles.sectionHeading || ""} ev-sectionHeading`}>
             <div>
-              <span className={styles.kicker}>PORTFÓLIO DO ECOSSISTEMA</span>
+              <span className={`${styles.kicker || ""} ev-kicker`}>PORTFÓLIO DO ECOSSISTEMA</span>
               <h2 id="featured-title">Projetos que não ficam <em>na gaveta.</em></h2>
             </div>
-            <div className={styles.sectionAside}>
+            <div className={`${styles.sectionAside || ""} ev-sectionAside`}>
               <p>Uma vitrine organizada do que estudantes e equipes estão construindo no Envista.</p>
-              <Link className={styles.textLink} href="/projects">Ver todos os projetos <ArrowRight size={16} aria-hidden="true" /></Link>
+              <Link className={`${styles.textLink || ""} ev-textLink`} href="/projects">Ver todos os projetos <ArrowRight size={16} aria-hidden="true" /></Link>
             </div>
           </div>
 
           {projects.length ? (
-            <div className={styles.projectsGrid}>
+            <div className={`${styles.projectsGrid || ""} ev-projectsGrid`}>
               {projects.map((project, index) => <ProjectCard key={project.slug} project={project} index={index} />)}
             </div>
           ) : (
-            <div className={styles.emptyProjects}>
+            <div className={`${styles.emptyProjects || ""} ev-emptyProjects`}>
               <Sparkles size={22} aria-hidden="true" />
               <div><strong>Os primeiros projetos públicos estão chegando.</strong><span>Publique o seu e transforme-o em uma página que continua evoluindo.</span></div>
               <Link href="/register">Publicar projeto <ArrowRight size={16} aria-hidden="true" /></Link>
@@ -295,21 +295,21 @@ export default async function PublicLandingServer() {
           )}
         </section>
 
-        <section className={styles.processSection} id="como-funciona" aria-labelledby="process-title">
-          <div className={styles.sectionHeading}>
+        <section className={`${styles.processSection || ""} ev-processSection`} id="como-funciona" aria-labelledby="process-title">
+          <div className={`${styles.sectionHeading || ""} ev-sectionHeading`}>
             <div>
-              <span className={styles.kicker}>UM PROCESSO, NÃO SÓ UMA VITRINE</span>
+              <span className={`${styles.kicker || ""} ev-kicker`}>UM PROCESSO, NÃO SÓ UMA VITRINE</span>
               <h2 id="process-title">Uma ideia é só <em>o começo.</em></h2>
             </div>
-            <div className={styles.sectionAside}>
+            <div className={`${styles.sectionAside || ""} ev-sectionAside`}>
               <p>O Envista organiza a jornada do projeto em etapas simples para que evolução e contexto não se percam.</p>
             </div>
           </div>
 
-          <div className={styles.stepsGrid}>
+          <div className={`${styles.stepsGrid || ""} ev-stepsGrid`}>
             {incubationSteps.map(({ Icon, index, title, copy }) => (
-              <article className={styles.stepCard} key={title}>
-                <div className={styles.stepCardTop}><span>{index}</span><Icon size={21} aria-hidden="true" /></div>
+              <article className={`${styles.stepCard || ""} ev-stepCard`} key={title}>
+                <div className={`${styles.stepCardTop || ""} ev-stepCardTop`}><span>{index}</span><Icon size={21} aria-hidden="true" /></div>
                 <h3>{title}</h3>
                 <p>{copy}</p>
               </article>
@@ -317,14 +317,14 @@ export default async function PublicLandingServer() {
           </div>
         </section>
 
-        <section className={styles.ecosystemSection} aria-labelledby="ecosystem-title">
-          <div className={styles.ecosystemIntro}>
-            <span className={styles.kicker}>ECOSSISTEMA ORGANIZADO</span>
+        <section className={`${styles.ecosystemSection || ""} ev-ecosystemSection`} aria-labelledby="ecosystem-title">
+          <div className={`${styles.ecosystemIntro || ""} ev-ecosystemIntro`}>
+            <span className={`${styles.kicker || ""} ev-kicker`}>ECOSSISTEMA ORGANIZADO</span>
             <h2 id="ecosystem-title">Tudo o que uma boa ideia precisa para <em>acontecer.</em></h2>
             <p>Em vez de espalhar o trabalho entre links, arquivos, mensagens e apresentações, o Envista reúne o contexto que realmente importa.</p>
-            <Link className={styles.lightCta} href="/register">Criar meu espaço <ArrowRight size={17} aria-hidden="true" /></Link>
+            <Link className={`${styles.lightCta || ""} ev-lightCta`} href="/register">Criar meu espaço <ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
-          <div className={styles.pillarsGrid}>
+          <div className={`${styles.pillarsGrid || ""} ev-pillarsGrid`}>
             {ecosystemPillars.map(({ Icon, title, copy }) => (
               <article key={title}>
                 <Icon size={20} aria-hidden="true" />
@@ -335,25 +335,25 @@ export default async function PublicLandingServer() {
           </div>
         </section>
 
-        <section className={styles.audienceSection} aria-labelledby="audience-title">
-          <div className={styles.sectionHeading}>
+        <section className={`${styles.audienceSection || ""} ev-audienceSection`} aria-labelledby="audience-title">
+          <div className={`${styles.sectionHeading || ""} ev-sectionHeading`}>
             <div>
-              <span className={styles.kicker}>DOIS LADOS DO MESMO ECOSSISTEMA</span>
+              <span className={`${styles.kicker || ""} ev-kicker`}>DOIS LADOS DO MESMO ECOSSISTEMA</span>
               <h2 id="audience-title">Diferentes pessoas. <em>O mesmo impulso.</em></h2>
             </div>
           </div>
 
-          <div className={styles.audienceGrid}>
-            <article className={styles.audienceCard}>
-              <div className={styles.audienceIcon}><School size={23} aria-hidden="true" /></div>
+          <div className={`${styles.audienceGrid || ""} ev-audienceGrid`}>
+            <article className={`${styles.audienceCard || ""} ev-audienceCard`}>
+              <div className={`${styles.audienceIcon || ""} ev-audienceIcon`}><School size={23} aria-hidden="true" /></div>
               <span>ESTUDANTES, EQUIPES E ESCOLAS</span>
               <h3>Projeto como parte da aprendizagem.</h3>
               <p>Organize iniciativas, challenges e trabalhos em um formato que valoriza processo, colaboração e resultado.</p>
               <Link href="/schools">Conhecer o Envista para escolas <ArrowRight size={16} aria-hidden="true" /></Link>
             </article>
 
-            <article className={styles.audienceCard}>
-              <div className={styles.audienceIcon}><Compass size={23} aria-hidden="true" /></div>
+            <article className={`${styles.audienceCard || ""} ev-audienceCard`}>
+              <div className={`${styles.audienceIcon || ""} ev-audienceIcon`}><Compass size={23} aria-hidden="true" /></div>
               <span>MENTORES, EMPRESAS E INVESTIDORES</span>
               <h3>Descoberta com contexto antes do contato.</h3>
               <p>Veja problema, solução, equipe e estágio antes de acompanhar, orientar ou demonstrar interesse em um projeto.</p>
@@ -362,20 +362,20 @@ export default async function PublicLandingServer() {
           </div>
         </section>
 
-        <section className={styles.opportunityStrip} aria-labelledby="opportunity-title">
-          <div className={styles.opportunityIcon}><Target size={24} aria-hidden="true" /></div>
+        <section className={`${styles.opportunityStrip || ""} ev-opportunityStrip`} aria-labelledby="opportunity-title">
+          <div className={`${styles.opportunityIcon || ""} ev-opportunityIcon`}><Target size={24} aria-hidden="true" /></div>
           <div>
-            <span className={styles.kicker}>PRÓXIMO PASSO</span>
+            <span className={`${styles.kicker || ""} ev-kicker`}>PRÓXIMO PASSO</span>
             <h2 id="opportunity-title">Não termine na apresentação. <em>Comece por ela.</em></h2>
             <p>Competições, feedback, conexões e novas entregas passam a fazer parte da mesma jornada.</p>
           </div>
-          <Link className={styles.lightCta} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
+          <Link className={`${styles.lightCta || ""} ev-lightCta`} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
         </section>
       </div>
 
-      <footer className={styles.footer}>
+      <footer className={`${styles.footer || ""} ev-footer`}>
         <div>
-          <Link className={styles.brand} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={27} height={36} /><span className={styles.brandName}>ENVISTA<span className={styles.brandPeriod}>.</span></span></Link>
+          <Link className={`${styles.brand || ""} ev-brand`} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={27} height={36} /><span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA<span className={`${styles.brandPeriod || ""} ev-brandPeriod`}>.</span></span></Link>
           <p>Projetos que continuam depois da entrega.</p>
         </div>
         <nav aria-label="Links institucionais">
