@@ -85,7 +85,8 @@ function Header() {
     <header className={styles.header}>
       <div className={styles.headerInner}>
         <Link className={styles.brand} href="/" aria-label="Envista — página inicial">
-          <Image src="/brand/envista-symbol-gradient.svg" alt="" width={30} height={30} priority />
+          <Image src="/brand/envista-symbol-gradient.svg" alt="" width={31} height={42} priority />
+          <span className={styles.brandName}>ENVISTA<span className={styles.brandPeriod}>.</span></span>
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Navegação principal">
@@ -109,18 +110,25 @@ function Header() {
   );
 }
 
-function ProjectCard({ project }: { project: PublicProject }) {
+function ProjectCard({ project, index }: { project: PublicProject; index: number }) {
   return (
     <Link className={styles.projectCard} href={`/p/${project.slug}`}>
-      <div className={styles.projectTopline}>
-        <span>{project.stage || "Projeto em evolução"}</span>
-        <ArrowRight size={16} aria-hidden="true" />
+      <div className={styles.projectArtwork} aria-hidden="true">
+        <span className={styles.projectArtworkIndex}>{String(index + 1).padStart(2, "0")}</span>
+        <Image src="/brand/envista-symbol-white.svg" alt="" width={88} height={116} />
+        <span className={styles.projectArtworkLabel}>ENVISTA / PROJETOS</span>
       </div>
-      <h3>{project.title}</h3>
-      <p>{project.short_description || "Projeto publicado no Envista."}</p>
-      <div className={styles.projectMeta}>
-        {project.category ? <span>{project.category}</span> : null}
-        {(project.tags || []).slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}
+      <div className={styles.projectTopline}>
+        <span>{project.stage || "Em desenvolvimento"}</span>
+        <ArrowRight size={18} aria-hidden="true" />
+      </div>
+      <div className={styles.projectCardCopy}>
+        <h3>{project.title}</h3>
+        <p>{project.short_description || "Conheça o percurso e os próximos passos deste projeto."}</p>
+        <div className={styles.projectMeta}>
+          {project.category ? <span>{project.category}</span> : null}
+          {(project.tags || []).slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
+        </div>
       </div>
     </Link>
   );
@@ -146,6 +154,8 @@ export default async function PublicLandingServer() {
       projects = [];
     }
   }
+
+  const spotlight = projects[0] ?? null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -186,55 +196,85 @@ export default async function PublicLandingServer() {
       <div id="conteudo">
         <section className={styles.hero} aria-labelledby="hero-title">
           <div className={styles.heroCopy}>
-            <span className={styles.kicker}>INCUBADORA DIGITAL DE PROJETOS</span>
-            <h1 id="hero-title">Ideias não precisam morrer <span className={styles.heroAccent}>depois da apresentação.</span></h1>
+            <div className={styles.heroMeta}>
+              <span className={styles.kicker}>INCUBADORA DE PROJETOS / 2026</span>
+              <span className={styles.heroEdition}>IDÉIAS QUE CONTINUAM</span>
+            </div>
+            <h1 id="hero-title">
+              Seu projeto<br />
+              merece ir <span className={styles.heroAccent}>além.</span>
+            </h1>
             <p>
-              O Envista ajuda estudantes e equipes a transformar trabalhos, desafios e projetos autorais em algo que continua evoluindo: com portfólio, equipe, feedback e oportunidades no mesmo lugar.
+              Da primeira ideia ao mundo real. Organize sua equipe, dê vida ao seu
+              portfólio e encontre oportunidades para o que você está construindo.
             </p>
             <div className={styles.heroActions}>
-              <Link className={styles.primary} href="/register">Começar um projeto <ArrowRight size={17} aria-hidden="true" /></Link>
-              <Link className={styles.secondary} href="/projects">Explorar projetos</Link>
+              <Link className={styles.editorialCta} href="/register">
+                Começar meu projeto <ArrowRight size={18} aria-hidden="true" />
+              </Link>
+              <Link className={styles.editorialOutline} href="/projects">
+                Explorar a comunidade <ArrowRight size={17} aria-hidden="true" />
+              </Link>
             </div>
-            <div className={styles.heroSignals}>
-              <span><CheckCircle2 size={15} aria-hidden="true" /> Portfólio vivo</span>
-              <span><CheckCircle2 size={15} aria-hidden="true" /> Equipes</span>
-              <span><CheckCircle2 size={15} aria-hidden="true" /> Competições</span>
-              <span><CheckCircle2 size={15} aria-hidden="true" /> Feedback</span>
+            <div className={styles.heroSignals} aria-label="O que você encontra no Envista">
+              <span><span className={styles.signalDot} /> Uma ideia</span>
+              <span><span className={styles.signalDot} /> Muitas conexões</span>
+              <span><span className={styles.signalDot} /> Novos caminhos</span>
             </div>
           </div>
 
-          <div className={styles.incubatorPanel} aria-label="Fluxo de incubação no Envista">
-            <div className={styles.panelHeader}>
-              <div>
-                <span>FLUXO DO ENVISTA</span>
-                <strong>Projeto em evolução</strong>
-              </div>
-              <span className={styles.liveBadge}>Ativo</span>
+          <div className={styles.heroVisual}>
+            <div className={styles.heroVisualPattern} aria-hidden="true" />
+            <div className={styles.heroVisualSignature} aria-hidden="true">
+              <Image src="/brand/envista-symbol-gradient.svg" alt="" width={270} height={360} />
+            </div>
+            <div className={styles.heroVisualCaption}>
+              <span>01 / PENSE</span><span>02 / CRIE</span><span>03 / COMPARTILHE</span>
             </div>
 
-            <div className={styles.projectPulse}>
-              <div className={styles.projectPulseIcon}><Rocket size={24} aria-hidden="true" /></div>
-              <div>
-                <small>DO PRIMEIRO RASCUNHO AO PORTFÓLIO</small>
-                <h2>Construa → publique → evolua</h2>
-                <p>O projeto ganha contexto, histórico e um próximo passo claro.</p>
+            <div className={styles.showcaseWindow}>
+              <div className={styles.showcaseChrome}>
+                <div className={styles.showcaseChromeDots} aria-hidden="true"><i /><i /><i /></div>
+                <span>PORTFÓLIO · ENVISTA</span>
+                <span className={styles.showcaseChromeArrow}>↗</span>
+              </div>
+              <div className={styles.showcaseCover}>
+                <span>{spotlight ? "UM PROJETO DA COMUNIDADE" : "PRÉVIA DA EXPERIÊNCIA"}</span>
+                <div className={styles.showcaseCoverSymbol}>
+                  <Image src="/brand/envista-symbol-white.svg" alt="" width={82} height={110} />
+                </div>
+                <span>DE IDEIA A IMPACTO / <strong>∞</strong></span>
+              </div>
+              <div className={styles.showcaseBody}>
+                <div className={styles.showcaseState}><span className={styles.showcaseStateDot} />
+                  {spotlight?.stage || "Seu próximo capítulo"}
+                </div>
+                <h2>{spotlight?.title || "O futuro começa com o que você cria."}</h2>
+                <p>{spotlight?.short_description || "Crie um espaço para mostrar a evolução do seu trabalho e conectá-lo a novas oportunidades."}</p>
+                <div className={styles.showcaseChips}>
+                  <span>Projeto</span><span>Equipe</span><span>Portfólio</span>
+                </div>
+              </div>
+              <div className={styles.showcaseBottom}>
+                <span>UM PROJETO. INFINITAS POSSIBILIDADES.</span>
+                <Link href={spotlight ? `/p/${spotlight.slug}` : "/projects"} aria-label={spotlight ? "Abrir projeto em destaque" : "Explorar projetos"}>
+                  <ArrowRight size={18} aria-hidden="true" />
+                </Link>
               </div>
             </div>
-
-            <div className={styles.incubatorTimeline}>
-              <div className={styles.timelineItem} data-active="true"><span>01</span><div><strong>Ideia</strong><small>Problema e solução</small></div></div>
-              <div className={styles.timelineItem} data-active="true"><span>02</span><div><strong>Construção</strong><small>Equipe e entregas</small></div></div>
-              <div className={styles.timelineItem} data-active="true"><span>03</span><div><strong>Portfólio</strong><small>Página pública</small></div></div>
-              <div className={styles.timelineItem}><span>04</span><div><strong>Oportunidade</strong><small>Feedback e competições</small></div></div>
-            </div>
+            <div className={styles.heroVisualStamp} aria-hidden="true">FEITO PARA<br />IR ALÉM ↗</div>
           </div>
         </section>
+
+        <div className={styles.manifestoStrip} aria-label="Da ideia às oportunidades">
+          <span>IDEIAS</span><b>✳</b><span>PROJETOS</span><b>✳</b><span>CONEXÕES</span><b>✳</b><span>OPORTUNIDADES</span>
+        </div>
 
         <section className={styles.featuredProjects} aria-labelledby="featured-title">
           <div className={styles.sectionHeading}>
             <div>
               <span className={styles.kicker}>PORTFÓLIO DO ECOSSISTEMA</span>
-              <h2 id="featured-title">Projetos para descobrir, acompanhar e compartilhar.</h2>
+              <h2 id="featured-title">Projetos que não ficam <em>na gaveta.</em></h2>
             </div>
             <div className={styles.sectionAside}>
               <p>Uma vitrine organizada do que estudantes e equipes estão construindo no Envista.</p>
@@ -244,7 +284,7 @@ export default async function PublicLandingServer() {
 
           {projects.length ? (
             <div className={styles.projectsGrid}>
-              {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
+              {projects.map((project, index) => <ProjectCard key={project.slug} project={project} index={index} />)}
             </div>
           ) : (
             <div className={styles.emptyProjects}>
@@ -259,7 +299,7 @@ export default async function PublicLandingServer() {
           <div className={styles.sectionHeading}>
             <div>
               <span className={styles.kicker}>UM PROCESSO, NÃO SÓ UMA VITRINE</span>
-              <h2 id="process-title">Do primeiro rascunho até a próxima oportunidade.</h2>
+              <h2 id="process-title">Uma ideia é só <em>o começo.</em></h2>
             </div>
             <div className={styles.sectionAside}>
               <p>O Envista organiza a jornada do projeto em etapas simples para que evolução e contexto não se percam.</p>
@@ -280,9 +320,9 @@ export default async function PublicLandingServer() {
         <section className={styles.ecosystemSection} aria-labelledby="ecosystem-title">
           <div className={styles.ecosystemIntro}>
             <span className={styles.kicker}>ECOSSISTEMA ORGANIZADO</span>
-            <h2 id="ecosystem-title">Tudo que faz o projeto continuar.</h2>
+            <h2 id="ecosystem-title">Tudo o que uma boa ideia precisa para <em>acontecer.</em></h2>
             <p>Em vez de espalhar o trabalho entre links, arquivos, mensagens e apresentações, o Envista reúne o contexto que realmente importa.</p>
-            <Link className={styles.primaryDark} href="/register">Criar meu espaço <ArrowRight size={17} aria-hidden="true" /></Link>
+            <Link className={styles.lightCta} href="/register">Criar meu espaço <ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
           <div className={styles.pillarsGrid}>
             {ecosystemPillars.map(({ Icon, title, copy }) => (
@@ -299,7 +339,7 @@ export default async function PublicLandingServer() {
           <div className={styles.sectionHeading}>
             <div>
               <span className={styles.kicker}>DOIS LADOS DO MESMO ECOSSISTEMA</span>
-              <h2 id="audience-title">Quem constrói encontra quem pode impulsionar.</h2>
+              <h2 id="audience-title">Diferentes pessoas. <em>O mesmo impulso.</em></h2>
             </div>
           </div>
 
@@ -326,16 +366,16 @@ export default async function PublicLandingServer() {
           <div className={styles.opportunityIcon}><Target size={24} aria-hidden="true" /></div>
           <div>
             <span className={styles.kicker}>PRÓXIMO PASSO</span>
-            <h2 id="opportunity-title">O projeto fica pronto para oportunidades, não só para avaliação.</h2>
+            <h2 id="opportunity-title">Não termine na apresentação. <em>Comece por ela.</em></h2>
             <p>Competições, feedback, conexões e novas entregas passam a fazer parte da mesma jornada.</p>
           </div>
-          <Link className={styles.primaryDark} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
+          <Link className={styles.lightCta} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
         </section>
       </div>
 
       <footer className={styles.footer}>
         <div>
-          <Link className={styles.brand} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={26} height={26} /></Link>
+          <Link className={styles.brand} href="/" aria-label="Página inicial do Envista"><Image src="/brand/envista-symbol-gradient.svg" alt="" width={27} height={36} /><span className={styles.brandName}>ENVISTA<span className={styles.brandPeriod}>.</span></span></Link>
           <p>Projetos que continuam depois da entrega.</p>
         </div>
         <nav aria-label="Links institucionais">
