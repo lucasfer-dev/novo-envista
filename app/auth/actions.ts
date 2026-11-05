@@ -209,20 +209,13 @@ export async function updatePasswordAction(formData: FormData) {
   return updateRecoveryPasswordAction(formData);
 }
 
-async function ensureLegalEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-  documentType: "terms" | "privacy",
-  documentVersion: string,
-) {
-  const { data: existing } = await supabase.from("legal_acceptances").select("id").eq("user_id", userId).eq("document_type", documentType).eq("document_version", documentVersion).maybeSingle();
-  if (existing) return null;
-  const { error } = await supabase.from("legal_acceptances").insert({ user_id: userId, document_type: documentType, document_version: documentVersion, context: "public_onboarding" });
-  return error;
-}
-
+/**
+ * One Supabase RPC saves profile, age, legal declarations and completion in a
+ * single Postgres transaction. Guardian consent may require a separate step;
+ * those paths intentionally leave onboarding incomplete until approval.
+ */
 export async function onboardingAction(formData: FormData) {
-  const { supabase, userId } = await getVerifiedUser();
+  const { supabase } = await getVerifiedUser();
   const username = normalizeUsername(formData.get("username"));
   const displayName = value(formData, "display_name").slice(0, 100);
   const ageBand = parseAgeBand(formData.get("age_band"));
@@ -235,61 +228,36 @@ export async function onboardingAction(formData: FormData) {
   if (!acceptedTerms) redirect("/onboarding?error=terms-required");
   if (!acknowledgedPrivacy) redirect("/onboarding?error=privacy-required");
 
-  const profilePatch = {
+  const payload = {
     username,
     display_name: displayName,
-    bio: value(formData, "bio").slice(0, 500) || null,
-    public_city: value(formData, "public_city").slice(0, 100) || null,
-    public_state: value(formData, "public_state").slice(0, 100) || null,
-    public_school: value(formData, "public_school").slice(0, 160) || null,
-    organization: value(formData, "organization").slice(0, 160) || null,
-    organization_type: value(formData, "organization_type").slice(0, 100) || null,
+    age_band: ageBand,
+    bio: value(formData, "bio").slice(0, 500),
+    public_city: value(formData, "public_city").slice(0, 100),
+    public_state: value(formData, "public_state").slice(0, 100),
+    public_school: value(formData, "public_school").slice(0, 160),
+    organization: value(formData, "organization").slice(0, 160),
+    organization_type: value(formData, "organization_type").slice(0, 100),
     interest_tags: interestTags(formData),
-    profile_visibility: "private" as const,
-    allow_messages: false,
+    terms_version: INTERNAL_TERMS_VERSION,
+    privacy_version: INTERNAL_PRIVACY_VERSION,
   };
 
-  const { data: updatedProfile, error: profileError } = await supabase
-    .from("profiles")
-    .update(profilePatch)
-    .eq("id", userId)
-    .select("id")
-    .maybeSingle();
-  if (profileError || !updatedProfile) redirect(`/onboarding?error=${profileError?.code === "23505" ? "username" : "profile"}`);
-
-  const { data: compliance } = await supabase
-    .from("account_compliance")
-    .select("age_band,guardian_required,guardian_consent_verified_at,protected_mode_started_at")
-    .eq("user_id", userId)
-    .single();
-  if (compliance?.age_band === "unknown") {
-    const { error: ageError } = await supabase.from("account_compliance").update({ age_band: ageBand }).eq("user_id", userId);
-    if (ageError) redirect("/onboarding?error=age");
-  } else if (compliance?.age_band !== ageBand) redirect("/onboarding?error=age-locked");
-
-  const termsError = await ensureLegalEvent(supabase, userId, "terms", INTERNAL_TERMS_VERSION);
-  const privacyError = await ensureLegalEvent(supabase, userId, "privacy", INTERNAL_PRIVACY_VERSION);
-  if (termsError || privacyError) redirect("/onboarding?error=legal");
-
-  if (
-    compliance?.age_band === "child" &&
-    compliance.guardian_required &&
-    !compliance.guardian_consent_verified_at
-  ) redirect("/guardian");
-  if (
-    compliance?.age_band === "adolescent" &&
-    compliance.guardian_required &&
-    !compliance.guardian_consent_verified_at &&
-    !compliance.protected_mode_started_at
-  ) redirect("/guardian-choice");
-
-  const { data: completion } = await supabase.from("onboarding_completions").select("user_id").eq("user_id", userId).maybeSingle();
-  if (!completion) {
-    const { error: completionError } = await supabase.from("onboarding_completions").insert({ user_id: userId });
-    if (completionError) redirect("/onboarding?error=completion");
+  const { data: status, error } = await supabase.rpc("complete_onboarding_atomic", { payload });
+  if (error) {
+    logServerEvent("error", "auth.onboarding_atomic_failed", { db_code: error.code ?? null });
+    redirect("/onboarding?error=profile");
   }
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).single();
+  if (status === "guardian") redirect("/guardian");
+  if (status === "guardian-choice") redirect("/guardian-choice");
+
+  if (status !== "completed") {
+    const known = new Set(["username", "age-locked", "legal", "profile", "invalid"]);
+    redirect("/onboarding?error=" + (known.has(String(status)) ? status : "invalid"));
+  }
+
+  const { data: profile } = await supabase.from("profiles").select("role").single();
   redirect(homeForRole(parseProductRole(profile?.role)));
 }
 
