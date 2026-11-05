@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { logServerEvent, requestIdFromHeaders } from "@/lib/observability/logger";
-import { getSupabaseConfig } from "@/lib/supabase/config";
+import { logServerEvent, requestIdFromHeaders } from "../../../lib/observability/logger";
+import { getSupabaseConfig } from "../../../lib/supabase/config";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
