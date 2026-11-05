@@ -5,6 +5,7 @@ const validation = readFileSync("lib/auth/validation.ts", "utf8");
 const signupReadiness = readFileSync("lib/auth/signup-readiness.ts", "utf8");
 const envExample = readFileSync(".env.example", "utf8");
 const authActions = readFileSync("app/auth/actions.ts", "utf8");
+const atomicOnboarding = readFileSync("supabase/migrations/20261105160000_complete_onboarding_atomic.sql", "utf8");
 const authShell = readFileSync("components/auth/AuthShell.tsx", "utf8");
 const rootPage = readFileSync("app/page.tsx", "utf8");
 const signoutRoute = readFileSync("app/auth/signout/route.ts", "utf8");
@@ -69,7 +70,8 @@ describe("auth form feedback", () => {
   it("records the current public legal documents during onboarding", () => {
     expect(validation).toContain('INTERNAL_TERMS_VERSION = "2026-09-25-v6"');
     expect(validation).toContain('INTERNAL_PRIVACY_VERSION = "2026-09-25-v6"');
-    expect(authActions).toContain('context: "public_onboarding"');
+    expect(authActions).toContain('supabase.rpc("complete_onboarding_atomic", { payload })');
+    expect(atomicOnboarding).toContain("'public_onboarding'");
     expect(authActions).not.toContain('context: "internal_test"');
     expect(privacyPage).toContain("Versão 2026-09-25-v6");
     expect(privacyPage).toContain("CPF ou CNPJ");

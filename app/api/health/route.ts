@@ -1,38 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { logServerEvent, requestIdFromHeaders } from "@/lib/observability/logger";
-import { getSupabaseConfig } from "@/lib/supabase/config";
+import { logServerEvent, requestIdFromHeaders } from "../../../lib/observability/logger";
+import { getSupabaseConfig } from "../../../lib/supabase/config";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+async function probe(url: string, publishableKey: string) {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { apikey: publishableKey, Accept: "application/json" },
+      signal: AbortSignal.timeout(3000),
+      cache: "no-store",
+      redirect: "error",
+    });
+    return response.ok;
+  } catch { return false; }
+}
 
 export async function GET(request: NextRequest) {
   const requestId = requestIdFromHeaders(request.headers);
-  const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown";
-
-  let supabaseConfigured = false;
+  let database = false;
+  let auth = false;
   try {
-    getSupabaseConfig();
-    supabaseConfigured = true;
-  } catch {
-    supabaseConfigured = false;
-  }
-
-  logServerEvent("info", "health_check", {
-    requestId,
-    route: "/api/health",
-    environment,
-    supabaseConfigured,
+    const { url, publishableKey } = getSupabaseConfig();
+    [database, auth] = await Promise.all([
+      probe(url + "/rest/v1/projects?select=id&limit=1", publishableKey),
+      probe(url + "/auth/v1/health", publishableKey),
+    ]);
+  } catch { /* Invalid configuration is also degraded. */ }
+  const healthy = database && auth;
+  logServerEvent(healthy ? "info" : "warn", "health_check", { route: "/api/health", requestId, database, auth });
+  return NextResponse.json({ status: healthy ? "ok" : "degraded" }, {
+    status: healthy ? 200 : 503,
+    headers: { "Cache-Control": "no-store", "X-Request-ID": requestId },
   });
-
-  // A resposta pública revela apenas o necessário para uptime checks. Release,
-  // ambiente e dependências continuam disponíveis somente nos logs do servidor.
-  return NextResponse.json(
-    { status: supabaseConfigured ? "ok" : "degraded" },
-    {
-      status: supabaseConfigured ? 200 : 503,
-      headers: {
-        "Cache-Control": "no-store",
-        "X-Request-ID": requestId,
-      },
-    },
-  );
 }
