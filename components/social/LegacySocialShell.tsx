@@ -50,6 +50,23 @@ const participantNav = [
   ["/messages", MessageCircle, "Mensagens"],
 ] as const;
 
+const participantHomeNav = [
+  ["/home", Home, "Início"],
+  ["/explore", Compass, "Explorar"],
+  ["/social", Activity, "Social"],
+  ["/app/projects", FolderKanban, "Projetos"],
+  ["/teams", Users, "Equipes"],
+  ["/competitions", Trophy, "Competições"],
+  ["/learn", GraduationCap, "Aprender"],
+  ["/explore#explore-people", CircleUserRound, "Investidores"],
+] as const;
+
+const participantHomeWorkspace = [
+  ["/workspace", PanelsTopLeft, "Workspace"],
+  ["/messages", MessageCircle, "Mensagens"],
+  ["/insights", BarChart3, "Insights"],
+] as const;
+
 const investorNav = [
   ["/investor", Home, "Início"],
   ["/investor/explore", Compass, "Radar"],
@@ -150,7 +167,8 @@ export default function LegacySocialShell({
       : pathname === "/app"
         ? "/home"
         : pathname;
-  const nav = role === "investor" ? investorNav : participantNav;
+  const homeReference = role === "participant" && pathname === "/home";
+  const nav = role === "investor" ? investorNav : homeReference ? participantHomeNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
   const prefix: "" | "/investor" = role === "investor" ? "/investor" : "";
@@ -168,7 +186,7 @@ export default function LegacySocialShell({
   };
 
   return (
-    <div className="app-shell" data-envista-product-shell>
+    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined}>
       <a className="a11y-skip-link" href="#main-content">
         Pular para o conteúdo
       </a>
@@ -202,6 +220,7 @@ export default function LegacySocialShell({
           aria-label="Ir para o início do Envista"
         >
           <img src="/brand/envista-symbol-gradient.svg" alt="" />
+          <strong>ENVISTA</strong>
         </Link>
 
         <nav aria-label="Seções do produto">
@@ -226,6 +245,36 @@ export default function LegacySocialShell({
           })}
         </nav>
 
+
+        {homeReference ? <>
+          <div className="home-nav-section">
+            <span>Seu espaço</span>
+            <nav aria-label="Espaço de trabalho">
+              {participantHomeWorkspace.map(([href, Icon, label]) => {
+                const active = isNavItemActive(normalizedPathname, href);
+                return <Link key={href} href={href} onClick={closeMobile} className={cx(active && "active")} aria-current={active ? "page" : undefined}>
+                  <Icon size={18} aria-hidden="true" /><span>{label}</span>
+                </Link>;
+              })}
+            </nav>
+          </div>
+          <details className="home-more-menu">
+            <summary>Mais opções</summary>
+            <div className="home-more-links">
+              <Link href="/interests" onClick={closeMobile}>Interesses recebidos</Link>
+              <Link href="/calendar" onClick={closeMobile}>Calendário</Link>
+              <Link href="/integrations/github" onClick={closeMobile}>Integrações</Link>
+              <Link href="/account/settings" onClick={closeMobile}>Configurações</Link>
+              <Link href="/account/feedback" onClick={closeMobile}>Feedback e suporte</Link>
+            </div>
+          </details>
+          <div className="home-nav-promo">
+            <span className="home-promo-icon" aria-hidden="true">✦</span>
+            <strong>Envista</strong>
+            <p>Explore projetos, conexões e oportunidades.</p>
+            <Link href="/explore" onClick={closeMobile}>Descobrir agora <span aria-hidden="true">→</span></Link>
+          </div>
+        </> : (
         <div className="side-section">
           <span>Conta</span>
           {[
@@ -250,6 +299,7 @@ export default function LegacySocialShell({
           })}
         </div>
 
+        )}
         <div className="side-bottom">
           <div className="user-card">
             <Link

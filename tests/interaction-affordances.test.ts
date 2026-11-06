@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
-const home = readFileSync("components/product/HomeDashboard.tsx", "utf8");
+const home = readFileSync("components/product/HomeDashboardRedesign.tsx", "utf8");
 const dashboard = readFileSync("components/real/LegacyDashboardServerPages.tsx", "utf8");
 const explore = readFileSync("components/explore/ExploreView.tsx", "utf8");
 const design = readFileSync("app/design-system.css", "utf8");
 
 describe("interaction affordances", () => {
   it("makes dashboard project cards clickable across the whole surface", () => {
-    expect(home).toContain('className="panel dashboard-project"');
-    expect(home).toContain('aria-label={`Abrir projeto ${project.title}`}');
-    expect(home).not.toContain('<article className="panel dashboard-project"');
+    expect(home).toContain('className={styles.projectCard}');
+    expect(home).toContain('aria-label={"Abrir projeto " + project.title}');
+    expect(home).not.toContain('<article className={styles.projectCard}');
   });
 
   it("uses a card-wide target while keeping nested actions usable", () => {

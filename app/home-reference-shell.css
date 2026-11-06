@@ -1,0 +1,155 @@
+/* Exclusively the participant Home; matches the 06 Nov approved screenshot without altering other product pages. */
+.app-shell[data-envista-home-reference="true"] {
+  --ev-sidebar-width: 248px;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar {
+  width: 248px;
+  padding: 18px 14px 13px;
+  background: #061821 !important;
+  border-right-color: #19404b !important;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar::before {
+  opacity: .1;
+}
+.app-shell[data-envista-home-reference="true"] .brand {
+  margin-bottom: 19px;
+  min-height: 44px;
+  padding-left: 10px;
+}
+.app-shell[data-envista-home-reference="true"] .brand img {
+  width: 39px;
+  height: 44px;
+}
+.app-shell[data-envista-home-reference="true"] .brand strong {
+  font-size: 24px;
+  letter-spacing: .075em;
+  font-weight: 850;
+  color: #f9fdff;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar nav {
+  gap: 4px;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar nav a {
+  min-height: 36px;
+  border-radius: 20px;
+  padding: 0 14px;
+  color: #e4eff3;
+  font-size: 13px;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar nav a svg {
+  width: 18px;
+  height: 18px;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar nav a[aria-current="page"] {
+  background: linear-gradient(100deg,#045968,#089982);
+  box-shadow: none;
+  color: #fff;
+}
+.app-shell[data-envista-home-reference="true"] .sidebar nav a[aria-current="page"] svg {color:#2cf9d6;}
+.app-shell[data-envista-home-reference="true"] .home-nav-section {
+  margin: 18px 5px 0;
+  padding-top: 11px;
+  border-top: 1px solid #204451;
+}
+.app-shell[data-envista-home-reference="true"] .home-nav-section > span {
+  display: block;
+  margin: 0 10px 6px;
+  color: #8aa7b5;
+  font-size: 11px;
+}
+.app-shell[data-envista-home-reference="true"] .home-nav-section nav a {
+  border-radius: 10px;
+}
+.app-shell[data-envista-home-reference="true"] .home-more-menu {
+  margin: 8px 9px 0;
+  font-size: 11px;
+  color: #9cb9c5;
+}
+.app-shell[data-envista-home-reference="true"] .home-more-menu summary {
+  list-style: none;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #9cb9c5;
+}
+.app-shell[data-envista-home-reference="true"] .home-more-menu summary::before {content:"+";margin-right:7px;font-weight:800;color:#1fe0be;}
+.app-shell[data-envista-home-reference="true"] .home-more-menu[open] summary::before {content:"−";}
+.app-shell[data-envista-home-reference="true"] .home-more-menu summary::-webkit-details-marker {display:none;}
+.app-shell[data-envista-home-reference="true"] .home-more-menu summary:hover {background:#0b303c;}
+.app-shell[data-envista-home-reference="true"] .home-more-links {display:grid;gap:4px;padding:4px 0 8px;}
+.app-shell[data-envista-home-reference="true"] .home-more-links a {
+  color:#afcad5;font-size:11px;padding:7px 10px;
+  border-radius:8px;text-decoration:none;
+}
+.app-shell[data-envista-home-reference="true"] .home-more-links a:hover {background:#0d3d46;color:#f8ffff;}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo {
+  position:relative;isolation:isolate;overflow:hidden;
+  margin: auto 5px 12px;
+  min-height:136px;
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding: 16px 19px 13px;
+  border: 1px solid rgba(0,169,157,.36);
+  border-radius: 14px;
+  background:linear-gradient(125deg,#085d58,#06484d 55%,#073440);
+}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo::before {
+  content:"";position:absolute;inset:0;z-index:-1;opacity:.15;
+  background:url("/brand/envista-pattern-original.png") center/320px repeat;
+}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo .home-promo-icon {
+  color:#38edba;font-size:25px;line-height:1;
+}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo strong {font-size:19px;color:#fff;line-height:1.2;margin-top:5px;}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo p {font-size:11px;line-height:1.33;margin-top:4px;color:#d3ebe9;}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo a {
+  display:inline-flex;align-items:center;gap:8px;
+  min-height:32px;margin-top:9px;padding:6px 13px;
+  border:1px solid #16dbc8;border-radius:99px;
+  font-size:11px;color:#fff;text-decoration:none;
+}
+.app-shell[data-envista-home-reference="true"] .home-nav-promo a:hover {background:#0d6262;}
+.app-shell[data-envista-home-reference="true"] .side-bottom {
+  margin-top:0;
+  border-top-color:rgba(114,170,184,.25);
+  padding-top:8px;
+}
+.app-shell[data-envista-home-reference="true"] .user-card {
+  padding:6px 0;
+}
+.app-shell[data-envista-home-reference="true"] .main {
+  margin-left:248px;
+  background: #04151e;
+}
+.app-shell[data-envista-home-reference="true"] .topbar {
+  height:69px;
+  padding-inline:25px;
+  background:#071d27!important;
+  border-bottom-color:#1b414a!important;
+}
+.app-shell[data-envista-home-reference="true"] .page-wrap {
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:16px 20px 40px 22px;
+}
+.app-shell[data-envista-home-reference="true"] .global-search {
+  height:40px;
+  border-radius:12px;
+  background:#0d2633;
+  border-color:#204554;
+  min-width: min(635px,50vw);
+}
+@media(max-width:980px) {
+  .app-shell[data-envista-home-reference="true"] .main {margin-left:0;}
+  .app-shell[data-envista-home-reference="true"] .sidebar {width:270px;}
+  .app-shell[data-envista-home-reference="true"] .topbar {padding-inline:15px;}
+  .app-shell[data-envista-home-reference="true"] .page-wrap {padding:16px 17px 90px;}
+  .app-shell[data-envista-home-reference="true"] .global-search {min-width:0;}
+}
+@media(max-height:800px) {
+  .app-shell[data-envista-home-reference="true"] .home-nav-promo {margin-top:16px;}
+}
+@media(max-width:480px) {
+  .app-shell[data-envista-home-reference="true"] .page-wrap {padding:13px 12px 90px;}
+  .app-shell[data-envista-home-reference="true"] .global-search {height:37px;}
+}
