@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
-const home = readFileSync("components/product/HomeDashboard.tsx", "utf8");
+const home = readFileSync("components/product/HomeDashboardRedesign.tsx", "utf8");
 const dashboard = readFileSync("components/real/LegacyDashboardServerPages.tsx", "utf8");
 
 describe("first-run product guidance", () => {
@@ -16,9 +16,10 @@ describe("first-run product guidance", () => {
   it("gives participant accounts actionable first steps", () => {
     expect(dashboard).toContain('<HomeDashboard');
     expect(home).toContain('Criar meu primeiro projeto');
-    expect(home).toContain('href="/teams/new"');
-    expect(home).toContain('"Ver cursos"');
+    expect(home).toContain('href: "/teams/new"');
+    expect(home).toContain('href: "/learn"');
     expect(home).toContain('href="/projects/new"');
+    expect(home).toContain('firstSteps.find(step => !step.done)');
   });
 
   it("gives investor accounts actionable first steps", () => {
