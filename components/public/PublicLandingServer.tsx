@@ -97,7 +97,7 @@ function Header() {
         </nav>
 
         <details className={`${styles.mobileNav || ""} ev-mobileNav`}>
-          <summary aria-label="Abrir navegação"><Menu size={20} aria-hidden="true" /></summary>
+          <summary aria-label="Menu de navegação"><Menu size={20} aria-hidden="true" /></summary>
           <nav aria-label="Navegação principal no celular">
             <a href="#como-funciona">Como funciona</a>
             <Link href="/schools">Para escolas</Link>
@@ -198,7 +198,7 @@ export default async function PublicLandingServer() {
       <a className={`${styles.skipLink || ""} ev-skipLink`} href="#conteudo">Pular para o conteúdo</a>
       <Header />
 
-      <div id="conteudo">
+      <div id="conteudo" tabIndex={-1}>
         <section className={`${styles.hero || ""} ev-hero`} aria-labelledby="hero-title">
           <div className={`${styles.heroCopy || ""} ev-heroCopy`}>
             <div className={`${styles.heroMeta || ""} ev-heroMeta`}>
@@ -274,7 +274,7 @@ export default async function PublicLandingServer() {
 
         <div className={`${styles.manifestoStrip || ""} ev-manifestoStrip`} aria-label="Da ideia às oportunidades">
           <span className="ev-manifestoSeal" aria-hidden="true"><Image src="/brand/envista-symbol-white.svg" alt="" width={29} height={39} /></span>
-          <span>IDEIAS</span><b>✳</b><span>PROJETOS</span><b>✳</b><span>CONEXÕES</span><b>✳</b><span>OPORTUNIDADES</span>
+          <span>IDEIAS</span><b aria-hidden="true">✳</b><span>PROJETOS</span><b aria-hidden="true">✳</b><span>CONEXÕES</span><b aria-hidden="true">✳</b><span>OPORTUNIDADES</span>
         </div>
 
         <section className={`${styles.featuredProjects || ""} ev-featuredProjects`} aria-labelledby="featured-title">
