@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { logServerEvent } from "@/lib/observability/logger";
 
 function text(formData: FormData, name: string, max = 500) {
   const raw = formData.get(name);
@@ -34,9 +35,15 @@ function safeUrl(value: string) {
 export async function updateProfessionalProfileAction(formData: FormData) {
   const { supabase, userId } = await currentUser();
   const headline = text(formData, "headline", 140);
-  const githubUrl = safeUrl(text(formData, "github_url", 500));
-  const linkedinUrl = safeUrl(text(formData, "linkedin_url", 500));
-  const websiteUrl = safeUrl(text(formData, "website_url", 500));
+  const githubInput = text(formData, "github_url", 500);
+  const linkedinInput = text(formData, "linkedin_url", 500);
+  const websiteInput = text(formData, "website_url", 500);
+  const githubUrl = safeUrl(githubInput);
+  const linkedinUrl = safeUrl(linkedinInput);
+  const websiteUrl = safeUrl(websiteInput);
+  if ((githubInput && !githubUrl) || (linkedinInput && !linkedinUrl) || (websiteInput && !websiteUrl)) {
+    redirect("/account/professional?error=url");
+  }
   const skills = text(formData, "skills", 500)
     .split(",")
     .map((item) => item.trim())
@@ -44,14 +51,17 @@ export async function updateProfessionalProfileAction(formData: FormData) {
     .slice(0, 20)
     .map((item) => item.slice(0, 40));
 
-  const { error } = await supabase.from("profiles").update({
+  const { data: updated, error } = await supabase.from("profiles").update({
     headline: headline || null,
     github_url: githubUrl,
     linkedin_url: linkedinUrl,
     website_url: websiteUrl,
     skills,
-  }).eq("id", userId);
-  if (error) redirect("/account/professional?error=save");
+  }).eq("id", userId).select("id").maybeSingle();
+  if (error || !updated) {
+    logServerEvent("error", "profile.professional_save_failed", { code: error?.code || "no_updated_row" });
+    redirect("/account/professional?error=save");
+  }
   revalidatePath("/account/professional");
   redirect("/account/professional?status=saved");
 }

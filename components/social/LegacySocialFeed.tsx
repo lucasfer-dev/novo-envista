@@ -122,6 +122,7 @@ function socialErrorMessage(code?: string) {
   if (code === "comment") return "Não foi possível enviar o comentário. Tente novamente.";
   if (code === "like") return "Não foi possível atualizar a curtida. Tente novamente.";
   if (code === "follow") return "Não foi possível atualizar esse follow. Tente novamente.";
+  if (code === "post") return "Não foi possível publicar agora. O texto foi mantido nesta aba para uma nova tentativa.";
   return "Não foi possível concluir essa ação. Tente novamente.";
 }
 
@@ -174,6 +175,9 @@ export default function LegacySocialFeed({
 }) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
+  const [composerBody, setComposerBody] = useState("");
+  const [composerRecovered, setComposerRecovered] = useState(false);
+  const composerDraftKey = "envista:social-draft:v2:" + userId;
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [replyingTo, setReplyingTo] = useState<Record<string, string | null>>({});
   const normalized = normalize(query);
@@ -182,6 +186,37 @@ export default function LegacySocialFeed({
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
+
+  useEffect(() => {
+    try {
+      if (status?.startsWith("posted")) {
+        window.sessionStorage.removeItem(composerDraftKey);
+        setComposerBody("");
+        setComposerRecovered(false);
+        return;
+      }
+      const previous = window.sessionStorage.getItem(composerDraftKey);
+      if (!previous) return;
+      const draft = JSON.parse(previous) as { body?: string; updatedAt?: number };
+      if (!draft || typeof draft.body !== "string" || !draft.updatedAt || Date.now() - draft.updatedAt > 86_400_000) {
+        window.sessionStorage.removeItem(composerDraftKey);
+        return;
+      }
+      setComposerBody(draft.body);
+      setComposerRecovered(Boolean(draft.body.trim()));
+    } catch {
+      // Browser storage may be unavailable; posting remains usable.
+    }
+  }, [composerDraftKey, status]);
+
+  function changeComposerBody(body: string) {
+    setComposerBody(body);
+    try {
+      window.sessionStorage.setItem(composerDraftKey, JSON.stringify({ body, updatedAt: Date.now() }));
+    } catch {
+      // Browser storage is best effort.
+    }
+  }
 
   const visibleSuggestions = suggestions.filter(
     (suggestion) => !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
@@ -236,6 +271,7 @@ export default function LegacySocialFeed({
         <section className={styles.mainColumn}>
           <div className={`panel ${styles.composer}`}>
             <form action={createPostAction}>
+              {composerRecovered && error ? <div className={styles.notice} role="status">Sua publicação foi recuperada nesta aba. O texto não foi perdido.</div> : null}
               <input type="hidden" name="return_to" value={path} />
               <div className={styles.composerHead}>
                 <span className="avatar">{initials(userName)}</span>
@@ -243,6 +279,8 @@ export default function LegacySocialFeed({
                   required
                   maxLength={5000}
                   name="body"
+                  value={composerBody}
+                  onChange={(event) => changeComposerBody(event.target.value)}
                   aria-label="Conteúdo da publicação"
                   placeholder="O que está acontecendo no seu projeto, equipe ou jornada?"
                 />

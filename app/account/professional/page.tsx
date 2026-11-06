@@ -5,6 +5,7 @@ import { authStyles as styles } from "@/components/auth/AuthShell";
 import suite from "@/components/product/ProfessionalSuite.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { updateProfessionalProfileAction } from "@/lib/account/professional-actions";
+import ResilientServerForm from "@/components/forms/ResilientServerForm";
 
 export default async function ProfessionalProfilePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const supabase = await createClient();
@@ -33,14 +34,14 @@ export default async function ProfessionalProfilePage({ searchParams }: { search
       description="Mostre o que você sabe fazer e deixe seu perfil mais confiável para equipes e oportunidades."
     >
       {params.status === "saved" ? <div className={styles.success}>Perfil profissional atualizado.</div> : null}
-      {params.error ? <div className={styles.error}>Não foi possível salvar. Use apenas links HTTPS válidos.</div> : null}
+      {params.error ? <div className={styles.error} role="alert">{params.error === "url" ? "Confira os links informados: use endereços HTTPS completos." : "Não foi possível salvar o perfil agora. Os dados digitados foram preservados nesta aba."}</div> : null}
 
       <div className={suite.score} style={{ marginBottom: 20 }}>
         <span className={suite.scoreRing}>{score}%</span>
         <span className={suite.scoreText}><strong>Completude do perfil</strong><span>Avatar, bio, headline, ao menos 3 skills e um link profissional.</span></span>
       </div>
 
-      <form action={updateProfessionalProfileAction} className={styles.form}>
+      <ResilientServerForm action={updateProfessionalProfileAction} className={styles.form} storageKey={"envista:profile-professional:v2:" + userId} clearOnSuccess={params.status === "saved"}>
         <label>Headline<input name="headline" defaultValue={profile.headline || ""} maxLength={140} placeholder="Ex.: Desenvolvedor full stack · IA aplicada · Produtos digitais" /><span className={styles.muted}>Uma frase curta sobre o que você faz ou procura.</span></label>
         <label>Skills<input name="skills" defaultValue={(profile.skills ?? []).join(", ")} maxLength={500} placeholder="JavaScript, React, Java, UI/UX, IA" /><span className={styles.muted}>Separe por vírgulas. Mostramos até 20 competências.</span></label>
         <div className={styles.grid2}>
@@ -54,7 +55,7 @@ export default async function ProfessionalProfilePage({ searchParams }: { search
           <Link className={styles.secondary} href="/account/settings">Configurações</Link>
           <Link className={styles.secondary} href={home}>Voltar ao Envista</Link>
         </div>
-      </form>
+      </ResilientServerForm>
     </AccountProductShell>
   );
 }
