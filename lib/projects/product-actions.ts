@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { readProjectDetails } from "@/lib/projects/project-details";
 import { projectProfileFields } from "@/lib/projects/profile-fields";
+import { logServerEvent } from "@/lib/observability/logger";
 
 const stages = new Set(["Ideia", "Validação", "Protótipo", "MVP", "Projeto ativo"]);
 const BASE = "/app/projects";
@@ -42,16 +43,18 @@ async function resolveOwner(supabase: any, userId: string, formData: FormData) {
   return { owner_user_id: null, owner_team_id: owner };
 }
 
-export async function createProductProjectAction(formData: FormData) {
+type ProjectCreateResult = { error?: "title" | "owner" | "url" | "create"; successUrl?: string };
+
+async function saveNewProductProject(formData: FormData): Promise<ProjectCreateResult> {
   const { supabase, userId } = await requireProductUser("participant");
   const title = text(formData, "title", 140);
-  if (title.length < 2) redirect(`${BASE}/new?error=title`);
+  if (title.length < 2) return { error: "title" };
   const owner = await resolveOwner(supabase, userId, formData);
-  if (!owner) redirect(`${BASE}/new?error=owner`);
+  if (!owner) return { error: "owner" };
 
   const website = text(formData, "website_url", 500);
   const repository = text(formData, "repository_url", 500);
-  if ((website && !safeUrl(website)) || (repository && !safeUrl(repository))) redirect(`${BASE}/new?error=url`);
+  if ((website && !safeUrl(website)) || (repository && !safeUrl(repository))) return { error: "url" };
 
   const slug = `${slugify(title) || "projeto"}-${randomUUID().slice(0, 8)}`.slice(0, 90);
   const { data: created, error } = await supabase.from("projects").insert({
@@ -76,10 +79,32 @@ export async function createProductProjectAction(formData: FormData) {
     created_by: userId,
   }).select("id").single();
 
-  if (error || !created) redirect(`${BASE}/new?error=create`);
+  if (error || !created) {
+    logServerEvent("error", "project.create_failed", { code: error?.code || "missing_result", path: "/app/projects/new" });
+    return { error: "create" };
+  }
+  return { successUrl: `${BASE}/${slug}?status=created` };
+}
+
+
+export async function createProductProjectWithFeedbackAction(
+  _previous: ProjectCreateResult,
+  formData: FormData,
+): Promise<ProjectCreateResult> {
+  const result = await saveNewProductProject(formData);
+  if (result.successUrl) {
+    revalidatePath(BASE);
+    revalidatePath("/app");
+  }
+  return result;
+}
+
+export async function createProductProjectAction(formData: FormData) {
+  const result = await saveNewProductProject(formData);
+  if (result.error) redirect(`${BASE}/new?error=${result.error}`);
   revalidatePath(BASE);
   revalidatePath("/app");
-  redirect(`${BASE}/${slug}?status=created`);
+  redirect(result.successUrl || BASE);
 }
 
 export async function updateProductProjectAction(formData: FormData) {
