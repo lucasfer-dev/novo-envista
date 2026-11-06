@@ -1,0 +1,110 @@
+/* Brand system QA: WCAG 2.2 AA + touch ergonomics + reduced motion. */
+.ev-page .ev-editorialCta,
+.ev-page .ev-headerCta{
+  color:#000b0f!important;
+  min-height:48px;
+}
+.ev-page .ev-editorialOutline{
+  color:#e9fff8;
+  border-color:#76a9a7;
+  min-height:48px;
+}
+.ev-page .ev-lightCta{
+  color:#04333b;
+  min-height:48px;
+}
+.ev-page .ev-manifestoStrip,
+.ev-page .ev-manifestoStrip span:not(.ev-manifestoSeal),
+.ev-page .ev-opportunityStrip,
+.ev-page .ev-opportunityStrip p,
+.ev-page .ev-opportunityStrip .ev-kicker{
+  color:#000b0f;
+}
+.ev-page .ev-manifestoSeal{
+  height:44px;
+  width:44px;
+  padding:0;
+  border-right:0;
+  border-radius:8px;
+  background:#0f1923;
+}
+.ev-page .ev-manifestoSeal img{
+  width:22px;
+  height:30px;
+}
+.ev-page .ev-header .ev-desktopNav>a:not(.ev-headerCta){
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+}
+.ev-page .ev-mobileNav summary{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(145,222,203,.23);
+  border-radius:8px;
+  background:rgba(13,43,50,.4);
+  color:#f4fcfa;
+}
+.ev-page .ev-mobileNav[open] summary{
+  background:rgba(0,169,157,.19);
+  border-color:#72c6b6;
+}
+.ev-page .ev-mobileNav nav{
+  z-index:90;
+  border-color:#528d8c;
+  box-shadow:0 20px 65px rgba(0,5,10,.55);
+}
+.ev-page .ev-mobileNav nav a{
+  min-height:48px;
+  border-radius:6px;
+}
+.ev-page .ev-showcaseBottom a{
+  width:44px;
+  height:44px;
+  flex:none;
+}
+.ev-page .ev-showcaseBottom{
+  min-height:68px;
+}
+.ev-page :is(a,button,summary):focus-visible{
+  outline:3px solid #b9ffdc;
+  outline-offset:3px;
+}
+.ev-page .ev-processSection :is(a,button,summary):focus-visible,
+.ev-page .ev-opportunityStrip :is(a,button,summary):focus-visible,
+.ev-page .ev-manifestoStrip :is(a,button,summary):focus-visible{
+  outline-color:#001115;
+}
+.ev-page .ev-projectCard:focus-visible,
+.ev-page .ev-audienceCard a:focus-visible{
+  outline-offset:5px;
+}
+.ev-page [id]{
+  scroll-margin-top:100px;
+}
+.ev-page .ev-skipLink:focus-visible{
+  top:12px;
+  outline:3px solid #fff;
+  outline-offset:3px;
+  color:#001115;
+  background:#7aecd0;
+}
+@media(max-width:740px){
+  .ev-page .ev-headerInner{min-width:0}
+  .ev-page .ev-heroVisual{min-width:0}
+  .ev-page .ev-showcaseWindow{max-width:100%}
+  .ev-page .ev-featuredProjects{min-width:0}
+  .ev-page .ev-projectsGrid{min-width:0}
+  .ev-page .ev-footer nav{gap:12px 20px}
+  .ev-page [id]{scroll-margin-top:79px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ev-page,.ev-page *,.ev-page *::before,.ev-page *::after{
+    scroll-behavior:auto!important;
+    animation-duration:0.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:0.01ms!important;
+  }
+}
