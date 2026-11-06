@@ -12,18 +12,18 @@ async function courseStructure(supabase:any,courseId:string,userId:string){
   supabase.from("lesson_progress").select("lesson_id").eq("user_id",userId),
  ]);
  const completed=new Set((progress??[]).map((item:any)=>item.lesson_id));
- return (modules??[]).map((module:any)=>({id:module.id,title:module.title,position:module.position,lessons:(module.course_lessons??[]).sort((a:any,b:any)=>a.position-b.position).map((lesson:any)=>({...lesson,assetCount:(lesson.course_lesson_assets??[]).length,completed:completed.has(lesson.id)}))}));
+ return (modules??[]).map((module:any)=>({id:module.id,title:module.title,position:module.position,lessons:(module.course_lessons??[]).sort((a:any,b:any)=>a.position-b.position).map((lesson:any)=>({...lesson,assetCount:(lesson.course_lesson_assets??[]).length,completed:completed.has(lesson.id) && (String(lesson.content_md||"").trim().length>=80 || (lesson.course_lesson_assets??[]).length>0)}))}));
 }
 
 export async function LearnServerPage(){
  const {supabase,userId,appUser}=await requireProductUser("participant");
  const [{data:courses},{data:enrollments},{data:progress}]=await Promise.all([
-  supabase.from("courses").select("id,slug,title,description,instructor,level,duration_minutes,course_modules(id,course_lessons(id))").eq("status","published").order("title"),
+  supabase.from("courses").select("id,slug,title,description,instructor,level,duration_minutes,course_modules(id,course_lessons(id,content_md,course_lesson_assets(id)))").eq("status","published").order("title"),
   supabase.from("course_enrollments").select("course_id").eq("user_id",userId),
   supabase.from("lesson_progress").select("lesson_id").eq("user_id",userId),
  ]);
  const enrolled=new Set((enrollments??[]).map((item:any)=>item.course_id));const done=new Set((progress??[]).map((item:any)=>item.lesson_id));
- const cards=(courses??[]).map((course:any)=>{const lessonIds=(course.course_modules??[]).flatMap((module:any)=>(module.course_lessons??[]).map((lesson:any)=>lesson.id));return {...course,totalLessons:lessonIds.length,completedLessons:lessonIds.filter((id:string)=>done.has(id)).length,enrolled:enrolled.has(course.id)};});
+ const cards=(courses??[]).map((course:any)=>{const lessonIds=(course.course_modules??[]).flatMap((module:any)=>(module.course_lessons??[]).filter((lesson:any)=>String(lesson.content_md||"").trim().length>=80||(lesson.course_lesson_assets??[]).length>0).map((lesson:any)=>lesson.id));return {...course,totalLessons:lessonIds.length,completedLessons:lessonIds.filter((id:string)=>done.has(id)).length,enrolled:enrolled.has(course.id)};});
  return <LegacySocialShell user={appUser} role="participant" pathname="/app/learn"><LearnView courses={cards as never[]}/></LegacySocialShell>;
 }
 
