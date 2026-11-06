@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import {
   ArrowRight, Bell, BookOpen, CalendarDays, Check, ChevronRight, Compass,
   FolderKanban, Layers3, Plus, Sparkles, Star, Trophy, UserRound, Users, Zap,
@@ -127,7 +128,7 @@ export default function HomeDashboard({
             </div>
             <div className={styles.nextGrid}>
               <Link href={firstIncomplete?.href || "/workspace"} className={styles.nextCard}>
-                <div className={styles.progressRing} style={{ "--home-progress": (completedSteps / firstSteps.length * 100) + "%" } as React.CSSProperties}><span>{completedSteps}/{firstSteps.length}</span></div>
+                <div className={styles.progressRing} style={{ "--home-progress": (completedSteps / firstSteps.length * 100) + "%" } as CSSProperties}><span>{completedSteps}/{firstSteps.length}</span></div>
                 <div className={styles.nextCopy}><h3>{firstIncomplete?.title || "Você concluiu os primeiros passos!"}</h3><p>{firstIncomplete?.description || "Acompanhe a evolução dos seus projetos."}</p></div>
                 <ArrowRight size={19} aria-hidden="true" />
               </Link>
