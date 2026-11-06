@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createProductProjectAction } from "@/lib/projects/product-actions";
+import { createProductProjectWithFeedbackAction } from "@/lib/projects/product-actions";
 import styles from "./ProjectRegistrationWizard.module.css";
 
 type Team = { id: string; name: string };
@@ -22,12 +23,92 @@ const kinds = [
   ["other", "Outro"],
 ];
 
-export default function ProjectRegistrationWizard({ name, teams }: { name: string; teams: Team[] }) {
+type Snapshot = { timestamp: number; step: number; fields: [string, string][] };
+const errorText: Record<string, string> = {
+  title: "Informe um nome válido para o projeto.",
+  owner: "Você não pode publicar em nome dessa equipe.",
+  url: "Verifique os links: eles precisam começar com https://.",
+  create: "Não conseguimos salvar o projeto agora. Seu rascunho foi preservado nesta aba; revise e tente novamente.",
+};
+
+export default function ProjectRegistrationWizard({ name, teams, userId }: { name: string; teams: Team[]; userId: string }) {
   const [step, setStep] = useState(0);
   const [investment, setInvestment] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
+  const [result, submitAction, pending] = useActionState(createProductProjectWithFeedbackAction, {});
+  const [restored, setRestored] = useState(false);
+  const draftKey = "envista:project-draft:v3:" + userId;
   const titleRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  function restoreDraft(snapshot: Snapshot) {
+    const form = formRef.current;
+    if (!form) return;
+    const values = new Map<string, string[]>();
+    for (const [key, value] of snapshot.fields) {
+      const arr = values.get(key) ?? [];
+      arr.push(value);
+      values.set(key, arr);
+    }
+    for (const element of Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("[name]"))) {
+      if (element.name === "submission_intent") continue;
+      if (element instanceof HTMLInputElement && element.type === "checkbox") {
+        if (element.name !== "seeking_investment") element.checked = (values.get(element.name) ?? []).includes(element.value);
+      } else {
+        const next = values.get(element.name)?.[0];
+        if (next !== undefined) element.value = next;
+      }
+    }
+  }
+
+  function saveDraft(nextStep = step) {
+    if (!formRef.current) return;
+    try {
+      const fields: [string, string][] = [];
+      new FormData(formRef.current).forEach((entry, key) => {
+        if (typeof entry === "string") fields.push([key, entry]);
+      });
+      window.sessionStorage.setItem(draftKey, JSON.stringify({ timestamp: Date.now(), step: nextStep, fields }));
+    } catch {
+      // Storage can be disabled or full: submission still works.
+    }
+  }
+
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(draftKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as Snapshot;
+      if (!Array.isArray(saved.fields) || Date.now() - saved.timestamp > 86_400_000) {
+        window.sessionStorage.removeItem(draftKey);
+        return;
+      }
+      setStep(Math.min(3, Math.max(0, Number(saved.step) || 0)));
+      setInvestment(saved.fields.some(([key, value]) => key === "seeking_investment" && value === "on"));
+      setRestored(true);
+    } catch {
+      // A malformed draft is ignored.
+    }
+  }, [draftKey]);
+
+  useEffect(() => {
+    if (!restored && !result.error) return;
+    try {
+      const raw = window.sessionStorage.getItem(draftKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as Snapshot;
+        if (Array.isArray(saved.fields)) restoreDraft(saved);
+      }
+    } catch {
+      // Keep the form usable even when storage is unavailable.
+    }
+  }, [draftKey, restored, investment, result.error]);
+
+  useEffect(() => {
+    if (!result.successUrl) return;
+    try { window.sessionStorage.removeItem(draftKey); } catch { /* storage unavailable */ }
+    router.replace(result.successUrl);
+  }, [draftKey, result.successUrl, router]);
 
   function next() {
     if (step === 0 && !titleRef.current?.reportValidity()) return;
@@ -37,11 +118,21 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
       const control = element as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
       if (!control.checkValidity()) { control.reportValidity(); return; }
     }
+    saveDraft(Math.min(step + 1, 3));
     setStep((current) => Math.min(current + 1, 3));
   }
 
   return (
-    <form ref={formRef} className={"form-page panel " + styles.wizard} action={createProductProjectAction} onSubmit={() => setSubmitting(true)}>
+    <form ref={formRef} className={"form-page panel " + styles.wizard} action={submitAction}
+      onInput={() => saveDraft()} onChange={() => saveDraft()} onSubmit={() => saveDraft()}
+      onInvalidCapture={(event) => {
+        const section = (event.target as HTMLElement).closest("section");
+        const sections = Array.from(formRef.current?.querySelectorAll("section") ?? []);
+        const index = section ? sections.indexOf(section) : -1;
+        if (index >= 0) setStep(index);
+      }}>
+      {restored ? <p className={styles.note} role="status">Seu rascunho anterior foi recuperado nesta aba.</p> : null}
+      {result.error ? <p className="form-error" role="alert">{errorText[result.error] ?? errorText.create}</p> : null}
       <div className={styles.progressHeader}>
         <span>Etapa {step + 1} de 4</span>
         <strong>{labels[step]}</strong>
@@ -50,7 +141,7 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
       <nav className={styles.steps} aria-label="Etapas do cadastro">
         {labels.map((label, index) => (
           <button key={label} type="button" disabled={index > step} aria-current={index === step ? "step" : undefined}
-            className={index === step ? styles.current : ""} onClick={() => setStep(index)}>
+            className={index === step ? styles.current : ""} onClick={() => { saveDraft(index); setStep(index); }}>
             <span>{index + 1}</span><small>{label}</small>
           </button>
         ))}
@@ -139,11 +230,11 @@ export default function ProjectRegistrationWizard({ name, teams }: { name: strin
 
       <div className={styles.actions}>
         <div>{step === 0 ? <Link className="secondary" href="/app/projects">Cancelar</Link>
-          : <button className="secondary" type="button" onClick={() => setStep((current) => current - 1)}>Voltar</button>}</div>
+          : <button className="secondary" type="button" onClick={() => { saveDraft(Math.max(0, step - 1)); setStep((current) => current - 1); }}>Voltar</button>}</div>
         <div className={styles.actionsRight}>
           {step === 3 ? <>
-            <button name="submission_intent" value="draft" className="secondary" disabled={submitting} type="submit">Salvar como rascunho</button>
-            <button name="submission_intent" value="publish" className="primary" disabled={submitting} type="submit">{submitting ? "Salvando…" : "Criar projeto"}</button>
+            <button name="submission_intent" value="draft" className="secondary" disabled={pending} type="submit">Salvar como rascunho</button>
+            <button name="submission_intent" value="publish" className="primary" disabled={pending} type="submit">{pending ? "Salvando…" : "Criar projeto"}</button>
           </> : <button className="primary" type="button" onClick={next}>Continuar</button>}
         </div>
       </div>
