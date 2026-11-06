@@ -1,0 +1,253 @@
+/* Editorial rhythm: reserved graphics, clear reading zones and accessible contrast. */
+.ev-page .ev-processSection{
+  isolation:isolate;
+  background:#ecf6f2;
+  border-top:1px solid #d4e9e1;
+  border-bottom:1px solid #d4e9e1;
+}
+.ev-page .ev-processSection:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  top:-35px;
+  right:-5%;
+  width:49%;
+  height:360px;
+  pointer-events:none;
+  background:url("/brand/envista-pattern-original.png") right top/380px repeat;
+  filter:invert(1) contrast(6);
+  mix-blend-mode:multiply;
+  opacity:.34;
+  mask-image:linear-gradient(90deg,transparent,#000);
+}
+.ev-page .ev-processSection > *{
+  position:relative;
+  z-index:1;
+}
+.ev-page .ev-processSection .ev-sectionHeading .ev-kicker{
+  color:#065c55;
+}
+.ev-page .ev-stepsGrid{
+  position:relative;
+  gap:0 66px;
+  border-top:1px solid #b6d9cf;
+}
+.ev-page .ev-stepCard{
+  border-top:1px solid rgba(14,94,90,.18);
+  background:transparent;
+  box-shadow:none;
+}
+.ev-page .ev-stepCard:nth-child(-n+2){
+  border-top:2px solid #087c74;
+}
+.ev-page .ev-stepCardTop>span{
+  color:#1d877c;
+  font-variant-numeric:tabular-nums;
+}
+.ev-page .ev-stepCardTop svg{
+  background:#d8eee5;
+  color:#076a69;
+  border-color:#a9d0c6;
+}
+.ev-page .ev-stepCard h3{
+  color:#102e35;
+}
+.ev-page .ev-ecosystemSection{
+  isolation:isolate;
+  background:
+    linear-gradient(108deg,rgba(4,46,53,.94),rgba(5,75,77,.85) 58%,rgba(7,91,103,.83)),
+    url("/brand/envista-texture-original.png") center/cover;
+  border-top:1px solid rgba(180,247,220,.19);
+  border-bottom:1px solid rgba(180,247,220,.24);
+}
+.ev-page .ev-ecosystemSection:before{
+  opacity:.11;
+}
+.ev-page .ev-ecosystemSection:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0 0 0 47%;
+  background:url("/brand/envista-pattern-original.png") center/410px repeat;
+  mix-blend-mode:screen;
+  opacity:.14;
+  mask-image:linear-gradient(90deg,transparent,#000 75%);
+  pointer-events:none;
+}
+.ev-page .ev-ecosystemSection>*{
+  position:relative;
+  z-index:1;
+}
+.ev-page .ev-ecosystemIntro{
+  padding-left:21px;
+  border-left:3px solid rgba(123,241,206,.57);
+}
+.ev-page .ev-ecosystemIntro .ev-kicker{
+  color:#adf8d7;
+}
+.ev-page .ev-pillarsGrid{
+  position:relative;
+  box-shadow:0 18px 65px rgba(0,20,23,.17);
+}
+.ev-page .ev-pillarsGrid article{
+  background:rgba(7,40,48,.88);
+  transition:background-color .2s ease;
+}
+.ev-page .ev-pillarsGrid article:hover{
+  background:rgba(5,70,70,.92);
+}
+.ev-page .ev-pillarsGrid article svg{
+  color:#b6fbe0;
+}
+.ev-page .ev-audienceSection{
+  position:relative;
+  isolation:isolate;
+}
+.ev-page .ev-audienceCard{
+  background:
+    linear-gradient(117deg,rgba(13,48,61,.82),rgba(7,30,44,.96)),
+    url("/brand/envista-pattern-original.png") center/450px repeat;
+  border-color:rgba(124,219,198,.23);
+  box-shadow:0 23px 63px rgba(0,3,8,.14);
+}
+.ev-page .ev-audienceCard:nth-child(2){
+  background:
+    linear-gradient(122deg,rgba(4,103,100,.63),rgba(7,39,55,.88)),
+    url("/brand/envista-texture-original.png") center/cover;
+}
+.ev-page .ev-audienceCard:before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:4px;
+  background:var(--ev-brand-gradient);
+}
+.ev-page .ev-audienceCard:after{
+  color:rgba(150,240,216,.12);
+}
+.ev-page .ev-audienceIcon{
+  border-color:rgba(153,241,218,.46);
+  background:rgba(0,169,157,.18);
+}
+.ev-page .ev-audienceCard a{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  color:#abf2db;
+  text-decoration:none;
+  font-weight:800;
+}
+.ev-page .ev-opportunityStrip{
+  isolation:isolate;
+  border-top:2px solid rgba(245,255,250,.28);
+  border-bottom:2px solid rgba(6,50,58,.18);
+  background:var(--ev-brand-gradient);
+  color:#000b0f;
+}
+.ev-page .ev-opportunityStrip:before{
+  opacity:.24;
+}
+.ev-page .ev-opportunityStrip:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  right:8%;
+  top:-68px;
+  width:230px;
+  height:307px;
+  transform:rotate(12deg);
+  background:url("/brand/envista-symbol-white.svg") center/contain no-repeat;
+  opacity:.16;
+  pointer-events:none;
+}
+.ev-page .ev-opportunityStrip>*{
+  position:relative;
+  z-index:1;
+}
+.ev-page .ev-opportunityStrip .ev-kicker{
+  color:#001115;
+}
+.ev-page .ev-opportunityStrip h2{
+  color:#001115;
+}
+.ev-page .ev-opportunityStrip h2 em{
+  display:inline;
+  padding:1px 8px 5px;
+  box-decoration-break:clone;
+  -webkit-box-decoration-break:clone;
+  background:#0b3441;
+  color:#f0fffa;
+}
+.ev-page .ev-opportunityStrip p{
+  color:#001115;
+}
+.ev-page .ev-opportunityIcon{
+  color:#001115;
+  border-color:rgba(0,17,21,.42);
+}
+.ev-page .ev-footer{
+  position:relative;
+  isolation:isolate;
+  background:#081720;
+  border-top:3px solid #00a99d;
+  overflow:hidden;
+}
+.ev-page .ev-footer:after{
+  content:"";
+  position:absolute;
+  inset:0 0 0 63%;
+  z-index:-1;
+  background:url("/brand/envista-pattern-original.png") right top/400px repeat;
+  opacity:.14;
+  mix-blend-mode:screen;
+  mask-image:linear-gradient(90deg,transparent,#000);
+  pointer-events:none;
+}
+.ev-page .ev-footer nav{
+  position:relative;
+  z-index:1;
+}
+.ev-page .ev-footer nav a{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+}
+@media(max-width:1120px){
+  .ev-heroVisualAxis{display:none}
+  .ev-page .ev-ecosystemSection:after{inset:0}
+}
+@media(max-width:950px){
+  .ev-page .ev-featuredProjects:before{height:230px;width:70%}
+  .ev-page .ev-hero{min-height:0}
+  .ev-page .ev-manifestoStrip{justify-content:center}
+  .ev-manifestoSeal{display:none}
+  .ev-page .ev-ecosystemIntro{padding-left:16px}
+}
+@media(max-width:740px){
+  .ev-brandDescriptor{display:none}
+  .ev-page .ev-manifestoStrip{min-height:73px;padding:15px 14px;gap:7px 12px}
+  .ev-page .ev-manifestoStrip span:not(.ev-manifestoSeal){font-size:10px;letter-spacing:.08em}
+  .ev-page .ev-manifestoStrip b{font-size:12px}
+  .ev-page .ev-projectArtwork:before{background-size:350px}
+  .ev-page .ev-projectCard:first-child .ev-projectMonogram{font-size:104px}
+  .ev-page .ev-projectMonogram{font-size:85px}
+  .ev-projectBrandSeal{right:15px;top:16px}
+  .ev-page .ev-processSection:after{height:200px;right:-24%;width:100%;opacity:.23}
+  .ev-page .ev-ecosystemIntro{padding-left:15px}
+  .ev-page .ev-opportunityStrip:after{right:-80px;top:10px;width:210px;opacity:.13}
+  .ev-page .ev-footer:after{inset:0 0 0 36%}
+}
+@media(max-width:440px){
+  .ev-page .ev-projectCard:first-child .ev-projectMonogram{font-size:92px}
+  .ev-page .ev-projectMonogram{font-size:75px}
+  .ev-page .ev-manifestoStrip span:not(.ev-manifestoSeal){font-size:9px}
+  .ev-page .ev-manifestoStrip{gap:7px 8px}
+  .ev-page .ev-ecosystemSection:after{opacity:.08}
+  .ev-page .ev-opportunityStrip h2 em{padding-inline:5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ev-page .ev-projectMonogram,.ev-page .ev-pillarsGrid article{
+    transition:none!important;
+    transform:none!important;
+  }
+}
