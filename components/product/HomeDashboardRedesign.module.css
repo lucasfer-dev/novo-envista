@@ -295,3 +295,160 @@
 @media (prefers-reduced-motion: reduce) {
   .home *, .home *::before, .home *::after { transition:none!important; animation:none!important; scroll-behavior:auto!important; }
 }
+
+
+/* 06/11 reference lock — exact desktop composition, with real datasets. */
+.columns {
+  grid-template-columns: minmax(0, 1fr) minmax(318px, 339px);
+  gap: 20px;
+}
+.mainColumn { gap: 18px; }
+.rail { gap: 17px; }
+.hero { height: 287px; min-height: 287px; border-radius: 16px; background:linear-gradient(110deg,#052a35 0%,#05574f 50%,#075d55 100%); }
+.heroContent { max-width: 65%; padding: 23px 33px; position:relative; z-index: 3; }
+.heroEyebrow { display:block;color:#30e7c4;font-size:11px;font-weight:800;letter-spacing:.15em;margin-bottom:12px; }
+.hero h1 {font-size:clamp(32px,2.55vw,39px);line-height:1.15;letter-spacing:-.035em;}
+.hero h1 span {background:linear-gradient(95deg,#35e6ad,#00d2c1);background-clip:text;-webkit-background-clip:text;}
+.hero p {font-size:14px;line-height:1.54;margin-top:13px;max-width:510px;color:#e5f2f3;}
+.heroActions {margin-top:20px;gap:16px;}
+.heroActions .primaryAction, .heroActions .outlineAction {min-height:44px;padding:10px 20px;font-size:12px;border-radius:11px;}
+.heroPattern {inset:0 28% 0 40%;background-size:430px;opacity:.22;z-index:0;}
+.heroAngle {right:33%;width:11%;z-index:0;transform:skewX(-34deg);background:linear-gradient(90deg,transparent,rgba(5,30,38,.27),transparent);}
+.heroPortrait {
+  position:absolute;display:block;right:0;top:0;width:41%;height:100%;object-fit:cover;
+  object-position:right center;border-radius:0 16px 16px 0;z-index:2;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 16%);
+  mask-image:linear-gradient(to right,transparent 0%,#000 16%);
+}
+.stats {gap:14px;}
+.statCard {min-height:105px;padding:15px 17px;gap:15px;border-radius:14px;background:linear-gradient(130deg,#0b2a35,#0a202d);align-items:flex-start;}
+.statIcon {height:48px;flex-basis:48px;border-radius:11px;}
+.statCopy {display:flex;flex-direction:column;min-width:0;gap:3px;margin-top:1px;}
+.statCopy strong {font-size:27px;line-height:1.05;color:#f6fbff;font-weight:800;font-variant-numeric:tabular-nums;}
+.statCopy small {font-size:12px;line-height:1.25;color:#cbdce2;}
+.statTrend {position:absolute;bottom:15px;right:17px;color:#19d8a9;opacity:.8;}
+.statCard:hover .statTrend {opacity:1;}
+.showcaseGrid {display:grid;grid-template-columns:minmax(0,2fr) minmax(285px,1fr);gap:29px;min-width:0;align-items:start;margin-top:8px;}
+.featuredSection {min-width:0;}
+.panelHeading {margin-bottom:17px;}
+.panelHeading h2 {font-size:17px;letter-spacing:-.025em;gap:9px;}
+.viewAll {font-size:11px;}
+.projectGrid {grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.projectCard {min-height:205px;border-radius:14px;}
+.projectCover {height:100px;}
+.projectImage {position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;}
+.projectInfo {padding:10px 13px 11px;}
+.projectInfo h3 {font-size:16px;font-weight:800;}
+.projectInfo p {font-size:12px;line-height:1.32;color:#d0e0e6;min-height:32px;}
+.projectMeta {padding-top:8px;font-size:11px;}
+.projectCategory {background:#079b80;padding:4px 9px;font-weight:700;left:12px;bottom:7px;}
+.competitionSection {min-width:0;}
+.opportunityPanel {padding:0;overflow:hidden;border-radius:14px;min-height:205px;}
+.opportunityFeature {border-radius:0;min-height:104px;padding:16px 17px;background:linear-gradient(120deg,#064f46,#0a7051);}
+.opportunityFeature::after {opacity:.13;}
+.opportunityFeature h3 {font-size:18px;font-weight:800;}
+.opportunityFeature p {font-size:12px;}
+.opportunityFeature img {height:64px;width:70px;align-self:flex-start;}
+.opportunityFeature small {font-size:11px;}
+.opportunityDetails {padding:12px 17px 15px;}
+.opportunityDetails p {color:#bfd4dc;font-size:11px;margin:0 0 8px;}
+.opportunityDetails .primaryAction {min-height:36px;border-radius:10px;padding:7px 14px;}
+.opportunityPanel .opportunityEmpty {min-height:205px;padding:16px;}
+.learningBanner {
+  position:relative; isolation:isolate; display:flex;align-items:center;gap:18px;
+  min-height:92px;padding:11px 16px 11px 24px;
+  border-radius:14px;border:1px solid rgba(0,169,157,.52);
+  background:linear-gradient(100deg,#07453f,#05443b 40%,#062b30 100%);
+  overflow:hidden;
+}
+.learningBanner::before {content:"";position:absolute;inset:0;background:url("/brand/envista-pattern-original.png") 50% 50%/360px repeat;opacity:.11;z-index:-1;}
+.learningVisual {width:92px;min-width:92px;height:67px;display:grid;place-items:center;}
+.learningVisual img {max-width:85px;max-height:65px;object-fit:contain;}
+.learningCopy {flex:1;min-width:160px;}
+.learningCopy h2 {font-size:20px;letter-spacing:-.02em;color:#f5fffc;}
+.learningCopy p {font-size:12px;color:#cbe8e5;line-height:1.4;margin-top:5px;}
+.learningProgress {min-width:0;flex:0 0 245px;}
+.learningProgress > span {font-size:11px;color:#e2f0ed;display:block;margin-bottom:7px;}
+.progressInline {display:flex;align-items:center;gap:10px;}
+.progressInline strong {font-size:11px;font-weight:700;color:#eefbf7;}
+.learningBanner .track {height:9px;display:block;}
+.learningBanner .track i {display:block;height:100%;border-radius:99px;background:linear-gradient(95deg,#2df5a0,#1bc9b6);}
+.learningBanner .outlineAction {font-size:11px;min-height:38px;padding:9px 15px;white-space:nowrap;}
+.progressPanel {background:linear-gradient(140deg,#0c2a36,#0b202c);border:1px solid var(--home-border);border-radius:16px;min-height:188px;padding:20px 20px 18px;}
+.progressPanel h2 {font-size:17px;font-weight:800;letter-spacing:-.015em;display:flex;align-items:center;gap:8px;}
+.progressPanel h2 svg {color:#0fdec4;}
+.progressContent {display:flex;align-items:center;gap:18px;margin-top:22px;}
+.progressRing {
+  --home-progress:0%;
+  flex:0 0 110px;width:110px;height:110px;display:grid;place-items:center;
+  border-radius:50%;position:relative;background:conic-gradient(#25e5a9 0 var(--home-progress),#174a58 var(--home-progress) 100%);
+}
+.progressRing::before {content:"";position:absolute;inset:12px;background:#0b2632;border-radius:50%;}
+.progressRing > span {position:relative;font-size:26px;color:#fff;font-weight:850;font-variant-numeric:tabular-nums;}
+.progressCopy {min-width:0;}
+.progressCopy h3 {font-size:14px;line-height:1.3;font-weight:780;}
+.progressCopy p {font-size:12px;color:#d0e0e5;line-height:1.42;margin-top:6px!important;}
+.progressCopy .outlineAction {margin-top:10px;min-height:34px;font-size:11px;padding:7px 16px;}
+.railPanel {padding:18px 19px;border-radius:15px;}
+.railTitle {font-size:16px;display:flex;align-items:center;gap:9px;padding-bottom:14px;border-bottom:1px solid rgba(154,188,198,.16);}
+.railTitle svg {color:#16dbba;}
+.railPanel .panelHeading {margin-bottom:10px;padding-bottom:10px;}
+.activityItem {padding:13px 0;gap:11px;}
+.activityIcon {flex-basis:41px;width:41px;height:41px;}
+.activityCopy strong, .agendaItem strong {font-size:12px;font-weight:750;}
+.activityCopy small,.agendaItem small {font-size:11px;line-height:1.45;}
+.railFooterLink {font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px;color:#32e4bf!important;font-weight:700;padding-top:14px;border-top:1px solid rgba(155,185,194,.12);}
+.agendaItem {padding:10px 0;align-items:center;}
+.calendarDate {min-height:51px;}
+.agendaList {gap:0;}
+
+@media (max-width:1450px) {
+  .columns {grid-template-columns:minmax(0,1fr) minmax(280px,310px);gap:17px;}
+  .hero {height:260px;min-height:260px;}
+  .heroContent {padding:22px 26px;}
+  .hero h1 {font-size:32px;}
+  .hero p {font-size:12px;}
+  .projectGrid {gap:10px;}
+  .showcaseGrid {gap:18px;}
+  .learningProgress {flex-basis:180px;}
+  .learningVisual {width:60px;min-width:60px;}
+}
+@media (max-width:1200px) {
+  .columns {grid-template-columns:1fr;}
+  .hero {height:270px;min-height:270px;}
+  .heroContent {max-width:66%;}
+  .stats {grid-template-columns:repeat(4,minmax(0,1fr));}
+  .showcaseGrid {grid-template-columns:minmax(0,1.85fr) minmax(260px,1fr);}
+  .projectGrid {grid-template-columns:repeat(3,minmax(0,1fr));}
+  .rail {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+  .progressPanel {min-height:200px;}
+  .progressContent {flex-direction:column;align-items:start;gap:12px;margin-top:14px;}
+  .progressRing {width:75px;height:75px;flex-basis:75px;}
+  .progressRing::before {inset:9px;}
+  .progressRing span {font-size:18px;}
+}
+@media (max-width:850px) {
+  .stats {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .showcaseGrid {grid-template-columns:1fr;}
+  .projectGrid {grid-template-columns:repeat(3,minmax(0,1fr));}
+  .rail {grid-template-columns:1fr 1fr;}
+  .railPanel:last-child {grid-column:1/-1;}
+  .learningBanner {flex-wrap:wrap;gap:12px;}
+  .learningProgress {flex:1 1 160px;}
+}
+@media (max-width:620px) {
+  .hero {min-height:305px;height:auto;align-items:flex-start;}
+  .heroContent {max-width:100%;padding:23px 19px 29px;}
+  .hero h1 {font-size:31px;}
+  .hero p {max-width:360px;}
+  .heroPortrait {width:80%;opacity:.18;mask-image:linear-gradient(to right,transparent,#000 70%);}
+  .heroActions {gap:9px;}
+  .heroActions a {width:100%;justify-content:center;}
+  .projectGrid {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .rail {grid-template-columns:1fr;}
+  .railPanel:last-child {grid-column:auto;}
+  .progressContent {flex-direction:row;align-items:center;}
+  .learningBanner {padding:14px;}
+  .learningVisual {width:50px;min-width:50px;}
+  .learningCopy h2 {font-size:17px;}
+}
