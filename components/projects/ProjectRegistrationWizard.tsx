@@ -102,7 +102,7 @@ export default function ProjectRegistrationWizard({ name, teams, userId }: { nam
     } catch {
       // Keep the form usable even when storage is unavailable.
     }
-  }, [draftKey, restored, investment, result.error]);
+  }, [draftKey, restored, investment, result.attempt]);
 
   useEffect(() => {
     if (!result.successUrl) return;
