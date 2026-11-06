@@ -23,6 +23,7 @@ import {
   MessageCircle,
   MoreHorizontal,
   PanelsTopLeft,
+  Rocket,
   Settings,
   Trophy,
   Users,
@@ -269,10 +270,10 @@ export default function LegacySocialShell({
             </div>
           </details>
           <div className="home-nav-promo">
-            <span className="home-promo-icon" aria-hidden="true">✦</span>
+            <span className="home-promo-icon" aria-hidden="true"><Rocket size={27} strokeWidth={1.8} /></span>
             <strong>Envista</strong>
-            <p>Explore projetos, conexões e oportunidades.</p>
-            <Link href="/explore" onClick={closeMobile}>Descobrir agora <span aria-hidden="true">→</span></Link>
+            <p>Ideias, pessoas e oportunidades para levar seus projetos mais longe.</p>
+            <Link href="/explore" onClick={closeMobile}>Explorar projetos <span aria-hidden="true">→</span></Link>
           </div>
         </> : (
         <div className="side-section">
