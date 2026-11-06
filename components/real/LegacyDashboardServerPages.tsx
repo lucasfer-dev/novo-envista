@@ -118,13 +118,16 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       .order("joined_at", { ascending: false });
     const teamIds = (memberships ?? []).map((item: any) => item.team_id);
 
-    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult] = await Promise.all([
+    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult] = await Promise.all([
       supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("owner_user_id", userId).order("updated_at", { ascending: false }).limit(6),
       teamIds.length
         ? supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").in("owner_team_id", teamIds).order("updated_at", { ascending: false }).limit(8)
         : Promise.resolve({ data: [] as ProjectCardRow[] }),
       supabase.from("course_enrollments").select("course_id,enrolled_at,courses(id,slug,title,description)").eq("user_id", userId).order("enrolled_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("notifications").select("id,title,body,href,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(4),
+      supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("visibility", "platform").order("updated_at", { ascending: false }).limit(4),
+      supabase.from("platform_calendar_events").select("id,title,starts_at,href").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(3),
+      supabase.from("profiles").select("username,display_name,bio,public_city,public_state,public_school,interest_tags").eq("id", userId).maybeSingle(),
     ]);
 
     const projects = new Map<string, ProjectCardRow>();
@@ -146,7 +149,18 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
     return (
       <LegacySocialShell user={appUser} role="participant" pathname={pathname}>
         <HomeDashboard name={appUser.name} projects={[...projects.values()]} teams={teams}
-          notifications={notificationsResult.data ?? []} course={course} courseProgress={courseProgress} />
+          featuredProjects={publicProjectsResult.data ?? []}
+          notifications={notificationsResult.data ?? []}
+          agenda={agendaResult.data ?? []}
+          profileSteps={[
+            { label: "Nome de exibição", done: Boolean(profileResult.data?.display_name) },
+            { label: "Nome de usuário", done: Boolean(profileResult.data?.username) },
+            { label: "Sobre você", done: Boolean(profileResult.data?.bio) },
+            { label: "Localização", done: Boolean(profileResult.data?.public_city && profileResult.data?.public_state) },
+            { label: "Instituição", done: Boolean(profileResult.data?.public_school) },
+            { label: "Áreas de interesse", done: Boolean(profileResult.data?.interest_tags?.length) },
+          ]}
+          course={course} courseProgress={courseProgress} />
       </LegacySocialShell>
     );
   }
