@@ -89,8 +89,8 @@ export default function HomeDashboard({
   const showcase = (featuredProjects.length ? featuredProjects : projects).slice(0, 4);
   const ownProject = projects[0];
   const firstSteps = [
-    { title: "Crie seu primeiro projeto", description: "Mostre sua ideia e comece seu portfólio.", href: "/projects/new", Icon: FolderKanban, done: projects.length > 0 },
-    { title: "Encontre sua equipe", description: "Conheça pessoas e construa em conjunto.", href: "/teams", Icon: Users, done: teams.length > 0 },
+    { title: "Criar meu primeiro projeto", description: "Mostre sua ideia e comece seu portfólio.", href: "/projects/new", Icon: FolderKanban, done: projects.length > 0 },
+    { title: "Encontre sua equipe", description: "Conheça pessoas e construa em conjunto.", href: "/teams/new", Icon: Users, done: teams.length > 0 },
     { title: "Comece uma trilha", description: "Aprenda e aplique novas habilidades.", href: "/learn", Icon: BookOpen, done: Boolean(course) },
   ];
   const completedSteps = firstSteps.filter(step => step.done).length;
@@ -143,7 +143,7 @@ export default function HomeDashboard({
           <section className={styles.featuredSection} aria-labelledby="featured-projects-heading">
             {panelHeading("featured-projects-heading", "Projetos em destaque", Star, "/explore", "Ver todos")}
             {showcase.length ? <div className={styles.projectGrid}>
-              {showcase.map((project, index) => <Link key={project.id} className={styles.projectCard} href={"/projects/" + encodeURIComponent(project.slug)}>
+              {showcase.map((project, index) => <Link key={project.id} className={styles.projectCard} href={"/projects/" + encodeURIComponent(project.slug)} aria-label={"Abrir projeto " + project.title}>
                 <div className={styles.projectCover} data-tone={index % 4}>
                   <ProjectArtwork title={project.title} category={project.category} />
                   <span className={styles.projectCategory}>{project.category || "Projeto"}</span>
