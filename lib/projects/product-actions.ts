@@ -43,7 +43,7 @@ async function resolveOwner(supabase: any, userId: string, formData: FormData) {
   return { owner_user_id: null, owner_team_id: owner };
 }
 
-type ProjectCreateResult = { error?: "title" | "owner" | "url" | "create"; successUrl?: string };
+type ProjectCreateResult = { error?: "title" | "owner" | "url" | "create"; successUrl?: string; attempt?: number };
 
 async function saveNewProductProject(formData: FormData): Promise<ProjectCreateResult> {
   const { supabase, userId } = await requireProductUser("participant");
@@ -96,7 +96,9 @@ export async function createProductProjectWithFeedbackAction(
     revalidatePath(BASE);
     revalidatePath("/app");
   }
-  return result;
+  // Increment even on consecutive identical failures so client-side draft
+  // restoration runs after every React form reset.
+  return { ...result, attempt: (_previous.attempt ?? 0) + 1 };
 }
 
 export async function createProductProjectAction(formData: FormData) {
