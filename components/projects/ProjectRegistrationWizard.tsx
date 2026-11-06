@@ -124,7 +124,15 @@ export default function ProjectRegistrationWizard({ name, teams, userId }: { nam
 
   return (
     <form ref={formRef} className={"form-page panel " + styles.wizard} action={submitAction}
-      onInput={() => saveDraft()} onChange={() => saveDraft()} onSubmit={() => saveDraft()}
+      onInput={() => saveDraft()} onChange={() => saveDraft()}
+      onSubmit={(event) => {
+        if (step < 3) {
+          event.preventDefault();
+          next();
+          return;
+        }
+        saveDraft();
+      }}
       onInvalidCapture={(event) => {
         const section = (event.target as HTMLElement).closest("section");
         const sections = Array.from(formRef.current?.querySelectorAll("section") ?? []);
