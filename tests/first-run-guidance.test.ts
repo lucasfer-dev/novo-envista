@@ -13,13 +13,14 @@ describe("first-run product guidance", () => {
     expect(onboarding).toContain("Salvar e entrar no Envista");
   });
 
-  it("gives participant accounts actionable first steps", () => {
+  it("offers clear project creation, community exploration and profile completion without fake onboarding cards", () => {
     expect(dashboard).toContain('<HomeDashboard');
-    expect(home).toContain('Criar meu primeiro projeto');
-    expect(home).toContain('href: "/teams/new"');
-    expect(home).toContain('href: "/learn"');
+    expect(home).toContain("Boas ideias merecem");
+    expect(home).toContain("Criar novo projeto");
     expect(home).toContain('href="/projects/new"');
-    expect(home).toContain('firstSteps.find(step => !step.done)');
+    expect(home).toContain('href="/explore"');
+    expect(home).toContain('href="/account/profile"');
+    expect(home).toContain("profileSteps.length - stepsDone");
   });
 
   it("gives investor accounts actionable first steps", () => {
