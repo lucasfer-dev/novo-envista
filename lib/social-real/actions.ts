@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { safeInternalPath } from "@/lib/auth/validation";
 import { createGitHubDiscussion, getInstallationToken } from "@/lib/github/app";
+import { logServerEvent } from "@/lib/observability/logger";
 
 function text(formData: FormData, name: string, max: number) {
   const value = formData.get(name);
@@ -73,7 +74,15 @@ export async function createPostAction(formData: FormData) {
     body,
     visibility,
   }).select("id").single();
-  if (error || !created) redirect(withError(returnTo, "post"));
+  if (error || !created) {
+    logServerEvent("error", "social.post_create_failed", {
+      db_code: error?.code || "missing_result",
+      visibility,
+      author_type: personal ? "personal" : "team",
+      with_project: Boolean(projectId),
+    });
+    redirect(withError(returnTo, "post"));
+  }
 
   const githubRepositoryId = text(formData, "github_repository_id", 32);
   let status = "posted";
