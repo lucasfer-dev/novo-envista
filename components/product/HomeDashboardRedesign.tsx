@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import CompetitionCount from "./HomeCompetitionCount";
 import {
   ArrowRight, Bell, BookOpen, CalendarDays, Check, ChevronRight, Compass,
   FolderKanban, Layers3, Plus, Sparkles, Star, Trophy, UserRound, Users, Zap,
@@ -41,6 +42,7 @@ type Props = {
   profileSteps?: DashboardProfileStep[];
   course: { slug: string; title: string; description: string | null } | null;
   courseProgress: number;
+  followerCount?: number;
 };
 
 function iconForNotification(title: string) {
@@ -77,7 +79,7 @@ function panelHeading(id: string, label: string, Icon: typeof Star, href: string
   </div>;
 }
 export default function HomeDashboard({
-  name, projects, featuredProjects = [], teams, notifications, agenda = [],
+  name, projects, featuredProjects = [], teams, notifications, agenda = [], followerCount = 0,
   profileSteps = [], course, courseProgress,
 }: Props) {
   const firstName = name.trim().split(/\s+/)[0] || "criador";
@@ -88,122 +90,129 @@ export default function HomeDashboard({
     ? Math.round(stepsDone * 100 / profileSteps.length) : null;
   const showcase = (featuredProjects.length ? featuredProjects : projects).slice(0, 4);
   const ownProject = projects[0];
-  const firstSteps = [
-    { title: "Criar meu primeiro projeto", description: "Mostre sua ideia e comece seu portfólio.", href: "/projects/new", Icon: FolderKanban, done: projects.length > 0 },
-    { title: "Encontre sua equipe", description: "Conheça pessoas e construa em conjunto.", href: "/teams/new", Icon: Users, done: teams.length > 0 },
-    { title: "Comece uma trilha", description: "Aprenda e aplique novas habilidades.", href: "/learn", Icon: BookOpen, done: Boolean(course) },
-  ];
-  const completedSteps = firstSteps.filter(step => step.done).length;
-  const firstIncomplete = firstSteps.find(step => !step.done);
 
+  const displayProjects = (featuredProjects.length ? featuredProjects : projects).slice(0, 3);
+  const profileDone = profilePercentage === 100;
   return (
     <div className={styles.home} data-envista-home-redesign>
       <div className={styles.columns}>
         <div className={styles.mainColumn}>
           <header className={styles.hero}>
-            <div className={styles.heroPattern} aria-hidden="true" />
-            <div className={styles.heroAngle} aria-hidden="true" />
-            <img className={styles.heroSymbol} src="/brand/envista-symbol-gradient.svg" alt="" aria-hidden="true" />
+            <span className={styles.heroPattern} aria-hidden="true" />
+            <span className={styles.heroAngle} aria-hidden="true" />
+            <img className={styles.heroPortrait} src="/brand/envista-hero-reference.webp" width="390" height="276" alt="" aria-hidden="true" />
             <div className={styles.heroContent}>
-              <h1>Olá, {firstName}.<br /><span>Suas ideias em movimento.</span></h1>
-              <p>Transforme suas ideias em projetos, forme equipes e encontre oportunidades reais para evoluir com impacto.</p>
+              <span className={styles.heroEyebrow}>IDEIAS · PESSOAS · PROJETOS · IMPACTO</span>
+              <h1>Boas ideias merecem<br /><span>sair do papel.</span></h1>
+              <p>Crie projetos, forme equipes, participe de competições e conecte-se com pessoas e investidores para transformar suas ideias em impacto.</p>
               <div className={styles.heroActions}>
-                <Link className={styles.primaryAction} href="/projects/new"><Plus size={19} aria-hidden="true" /> Criar projeto</Link>
+                <Link className={styles.primaryAction} href="/projects/new"><Plus size={20} aria-hidden="true" /> Criar novo projeto</Link>
                 <Link className={styles.outlineAction} href="/explore"><Compass size={19} aria-hidden="true" /> Explorar oportunidades</Link>
               </div>
             </div>
           </header>
 
           <section className={styles.stats} aria-label="Resumo da sua conta">
-            <Link href="/projects" className={styles.statCard}><span className={styles.statIcon}><FolderKanban size={25} aria-hidden="true" /></span><div><strong>{projects.length}</strong><span>{projects.length === 1 ? "Projeto" : "Projetos"}</span></div><ChevronRight className={styles.statArrow} size={16} /></Link>
-            <Link href="/teams" className={styles.statCard}><span className={styles.statIcon}><Users size={25} aria-hidden="true" /></span><div><strong>{teams.length}</strong><span>{teams.length === 1 ? "Equipe" : "Equipes"}</span></div><ChevronRight className={styles.statArrow} size={16} /></Link>
-            <Link href="/notifications" className={styles.statCard}><span className={styles.statIcon}><Bell size={24} aria-hidden="true" /></span><div><strong>{unread}</strong><span>{unread === 1 ? "Notificação não lida" : "Notificações não lidas"}</span></div><ChevronRight className={styles.statArrow} size={16} /></Link>
-            <Link href="/competitions" className={styles.statCard}><span className={styles.statIcon}><Zap size={25} aria-hidden="true" /></span><div><strong className={styles.statText}>Explorar</strong><span>Oportunidades</span></div><ChevronRight className={styles.statArrow} size={16} /></Link>
+            <Link className={styles.statCard} href="/projects" aria-label={projects.length + " projetos recentes"}>
+              <span className={styles.statIcon}><FolderKanban size={24} aria-hidden="true" /></span>
+              <span className={styles.statCopy}><strong>{projects.length}</strong><small>Projetos recentes</small></span>
+              <ArrowRight className={styles.statTrend} size={18} aria-hidden="true" />
+            </Link>
+            <Link className={styles.statCard} href="/teams">
+              <span className={styles.statIcon}><Users size={24} aria-hidden="true" /></span>
+              <span className={styles.statCopy}><strong>{teams.length}</strong><small>{teams.length === 1 ? "Equipe" : "Equipes"}</small></span>
+              <ArrowRight className={styles.statTrend} size={18} aria-hidden="true" />
+            </Link>
+            <CompetitionCount />
+            <Link className={styles.statCard} href="/account/profile">
+              <span className={styles.statIcon}><UserRound size={24} aria-hidden="true" /></span>
+              <span className={styles.statCopy}><strong>{followerCount}</strong><small>{followerCount === 1 ? "Seguidor" : "Seguidores"}</small></span>
+              <ArrowRight className={styles.statTrend} size={18} aria-hidden="true" />
+            </Link>
           </section>
 
-          <section className={styles.stepsSection} aria-labelledby="next-steps-heading">
-            <div className={styles.sectionHeading}>
-              <div><h2 id="next-steps-heading"><Layers3 size={20} aria-hidden="true" /> Próximos passos</h2><p>Ações para você avançar no Envista.</p></div>
-              {completedSteps < firstSteps.length && <span className={styles.stepCounter}>{completedSteps}/{firstSteps.length} concluídos</span>}
-            </div>
-            <div className={styles.nextGrid}>
-              <Link href={firstIncomplete?.href || "/workspace"} className={styles.nextCard}>
-                <div className={styles.progressRing} style={{ "--home-progress": (completedSteps / firstSteps.length * 100) + "%" } as CSSProperties}><span>{completedSteps}/{firstSteps.length}</span></div>
-                <div className={styles.nextCopy}><h3>{firstIncomplete?.title || "Você concluiu os primeiros passos!"}</h3><p>{firstIncomplete?.description || "Acompanhe a evolução dos seus projetos."}</p></div>
-                <ArrowRight size={19} aria-hidden="true" />
-              </Link>
-              <Link href={ownProject ? "/projects/" + encodeURIComponent(ownProject.slug) : "/explore"} className={styles.nextCard}>
-                <span className={styles.nextArtwork}>{ownProject ? <ProjectArtwork title={ownProject.title} category={ownProject.category} /> : <Compass size={29} aria-hidden="true" />}</span>
-                <div className={styles.nextCopy}><h3>{ownProject ? "Continue: " + ownProject.title : "Descubra projetos para se inspirar"}</h3><p>{ownProject ? "Retome sua ideia e dê o próximo passo." : "Explore projetos reais da comunidade Envista."}</p></div>
-                <ArrowRight size={19} aria-hidden="true" />
-              </Link>
-            </div>
-          </section>
-
-          <section className={styles.featuredSection} aria-labelledby="featured-projects-heading">
-            {panelHeading("featured-projects-heading", "Projetos em destaque", Star, "/explore", "Ver todos")}
-            {showcase.length ? <div className={styles.projectGrid}>
-              {showcase.map((project, index) => <Link key={project.id} className={styles.projectCard} href={"/projects/" + encodeURIComponent(project.slug)} aria-label={"Abrir projeto " + project.title}>
-                <div className={styles.projectCover} data-tone={index % 4}>
-                  <ProjectArtwork title={project.title} category={project.category} />
-                  <span className={styles.projectCategory}>{project.category || "Projeto"}</span>
-                </div>
-                <div className={styles.projectInfo}>
-                  <h3>{project.title}</h3>
-                  <p>{project.short_description || "Conheça este projeto da comunidade."}</p>
-                  <div className={styles.projectMeta}><span>{project.stage || "Em desenvolvimento"}</span><ArrowRight size={16} aria-hidden="true" /></div>
-                </div>
-              </Link>)}
-            </div> : <div className={styles.featuredEmpty}>
-              <span className={styles.emptyArt}><FolderKanban size={28} aria-hidden="true" /></span>
-              <div><h3>Seu próximo projeto pode estar aqui.</h3><p>Quando houver projetos publicados, você poderá descobri-los nesta seção. Que tal começar pelo seu?</p></div>
-              <Link className={styles.outlineAction} href="/projects/new">Criar projeto <ArrowRight size={16} /></Link>
-            </div>}
-          </section>
-
-          <div className={styles.bottomGrid}>
-            <HomeOpportunitiesRedesign />
-            <section className={styles.learningPanel} aria-labelledby="learning-heading">
-              {panelHeading("learning-heading", "Aprender", BookOpen, "/learn", "Ver trilhas")}
-              <div className={styles.learningBody}>
-                <span className={styles.learningIllustration}><img src="/brand/learning-books.svg" alt="" loading="lazy" /></span>
-                <div><h3>{course?.title || "Da ideia ao projeto"}</h3><p>{course?.description || "Aprenda no seu ritmo e transforme conhecimento em um projeto real."}</p></div>
-              </div>
-              {course && <div className={styles.courseProgress}><div className={styles.track}><span style={{ width: progress + "%" }} /></div><small>{progress}% concluído</small></div>}
-              <Link className={styles.outlineAction} href={course ? "/learn/" + encodeURIComponent(course.slug) : "/learn"}>{course ? "Continuar trilha" : "Explorar trilhas"} <ArrowRight size={16} /></Link>
+          <div className={styles.showcaseGrid}>
+            <section className={styles.featuredSection} aria-labelledby="featured-projects-heading">
+              {panelHeading("featured-projects-heading", "Projetos em destaque", Star, "/explore", "Ver todos")}
+              {displayProjects.length ? <div className={styles.projectGrid}>
+                {displayProjects.map((project,index) => {
+                  const name = project.title.trim().toLocaleLowerCase("pt-BR");
+                  const referenceCover = name === "elas+" ? "/brand/envista-cover-elas.webp" :
+                    name === "elovia" ? "/brand/envista-cover-elovia.webp" :
+                    name === "nova" ? "/brand/envista-cover-nova.webp" : null;
+                  return <Link key={project.id} className={styles.projectCard} href={"/projects/" + encodeURIComponent(project.slug)} aria-label={"Abrir projeto " + project.title}>
+                    <div className={styles.projectCover} data-tone={index}>
+                      {referenceCover ? <img className={styles.projectImage} src={referenceCover} alt="" loading="lazy" /> :
+                        <ProjectArtwork title={project.title} category={project.category} />}
+                      <span className={styles.projectCategory}>{project.category || "Projeto"}</span>
+                    </div>
+                    <div className={styles.projectInfo}>
+                      <h3>{project.title}</h3>
+                      <p>{project.short_description || "Conheça este projeto da comunidade Envista."}</p>
+                      <div className={styles.projectMeta}><span>{project.stage || "Em desenvolvimento"}</span><ArrowRight size={15} aria-hidden="true" /></div>
+                    </div>
+                  </Link>;
+                })}
+              </div> : <div className={styles.featuredEmpty}>
+                <FolderKanban size={26} aria-hidden="true" />
+                <div><h3>Seus projetos começam aqui.</h3><p>Publique sua primeira ideia ou descubra os projetos da comunidade.</p></div>
+                <Link className={styles.viewAll} href="/explore">Explorar <ArrowRight size={15} aria-hidden="true" /></Link>
+              </div>}
             </section>
+            <HomeOpportunitiesRedesign />
           </div>
+
+          <section className={styles.learningBanner} aria-labelledby="learning-heading">
+            <span className={styles.learningVisual}><img src="/brand/learning-books.svg" width="88" height="77" alt="" loading="lazy" /></span>
+            <div className={styles.learningCopy}>
+              <h2 id="learning-heading">Continue aprendendo</h2>
+              <p>{course?.description || "Trilhas, aulas e conteúdos práticos para evoluir suas ideias e projetos."}</p>
+            </div>
+            {course && <div className={styles.learningProgress}>
+              <span>Seu progresso nas trilhas</span>
+              <div className={styles.progressInline}><span className={styles.track}><i style={{ width: progress + "%" }} /></span><strong>{progress}%</strong></div>
+            </div>}
+            <Link className={styles.outlineAction} href={course ? "/learn/" + encodeURIComponent(course.slug) : "/learn"}>{course ? "Continuar trilha" : "Explorar trilhas"} <ArrowRight size={16} aria-hidden="true" /></Link>
+          </section>
         </div>
 
-        <aside className={styles.rail} aria-label="Atividades, agenda e perfil">
+        <aside className={styles.rail} aria-label="Seu progresso e novidades">
+          <section className={styles.progressPanel} aria-labelledby="progress-heading">
+            <h2 id="progress-heading"><Zap size={19} aria-hidden="true" /> Seu progresso</h2>
+            <div className={styles.progressContent}>
+              <div className={styles.progressRing} style={{ "--home-progress": (profilePercentage ?? 0) + "%" } as CSSProperties}>
+                <span>{profilePercentage === null ? "—" : profilePercentage + "%"}</span>
+              </div>
+              <div className={styles.progressCopy}>
+                <h3>{profileDone ? "Perfil completo!" : "Complete seu perfil"}</h3>
+                <p>{profileDone ? "Seu perfil está pronto para novas conexões." : profileSteps.length ? "Faltam " + (profileSteps.length - stepsDone) + " etapas para concluir seu perfil." : "Adicione suas informações e aumente suas conexões."}</p>
+                <Link className={styles.outlineAction} href="/account/profile">{profileDone ? "Ver perfil" : "Continuar"} <ArrowRight size={16} aria-hidden="true" /></Link>
+              </div>
+            </div>
+          </section>
+
           <section className={styles.railPanel} aria-labelledby="activity-heading">
-            {panelHeading("activity-heading", "Acontecendo agora", Zap, "/activity", "Ver tudo")}
-            {notifications.length ? <div className={styles.activityList}>{notifications.slice(0, 3).map(item => {
+            <h2 id="activity-heading" className={styles.railTitle}><Zap size={19} aria-hidden="true" /> Acontecendo agora</h2>
+            {notifications.length ? <div className={styles.activityList}>{notifications.slice(0,3).map(item => {
               const Icon = iconForNotification(item.title);
               return <Link className={styles.activityItem} href={item.href || "/notifications"} key={item.id}>
-                <span className={styles.activityIcon}><Icon size={20} aria-hidden="true" /></span>
+                <span className={styles.activityIcon}><Icon size={18} aria-hidden="true" /></span>
                 <span className={styles.activityCopy}><strong>{item.title}</strong><small>{item.body || "Confira a atualização na sua conta."}</small><time dateTime={item.created_at}>{when(item.created_at)}</time></span>
               </Link>;
-            })}</div> : <div className={styles.railEmpty}><Bell size={21} aria-hidden="true" /><p>Tudo em dia! Novidades e convites aparecerão aqui.</p></div>}
+            })}</div> : <div className={styles.railEmpty}><Bell size={21} aria-hidden="true" /><p>Você está em dia. Novas atividades vão aparecer aqui.</p></div>}
+            <Link className={styles.railFooterLink} href="/activity">Ver mais atividades <ArrowRight size={14} aria-hidden="true" /></Link>
           </section>
 
           <section className={styles.railPanel} aria-labelledby="agenda-heading">
-            {panelHeading("agenda-heading", "Agenda", CalendarDays, "/calendar", "Ver agenda")}
-            {agenda.length ? <div className={styles.agendaList}>{agenda.slice(0, 3).map(event => {
-              const date = eventDay(event.starts_at);
+            <div className={styles.panelHeading}><h2 id="agenda-heading"><CalendarDays size={18} aria-hidden="true" /> Seu calendário</h2>
+              <Link className={styles.viewAll} href="/calendar">Ver agenda <ArrowRight size={14} aria-hidden="true" /></Link></div>
+            {agenda.length ? <div className={styles.agendaList}>{agenda.slice(0,3).map(event=>{
+              const date=eventDay(event.starts_at);
               return <Link key={event.id} className={styles.agendaItem} href={event.href && event.href.startsWith("/") ? event.href : "/calendar"}>
                 <span className={styles.calendarDate}><strong>{date.day}</strong><small>{date.month}</small></span>
                 <span><strong>{event.title}</strong><small>{timeOnly(event.starts_at)}</small></span>
               </Link>;
-            })}</div> : <div className={styles.railEmpty}><CalendarDays size={21} aria-hidden="true" /><p>Nenhum evento próximo. Veja as competições disponíveis no calendário.</p></div>}
-          </section>
-
-          <section className={styles.railPanel} aria-labelledby="profile-heading">
-            <div className={styles.panelHeading}><h2 id="profile-heading"><UserRound size={19} aria-hidden="true" />{profilePercentage === 100 ? "Seu perfil" : "Complete seu perfil"}</h2>{profilePercentage !== null && <b className={styles.profilePercent}>{profilePercentage}%</b>}</div>
-            {profilePercentage !== null && <div className={styles.track} role="progressbar" aria-label="Perfil preenchido" aria-valuemin={0} aria-valuemax={100} aria-valuenow={profilePercentage}><span style={{ width: profilePercentage + "%" }} /></div>}
-            <p className={styles.profileHelp}>{profilePercentage === 100 ? "Seu perfil está completo. Continue compartilhando sua evolução." : "Um perfil completo facilita conexões com equipes, projetos e oportunidades."}</p>
-            {profileSteps.length > 0 && <ul className={styles.profileChecklist}>{profileSteps.map(item => <li key={item.label} data-done={item.done}><span className={styles.checkIcon}>{item.done && <Check size={14} aria-hidden="true" />}</span>{item.label}</li>)}</ul>}
-            <Link className={styles.profileButton} href="/account/profile">{profilePercentage === 100 ? "Ver meu perfil" : "Completar perfil"} <ArrowRight size={16} aria-hidden="true" /></Link>
+            })}</div> : <div className={styles.railEmpty}><CalendarDays size={21} aria-hidden="true" /><p>Nenhum evento próximo no calendário.</p></div>}
           </section>
         </aside>
       </div>
