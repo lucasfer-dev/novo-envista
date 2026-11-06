@@ -86,6 +86,7 @@ function Header() {
         <Link className={`${styles.brand || ""} ev-brand`} href="/" aria-label="Envista — página inicial">
           <Image src="/brand/envista-symbol-gradient.svg" alt="" width={31} height={42} priority />
           <span className={`${styles.brandName || ""} ev-brandName`}>ENVISTA</span>
+          <span className="ev-brandDescriptor" aria-hidden="true">PROJETOS<br />QUE CONTINUAM</span>
         </Link>
 
         <nav className={`${styles.desktopNav || ""} ev-desktopNav`} aria-label="Navegação principal">
@@ -96,7 +97,7 @@ function Header() {
         </nav>
 
         <details className={`${styles.mobileNav || ""} ev-mobileNav`}>
-          <summary aria-label="Abrir navegação"><Menu size={20} aria-hidden="true" /></summary>
+          <summary aria-label="Menu de navegação"><Menu size={20} aria-hidden="true" /></summary>
           <nav aria-label="Navegação principal no celular">
             <a href="#como-funciona">Como funciona</a>
             <Link href="/schools">Para escolas</Link>
@@ -110,12 +111,17 @@ function Header() {
 }
 
 function ProjectCard({ project, index }: { project: PublicProject; index: number }) {
+  const monogram = project.title.trim().split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toLocaleUpperCase("pt-BR") || "EV";
   return (
     <Link className={`${styles.projectCard || ""} ev-projectCard`} href={`/p/${project.slug}`}>
       <div className={`${styles.projectArtwork || ""} ev-projectArtwork`} aria-hidden="true">
         <span className={`${styles.projectArtworkIndex || ""} ev-projectArtworkIndex`}>{String(index + 1).padStart(2, "0")}</span>
-        <Image src="/brand/envista-symbol-white.svg" alt="" width={88} height={116} />
-        <span className={`${styles.projectArtworkLabel || ""} ev-projectArtworkLabel`}>ENVISTA / PROJETOS</span>
+        <div className="ev-projectVisualIdentity">
+          <span className="ev-projectMonogram">{monogram}</span>
+          <span className="ev-projectMonogramRule" />
+        </div>
+        <span className="ev-projectBrandSeal"><Image src="/brand/envista-symbol-white.svg" alt="" width={19} height={25} /> ENVISTA</span>
+        <span className={`${styles.projectArtworkLabel || ""} ev-projectArtworkLabel`}>ECOSSISTEMA / PROJETOS</span>
       </div>
       <div className={`${styles.projectTopline || ""} ev-projectTopline`}>
         <span>{project.stage || "Em desenvolvimento"}</span>
@@ -192,12 +198,12 @@ export default async function PublicLandingServer() {
       <a className={`${styles.skipLink || ""} ev-skipLink`} href="#conteudo">Pular para o conteúdo</a>
       <Header />
 
-      <div id="conteudo">
+      <div id="conteudo" tabIndex={-1}>
         <section className={`${styles.hero || ""} ev-hero`} aria-labelledby="hero-title">
           <div className={`${styles.heroCopy || ""} ev-heroCopy`}>
             <div className={`${styles.heroMeta || ""} ev-heroMeta`}>
               <span className={`${styles.kicker || ""} ev-kicker`}>INCUBADORA DE PROJETOS / 2026</span>
-              <span className={`${styles.heroEdition || ""} ev-heroEdition`}>IDÉIAS QUE CONTINUAM</span>
+              <span className={`${styles.heroEdition || ""} ev-heroEdition`}>IDEIAS QUE CONTINUAM</span>
             </div>
             <h1 id="hero-title">
               Seu projeto<br />
@@ -230,6 +236,7 @@ export default async function PublicLandingServer() {
             <div className={`${styles.heroVisualCaption || ""} ev-heroVisualCaption`}>
               <span>01 / PENSE</span><span>02 / CRIE</span><span>03 / COMPARTILHE</span>
             </div>
+            <span className="ev-heroVisualAxis" aria-hidden="true">ENVISTA — IDEIAS EM MOVIMENTO</span>
 
             <div className={`${styles.showcaseWindow || ""} ev-showcaseWindow`}>
               <div className={`${styles.showcaseChrome || ""} ev-showcaseChrome`}>
@@ -266,7 +273,8 @@ export default async function PublicLandingServer() {
         </section>
 
         <div className={`${styles.manifestoStrip || ""} ev-manifestoStrip`} aria-label="Da ideia às oportunidades">
-          <span>IDEIAS</span><b>✳</b><span>PROJETOS</span><b>✳</b><span>CONEXÕES</span><b>✳</b><span>OPORTUNIDADES</span>
+          <span className="ev-manifestoSeal" aria-hidden="true"><Image src="/brand/envista-symbol-white.svg" alt="" width={29} height={39} /></span>
+          <span>IDEIAS</span><b aria-hidden="true">✳</b><span>PROJETOS</span><b aria-hidden="true">✳</b><span>CONEXÕES</span><b aria-hidden="true">✳</b><span>OPORTUNIDADES</span>
         </div>
 
         <section className={`${styles.featuredProjects || ""} ev-featuredProjects`} aria-labelledby="featured-title">

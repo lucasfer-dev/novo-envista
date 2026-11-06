@@ -1,0 +1,292 @@
+/*
+ * Envista / identidade em uso, v2.
+ * O design usa materiais originais com parcimônia: títulos e ações permanecem
+ * em superfícies limpas, pattern/textura atuam como assinatura de marca.
+ */
+.ev-page{
+  --ev-brand-blue:#0086a7;
+  --ev-brand-teal:#00a99d;
+  --ev-brand-green:#22b573;
+  --ev-brand-ink:#0f1923;
+  --ev-brand-gradient:linear-gradient(116deg,#22b573 0%,#00a99d 51%,#0086a7 100%);
+  --ev-editorial-rule:rgba(155,233,213,.24);
+}
+.ev-page .ev-header{
+  border-bottom-color:rgba(117,212,200,.25);
+}
+.ev-page .ev-header:before{
+  height:3px;
+}
+.ev-page .ev-headerInner{
+  max-width:1420px;
+}
+.ev-brandDescriptor{
+  display:inline-block;
+  margin-left:6px;
+  padding-left:16px;
+  border-left:1px solid rgba(107,206,185,.35);
+  font-size:9px;
+  line-height:1.5;
+  font-weight:800;
+  letter-spacing:.12em;
+  color:#81bdb8;
+}
+.ev-page .ev-hero{
+  isolation:isolate;
+  min-height:770px;
+}
+.ev-page .ev-hero:after{
+  opacity:.27;
+  filter:brightness(1.42);
+  mask-image:linear-gradient(90deg,transparent 6%,transparent 32%,#000 83%);
+}
+.ev-page .ev-heroCopy{
+  position:relative;
+}
+.ev-page .ev-heroCopy:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:-20px;
+  height:2px;
+  width:46px;
+  background:var(--ev-brand-gradient);
+}
+.ev-page .ev-heroCopy h1{
+  text-wrap:balance;
+}
+.ev-page .ev-heroActions{
+  position:relative;
+}
+.ev-page .ev-heroSignals{
+  border-top-color:var(--ev-editorial-rule);
+}
+.ev-page .ev-heroVisualPattern{
+  opacity:.46;
+  filter:brightness(1.52);
+  border-color:rgba(148,239,213,.2);
+  mask-image:radial-gradient(ellipse at center,#000 0,transparent 80%);
+}
+.ev-heroVisualAxis{
+  position:absolute;
+  right:-15px;
+  top:48%;
+  transform:translate(47%,-50%) rotate(90deg);
+  transform-origin:center;
+  color:#7cc5c0;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.22em;
+  white-space:nowrap;
+  opacity:.72;
+}
+.ev-page .ev-heroVisualSignature{
+  opacity:.2;
+}
+.ev-page .ev-showcaseWindow{
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 42px 105px rgba(0,5,11,.55),17px 18px 0 -7px rgba(0,169,157,.2),32px 33px 0 -15px rgba(34,181,115,.13);
+}
+.ev-page .ev-showcaseCover{
+  isolation:isolate;
+  background:
+    linear-gradient(128deg,rgba(6,50,53,.3),rgba(0,37,49,.04)),
+    url("/brand/envista-texture-original.png") center/cover,
+    var(--ev-brand-gradient);
+}
+.ev-page .ev-showcaseCover:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:url("/brand/envista-pattern-original.png") center/310px repeat;
+  mix-blend-mode:screen;
+  opacity:.32;
+  pointer-events:none;
+}
+.ev-page .ev-showcaseCoverSymbol{
+  top:18px;
+  right:28px;
+  opacity:.43;
+  transform:rotate(-16deg);
+}
+.ev-page .ev-showcaseCoverSymbol img{
+  height:152px;
+  width:113px;
+}
+.ev-page .ev-showcaseChrome{
+  border-bottom:1px solid #dde9e5;
+}
+.ev-page .ev-showcaseBottom{
+  border-top:2px solid rgba(0,169,157,.15);
+}
+.ev-page .ev-manifestoStrip{
+  position:relative;
+  isolation:isolate;
+  min-height:100px;
+  padding:18px clamp(24px,5vw,80px);
+  gap:16px 21px;
+  background:var(--ev-brand-gradient);
+  color:#000b0f;
+  overflow:hidden;
+}
+.ev-page .ev-manifestoStrip:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:url("/brand/envista-pattern-original.png") center/390px repeat;
+  mix-blend-mode:screen;
+  opacity:.19;
+  pointer-events:none;
+}
+.ev-manifestoSeal{
+  width:39px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  border-right:1px solid rgba(0,34,42,.23);
+  padding-right:10px;
+  box-sizing:content-box;
+}
+.ev-manifestoSeal img{
+  display:block;
+  height:39px;
+  width:29px;
+}
+.ev-page .ev-manifestoStrip span:not(.ev-manifestoSeal){
+  font-size:clamp(12px,1.34vw,17px);
+  letter-spacing:.1em;
+  color:#000b0f;
+}
+.ev-page .ev-featuredProjects{
+  position:relative;
+  isolation:isolate;
+}
+.ev-page .ev-featuredProjects:before{
+  content:"";
+  position:absolute;
+  top:0;
+  right:0;
+  height:310px;
+  width:50%;
+  z-index:-1;
+  pointer-events:none;
+  background:url("/brand/envista-pattern-original.png") right top/440px repeat;
+  mix-blend-mode:screen;
+  opacity:.17;
+  mask-image:linear-gradient(90deg,transparent,#000 85%);
+}
+.ev-page .ev-sectionHeading{
+  position:relative;
+  z-index:1;
+}
+.ev-page .ev-sectionHeading .ev-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:13px;
+}
+.ev-page .ev-sectionHeading .ev-kicker:before{
+  content:"";
+  display:inline-block;
+  width:23px;
+  height:2px;
+  background:currentColor;
+  opacity:.8;
+}
+.ev-page .ev-projectCard{
+  background:linear-gradient(140deg,#12303c,#0b1d2b);
+  border-color:rgba(122,226,201,.22);
+}
+.ev-page .ev-projectArtwork{
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 75% 24%,rgba(167,249,199,.24),transparent 64%),
+    linear-gradient(118deg,#0b6e6b,#0086a7 85%);
+}
+.ev-page .ev-projectCard:first-child .ev-projectArtwork{
+  background:
+    linear-gradient(100deg,rgba(3,59,62,.24),rgba(4,64,79,.13)),
+    url("/brand/envista-texture-original.png") center/cover,
+    linear-gradient(115deg,#22b573,#00a99d,#0086a7);
+}
+.ev-page .ev-projectCard:nth-child(3n) .ev-projectArtwork{
+  background:linear-gradient(112deg,#0e725f,#07878b 60%,#075877);
+}
+.ev-page .ev-projectArtwork:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:url("/brand/envista-pattern-original.png") center/310px repeat;
+  opacity:.27;
+  mix-blend-mode:screen;
+  pointer-events:none;
+}
+.ev-page .ev-projectArtwork:after{
+  opacity:.9;
+}
+.ev-projectVisualIdentity{
+  position:relative;
+  z-index:1;
+  display:grid;
+  gap:13px;
+  justify-items:center;
+  text-align:center;
+}
+.ev-projectMonogram{
+  display:block;
+  font-size:clamp(65px,8vw,112px);
+  font-weight:810;
+  line-height:1;
+  letter-spacing:-.09em;
+  color:#f2fffa;
+  text-shadow:0 12px 42px rgba(2,43,47,.16);
+  transition:transform .24s ease;
+}
+.ev-page .ev-projectCard:first-child .ev-projectMonogram{
+  font-size:clamp(100px,11vw,154px);
+}
+.ev-projectMonogramRule{
+  display:block;
+  height:3px;
+  width:54px;
+  background:rgba(243,255,249,.78);
+}
+.ev-page .ev-projectCard:hover .ev-projectMonogram,
+.ev-page .ev-projectCard:focus-visible .ev-projectMonogram{
+  transform:translateY(-5px);
+}
+.ev-projectBrandSeal{
+  position:absolute;
+  top:15px;
+  right:19px;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:9px;
+  letter-spacing:.14em;
+  font-weight:850;
+  color:#f1fff9;
+}
+.ev-projectBrandSeal img{
+  display:block;
+  height:20px;
+  width:15px;
+}
+.ev-page .ev-projectArtworkIndex{
+  top:21px;
+  left:23px;
+  color:rgba(249,255,251,.87);
+}
+.ev-page .ev-projectArtworkLabel{
+  color:rgba(249,255,251,.84);
+}
+.ev-page .ev-projectCardCopy{
+  border-top:1px solid rgba(130,222,202,.19);
+}
+.ev-page .ev-projectTopline{
+  color:#94ead1;
+}
