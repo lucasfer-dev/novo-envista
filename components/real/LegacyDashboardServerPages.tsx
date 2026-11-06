@@ -118,7 +118,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       .order("joined_at", { ascending: false });
     const teamIds = (memberships ?? []).map((item: any) => item.team_id);
 
-    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult] = await Promise.all([
+    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult, followersResult] = await Promise.all([
       supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("owner_user_id", userId).order("updated_at", { ascending: false }).limit(6),
       teamIds.length
         ? supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").in("owner_team_id", teamIds).order("updated_at", { ascending: false }).limit(8)
@@ -128,6 +128,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("visibility", "platform").order("updated_at", { ascending: false }).limit(4),
       supabase.from("platform_calendar_events").select("id,title,starts_at,href").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(3),
       supabase.from("profiles").select("username,display_name,bio,public_city,public_state,public_school,interest_tags").eq("id", userId).maybeSingle(),
+      supabase.from("follows").select("id", { count: "exact", head: true }).eq("target_profile_id", userId),
     ]);
 
     const projects = new Map<string, ProjectCardRow>();
@@ -150,6 +151,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       <LegacySocialShell user={appUser} role="participant" pathname={pathname}>
         <HomeDashboard name={appUser.name} projects={[...projects.values()]} teams={teams}
           featuredProjects={publicProjectsResult.data ?? []}
+          followerCount={followersResult.count ?? 0}
           notifications={notificationsResult.data ?? []}
           agenda={agendaResult.data ?? []}
           profileSteps={[
