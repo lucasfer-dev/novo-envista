@@ -22,6 +22,7 @@ import {
   Send,
   Share2,
   UserPlus,
+  Users,
   X,
 } from "lucide-react";
 import {
