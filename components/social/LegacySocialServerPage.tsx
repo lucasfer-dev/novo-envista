@@ -84,7 +84,7 @@ export default async function LegacySocialServerPage({
   const page = pageNumber(query.page);
   const returnTo = socialHref(path, feedMode, searchQuery, page);
 
-  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult, githubRepositoriesResult] = await Promise.all([
+  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult, githubRepositoriesResult, agendaResult] = await Promise.all([
     supabase.rpc("get_social_feed_refs", {
       feed_mode: feedMode,
       search_query: searchQuery,
@@ -121,6 +121,12 @@ export default async function LegacySocialServerPage({
       .eq("user_id", userId)
       .order("github_updated_at", { ascending: false })
       .limit(50),
+    supabase
+      .from("platform_calendar_events")
+      .select("id,title,starts_at,href")
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true })
+      .limit(3),
   ]);
 
   const feed = feedPayload(feedResult.data);
@@ -360,6 +366,12 @@ export default async function LegacySocialServerPage({
         items={items}
         suggestions={suggestions}
         followingCount={followingCountResult.count ?? 0}
+        agenda={(agendaResult.data ?? []).map(event => ({
+          id: event.id,
+          title: event.title,
+          startsAt: event.starts_at,
+          href: event.href,
+        }))}
         feedMode={feedMode}
         initialQuery={searchQuery}
         page={page}
