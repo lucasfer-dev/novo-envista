@@ -37,6 +37,7 @@ import {
 } from "@/lib/social-real/actions";
 import styles from "./LegacySocialFeed.module.css";
 import SocialCompetitionSpotlight from "./SocialCompetitionSpotlight";
+import ProjectArtwork from "@/components/product/ProjectArtwork";
 
 export type SocialTeamOption = { id: string; name: string };
 export type SocialProjectOption = { id: string; title: string; slug: string };
@@ -241,16 +242,25 @@ export default function LegacySocialFeed({
     }
   }
 
-  const topics = new Map<string, number>();
-  for (const item of items) {
-    if (item.kind !== "post" || item.visibility !== "platform") continue;
-    const perPost = new Set<string>();
-    for (const hashtag of item.body.matchAll(/#([\p{L}\p{N}_]{2,32})/gu)) {
-      perPost.add(hashtag[1].toLocaleLowerCase("pt-BR"));
-    }
-    for (const tag of perPost) topics.set(tag, (topics.get(tag) ?? 0) + 1);
-  }
-  const topTopics = [...topics.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+  // Real, page-local topics, including project activity (not fabricated
+  // platform-wide hashtag counts). A tag is counted once per feed item.
+  const topicTerms = [
+    { label: "Inovação", term: "inova", query: "inovação" },
+    { label: "Educação", term: "educa|aprendiz|escola|mentor", query: "educação" },
+    { label: "Sustentabilidade", term: "sustent|resíduo|ambient|circular|água", query: "sustentabilidade" },
+    { label: "Tecnologia", term: "tecnolog|digital|aplicativo|plataforma", query: "tecnologia" },
+    { label: "Saúde", term: "saúde|bem-estar|mental", query: "saúde" },
+    { label: "Mobilidade", term: "mobilidade|transporte|rota|acessibilidade", query: "mobilidade" },
+    { label: "Projetos", term: "projeto|protótip|solução", query: "projetos" },
+  ];
+  const topicStats = topicTerms.map(topic => ({
+    ...topic,
+    count: items.filter(item => {
+      if (item.kind === "post" && item.visibility !== "platform") return false;
+      const source = item.kind === "post" ? item.body : [item.title, item.description].join(" ");
+      return new RegExp(topic.term, "i").test(normalize(source));
+    }).length,
+  })).filter(topic => topic.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
 
   const visibleSuggestions = suggestions.filter(
     (suggestion) => !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
@@ -431,30 +441,42 @@ export default function LegacySocialFeed({
           <div className={styles.timeline}>
             {items.map((item) => {
               if (item.kind === "project-update") {
+                const projectTitle = item.title.trim().toLocaleLowerCase("pt-BR");
+                const projectImage = projectTitle === "elovia" ? "/brand/social-elovia-reference.webp"
+                  : projectTitle === "elas+" ? "/brand/envista-cover-elas.webp"
+                  : projectTitle === "nova" ? "/brand/envista-cover-nova.webp" : null;
                 return (
                   <article className={styles.timelineUpdate} key={item.id}>
                     <div className={styles.identityRow}>
-                      <span className={`${styles.timelineAvatar} ${styles.projectAvatar}`}>
-                        {item.ownerAvatarUrl ? <img src={item.ownerAvatarUrl} alt="" /> : <FolderKanban size={18} />}
+                      <span className={styles.timelineAvatar}>
+                        {item.ownerAvatarUrl ? <img src={item.ownerAvatarUrl} alt="" /> : initials(item.ownerLabel)}
                       </span>
                       <div className={styles.identityText}>
-                        <div>
-                          <b>{item.ownerLabel}</b>
-                          <span className={styles.authorKind}>{kindLabel(item.ownerKind)}</span>
-                        </div>
-                        <small>{item.isNew ? "publicou um projeto" : "atualizou um projeto"} · {time(item.createdAt)}</small>
+                        <div><b>{item.ownerLabel}</b><span className={styles.authorKind}>{kindLabel(item.ownerKind)}</span></div>
+                        <small>{item.isNew ? "Publicou um novo projeto" : "Atualizou um projeto"} · {time(item.createdAt)}</small>
                       </div>
                       {item.followed && <span className={styles.followingLabel}>Seguindo</span>}
                     </div>
-
-                    <Link className={styles.projectUpdateBody} href={item.href}>
-                      <div className={styles.updateTitle}>
-                        <strong>{item.title}</strong>
-                        <span className="stage">{item.stage}</span>
-                      </div>
-                      <p>{item.description || "O projeto recebeu uma nova atualização."}</p>
-                      <span className={styles.updateAction}>Ver projeto <ArrowRight size={14} /></span>
+                    <p className={styles.postBody}>
+                      {item.isNew ? "Compartilhou um novo projeto: " : "Novidades no projeto: "}
+                      <strong>{item.title}</strong>. {item.description}
+                    </p>
+                    <Link className={styles.projectReference} href={item.href} aria-label={"Conhecer o projeto " + item.title}>
+                      <span className={styles.projectCover}>
+                        {projectImage
+                          ? <img src={projectImage} alt="" loading="lazy" />
+                          : <span className={styles.updateArtwork}><ProjectArtwork title={item.title} category={item.stage} large /></span>}
+                      </span>
+                      <span className={styles.projectReferenceCaption}>
+                        <FolderKanban size={16} aria-hidden="true" />
+                        <span><b>{item.title}</b><small>{item.stage} · Ver projeto</small></span>
+                        <ArrowRight size={16} aria-hidden="true" />
+                      </span>
                     </Link>
+                    <div className={styles.updateFooter}>
+                      <span><FolderKanban size={17} aria-hidden="true" /> {item.stage}</span>
+                      <Link href={item.href}>Ver projeto <ArrowRight size={16} aria-hidden="true" /></Link>
+                    </div>
                   </article>
                 );
               }
@@ -628,15 +650,15 @@ export default function LegacySocialFeed({
               <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
               <Link href="/explore">Explorar <ArrowRight size={14} aria-hidden="true" /></Link>
             </div>
-            {topTopics.length ? <>
-              <p className={styles.topicContext}>Hashtags presentes nas publicações desta página</p>
+            {topicStats.length ? <>
+              <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
               <div className={styles.topicList}>
-                {topTopics.map(([tag, count]) => <Link key={tag} href={feedHref(path, feedMode, "#" + tag, 1)}>
-                  <span><strong>#{tag}</strong><small>{count} {count === 1 ? "publicação recente" : "publicações recentes"}</small></span>
+                {topicStats.map(topic => <Link key={topic.label} href={"/explore?q=" + encodeURIComponent(topic.query)}>
+                  <span><strong>#{topic.label.replace(/\\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
                   <TrendingUp size={17} aria-hidden="true" />
                 </Link>)}
               </div>
-            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>As hashtags das publicações públicas desta página aparecerão aqui.</p></div>}
+            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>Os temas aparecerão conforme a comunidade publicar novas atividades.</p></div>}
           </section>
 
           <section className={[styles.sideCard, styles.peoplePanel].join(" ")} aria-labelledby="social-suggestions-title">
