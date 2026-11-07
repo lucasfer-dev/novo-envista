@@ -405,6 +405,9 @@ export default function LegacySocialFeed({
               <Link className={styles.discoverTab} href="/explore?type=projects">Projetos</Link>
             </div>
 
+            <div className={styles.toolbarRight}>
+              <details className={styles.feedSearchToggle}>
+                <summary aria-label="Pesquisar no feed" title="Pesquisar no feed"><Search size={17} aria-hidden="true" /></summary>
             <form className={styles.feedSearch} onSubmit={submitSearch}>
               <Search size={16} />
               <input
@@ -420,7 +423,9 @@ export default function LegacySocialFeed({
                 </button>
               )}
             </form>
+              </details>
             <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Mais recentes <ChevronDown size={13} aria-hidden="true" /></span>
+            </div>
           </div>
 
           <div className={styles.timeline}>
@@ -483,7 +488,7 @@ export default function LegacySocialFeed({
                   <p className={styles.postBody}>{item.body}</p>
 
                   {item.project && (
-                    <Link className={styles.projectReference} href={item.project.href}>
+                    <Link className={styles.projectReference} href={item.project.href} aria-label={"Abrir projeto " + item.project.title}>
                       <span className={styles.projectCover}>
                         {item.project.title.trim().toLowerCase() === "elovia"
                           ? <img src="/brand/envista-cover-elovia.webp" alt="" loading="lazy" />
@@ -507,7 +512,7 @@ export default function LegacySocialFeed({
                       <input type="hidden" name="return_to" value={returnTo} />
                       <button className={item.liked ? styles.liked : ""} aria-pressed={item.liked} type="submit">
                         <Heart size={18} fill={item.liked ? "currentColor" : "none"} />
-                        <span>{item.likeCount || "Curtir"}</span>
+                        <span>{item.likeCount}</span>
                       </button>
                     </form>
                     <button
@@ -515,11 +520,11 @@ export default function LegacySocialFeed({
                       onClick={() => setOpenComments((current) => ({ ...current, [item.id]: !current[item.id] }))}
                     >
                       <MessageCircle size={18} />
-                      <span>{item.comments.length || "Comentar"}</span>
+                      <span>{item.comments.length}</span>
                     </button>
-                    <button type="button" onClick={() => sharePost(item)}>
-                      <Share2 size={18} />
-                      <span>Compartilhar</span>
+                    <button type="button" aria-label="Compartilhar publicação" onClick={() => sharePost(item)}>
+                      <Share2 size={19} aria-hidden="true" />
+                      <span className={styles.visuallyHidden}>Compartilhar</span>
                     </button>
                     <span className={styles.savePlaceholder} title="Salvar publicações estará disponível em uma atualização futura" aria-label="Salvar publicação: em breve"><Bookmark size={19} aria-hidden="true" /></span>
                   </div>
