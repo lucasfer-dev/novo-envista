@@ -111,19 +111,21 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-function Avatar({ name }: { name: string }) {
-  return <span className="avatar">{initials(name)}</span>;
+function Avatar({ name, src }: { name: string; src?: string | null }) {
+  return <span className="avatar">{src ? <img src={src} alt="" loading="lazy" /> : initials(name)}</span>;
 }
 
 export default function LegacySocialShell({
   user,
   role,
   pathname: activePath,
+  avatarUrl,
   children,
 }: {
   user: User;
   role: ProductRole;
   pathname?: string;
+  avatarUrl?: string | null;
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -169,6 +171,7 @@ export default function LegacySocialShell({
         ? "/home"
         : pathname;
   const homeReference = role === "participant" && (pathname === "/home" || pathname === "/explore" || pathname === "/social");
+  const socialReference = role === "participant" && pathname === "/social";
   const nav = role === "investor" ? investorNav : homeReference ? participantHomeNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
@@ -187,7 +190,7 @@ export default function LegacySocialShell({
   };
 
   return (
-    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined}>
+    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined}>
       <a className="a11y-skip-link" href="#main-content">
         Pular para o conteúdo
       </a>
@@ -273,7 +276,7 @@ export default function LegacySocialShell({
             <span className="home-promo-icon" aria-hidden="true"><Rocket size={27} strokeWidth={1.8} /></span>
             <strong>Envista</strong>
             <p>Ideias, pessoas e oportunidades para levar seus projetos mais longe.</p>
-            <Link href={pathname === "/explore" ? "#explore-categories" : "/explore"} onClick={closeMobile}>Explorar projetos <span aria-hidden="true">→</span></Link>
+            <Link href={pathname === "/explore" ? "#explore-categories" : "/explore"} onClick={closeMobile}>{socialReference ? "Conhecer" : "Explorar projetos"} <span aria-hidden="true">→</span></Link>
           </div>
         </> : (
         <div className="side-section">
@@ -309,7 +312,7 @@ export default function LegacySocialShell({
               href={profile}
               onClick={closeMobile}
             >
-              <Avatar name={user.name} />
+              <Avatar name={user.name} src={avatarUrl} />
             </Link>
             <div>
               <Link href={profile} onClick={closeMobile}>
@@ -353,7 +356,7 @@ export default function LegacySocialShell({
               aria-label="Abrir meu perfil"
               href={profile}
             >
-              <Avatar name={user.name} />
+              <Avatar name={user.name} src={avatarUrl} />
             </Link>
           </div>
         </header>

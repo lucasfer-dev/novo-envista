@@ -11,7 +11,7 @@ describe("approved social UI / UX and existing functional contracts", () => {
   it("shows the full social interface without invented posts or metrics", () => {
     expect(feed).toContain("Conecte-se, compartilhe ideias, acompanhe projetos");
     expect(feed).toContain("SocialCompetitionSpotlight");
-    expect(feed).toContain("Assuntos em pauta");
+    expect(feed).toContain("Assuntos em alta");
     expect(feed).toContain("Sugestões de pessoas");
     expect(feed).toContain("Próximos eventos");
     expect(feed).toContain("items.map((item)");

@@ -1,0 +1,202 @@
+/* 07/11: Social's approved 1672×941 reference composition.
+ * Scope the geometry to /social only; Home and Explore are unchanged.
+ */
+.app-shell[data-envista-social-reference="true"] {
+  --ev-sidebar-width: 260px;
+}
+.app-shell[data-envista-social-reference="true"] .sidebar {
+  width:260px;
+  padding:16px 19px 12px;
+  background:#031923!important;
+  border-right:1px solid #113b45!important;
+}
+.app-shell[data-envista-social-reference="true"] .sidebar > .brand {
+  min-height:44px;
+  padding-left:18px;
+  margin-bottom:22px;
+}
+.app-shell[data-envista-social-reference="true"] .sidebar > nav {
+  gap:5px;
+}
+.app-shell[data-envista-social-reference="true"] .sidebar > nav a {
+  min-height:37px;
+  height:37px;
+  padding:0 22px;
+  border-radius:999px;
+  font-size:13px;
+}
+.app-shell[data-envista-social-reference="true"] .sidebar > nav a[aria-current="page"] {
+  background:linear-gradient(90deg,#0b6270,#09baa6);
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-section {
+  margin:16px 5px 0;
+  padding-top:13px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-section > span {
+  font-size:11px;
+  margin-bottom:8px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-section nav a {
+  min-height:36px;
+  height:36px;
+  font-size:13px;
+  padding:0 16px;
+}
+.app-shell[data-envista-social-reference="true"] .home-more-menu {
+  margin:10px 10px 0;
+}
+.app-shell[data-envista-social-reference="true"] .home-more-menu summary {
+  color:#cff8f6;
+  padding:7px 10px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-promo {
+  margin:auto 5px 12px;
+  padding:17px 22px 16px;
+  width:auto;
+  min-height:181px;
+  height:181px;
+  justify-content:flex-start;
+  background:linear-gradient(140deg,#08645f,#094c54 67%,#063440);
+  border-color:#047c76;
+  border-radius:15px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-promo .home-promo-icon {
+  width:30px;
+  height:30px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-promo strong {
+  font-size:21px;
+  margin-top:4px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-promo p {
+  font-size:12px;
+  line-height:1.27;
+  margin-top:5px;
+}
+.app-shell[data-envista-social-reference="true"] .home-nav-promo a {
+  margin-top:auto;
+  min-height:35px;
+  padding:8px 20px;
+  font-size:11px;
+  color:#fff;
+  border-color:#18d4c9;
+  justify-content:center;
+  width:100%;
+}
+.app-shell[data-envista-social-reference="true"] .side-bottom {
+  padding-top:11px;
+  border-top-color:rgba(97,172,186,.31);
+}
+.app-shell[data-envista-social-reference="true"] .user-card {
+  padding:0;
+  min-height:52px;
+}
+.app-shell[data-envista-social-reference="true"] .avatar {
+  overflow:hidden;
+  background:linear-gradient(120deg,#074b58,#0ca394);
+}
+.app-shell[data-envista-social-reference="true"] .avatar > img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:inherit;
+}
+.app-shell[data-envista-social-reference="true"] .main {
+  margin-left:260px;
+  background:#02141d;
+}
+.app-shell[data-envista-social-reference="true"] .topbar {
+  height:68px;
+  padding-inline:26px 39px;
+  background:#051b24!important;
+  border-bottom-color:#113540!important;
+}
+.app-shell[data-envista-social-reference="true"] .global-search {
+  height:43px;
+  border-color:#1b4956;
+  background:#0a2532;
+  border-radius:13px;
+  min-width:min(667px,52vw);
+}
+.app-shell[data-envista-social-reference="true"] .page-wrap {
+  width:100%;
+  max-width:none;
+  padding:9px 40px 46px 35px;
+  margin:0;
+}
+@media(min-width:981px) and (max-height:850px) {
+  .app-shell[data-envista-social-reference="true"] .sidebar {
+    padding:10px 14px 8px;
+  }
+  .app-shell[data-envista-social-reference="true"] .sidebar > .brand {
+    margin-bottom:7px;
+  }
+  .app-shell[data-envista-social-reference="true"] .sidebar > nav {
+    gap:2px;
+  }
+  .app-shell[data-envista-social-reference="true"] .sidebar > nav a {
+    min-height:31px;
+    height:31px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-section {
+    margin-top:8px;
+    padding-top:6px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-section > span {
+    margin-bottom:4px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-section nav a {
+    height:31px;
+    min-height:31px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-more-menu {
+    margin-top:3px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-promo {
+    height:auto;
+    min-height:0;
+    padding:10px 15px;
+    margin-bottom:7px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-promo strong {
+    font-size:17px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-promo p {
+    font-size:10px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-promo a {
+    margin-top:7px;
+    min-height:30px;
+  }
+}
+@media(min-width:981px) and (max-height:700px) {
+  .app-shell[data-envista-social-reference="true"] .sidebar > nav a,
+  .app-shell[data-envista-social-reference="true"] .home-nav-section nav a {
+    min-height:29px;
+    height:29px;
+  }
+  .app-shell[data-envista-social-reference="true"] .sidebar > .brand {margin-bottom:3px;}
+  .app-shell[data-envista-social-reference="true"] .home-nav-promo p {display:none;}
+}
+@media(max-width:980px) {
+  .app-shell[data-envista-social-reference="true"] .main {margin-left:0;}
+  .app-shell[data-envista-social-reference="true"] .sidebar {
+    width:270px;
+    height:100dvh;
+    overflow-y:auto;
+    padding:16px 14px;
+  }
+  .app-shell[data-envista-social-reference="true"] .home-nav-promo {
+    height:auto;
+    min-height:0;
+    margin:18px 5px 10px;
+  }
+  .app-shell[data-envista-social-reference="true"] .page-wrap {
+    padding:16px 18px 90px;
+  }
+  .app-shell[data-envista-social-reference="true"] .global-search {min-width:0;}
+}
+@media(max-width:520px) {
+  .app-shell[data-envista-social-reference="true"] .page-wrap {padding:13px 12px 95px;}
+}

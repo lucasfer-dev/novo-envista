@@ -6,13 +6,15 @@ import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowRight,
+  Bookmark,
+  ImagePlus,
+  TrendingUp,
   CalendarDays,
   ChevronDown,
   Clock3,
   Code2,
   Compass,
   Flame,
-  Plus,
   Settings2,
   Trophy,
   FolderKanban,
@@ -39,7 +41,7 @@ import SocialCompetitionSpotlight from "./SocialCompetitionSpotlight";
 export type SocialTeamOption = { id: string; name: string };
 export type SocialProjectOption = { id: string; title: string; slug: string };
 export type SocialGitHubRepositoryOption = { id: string; fullName: string; private: boolean };
-export type SocialCommentView = { id: string; body: string; userId: string; authorLabel: string; authorHref: string; parentCommentId: string | null };
+export type SocialCommentView = { id: string; body: string; userId: string; authorLabel: string; authorHref: string; parentCommentId: string | null; avatarUrl?: string | null };
 export type SocialAuthorKind = "participant" | "investor" | "team";
 
 export type SocialPostFeedItem = {
@@ -52,6 +54,7 @@ export type SocialPostFeedItem = {
   authorHandle: string;
   authorKind: SocialAuthorKind;
   authorHref: string;
+  authorAvatarUrl?: string | null;
   followed: boolean;
   canDelete: boolean;
   liked: boolean;
@@ -69,6 +72,7 @@ export type SocialProjectUpdateFeedItem = {
   stage: string;
   href: string;
   ownerLabel: string;
+  ownerAvatarUrl?: string | null;
   ownerKind: SocialAuthorKind;
   followed: boolean;
   isNew: boolean;
@@ -84,6 +88,7 @@ export type SocialSuggestion = {
   label: string;
   subtitle: string;
   href: string;
+  avatarUrl?: string | null;
 };
 
 type FeedMode = "for-you" | "following";
@@ -152,6 +157,7 @@ function feedHref(path: string, mode: FeedMode, query: string, page: number) {
 export default function LegacySocialFeed({
   userId,
   userName,
+  userAvatarUrl,
   path,
   returnTo,
   teams,
@@ -171,6 +177,7 @@ export default function LegacySocialFeed({
 }: {
   userId: string;
   userName: string;
+  userAvatarUrl?: string | null;
   path: string;
   returnTo: string;
   teams: SocialTeamOption[];
@@ -192,6 +199,7 @@ export default function LegacySocialFeed({
   const [query, setQuery] = useState(initialQuery);
   const [composerBody, setComposerBody] = useState("");
   const [composerRecovered, setComposerRecovered] = useState(false);
+  const [composerSettingsOpen, setComposerSettingsOpen] = useState(false);
   const composerDraftKey = "envista:social-draft:v2:" + userId;
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [replyingTo, setReplyingTo] = useState<Record<string, string | null>>({});
@@ -277,16 +285,6 @@ export default function LegacySocialFeed({
 
   return (
     <div className={styles.socialPage}>
-      <div className={`page-head ${styles.feedHeader}`}>
-        <div>
-          <h1>Social</h1>
-          <p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p>
-        </div>
-        <span className={styles.feedBadge}>
-          <Users size={15} aria-hidden="true" /> {followingCount} seguindo
-        </span>
-      </div>
-
       {status === "posted" && <div className={styles.notice}>Publicação criada.</div>}
       {status === "posted-github" && <div className={styles.notice}>Publicação criada no Envista e enviada ao GitHub como Discussion.</div>}
       {status === "posted-github-error" && <div className={styles.error}>A publicação entrou no Envista, mas não foi possível enviá-la ao GitHub. Você pode tentar novamente em Integrações.</div>}
@@ -295,12 +293,19 @@ export default function LegacySocialFeed({
 
       <div className={styles.socialLayout}>
         <section className={styles.mainColumn}>
+      <div className={`page-head ${styles.feedHeader}`}>
+        <div>
+          <h1>Social</h1>
+          <p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p>
+        </div>
+      </div>
+
           <div className={`panel ${styles.composer}`}>
             <form action={createPostAction}>
               {composerRecovered && error ? <div className={styles.notice} role="status">Sua publicação foi recuperada nesta aba. O texto não foi perdido.</div> : null}
               <input type="hidden" name="return_to" value={path} />
               <div className={styles.composerHead}>
-                <span className="avatar">{initials(userName)}</span>
+                <span className={styles.composerAvatar}>{userAvatarUrl ? <img src={userAvatarUrl} alt="" /> : initials(userName)}</span>
                 <textarea
                   required
                   maxLength={5000}
@@ -313,7 +318,7 @@ export default function LegacySocialFeed({
               </div>
 
 
-              <details className={styles.composerOptions}>
+              <details className={styles.composerOptions} open={composerSettingsOpen} onToggle={event => setComposerSettingsOpen(event.currentTarget.open)}>
                 <summary><Settings2 size={15} aria-hidden="true" /> Opções da publicação <ChevronDown size={14} aria-hidden="true" /></summary>
               <div className={styles.composerMeta}>
                 <label>
@@ -359,8 +364,15 @@ export default function LegacySocialFeed({
               </details>
               <div className={styles.composerFooter}>
                 <div className={styles.composerShortcuts} aria-label="Acessos rápidos">
-                  <Link href="/projects/new"><FolderKanban size={17} aria-hidden="true" /> Projeto</Link>
-                  {githubRepositories.length > 0 && <Link href="/integrations/github"><Code2 size={17} aria-hidden="true" /> Código</Link>}
+                  <span className={styles.unavailableShortcut} title="Publicar fotos diretamente no feed ainda não está disponível" aria-label="Mídia: em breve">
+                    <ImagePlus size={18} aria-hidden="true" /> Mídia
+                  </span>
+                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(true)}>
+                    <Code2 size={17} aria-hidden="true" /> Código
+                  </button>
+                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(true)}>
+                    <FolderKanban size={17} aria-hidden="true" /> Projeto
+                  </button>
                   <Link href="/competitions"><Trophy size={17} aria-hidden="true" /> Competição</Link>
                   <Link href="/calendar"><CalendarDays size={17} aria-hidden="true" /> Evento</Link>
                 </div>
@@ -393,6 +405,9 @@ export default function LegacySocialFeed({
               <Link className={styles.discoverTab} href="/explore?type=projects">Projetos</Link>
             </div>
 
+            <div className={styles.toolbarRight}>
+              <details className={styles.feedSearchToggle}>
+                <summary aria-label="Pesquisar no feed" title="Pesquisar no feed"><Search size={17} aria-hidden="true" /></summary>
             <form className={styles.feedSearch} onSubmit={submitSearch}>
               <Search size={16} />
               <input
@@ -408,7 +423,9 @@ export default function LegacySocialFeed({
                 </button>
               )}
             </form>
-            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Mais recentes</span>
+              </details>
+            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Mais recentes <ChevronDown size={13} aria-hidden="true" /></span>
+            </div>
           </div>
 
           <div className={styles.timeline}>
@@ -418,7 +435,7 @@ export default function LegacySocialFeed({
                   <article className={styles.timelineUpdate} key={item.id}>
                     <div className={styles.identityRow}>
                       <span className={`${styles.timelineAvatar} ${styles.projectAvatar}`}>
-                        <FolderKanban size={18} />
+                        {item.ownerAvatarUrl ? <img src={item.ownerAvatarUrl} alt="" /> : <FolderKanban size={18} />}
                       </span>
                       <div className={styles.identityText}>
                         <div>
@@ -447,7 +464,7 @@ export default function LegacySocialFeed({
                 <article className={styles.timelinePost} key={item.id}>
                   <div className={styles.identityRow}>
                     <Link className={styles.timelineAvatar} href={item.authorHref}>
-                      {initials(item.authorLabel)}
+                      {item.authorAvatarUrl ? <img src={item.authorAvatarUrl} alt="" /> : initials(item.authorLabel)}
                     </Link>
                     <div className={styles.identityText}>
                       <div>
@@ -471,10 +488,10 @@ export default function LegacySocialFeed({
                   <p className={styles.postBody}>{item.body}</p>
 
                   {item.project && (
-                    <Link className={styles.projectReference} href={item.project.href}>
+                    <Link className={styles.projectReference} href={item.project.href} aria-label={"Abrir projeto " + item.project.title}>
                       <span className={styles.projectCover}>
                         {item.project.title.trim().toLowerCase() === "elovia"
-                          ? <img src="/brand/envista-cover-elovia.webp" alt="" loading="lazy" />
+                          ? <img src="/brand/social-elovia-reference.webp" alt="" loading="lazy" />
                           : item.project.title.trim().toLowerCase() === "elas+"
                             ? <img src="/brand/envista-cover-elas.webp" alt="" loading="lazy" />
                             : item.project.title.trim().toLowerCase() === "nova"
@@ -495,7 +512,7 @@ export default function LegacySocialFeed({
                       <input type="hidden" name="return_to" value={returnTo} />
                       <button className={item.liked ? styles.liked : ""} aria-pressed={item.liked} type="submit">
                         <Heart size={18} fill={item.liked ? "currentColor" : "none"} />
-                        <span>{item.likeCount || "Curtir"}</span>
+                        <span>{item.likeCount}</span>
                       </button>
                     </form>
                     <button
@@ -503,12 +520,13 @@ export default function LegacySocialFeed({
                       onClick={() => setOpenComments((current) => ({ ...current, [item.id]: !current[item.id] }))}
                     >
                       <MessageCircle size={18} />
-                      <span>{item.comments.length || "Comentar"}</span>
+                      <span>{item.comments.length}</span>
                     </button>
-                    <button type="button" onClick={() => sharePost(item)}>
-                      <Share2 size={18} />
-                      <span>Compartilhar</span>
+                    <button type="button" aria-label="Compartilhar publicação" onClick={() => sharePost(item)}>
+                      <Share2 size={19} aria-hidden="true" />
+                      <span className={styles.visuallyHidden}>Compartilhar</span>
                     </button>
+                    <span className={styles.savePlaceholder} title="Salvar publicações estará disponível em uma atualização futura" aria-label="Salvar publicação: em breve"><Bookmark size={19} aria-hidden="true" /></span>
                   </div>
 
                   {commentsOpen && (
@@ -518,7 +536,7 @@ export default function LegacySocialFeed({
                         return (
                           <div className={styles.commentThread} key={comment.id}>
                             <div className={styles.commentRow}>
-                              <Link className={styles.commentAvatar} href={comment.authorHref} aria-label={`Abrir perfil de ${comment.authorLabel}`}>{initials(comment.authorLabel)}</Link>
+                              <Link className={styles.commentAvatar} href={comment.authorHref} aria-label={`Abrir perfil de ${comment.authorLabel}`}>{comment.avatarUrl ? <img src={comment.avatarUrl} alt="" /> : initials(comment.authorLabel)}</Link>
                               <div>
                                 <Link className={styles.commentAuthor} href={comment.authorHref}><strong>{comment.authorLabel}</strong></Link>
                                 <p>{comment.body}</p>
@@ -536,7 +554,7 @@ export default function LegacySocialFeed({
                             </div>
                             {replies.map((reply) => (
                               <div className={`${styles.commentRow} ${styles.commentReply}`} key={reply.id}>
-                                <Link className={styles.commentAvatar} href={reply.authorHref} aria-label={`Abrir perfil de ${reply.authorLabel}`}>{initials(reply.authorLabel)}</Link>
+                                <Link className={styles.commentAvatar} href={reply.authorHref} aria-label={`Abrir perfil de ${reply.authorLabel}`}>{reply.avatarUrl ? <img src={reply.avatarUrl} alt="" /> : initials(reply.authorLabel)}</Link>
                                 <div>
                                   <Link className={styles.commentAuthor} href={reply.authorHref}><strong>{reply.authorLabel}</strong></Link>
                                   <p>{reply.body}</p>
@@ -607,15 +625,15 @@ export default function LegacySocialFeed({
 
           <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
             <div className={styles.railTitle}>
-              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em pauta</h2>
+              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
               <Link href="/explore">Explorar <ArrowRight size={14} aria-hidden="true" /></Link>
             </div>
             {topTopics.length ? <>
               <p className={styles.topicContext}>Hashtags presentes nas publicações desta página</p>
               <div className={styles.topicList}>
                 {topTopics.map(([tag, count]) => <Link key={tag} href={feedHref(path, feedMode, "#" + tag, 1)}>
-                  <span><strong>#{tag}</strong><small>{count} {count === 1 ? "publicação" : "publicações"} nesta página</small></span>
-                  <ArrowRight size={15} aria-hidden="true" />
+                  <span><strong>#{tag}</strong><small>{count} {count === 1 ? "publicação recente" : "publicações recentes"}</small></span>
+                  <TrendingUp size={17} aria-hidden="true" />
                 </Link>)}
               </div>
             </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>As hashtags das publicações públicas desta página aparecerão aqui.</p></div>}
@@ -629,7 +647,7 @@ export default function LegacySocialFeed({
             <div className={styles.suggestions}>
               {visibleSuggestions.filter(suggestion => suggestion.targetType === "profile").slice(0, 3).map(suggestion => (
                 <div className={styles.suggestion} key={suggestion.targetId}>
-                  <span className={styles.suggestionAvatar}>{initials(suggestion.label)}</span>
+                  <span className={styles.suggestionAvatar}>{suggestion.avatarUrl ? <img src={suggestion.avatarUrl} alt="" /> : initials(suggestion.label)}</span>
                   <div className={styles.suggestionIdentity}>
                     <Link href={suggestion.href}>{suggestion.label}</Link>
                     <small>{suggestion.subtitle}</small>
