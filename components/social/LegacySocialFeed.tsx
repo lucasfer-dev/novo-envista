@@ -247,9 +247,9 @@ export default function LegacySocialFeed({
   const topicTerms = [
     { label: "Inovação", term: "inova", query: "inovação" },
     { label: "Educação", term: "educa|aprendiz|escola|mentor", query: "educação" },
-    { label: "Sustentabilidade", term: "sustent|resíduo|ambient|circular|água", query: "sustentabilidade" },
+    { label: "Sustentabilidade", term: "sustent|residuo|ambient|circular|agua", query: "sustentabilidade" },
     { label: "Tecnologia", term: "tecnolog|digital|aplicativo|plataforma", query: "tecnologia" },
-    { label: "Saúde", term: "saúde|bem-estar|mental", query: "saúde" },
+    { label: "Saúde", term: "saude|bem-estar|mental", query: "saúde" },
     { label: "Mobilidade", term: "mobilidade|transporte|rota|acessibilidade", query: "mobilidade" },
     { label: "Projetos", term: "projeto|protótip|solução", query: "projetos" },
   ];
