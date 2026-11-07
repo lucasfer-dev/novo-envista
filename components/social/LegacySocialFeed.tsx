@@ -491,7 +491,7 @@ export default function LegacySocialFeed({
                     <Link className={styles.projectReference} href={item.project.href} aria-label={"Abrir projeto " + item.project.title}>
                       <span className={styles.projectCover}>
                         {item.project.title.trim().toLowerCase() === "elovia"
-                          ? <img src="/brand/envista-cover-elovia.webp" alt="" loading="lazy" />
+                          ? <img src="/brand/social-elovia-reference.webp" alt="" loading="lazy" />
                           : item.project.title.trim().toLowerCase() === "elas+"
                             ? <img src="/brand/envista-cover-elas.webp" alt="" loading="lazy" />
                             : item.project.title.trim().toLowerCase() === "nova"
