@@ -192,8 +192,8 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             <h2 id="explore-hero-title">Encontre ideias que geram<br /><span>impacto real.</span></h2>
             <p>Navegue por projetos, conecte-se com pessoas e participe de competições que impulsionam a inovação.</p>
             <div className={styles.heroActions}>
-              <Link className={styles.primaryAction} href="#explore-projects"><Search size={18} aria-hidden="true" /> Explorar projetos</Link>
-              <Link className={styles.outlineAction} href="#explore-people"><Users size={17} aria-hidden="true" /> Encontrar pessoas</Link>
+              <Link className={styles.primaryAction} href={exploreUrl(base, q, stage, "projects") + "#explore-projects"}><Search size={18} aria-hidden="true" /> Explorar projetos</Link>
+              <Link className={styles.outlineAction} href={exploreUrl(base, q, "Todos", "people") + "#explore-people"}><Users size={17} aria-hidden="true" /> Encontrar pessoas</Link>
             </div>
           </div>
         </section>
