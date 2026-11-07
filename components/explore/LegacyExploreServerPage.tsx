@@ -1,5 +1,5 @@
 import LegacySocialShell from "@/components/social/LegacySocialShell";
-import { ExploreView, type ExploreProject, type ExploreTeam, type ExploreProfile, type PageState } from "./ExploreView";
+import { ExploreView, type ExploreProject, type ExploreTeam, type ExploreProfile, type PageState, type ExploreKind } from "./ExploreView";
 import { requireProductUser, type ProductRole } from "@/lib/auth/require-product-user";
 import type { User } from "@/types";
 
@@ -41,6 +41,8 @@ export default async function LegacyExploreServerPage({
   const params = await searchParams;
   const q = first(params.q).trim().slice(0, 120);
   const stage = first(params.stage).trim().slice(0, 40) || "Todos";
+  const requestedType = first(params.type).trim();
+  const type: ExploreKind = requestedType === "projects" || requestedType === "teams" || requestedType === "people" ? requestedType : "all";
   const pages: PageState = {
     projects_page: pageNumber(params.projects_page),
     teams_page: pageNumber(params.teams_page),
@@ -124,7 +126,7 @@ export default async function LegacyExploreServerPage({
 
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={pathname}>
-      <ExploreView expectedRole={expectedRole} base={base} q={q} stage={stage} pages={pages} projects={projects} teams={teams} profiles={profiles} projectTotal={projectTotal} teamTotal={teamTotal} profileTotal={profileTotal} loadError={loadError} />
+      <ExploreView expectedRole={expectedRole} base={base} q={q} stage={stage} type={type} pages={pages} projects={projects} teams={teams} profiles={profiles} projectTotal={projectTotal} teamTotal={teamTotal} profileTotal={profileTotal} loadError={loadError} />
     </LegacySocialShell>
   );
 }
