@@ -6,6 +6,15 @@ import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowRight,
+  CalendarDays,
+  ChevronDown,
+  Clock3,
+  Code2,
+  Compass,
+  Flame,
+  Plus,
+  Settings2,
+  Trophy,
   FolderKanban,
   Heart,
   MessageCircle,
@@ -24,6 +33,7 @@ import {
   togglePostLikeAction,
 } from "@/lib/social-real/actions";
 import styles from "./LegacySocialFeed.module.css";
+import SocialCompetitionSpotlight from "./SocialCompetitionSpotlight";
 
 export type SocialTeamOption = { id: string; name: string };
 export type SocialProjectOption = { id: string; title: string; slug: string };
@@ -64,6 +74,8 @@ export type SocialProjectUpdateFeedItem = {
 };
 
 export type SocialFeedItem = SocialPostFeedItem | SocialProjectUpdateFeedItem;
+
+export type SocialAgendaEvent = { id: string; title: string; startsAt: string; href: string | null };
 
 export type SocialSuggestion = {
   targetType: "profile" | "team" | "project";
@@ -147,6 +159,7 @@ export default function LegacySocialFeed({
   items,
   suggestions,
   followingCount,
+  agenda = [],
   feedMode,
   initialQuery,
   page,
@@ -165,6 +178,7 @@ export default function LegacySocialFeed({
   items: SocialFeedItem[];
   suggestions: SocialSuggestion[];
   followingCount: number;
+  agenda?: SocialAgendaEvent[];
   feedMode: FeedMode;
   initialQuery: string;
   page: number;
@@ -218,6 +232,17 @@ export default function LegacySocialFeed({
     }
   }
 
+  const topics = new Map<string, number>();
+  for (const item of items) {
+    if (item.kind !== "post" || item.visibility !== "platform") continue;
+    const perPost = new Set<string>();
+    for (const hashtag of item.body.matchAll(/#([\p{L}\p{N}_]{2,32})/gu)) {
+      perPost.add(hashtag[1].toLocaleLowerCase("pt-BR"));
+    }
+    for (const tag of perPost) topics.set(tag, (topics.get(tag) ?? 0) + 1);
+  }
+  const topTopics = [...topics.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+
   const visibleSuggestions = suggestions.filter(
     (suggestion) => !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
   );
@@ -254,10 +279,10 @@ export default function LegacySocialFeed({
       <div className={`page-head ${styles.feedHeader}`}>
         <div>
           <h1>Social</h1>
-          <p>Veja o que pessoas, investidores, equipes e projetos estão construindo no Envista.</p>
+          <p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p>
         </div>
         <span className={styles.feedBadge}>
-          <Activity size={14} /> {followingCount} seguindo
+          <Users size={15} aria-hidden="true" /> {followingCount} seguindo
         </span>
       </div>
 
@@ -282,10 +307,13 @@ export default function LegacySocialFeed({
                   value={composerBody}
                   onChange={(event) => changeComposerBody(event.target.value)}
                   aria-label="Conteúdo da publicação"
-                  placeholder="O que está acontecendo no seu projeto, equipe ou jornada?"
+                  placeholder="O que você quer compartilhar com a comunidade?"
                 />
               </div>
 
+
+              <details className={styles.composerOptions}>
+                <summary><Settings2 size={15} aria-hidden="true" /> Opções da publicação <ChevronDown size={14} aria-hidden="true" /></summary>
               <div className={styles.composerMeta}>
                 <label>
                   Publicar como
@@ -326,7 +354,16 @@ export default function LegacySocialFeed({
                     <option value="platform">Público no Envista</option>
                   </select>
                 </label>
-                <button className="primary" type="submit">Publicar</button>
+              </div>
+              </details>
+              <div className={styles.composerFooter}>
+                <div className={styles.composerShortcuts} aria-label="Acessos rápidos">
+                  <Link href="/projects/new"><FolderKanban size={17} aria-hidden="true" /> Projeto</Link>
+                  {githubRepositories.length > 0 && <Link href="/integrations/github"><Code2 size={17} aria-hidden="true" /> Código</Link>}
+                  <Link href="/competitions"><Trophy size={17} aria-hidden="true" /> Competição</Link>
+                  <Link href="/calendar"><CalendarDays size={17} aria-hidden="true" /> Evento</Link>
+                </div>
+                <button className={styles.publishButton} type="submit"><Send size={16} aria-hidden="true" /> Publicar</button>
               </div>
             </form>
           </div>
@@ -351,6 +388,8 @@ export default function LegacySocialFeed({
               >
                 Seguindo
               </button>
+              <Link className={styles.discoverTab} href="/explore?type=people">Comunidade</Link>
+              <Link className={styles.discoverTab} href="/explore?type=projects">Projetos</Link>
             </div>
 
             <form className={styles.feedSearch} onSubmit={submitSearch}>
@@ -368,6 +407,7 @@ export default function LegacySocialFeed({
                 </button>
               )}
             </form>
+            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Mais recentes</span>
           </div>
 
           <div className={styles.timeline}>
@@ -431,10 +471,19 @@ export default function LegacySocialFeed({
 
                   {item.project && (
                     <Link className={styles.projectReference} href={item.project.href}>
-                      <FolderKanban size={17} />
-                      <span>
-                        <b>{item.project.title}</b>
-                        <small>Projeto vinculado</small>
+                      <span className={styles.projectCover}>
+                        {item.project.title.trim().toLowerCase() === "elovia"
+                          ? <img src="/brand/envista-cover-elovia.webp" alt="" loading="lazy" />
+                          : item.project.title.trim().toLowerCase() === "elas+"
+                            ? <img src="/brand/envista-cover-elas.webp" alt="" loading="lazy" />
+                            : item.project.title.trim().toLowerCase() === "nova"
+                              ? <img src="/brand/envista-cover-nova.webp" alt="" loading="lazy" />
+                              : <FolderKanban size={42} aria-hidden="true" />}
+                      </span>
+                      <span className={styles.projectReferenceCaption}>
+                        <FolderKanban size={16} aria-hidden="true" />
+                        <span><b>{item.project.title}</b><small>Conheça o projeto vinculado a esta publicação</small></span>
+                        <ArrowRight size={16} aria-hidden="true" />
                       </span>
                     </Link>
                   )}
@@ -552,14 +601,34 @@ export default function LegacySocialFeed({
           )}
         </section>
 
-        <aside className={styles.sideColumn}>
-          <section className={`panel ${styles.sideCard}`}>
-            <h3>Quem seguir</h3>
-            <p>Pessoas, investidores, equipes e projetos para deixar sua timeline mais interessante.</p>
+        <aside className={styles.sideColumn} aria-label="Descobertas da comunidade">
+          <SocialCompetitionSpotlight />
+
+          <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
+            <div className={styles.railTitle}>
+              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em pauta</h2>
+              <Link href="/explore">Explorar <ArrowRight size={14} aria-hidden="true" /></Link>
+            </div>
+            {topTopics.length ? <>
+              <p className={styles.topicContext}>Hashtags presentes nas publicações desta página</p>
+              <div className={styles.topicList}>
+                {topTopics.map(([tag, count]) => <Link key={tag} href={feedHref(path, feedMode, "#" + tag, 1)}>
+                  <span><strong>#{tag}</strong><small>{count} {count === 1 ? "publicação" : "publicações"} nesta página</small></span>
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>)}
+              </div>
+            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>As hashtags das publicações públicas desta página aparecerão aqui.</p></div>}
+          </section>
+
+          <section className={[styles.sideCard, styles.peoplePanel].join(" ")} aria-labelledby="social-suggestions-title">
+            <div className={styles.railTitle}>
+              <h2 id="social-suggestions-title"><Users size={20} aria-hidden="true" /> Sugestões de pessoas</h2>
+              <Link href="/explore?type=people">Ver todas <ArrowRight size={14} aria-hidden="true" /></Link>
+            </div>
             <div className={styles.suggestions}>
-              {visibleSuggestions.slice(0, 8).map((suggestion) => (
-                <div className={styles.suggestion} key={`${suggestion.targetType}:${suggestion.targetId}`}>
-                  <span className="avatar">{initials(suggestion.label)}</span>
+              {visibleSuggestions.filter(suggestion => suggestion.targetType === "profile").slice(0, 3).map(suggestion => (
+                <div className={styles.suggestion} key={suggestion.targetId}>
+                  <span className={styles.suggestionAvatar}>{initials(suggestion.label)}</span>
                   <div className={styles.suggestionIdentity}>
                     <Link href={suggestion.href}>{suggestion.label}</Link>
                     <small>{suggestion.subtitle}</small>
@@ -568,19 +637,30 @@ export default function LegacySocialFeed({
                     <input type="hidden" name="target_type" value={suggestion.targetType} />
                     <input type="hidden" name="target_id" value={suggestion.targetId} />
                     <input type="hidden" name="return_to" value={returnTo} />
-                    <button className={styles.followButton} type="submit"><UserPlus size={13} /> Seguir</button>
+                    <button className={styles.followButton} type="submit"><UserPlus size={13} aria-hidden="true" /> Seguir</button>
                   </form>
                 </div>
               ))}
-              {!visibleSuggestions.length && <p className={styles.searchResultLabel}>Nenhuma sugestão encontrada.</p>}
+              {!visibleSuggestions.some(suggestion => suggestion.targetType === "profile") && <p className={styles.searchResultLabel}>Sem novas pessoas para sugerir agora.</p>}
             </div>
           </section>
 
-          <section className={`panel ${styles.sideCard}`}>
-            <h3>Feed do Envista</h3>
-            <p>
-              Participantes e investidores publicam pelo próprio perfil. Membros de equipes também podem publicar em nome do time e vincular a novidade a um projeto.
-            </p>
+          <section className={[styles.sideCard, styles.eventsPanel].join(" ")} aria-labelledby="social-events-title">
+            <div className={styles.railTitle}>
+              <h2 id="social-events-title"><CalendarDays size={20} aria-hidden="true" /> Próximos eventos</h2>
+              <Link href="/calendar">Ver agenda <ArrowRight size={14} aria-hidden="true" /></Link>
+            </div>
+            {agenda.length ? <div className={styles.eventsList}>
+              {agenda.map(event => {
+                const date = new Date(event.startsAt);
+                const valid = !Number.isNaN(date.getTime());
+                return <Link key={event.id} href={event.href?.startsWith("/") ? event.href : "/calendar"} className={styles.eventItem}>
+                  <span className={styles.eventDate}><strong>{valid ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", timeZone: "America/Sao_Paulo" }).format(date) : "—"}</strong><small>{valid ? new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "America/Sao_Paulo" }).format(date).replace(".", "").toUpperCase() : ""}</small></span>
+                  <span><strong>{event.title}</strong><small>{valid ? new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }).format(date) : "Ver no calendário"}</small></span>
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>;
+              })}
+            </div> : <div className={styles.railEmpty}><CalendarDays size={19} aria-hidden="true" /><p>Nenhum evento próximo no calendário.</p></div>}
           </section>
         </aside>
       </div>
