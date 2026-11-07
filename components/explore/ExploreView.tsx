@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight, ArrowUpRight, BookOpen, BrainCircuit, BriefcaseBusiness,
   Code2, Compass, FolderKanban, GraduationCap, HeartHandshake, HeartPulse,
-  Leaf, Search, SearchX, Sparkles, Star, Trophy, UserRound, Users,
+  Leaf, Search, SearchX, Sparkles, Star, UserRound, Users,
 } from "lucide-react";
 import ProjectArtwork from "@/components/product/ProjectArtwork";
 import { entityRoute } from "@/lib/profiles";
@@ -56,7 +56,7 @@ export type PageState = {
 const topics = [
   { label: "Games", term: "games", Icon: Sparkles, color: "purple" },
   { label: "Apps", term: "aplicativo", Icon: Code2, color: "violet" },
-  { label: "IA", term: "IA", Icon: BrainCircuit, color: "cyan" },
+  { label: "IA", term: "Inteligência Artificial", Icon: BrainCircuit, color: "cyan" },
   { label: "Educação", term: "Educação", Icon: GraduationCap, color: "blue" },
   { label: "Sustentabilidade", term: "Sustentabilidade", Icon: Leaf, color: "green" },
   { label: "Negócios", term: "Negócios", Icon: BriefcaseBusiness, color: "steel" },
@@ -67,7 +67,7 @@ const quickFilters = [
   { label: "Tecnologia", term: "Tecnologia", Icon: Code2 },
   { label: "Impacto Social", term: "Impacto Social", Icon: Leaf },
   { label: "Educação", term: "Educação", Icon: GraduationCap },
-  { label: "IA", term: "IA", Icon: BrainCircuit },
+  { label: "IA", term: "Inteligência Artificial", Icon: BrainCircuit },
   { label: "Saúde", term: "Saúde", Icon: HeartPulse },
   { label: "Igreja", term: "Igreja", Icon: HeartHandshake },
 ] as const;
@@ -119,8 +119,8 @@ function ProjectImage({ project }: { project: ExploreProject }) {
     : <ProjectArtwork title={project.title} category={project.category} />;
 }
 
-function ProjectCard({ project, expectedRole, base, stage, type }: {
-  project: ExploreProject; expectedRole: ProductRole; base: string; stage: string; type: ExploreKind;
+function ProjectCard({ project, expectedRole }: {
+  project: ExploreProject; expectedRole: ProductRole;
 }) {
   const href = project.real
     ? (expectedRole === "investor" ? "/investor" : "") + "/projects/" + encodeURIComponent(project.slug) + "?from=explore"
@@ -177,7 +177,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
 
   return <div className={styles.page} data-envista-explore-redesign>
     <div className={styles.columns}>
-      <main className={styles.content}>
+      <div className={styles.content}>
         <header className={styles.pageHeading}>
           <h1>Explorar</h1>
           <p>Descubra projetos, pessoas, equipes e oportunidades.</p>
@@ -218,7 +218,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             <Link href="#explore-more-projects">Ver todos <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
           {featured.length ? <div className={styles.projectsGrid}>
-            {featured.map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} base={base} stage={stage} type={type} />)}
+            {featured.map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} />)}
           </div> : <EmptyExploreState kind="projects" filtered={filtered} base={base} role={expectedRole} />}
         </section>}
 
@@ -238,7 +238,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             <span>{projectTotal} no total</span>
           </div>
           {projects.length > 3 ? <div className={styles.projectsGrid}>
-            {projects.slice(3).map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} base={base} stage={stage} type={type} />)}
+            {projects.slice(3).map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} />)}
           </div> : <div className={styles.sectionNote}>Explore novas áreas ou compartilhe uma ideia para ampliar a comunidade.</div>}
           <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="projects_page" total={projectTotal} />
         </section>}
@@ -280,7 +280,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
           })}</div> : <EmptyExploreState kind="people" filtered={filtered} base={base} role={expectedRole} />}
           <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="people_page" total={profileTotal} />
         </section>}
-      </main>
+      </div>
 
       <aside className={styles.rail} aria-label="Competições, filtros e recomendações">
         <ExploreCompetitionSpotlight />
