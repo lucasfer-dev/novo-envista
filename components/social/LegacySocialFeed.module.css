@@ -2002,3 +2002,82 @@
   .eventsPanel {padding-top:12px;padding-bottom:12px;min-height:187px;}
   .competitionLink img {filter:drop-shadow(0 0 10px rgba(19,255,159,.51)) saturate(1.25);}
 }
+
+
+/* Feed parity: genuine project updates share the same editorial card
+   treatment as member posts, instead of reverting to a tiny blue status box. */
+.timelineUpdate .postBody {
+  margin: 12px 0 0 65px;
+  line-height: 1.62;
+  color:#edf7f8;
+  font-size:13px;
+}
+.timelineUpdate .postBody strong {color:#f5fffc;font-weight:800;}
+.timelineUpdate .projectReference {margin-top:14px;}
+.timelineUpdate .projectCover {min-height:190px;}
+.timelineUpdate .updateArtwork {
+  position:absolute;inset:0;
+  overflow:hidden;
+  display:grid;place-items:center;
+  background:
+    radial-gradient(ellipse at 72% 38%,rgba(0,169,157,.23),transparent 66%),
+    linear-gradient(120deg,#0a424b,#062a3a 65%,#0c3e43);
+}
+.timelineUpdate .updateArtwork::before {
+  position:absolute;inset:0;content:"";
+  background:url("/brand/envista-pattern-original.png") center/420px repeat;
+  opacity:.16;
+}
+.timelineUpdate .updateArtwork :global(.dashboard-project-mark) {
+  border:0;background:transparent;
+  display:grid;place-items:center;
+  width:100%;height:100%;max-height:195px;
+}
+.timelineUpdate .updateArtwork :global(.dashboard-project-mark img) {
+  position:relative;
+  width:min(35%,180px);height:150px;
+  object-fit:contain;
+  filter:drop-shadow(0 12px 18px rgba(0,5,16,.55));
+}
+.timelineUpdate .updateArtwork :global(.dashboard-project-mark > span) {
+  display:none;
+}
+.timelineUpdate .projectReferenceCaption {
+  position:static;
+  clip:auto;
+  width:100%;height:auto;
+  margin:0;
+  padding:10px 14px;
+  overflow:visible;
+  display:flex;align-items:center;gap:9px;
+  border-top:1px solid rgba(74,165,179,.2);
+  background:#0a2a35;
+  white-space:normal;
+}
+.timelineUpdate .projectReferenceCaption > span {
+  display:flex;flex-direction:column;gap:3px;min-width:0;
+}
+.timelineUpdate .projectReferenceCaption svg {flex:none;color:#31e3c4;}
+.timelineUpdate .projectReferenceCaption svg:last-child {margin-left:auto;}
+.timelineUpdate .projectReferenceCaption b {font-size:12px;}
+.timelineUpdate .projectReferenceCaption small {font-size:10px;color:#a9ced4;}
+.updateFooter {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:13px;
+  margin-top:10px;
+  padding:10px 6px 2px;
+  border-top:1px solid rgba(119,165,180,.16);
+}
+.updateFooter > span,.updateFooter a {
+  display:inline-flex;align-items:center;gap:8px;
+  color:#d8f2f1;font-size:11px;line-height:1.3;
+  font-weight:700;
+}
+.updateFooter a {color:#32e8c7;text-decoration:none;}
+.updateFooter a:hover {color:#9bfff0;}
+.updateFooter svg {flex:none;color:#20d8bc;}
+@media(max-width:780px) {
+  .timelineUpdate .postBody {margin:11px 0 0;font-size:12px;}
+  .timelineUpdate .projectCover {min-height:140px;}
+  .timelineUpdate .updateArtwork :global(.dashboard-project-mark img) {max-height:125px;}
+}

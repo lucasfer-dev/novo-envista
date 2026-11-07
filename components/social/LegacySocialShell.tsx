@@ -275,7 +275,7 @@ export default function LegacySocialShell({
           <div className="home-nav-promo">
             <span className="home-promo-icon" aria-hidden="true"><Rocket size={27} strokeWidth={1.8} /></span>
             <strong>Envista</strong>
-            <p>Ideias, pessoas e oportunidades para levar seus projetos mais longe.</p>
+            <p>{socialReference ? "Explore projetos, conexões e oportunidades." : "Ideias, pessoas e oportunidades para levar seus projetos mais longe."}</p>
             <Link href={pathname === "/explore" ? "#explore-categories" : "/explore"} onClick={closeMobile}>{socialReference ? "Conhecer" : "Explorar projetos"} <span aria-hidden="true">→</span></Link>
           </div>
         </> : (
@@ -346,7 +346,7 @@ export default function LegacySocialShell({
             label={
               role === "investor"
                 ? "Buscar projetos, equipes e pessoas"
-                : "Buscar no Envista"
+                : socialReference ? "Buscar projetos, pessoas, equipes ou competições..." : "Buscar no Envista"
             }
           />
           <div className="top-actions">
