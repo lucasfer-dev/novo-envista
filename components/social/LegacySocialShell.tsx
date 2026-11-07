@@ -168,7 +168,7 @@ export default function LegacySocialShell({
       : pathname === "/app"
         ? "/home"
         : pathname;
-  const homeReference = role === "participant" && pathname === "/home";
+  const homeReference = role === "participant" && (pathname === "/home" || pathname === "/explore");
   const nav = role === "investor" ? investorNav : homeReference ? participantHomeNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
