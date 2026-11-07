@@ -84,7 +84,7 @@ export default async function LegacySocialServerPage({
   const page = pageNumber(query.page);
   const returnTo = socialHref(path, feedMode, searchQuery, page);
 
-  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult, githubRepositoriesResult, agendaResult] = await Promise.all([
+  const [feedResult, followingCountResult, membershipsResult, profilesResult, teamsResult, suggestionProjectsResult, githubRepositoriesResult, agendaResult, viewerAvatarResult] = await Promise.all([
     supabase.rpc("get_social_feed_refs", {
       feed_mode: feedMode,
       search_query: searchQuery,
@@ -98,7 +98,7 @@ export default async function LegacySocialServerPage({
       .eq("user_id", userId),
     supabase
       .from("profiles")
-      .select("id,username,display_name,role,bio")
+      .select("id,username,display_name,role,bio,avatar_path")
       .eq("profile_visibility", "platform")
       .neq("id", userId)
       .order("display_name")
@@ -127,6 +127,7 @@ export default async function LegacySocialServerPage({
       .gte("starts_at", new Date().toISOString())
       .order("starts_at", { ascending: true })
       .limit(3),
+    supabase.from("profiles").select("avatar_path").eq("id", userId).maybeSingle(),
   ]);
 
   const feed = feedPayload(feedResult.data);
@@ -147,13 +148,13 @@ export default async function LegacySocialServerPage({
     postIds.length
       ? supabase
           .from("posts")
-          .select("id,body,visibility,created_at,created_by,author_user_id,author_team_id,project_id,author_user:profiles!posts_author_user_id_fkey(id,username,display_name,role),author_team:teams!posts_author_team_id_fkey(id,slug,name),project:projects!posts_project_id_fkey(id,slug,title)")
+          .select("id,body,visibility,created_at,created_by,author_user_id,author_team_id,project_id,author_user:profiles!posts_author_user_id_fkey(id,username,display_name,role,avatar_path),author_team:teams!posts_author_team_id_fkey(id,slug,name),project:projects!posts_project_id_fkey(id,slug,title)")
           .in("id", postIds)
       : empty,
     projectIds.length
       ? supabase
           .from("projects")
-          .select("id,slug,title,short_description,stage,visibility,owner_user_id,owner_team_id,created_at,updated_at,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name,role),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
+          .select("id,slug,title,short_description,stage,visibility,owner_user_id,owner_team_id,created_at,updated_at,owner_user:profiles!projects_owner_user_id_fkey(id,username,display_name,role,avatar_path),owner_team:teams!projects_owner_team_id_fkey(id,slug,name)")
           .in("id", projectIds)
       : empty,
     postIds.length
@@ -162,11 +163,35 @@ export default async function LegacySocialServerPage({
     postIds.length
       ? supabase
           .from("post_comments")
-          .select("id,post_id,user_id,body,created_at,parent_comment_id,author:profiles!post_comments_user_id_fkey(username,display_name,role)")
+          .select("id,post_id,user_id,body,created_at,parent_comment_id,author:profiles!post_comments_user_id_fkey(username,display_name,role,avatar_path)")
           .in("post_id", postIds)
           .order("created_at", { ascending: true })
       : empty,
   ]);
+
+  // The avatars bucket is private. RLS allows signed URLs only for the
+  // viewer's own photo or platform-visible profiles; never use public URLs.
+  const candidateAvatarPaths = new Set<string>();
+  const collectAvatar = (record: unknown) => {
+    if (!record || typeof record !== "object" || !("avatar_path" in record)) return;
+    const path = (record as { avatar_path?: unknown }).avatar_path;
+    if (typeof path === "string" && path.length > 0 && path.length <= 512) candidateAvatarPaths.add(path);
+  };
+  collectAvatar(viewerAvatarResult.data);
+  for (const profile of profilesResult.data ?? []) collectAvatar(profile);
+  for (const post of postsResult.data ?? []) collectAvatar(one<any>((post as any).author_user));
+  for (const project of projectsResult.data ?? []) collectAvatar(one<any>((project as any).owner_user));
+  for (const comment of commentsResult.data ?? []) collectAvatar(one<any>((comment as any).author));
+  const avatarPaths = [...candidateAvatarPaths];
+  const signedAvatarUrls = new Map<string, string>();
+  if (avatarPaths.length) {
+    const { data } = await supabase.storage.from("avatars").createSignedUrls(avatarPaths, 60 * 60);
+    data?.forEach((item, index) => {
+      if (item.signedUrl) signedAvatarUrls.set(avatarPaths[index], item.signedUrl);
+    });
+  }
+  const avatarUrlFor = (path: unknown) =>
+    typeof path === "string" ? signedAvatarUrls.get(path) ?? null : null;
 
   const refsByKey = new Map(refs.map((ref) => [`${ref.kind}:${ref.id}`, ref]));
   const likes = likesResult.data ?? [];
@@ -196,6 +221,7 @@ export default async function LegacySocialServerPage({
               })
             : path,
           parentCommentId: comment.parent_comment_id || null,
+          avatarUrl: avatarUrlFor(author?.avatar_path),
         };
       });
 
@@ -217,6 +243,7 @@ export default async function LegacySocialServerPage({
       authorHref: authorId
         ? entityRoute({ type: authorType, id: authorId, source: "social", context })
         : path,
+      authorAvatarUrl: avatarUrlFor(authorUser?.avatar_path),
       followed: Boolean(ref?.followed),
       canDelete:
         (post as any).author_user_id === userId ||
@@ -253,6 +280,7 @@ export default async function LegacySocialServerPage({
       stage: row.stage,
       href: entityRoute({ type: "project", id: row.slug, source: "social", context }),
       ownerLabel: ownerTeam?.name || ownerUser?.display_name || ownerUser?.username || "Projeto Envista",
+      ownerAvatarUrl: avatarUrlFor(ownerUser?.avatar_path),
       ownerKind: ownerTeam ? "team" : ownerUser?.role === "investor" ? "investor" : "participant",
       followed: Boolean(ref?.followed),
       isNew: Math.abs(updatedAt - createdAt) < 90_000,
@@ -320,6 +348,7 @@ export default async function LegacySocialServerPage({
       targetId: (profile as any).id,
       label: (profile as any).display_name || (profile as any).username || "Pessoa",
       subtitle: `@${(profile as any).username || "usuario"} · ${profileRole === "investor" ? "Investidor" : "Participante"}`,
+      avatarUrl: avatarUrlFor((profile as any).avatar_path),
       href: entityRoute({ type: profileRole, id: (profile as any).username, source: "social", context }),
     });
     if (suggestions.length >= 5) break;
@@ -350,10 +379,11 @@ export default async function LegacySocialServerPage({
   }
 
   return (
-    <LegacySocialShell user={appUser} role={expectedRole}>
+    <LegacySocialShell user={appUser} role={expectedRole} avatarUrl={avatarUrlFor(viewerAvatarResult.data?.avatar_path)}>
       <LegacySocialFeed
         userId={userId}
         userName={appUser.name}
+        userAvatarUrl={avatarUrlFor(viewerAvatarResult.data?.avatar_path)}
         path={path}
         returnTo={returnTo}
         teams={teamOptions}
