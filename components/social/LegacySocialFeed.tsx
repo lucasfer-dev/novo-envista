@@ -654,7 +654,7 @@ export default function LegacySocialFeed({
               <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
               <div className={styles.topicList}>
                 {topicStats.map(topic => <Link key={topic.label} href={"/explore?q=" + encodeURIComponent(topic.query)}>
-                  <span><strong>#{topic.label.replace(/\\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
+                  <span><strong>#{topic.label.replace(/\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
                   <TrendingUp size={17} aria-hidden="true" />
                 </Link>)}
               </div>
