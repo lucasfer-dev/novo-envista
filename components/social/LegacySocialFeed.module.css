@@ -1989,3 +1989,16 @@
   .composerShortcuts svg {width:14px;height:14px;}
   .postActions {gap:12px;}
 }
+
+
+/* Right rail vertical rhythm follows reference: 129 / 223 / 227 / 187px. */
+@media(min-width:1101px) {
+  .topicPanel {padding:12px 17px 8px;min-height:223px;}
+  .topicPanel .railTitle {padding-bottom:8px;margin-bottom:5px;}
+  .topicContext {margin:2px 0 0;font-size:10px;line-height:1.3;}
+  .topicList a {min-height:38px;padding:4px 12px;}
+  .peoplePanel {padding-top:14px;padding-bottom:11px;min-height:225px;}
+  .peoplePanel .suggestion {min-height:54px;}
+  .eventsPanel {padding-top:12px;padding-bottom:12px;min-height:187px;}
+  .competitionLink img {filter:drop-shadow(0 0 10px rgba(19,255,159,.51)) saturate(1.25);}
+}
