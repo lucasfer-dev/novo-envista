@@ -648,7 +648,7 @@ export default function LegacySocialFeed({
           <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
             <div className={styles.railTitle}>
               <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
-              <Link href="/explore">Explorar <ArrowRight size={14} aria-hidden="true" /></Link>
+              <Link href="/explore">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
             </div>
             {topicStats.length ? <>
               <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
