@@ -168,7 +168,7 @@ export default function LegacySocialShell({
       : pathname === "/app"
         ? "/home"
         : pathname;
-  const homeReference = role === "participant" && pathname === "/home";
+  const homeReference = role === "participant" && (pathname === "/home" || pathname === "/explore");
   const nav = role === "investor" ? investorNav : homeReference ? participantHomeNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
@@ -273,7 +273,7 @@ export default function LegacySocialShell({
             <span className="home-promo-icon" aria-hidden="true"><Rocket size={27} strokeWidth={1.8} /></span>
             <strong>Envista</strong>
             <p>Ideias, pessoas e oportunidades para levar seus projetos mais longe.</p>
-            <Link href="/explore" onClick={closeMobile}>Explorar projetos <span aria-hidden="true">→</span></Link>
+            <Link href={pathname === "/explore" ? "#explore-categories" : "/explore"} onClick={closeMobile}>Explorar projetos <span aria-hidden="true">→</span></Link>
           </div>
         </> : (
         <div className="side-section">

@@ -31,6 +31,8 @@ describe("interaction affordances", () => {
   it("visually separates static metadata tags from clickable taxonomy filters", () => {
     expect(design).toContain(".app-shell .chips .chip-link");
     expect(design).toContain("cursor: default;");
-    expect(explore).toContain('className="chip-link"');
+    expect(explore).toContain('className={styles.filterChip}');
+    expect(explore).toContain('href={exploreUrl(base, term, "Todos", "all")}');
+    expect(explore).toContain('aria-label="Explorar por área"');
   });
 });
