@@ -1,71 +1,74 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import styles from "./Explore.module.css";
-import { Search } from "lucide-react";
+import { type FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowRight, Filter } from "lucide-react";
+import type { ExploreKind } from "./ExploreView";
+import styles from "./Explore.module.css";
 
-function hrefFor(base: string, query: string, stage: string) {
+function filterUrl(base: string, query: string, stage: string, type: ExploreKind) {
   const params = new URLSearchParams();
-  const cleanQuery = query.trim();
-  if (cleanQuery) params.set("q", cleanQuery);
-  if (stage && stage !== "Todos") params.set("stage", stage);
-  const qs = params.toString();
-  return qs ? `${base}?${qs}` : base;
+  if (query.trim()) params.set("q", query.trim());
+  if (stage !== "Todos" && (type === "all" || type === "projects")) params.set("stage", stage);
+  if (type !== "all") params.set("type", type);
+  const suffix = params.toString();
+  return suffix ? base + "?" + suffix : base;
 }
 
 export default function ExploreFiltersClient({
-  base,
-  initialQuery,
-  initialStage,
+  base, initialQuery, initialStage, initialType = "all",
 }: {
-  base: string;
-  initialQuery: string;
-  initialStage: string;
+  base: string; initialQuery: string; initialStage: string; initialType?: ExploreKind;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [stage, setStage] = useState(initialStage || "Todos");
+  const [type, setType] = useState<ExploreKind>(initialType);
+  const enabledStages = type === "all" || type === "projects";
+  const active = Boolean(initialQuery) || initialStage !== "Todos" || initialType !== "all";
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(hrefFor(base, query, stage), { scroll: false });
+    router.push(filterUrl(base, query, enabledStages ? stage : "Todos", type), { scroll: false });
   };
 
-  const clear = () => {
-    setQuery("");
-    setStage("Todos");
-    router.push(base, { scroll: false });
-  };
-
-  const hasFilters = Boolean(query.trim()) || stage !== "Todos";
-
-  return (
-    <form className={styles.filters} onSubmit={submit} data-envista-server-explore="true">
-      <label className={styles.search}>
-        <Search size={18} />
-        <input
-          aria-label="Buscar projetos, pessoas ou equipes"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Busque por nome, tema ou habilidade"
-          autoComplete="off"
-        />
+  return <section className={styles.filtersPanel} aria-labelledby="explore-filters-heading">
+    <div className={styles.panelHeading}>
+      <h2 id="explore-filters-heading"><Filter size={18} aria-hidden="true" /> Filtrar resultados</h2>
+      {active && <Link href={base}>Limpar <ArrowRight size={13} aria-hidden="true" /></Link>}
+    </div>
+    <form onSubmit={submit} data-envista-server-explore="true">
+      <label className={styles.filterField}>
+        <span>Tipo</span>
+        <select aria-label="Tipo de resultado" value={type} onChange={event => setType(event.target.value as ExploreKind)}>
+          <option value="all">Todos</option>
+          <option value="projects">Projetos</option>
+          <option value="teams">Equipes</option>
+          <option value="people">Pessoas</option>
+        </select>
       </label>
-      <select
-        aria-label="Filtrar por estágio"
-        value={stage}
-        onChange={(event) => setStage(event.target.value)}
-      >
-        <option value="Todos">Todos os estágios</option>
-        <option value="Ideia">Ideia</option>
-        <option value="Validação">Validação</option>
-        <option value="Protótipo">Protótipo</option>
-        <option value="MVP">MVP</option>
-        <option value="Projeto ativo">Projeto ativo</option>
-      </select>
-      <button className="primary" type="submit">Buscar</button>
-      {hasFilters && <button className="secondary" type="button" onClick={clear}>Limpar</button>}
+      <label className={styles.filterField}>
+        <span>Etapa do projeto</span>
+        <select aria-label="Filtrar por estágio" value={enabledStages ? stage : "Todos"} disabled={!enabledStages} onChange={event => setStage(event.target.value)}>
+          <option value="Todos">Todas as etapas</option>
+          <option value="Ideia">Ideia</option>
+          <option value="Validação">Validação</option>
+          <option value="Protótipo">Protótipo</option>
+          <option value="MVP">MVP</option>
+          <option value="Projeto ativo">Projeto ativo</option>
+        </select>
+      </label>
+      <label className={styles.filterField}>
+        <span>Buscar por área, nome ou palavra-chave</span>
+        <input aria-label="Buscar projetos, pessoas ou equipes" value={query} onChange={event => setQuery(event.target.value)}
+          placeholder="Ex.: tecnologia, impacto..." autoComplete="off" maxLength={120} />
+      </label>
+      <p className={styles.filterHint}>Os resultados são consultados no Envista e organizados pelas informações publicadas.</p>
+      <div className={styles.filterActions}>
+        <button type="submit">Aplicar filtros</button>
+        {active && <Link href={base}>Limpar</Link>}
+      </div>
     </form>
-  );
+  </section>;
 }
