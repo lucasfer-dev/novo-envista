@@ -303,7 +303,7 @@ export default function LegacySocialFeed({
 
       <div className={styles.socialLayout}>
         <section className={styles.mainColumn}>
-      <div className={`page-head ${styles.feedHeader}`}>
+      <div className={styles.feedHeader}>
         <div>
           <h1>Social</h1>
           <p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p>
@@ -465,7 +465,14 @@ export default function LegacySocialFeed({
                       <span className={styles.projectCover}>
                         {projectImage
                           ? <img src={projectImage} alt="" loading="lazy" />
-                          : <span className={styles.updateArtwork}><ProjectArtwork title={item.title} category={item.stage} large /></span>}
+                          : <span className={styles.updateArtwork}>
+                              <span className={styles.updateArtworkCopy}>
+                                <span className={styles.updateArtworkKicker}>PROJETO DA COMUNIDADE</span>
+                                <strong>{item.title}</strong>
+                                <small>{item.stage}</small>
+                              </span>
+                              <ProjectArtwork title={item.title} category={item.stage} large />
+                            </span>}
                       </span>
                       <span className={styles.projectReferenceCaption}>
                         <FolderKanban size={16} aria-hidden="true" />
