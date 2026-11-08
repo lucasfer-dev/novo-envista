@@ -16,3 +16,136 @@
 @media(max-width:600px){.container,.heroInner,.headerInner{width:calc(100% - 34px)}.headerInner{height:64px}.brandWord{font-size:20px}.brand img{width:26px;height:35px}.heroInner{padding-top:56px}.heroEyebrow{font-size:8px;margin-bottom:24px}.edition{font-size:8px}.heroCopy h1{font-size:clamp(44px,11vw,61px);letter-spacing:-.06em}.heroCopy>p{font-size:14px;line-height:1.68}.heroActions{align-items:stretch}.heroActions>a{font-size:12px;min-height:48px;padding:0 12px}.heroVisual{height:420px;margin-top:22px}.brandGhost{width:140px;height:190px;left:12%;top:24px}.phone{left:50%;top:0;width:210px;height:395px;transform:translateX(-50%) rotate(6deg);border-radius:39px;padding:7px}.phoneScreen{border-radius:31px}.phoneStatus{height:22px;font-size:7px}.phoneNotch{width:60px;height:15px}.phoneNav{height:39px;padding:5px 12px}.phoneContent{padding:11px}.phoneProjectCover{height:100px}.phoneContent h2{font-size:14px}.phoneContent h3{font-size:13px}.phoneContent p{font-size:8px}.phoneTags span{font-size:7px}.phoneBottom{height:40px}.orbit{width:360px;height:180px;left:50%;top:100px;transform:translateX(-50%) rotate(-15deg)}.orbitTwo{width:270px;height:95px;left:50%;top:200px;transform:translateX(-50%) rotate(20deg)}.floatCard{padding:9px 9px;gap:5px;border-radius:10px}.floatCard strong{font-size:8px}.floatCard svg{width:17px;height:17px}.floatOne{left:-3px;top:55px}.floatTwo{left:-8px;top:232px}.floatThree{right:-7px;top:116px}.floatFour{right:-8px;top:295px}.earth{width:870px;height:360px;bottom:-17px}.journey{width:calc(100% - 24px);padding:12px 9px;gap:3px;border-radius:12px;margin-bottom:20px}.journey span{font-size:10px;gap:4px}.journey span svg{width:16px;height:16px}.journeyArrow{width:12px;height:12px}.featured{padding:47px 0}.projectsGrid{grid-template-columns:1fr}.projectCard{display:grid;grid-template-columns:40% 60%;min-height:165px}.projectArt{height:100%;min-height:165px}.projectCardContent{padding:16px 12px}.projectCardContent p{min-height:0;font-size:11px}.cardTitleLine h3{font-size:17px}.featuredIntro h2{font-size:35px}.demoDisclaimer{text-align:left}.process{padding:43px 0;border-radius:14px}.sectionHeader{display:block;margin-bottom:25px}.sectionHeader h2{font-size:33px}.sectionHeader>p{width:auto;padding-left:0;border-left:0;margin-top:18px;font-size:12px}.stepsGrid{gap:12px}.step{padding:14px 12px;min-height:218px}.step h3{font-size:15px}.step p{font-size:11px}.stepIcon{width:35px;height:35px}.betweenSteps{display:none}.ecosystem{padding:51px 0}.ecosystemIntro h2{font-size:35px}.featureGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.feature{padding:14px;min-height:170px}.feature h3{font-size:14px}.feature p{font-size:11px}.audience{padding:43px 0}.audienceGrid{grid-template-columns:1fr 1fr;gap:9px}.audienceCard{padding:15px;min-height:200px}.audienceCard h3{font-size:14px}.audienceCard p{font-size:10.5px}.audienceCard svg{width:23px;height:23px}.banner{grid-template-columns:58px 1fr;gap:13px;padding:21px 17px;border-radius:16px}.bannerSymbol{width:55px;height:62px}.bannerSymbol img{width:37px;height:49px}.bannerHeadline{grid-column:2}.bannerHeadline h2{font-size:23px}.banner>p{grid-column:1 / 3;grid-row:auto;padding-left:0;border-left:0}.bannerButton{grid-column:1 / 3;justify-self:stretch}.footer{padding-top:27px}.footerColumns{grid-template-columns:1fr 1fr;gap:24px 19px}.footerIntro{grid-column:1 / 3}.footerColumns h3{margin-top:0}}
 @media(max-width:370px){.heroCopy h1{font-size:43px}.heroActions{flex-direction:column}.journey span{font-size:9px}.floatCard strong{font-size:7px}.phone{width:192px;height:365px}.heroVisual{height:390px}.phoneProjectCover{height:91px}.featureGrid,.audienceGrid{grid-template-columns:1fr}.step{min-height:220px}}
 @media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Envista brand motion and pattern refinements — November 2026 */
+/* The original monogram, tech doodles and organic texture remain the only art sources.
+   Patterns stay at low contrast behind readable content. */
+.heroPattern{
+  opacity:.29;
+  background-size:420px auto;
+  mask-image:linear-gradient(90deg, #000 0%, rgba(0,0,0,.74) 12%, transparent 39%, transparent 67%, rgba(0,0,0,.54) 84%, #000 100%);
+}
+.heroVisual{
+  background:radial-gradient(ellipse at 56% 49%, rgba(4,174,143,.13),transparent 61%);
+}
+
+/* The approved HTML floats the phone 9px every 7 seconds.
+   Animate independent translate so its desktop/mobile tilt stays untouched. */
+@media (prefers-reduced-motion:no-preference){
+  .phone{
+    animation:envistaPhoneFloat 7s ease-in-out infinite;
+    will-change:translate;
+  }
+  @keyframes envistaPhoneFloat{
+    0%,100%{translate:0 0}
+    50%{translate:0 -9px}
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .phone{animation:none!important;translate:0 0}
+}
+
+/* More of the official doodle pattern, never as an overlay on text. */
+.featured,
+.ecosystem,
+.audience,
+.process{
+  position:relative;
+  isolation:isolate;
+}
+.featured::before,
+.ecosystem::before,
+.audience::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  background-image:url("/brand/envista-pattern-original.png");
+  background-repeat:repeat;
+  background-size:460px auto;
+  opacity:.16;
+  mask-image:linear-gradient(90deg,transparent 5%, transparent 33%, rgba(0,0,0,.45) 68%, #000 100%);
+  pointer-events:none;
+}
+.featured::before{
+  opacity:.15;
+  background-position:100% 3%;
+}
+.featured::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  width:min(38vw,420px);
+  height:100%;
+  right:0;
+  top:0;
+  opacity:.07;
+  background:url("/brand/envista-texture-original.png") center/cover no-repeat;
+  mask-image:linear-gradient(90deg,transparent,#000);
+  pointer-events:none;
+}
+.ecosystem::before{
+  opacity:.19;
+  background-size:395px auto;
+  background-position:right top;
+  mask-image:linear-gradient(90deg,#000 0%,transparent 25%,transparent 67%,#000 100%);
+}
+.audience::before{
+  opacity:.14;
+  background-size:450px auto;
+  mask-image:linear-gradient(90deg,#000 0%,transparent 29%,transparent 73%,#000 100%);
+}
+
+/* Organic identity texture on selected surfaces, not every card. */
+.process::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  opacity:.055;
+  background:url("/brand/envista-texture-original.png") center/cover no-repeat;
+  mix-blend-mode:multiply;
+  pointer-events:none;
+}
+.featured>.container,
+.ecosystem>.container,
+.audience>.container,
+.process>.container{
+  position:relative;
+  z-index:1;
+}
+.projectArt::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  background:url("/brand/envista-pattern-original.png") center/250px repeat;
+  opacity:.13;
+  pointer-events:none;
+}
+.phoneProjectCover::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  background:url("/brand/envista-pattern-original.png") center/190px repeat;
+  opacity:.10;
+  pointer-events:none;
+}
+.banner::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  background:url("/brand/envista-texture-original.png") center/cover no-repeat;
+  opacity:.16;
+  mix-blend-mode:soft-light;
+  pointer-events:none;
+}
+@media (max-width:600px){
+  .heroPattern{opacity:.21;background-size:350px auto}
+  .featured::before,.ecosystem::before,.audience::before{opacity:.09;background-size:330px auto}
+  .process::before{opacity:.035}
+  .projectArt::before{opacity:.08}
+}
