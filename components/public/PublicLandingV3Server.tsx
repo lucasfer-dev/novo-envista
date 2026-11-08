@@ -64,7 +64,6 @@ function Header() {
         <Brand />
         <nav className={styles.desktopNav} aria-label="Navegação principal">
           <a href="#como-funciona">Como funciona</a>
-          <Link href="/projects">Explorar projetos</Link>
           <a href="#ecossistema">Aprender</a>
           <Link href="/schools">Para escolas</Link>
           <Link className={styles.login} href="/login">Entrar</Link>
@@ -74,7 +73,6 @@ function Header() {
           <summary aria-label="Abrir navegação"><Menu size={22} aria-hidden="true" /></summary>
           <nav aria-label="Navegação móvel">
             <a href="#como-funciona">Como funciona</a>
-            <Link href="/projects">Explorar projetos</Link>
             <a href="#ecossistema">Aprender</a>
             <Link href="/schools">Para escolas</Link>
             <Link href="/login">Entrar</Link>
