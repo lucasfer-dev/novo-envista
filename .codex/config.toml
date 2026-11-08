@@ -1,0 +1,5 @@
+# Configuração local do Codex apenas para o Envista.
+# Os subagentes herdam o modelo e as permissões da sessão principal.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
