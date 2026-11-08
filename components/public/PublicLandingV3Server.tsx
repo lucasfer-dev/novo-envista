@@ -251,7 +251,7 @@ export default async function PublicLandingV3Server() {
           <div className={styles.container}>
             <div className={styles.banner}>
               <div className={styles.bannerSymbol}><Image src="/brand/envista-symbol-gradient.svg" alt="" width={55} height={72} /></div>
-              <div className={styles.bannerHeadline}><span className={styles.bannerKicker}>PRÓXIMO PASSO</span><h2 id="final-title">Comece hoje a construir <mark>você também.</mark></h2></div>
+              <div className={styles.bannerHeadline}><span className={styles.bannerKicker}>PRÓXIMO PASSO</span><h2 id="final-title">Comece hoje a construir você também.</h2></div>
               <p>Crie seu projeto, monte sua equipe, acompanhe a evolução e conecte-se com oportunidades reais.</p>
               <Link href="/register" className={styles.bannerButton}>Criar meu projeto <ArrowRight aria-hidden="true" size={19} /></Link>
             </div>

@@ -9,7 +9,7 @@
 .process{background:linear-gradient(105deg,#d3f0ee,#e5f5f4 55%,#d2eceb);color:#0b2530;padding:58px 0 63px;border-radius:18px}.sectionHeader{display:flex;justify-content:space-between;align-items:center;gap:30px;margin-bottom:28px}.sectionHeader>div{max-width:580px}.sectionHeader h2{font-size:clamp(30px,3.3vw,44px);color:inherit;margin:0}.process .sectionHeader em{color:#008a72}.sectionHeader>p{width:32%;font-size:13px;color:#4c6670;line-height:1.65;border-left:1px solid rgba(0,90,95,.35);padding-left:25px;margin:0}.process .kicker{color:#13505a}.stepsGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:21px}.stepWrap{position:relative;min-width:0}.step{height:100%;min-height:205px;padding:22px 18px 20px;border:1px solid #b7d8d9;background:rgba(255,255,255,.32);border-radius:15px;box-shadow:0 10px 24px rgba(11,83,76,.05)}.stepIcon{width:39px;height:39px;border-radius:50%;background:#b2f8de;color:#095d55;display:grid;place-items:center;margin-bottom:8px}.stepIndex{font-size:11px;font-weight:800;color:#174653}.step h3{font-size:17px;color:#0c2734;letter-spacing:-.035em;margin:4px 0 9px}.step p{font-size:12px;line-height:1.57;color:#375b64;margin:0}.betweenSteps{position:absolute;top:50%;right:-21px;transform:translate(50%,-50%);z-index:2;color:#073d48;width:27px;height:27px;filter:drop-shadow(0 2px 0 #d6eeed)}
 .ecosystem{padding:70px 0;background:linear-gradient(100deg,#041820,#032822 85%)}.ecosystemLayout{display:grid;grid-template-columns:30% 1fr;gap:44px;align-items:center}.ecosystemIntro h2{font-size:clamp(32px,3.4vw,46px);max-width:410px;margin:0;color:#fff}.featureGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.feature{min-height:153px;padding:19px;border:1px solid #087f73;border-radius:13px;background:linear-gradient(145deg,#042d2a,#052025);transition:border-color .15s,transform .15s}.feature:hover{border-color:#00dfa8;transform:translateY(-2px)}.feature svg{color:#05e8bc;margin-bottom:14px}.feature h3{font-size:16px;color:#f7fffe;margin:0 0 7px}.feature p{font-size:11.5px;line-height:1.52;color:#b8d1d0;margin:0}
 .audience{border-top:1px solid #078b7d;padding:55px 0 55px;background:#041d25}.audience .sectionHeader h2{color:white}.audience .sectionHeader>p{color:#c1d6d9;border-left-color:rgba(49,207,177,.3)}.audienceGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.audienceCard{position:relative;min-height:173px;border:1px solid #0b947f;border-radius:13px;background:linear-gradient(140deg,#03423b,#052a31 74%);padding:19px 18px;display:block;transition:transform .15s,box-shadow .15s}.audienceCard:first-child{background:linear-gradient(140deg,#04664e,#053c38)}.audienceCard:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,228,164,.13)}.audienceCard svg{color:#04eab7;margin-bottom:10px}.audienceCard h3{font-size:16px;margin:0 0 7px;color:#fff}.audienceCard p{color:#c8dedc;font-size:11.5px;line-height:1.55;margin:0}.audienceArrow{position:absolute;right:13px;top:15px;opacity:0;transform:translateX(-5px);transition:opacity .2s,transform .2s}.audienceCard:hover .audienceArrow,.audienceCard:focus-visible .audienceArrow{opacity:1;transform:none}
-.finalSection{background:#041d25;padding:0 0 34px}.banner{position:relative;overflow:hidden;display:grid;grid-template-columns:78px minmax(0,1.18fr) minmax(0,.95fr) auto;align-items:center;gap:21px;border:1px solid rgba(20,227,184,.75);border-radius:22px;background:radial-gradient(circle at 18% 14%,rgba(30,241,172,.32),transparent 38%),linear-gradient(115deg,#035c48,#006e6b 51%,#037aa6);padding:24px 30px;box-shadow:0 20px 45px rgba(0,0,0,.25)}.banner:after{content:"";position:absolute;right:-80px;top:-90px;width:360px;height:280px;background:url("/brand/envista-symbol-white.svg") center/contain no-repeat;opacity:.055;pointer-events:none}.banner>*{position:relative}.bannerSymbol{width:72px;height:76px;background:linear-gradient(140deg,#087f67,#012e2d);border:1px solid rgba(20,245,194,.62);box-shadow:0 0 27px rgba(0,238,174,.4);border-radius:14px;display:grid;place-items:center}.bannerSymbol img{width:51px;height:66px;object-fit:contain}.bannerKicker{font-size:10px;color:#d1faf1;font-weight:850;letter-spacing:.09em}.bannerHeadline h2{font-size:clamp(23px,2.3vw,32px);color:#fff;margin:4px 0 0}.bannerHeadline mark{display:inline-block;background:#53f2c2;color:#04252c;padding:1px 8px;border-radius:6px}.banner>p{font-size:12px;color:#e1faf4;line-height:1.62;margin:0;padding-left:25px;border-left:1px solid rgba(220,255,251,.65)}.bannerButton{white-space:nowrap;padding:0 22px}
+.finalSection{background:#041d25;padding:0 0 34px}.banner{position:relative;overflow:hidden;display:grid;grid-template-columns:78px minmax(0,1.18fr) minmax(0,.95fr) auto;align-items:center;gap:21px;border:1px solid rgba(20,227,184,.75);border-radius:22px;background:radial-gradient(circle at 18% 14%,rgba(30,241,172,.32),transparent 38%),linear-gradient(115deg,#035c48,#006e6b 51%,#037aa6);padding:24px 30px;box-shadow:0 20px 45px rgba(0,0,0,.25)}.banner:after{content:"";position:absolute;right:-80px;top:-90px;width:360px;height:280px;background:url("/brand/envista-symbol-white.svg") center/contain no-repeat;opacity:.055;pointer-events:none}.banner>*{position:relative}.bannerSymbol{width:72px;height:76px;background:linear-gradient(140deg,#087f67,#012e2d);border:1px solid rgba(20,245,194,.62);box-shadow:0 0 27px rgba(0,238,174,.4);border-radius:14px;display:grid;place-items:center}.bannerSymbol img{width:51px;height:66px;object-fit:contain}.bannerKicker{font-size:10px;color:#d1faf1;font-weight:850;letter-spacing:.09em}.bannerHeadline h2{font-size:clamp(23px,2.3vw,32px);color:#fff;text-decoration:none;margin:4px 0 0}.banner>p{font-size:12px;color:#e1faf4;line-height:1.62;margin:0;padding-left:25px;border-left:1px solid rgba(220,255,251,.65)}.bannerButton{white-space:nowrap;padding:0 22px}
 .footer{border-top:1px solid #049c81;padding:29px 0 13px;background:#021720}.footerColumns{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px}.footerBrand img{width:30px;height:37px}.footerBrand .brandWord{font-size:21px}.footerIntro>p{font-size:12px;color:#a4c0c1;max-width:260px;line-height:1.6;margin:9px 0}.footerColumns h3{font-size:12px;color:#fff;letter-spacing:0;margin:6px 0 10px}.footerColumns nav{display:grid;gap:8px}.footerColumns nav a{font-size:12px;color:#b0c7cb}.footerColumns nav a:hover{color:#2ceab9}.footerBottom{border-top:1px solid rgba(101,221,206,.13);padding-top:15px;margin-top:23px;color:#7da0a4;font-size:11px}
 @media(max-width:1150px){.desktopNav{gap:13px}.brandCaption{display:none}.heroInner{grid-template-columns:47% 53%}.heroCopy h1{font-size:clamp(44px,5vw,66px)}.floatThree,.floatFour{right:-20px}.featuredLayout{grid-template-columns:270px 1fr;gap:20px}.banner{grid-template-columns:67px 1fr 1fr;gap:18px}.bannerButton{grid-column:3;justify-self:end}.banner>p{grid-column:2;grid-row:2}.bannerHeadline{grid-column:2 / 4}}
 @media(max-width:900px){.desktopNav{display:none}.mobileMenu{display:block}.heroInner{grid-template-columns:1fr;gap:0;padding-top:70px;min-height:0}.heroCopy{padding-bottom:0}.heroCopy h1{font-size:clamp(48px,8vw,78px)}.heroVisual{width:min(620px,100%);margin:20px auto 0;height:530px}.earth{width:1200px;height:500px;max-width:none;right:50%;transform:translateX(50%);bottom:-30px}.journey{margin:0 auto 25px}.featuredLayout{grid-template-columns:1fr}.featuredIntro{max-width:590px}.featuredIntro h2{max-width:530px}.ecosystemLayout{grid-template-columns:1fr;gap:28px}.ecosystemIntro h2{max-width:750px}.featureGrid{grid-template-columns:repeat(3,1fr)}.audienceGrid{grid-template-columns:repeat(2,1fr)}.stepsGrid{grid-template-columns:repeat(2,1fr)}.step{min-height:190px}.stepWrap:nth-child(2) .betweenSteps{display:none}.sectionHeader>p{width:40%}}
@@ -148,4 +148,81 @@
   .featured::before,.ecosystem::before,.audience::before{opacity:.09;background-size:330px auto}
   .process::before{opacity:.035}
   .projectArt::before{opacity:.08}
+}
+
+
+/* Branding: reinforce the official Envista tech doodles with legible negative space. */
+.header{isolation:isolate}
+.header::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  background:url("/brand/envista-pattern-original.png") left top/365px auto repeat;
+  opacity:.26;
+  filter:brightness(2.7);
+  mix-blend-mode:screen;
+  mask-image:linear-gradient(90deg,#000 0,rgba(0,0,0,.45) 20%,transparent 48%,transparent 69%,rgba(0,0,0,.45) 85%,#000 100%);
+}
+.headerInner{position:relative;z-index:1}
+.heroPattern{
+  opacity:.44;
+  filter:brightness(2.5);
+  mix-blend-mode:screen;
+  background-size:375px auto;
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.22) 20%,transparent 34%,transparent 70%,rgba(0,0,0,.65) 89%,#000 100%);
+}
+.featured::before{
+  opacity:.30;
+  filter:brightness(2.7);
+  mix-blend-mode:screen;
+  background-size:420px auto;
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.55) 0%,transparent 22%,transparent 69%,#000 100%);
+}
+.ecosystem::before{
+  opacity:.31;
+  filter:brightness(2.8);
+  mix-blend-mode:screen;
+  background-size:395px auto;
+  mask-image:linear-gradient(90deg,#000 0%,transparent 25%,transparent 68%,#000 100%);
+}
+.audience::before{
+  opacity:.28;
+  filter:brightness(2.8);
+  mix-blend-mode:screen;
+  background-size:420px auto;
+  mask-image:linear-gradient(90deg,#000 0%,transparent 24%,transparent 74%,#000 100%);
+}
+.footer{position:relative;isolation:isolate}
+.footer::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  opacity:.24;
+  filter:brightness(2.8);
+  mix-blend-mode:screen;
+  background:url("/brand/envista-pattern-original.png") right top/350px auto repeat;
+  mask-image:linear-gradient(90deg,#000 0%,transparent 24%,transparent 77%,#000 100%);
+}
+.footer>.container{position:relative;z-index:1}
+.projectArt::before{
+  opacity:.23;
+  filter:brightness(2.3);
+  mix-blend-mode:screen;
+}
+.phoneProjectCover::before{
+  opacity:.17;
+  filter:brightness(2.2);
+  mix-blend-mode:screen;
+}
+.bannerHeadline h2{color:#fff;text-decoration:none}
+@media(max-width:600px){
+ .header::before{opacity:.15;background-size:300px auto}
+ .heroPattern{opacity:.24;background-size:320px auto}
+ .featured::before,.ecosystem::before,.audience::before{opacity:.17;background-size:350px auto}
+ .footer::before{opacity:.14;background-size:320px auto}
+ .projectArt::before{opacity:.13}
 }
