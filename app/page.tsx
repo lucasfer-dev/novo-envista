@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import PublicLandingServer from "@/components/public/PublicLandingServer";
+import PublicLandingV3Server from "@/components/public/PublicLandingV3Server";
 import { createClient } from "@/lib/supabase/server";
 import { homeForRole, parseProductRole } from "@/lib/auth/validation";
 
@@ -44,5 +44,5 @@ export default async function HomePage() {
     }
   }
 
-  return <PublicLandingServer />;
+  return <PublicLandingV3Server />;
 }
