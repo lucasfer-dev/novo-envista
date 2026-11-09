@@ -3,3 +3,6 @@
 .fieldError{color:#ff9bad;font-size:11.5px;line-height:1.45}
 .srOnly{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .form input[aria-invalid="true"]{border-color:rgba(255,111,134,.55);box-shadow:0 0 0 3px rgba(255,111,134,.09)}
+
+.passwordWithIcon input{padding-left:41px!important}
+.passwordLeadingIcon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#9cdacf;pointer-events:none}

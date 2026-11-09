@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Eye, EyeOff } from "lucide-react";
+import { Check, Eye, EyeOff, LockKeyhole } from "lucide-react";
 import styles from "./Auth.module.css";
 
-export function RegisterPasswordFields({ minLength }: { minLength: number }) {
+export function RegisterPasswordFields({ minLength, leadingIcons = false }: { minLength: number; leadingIcons?: boolean }) {
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +21,8 @@ export function RegisterPasswordFields({ minLength }: { minLength: number }) {
       <div className={styles.grid2}>
         <div className={styles.fieldGroup}>
           <label htmlFor="register-password">Senha</label>
-          <div className={styles.passwordWrap}>
+          <div className={[styles.passwordWrap, leadingIcons ? styles.passwordWithIcon : ""].filter(Boolean).join(" ")}>
+            {leadingIcons ? <LockKeyhole className={styles.passwordLeadingIcon} size={17} aria-hidden="true" /> : null}
             <input
               id="register-password"
               type={showPassword ? "text" : "password"}
@@ -47,7 +48,8 @@ export function RegisterPasswordFields({ minLength }: { minLength: number }) {
 
         <div className={styles.fieldGroup}>
           <label htmlFor="register-password-confirmation">Confirmar senha</label>
-          <div className={styles.passwordWrap}>
+          <div className={[styles.passwordWrap, leadingIcons ? styles.passwordWithIcon : ""].filter(Boolean).join(" ")}>
+            {leadingIcons ? <LockKeyhole className={styles.passwordLeadingIcon} size={17} aria-hidden="true" /> : null}
             <input
               id="register-password-confirmation"
               type={showConfirmation ? "text" : "password"}

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
+import { authStyles as styles } from "@/components/auth/AuthShell";
+import { RegisterShell } from "@/components/auth/RegisterShell";
+import registerStyles from "@/components/auth/RegisterShell.module.css";
+import { ArrowRight, Building2, CalendarDays, CircleCheck, GraduationCap, IdCard, Mail, UserRound } from "lucide-react";
 import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { RegisterPasswordFields } from "@/components/auth/RegisterPasswordFields";
@@ -29,10 +32,10 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
       : "";
 
   return (
-    <AuthShell
-      wide
+    <RegisterShell
       title="Crie sua conta"
       description="Entre no Envista para aprender, construir projetos e se conectar a oportunidades."
+      phase={!enabled || status === "closed" ? "unavailable" : ["check-email", "resent", "resend-rate", "resend-temporary"].includes(status) ? "verify" : "account"}
     >
       {!enabled || status === "closed" ? (
         <>
@@ -78,50 +81,70 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
               <div className={styles.roleGrid}>
                 <label className={styles.roleCard}>
                   <input type="radio" name="role" value="participant" defaultChecked required />
-                  <span className={styles.roleCardBody}>
-                    <strong>Participante / aluno</strong>
-                    <small>Aprender, criar projetos, formar equipes e participar da comunidade.</small>
+                  <span className={[styles.roleCardBody, registerStyles.roleCardBody].join(" ")}>
+                    <GraduationCap className={registerStyles.roleIcon} size={24} aria-hidden="true" />
+                    <span className={registerStyles.roleText}>
+                      <strong>Participante / aluno</strong>
+                      <small>Aprender, criar projetos, formar equipes e participar da comunidade.</small>
+                    </span>
+                    <CircleCheck className={registerStyles.roleCheckedIcon} size={18} aria-hidden="true" />
                   </span>
                 </label>
                 <label className={styles.roleCard}>
                   <input type="radio" name="role" value="investor" required />
-                  <span className={styles.roleCardBody}>
-                    <strong>Investidor / organização</strong>
-                    <small>Explorar projetos, acompanhar oportunidades e se conectar com equipes.</small>
+                  <span className={[styles.roleCardBody, registerStyles.roleCardBody].join(" ")}>
+                    <Building2 className={registerStyles.roleIcon} size={24} aria-hidden="true" />
+                    <span className={registerStyles.roleText}>
+                      <strong>Investidor / organização</strong>
+                      <small>Explorar projetos, acompanhar oportunidades e se conectar com equipes.</small>
+                    </span>
+                    <CircleCheck className={registerStyles.roleCheckedIcon} size={18} aria-hidden="true" />
                   </span>
                 </label>
               </div>
             </fieldset>
 
             <div className={styles.grid2}>
-              <label>
-                Nome completo
-                <input name="display_name" autoComplete="name" maxLength={100} required />
-              </label>
-              <BirthDateField />
+              <div className={registerStyles.fieldWithIcon}>
+                <label>
+                  Nome completo
+                  <input name="display_name" autoComplete="name" maxLength={100} placeholder="Digite seu nome completo" required />
+                </label>
+                <UserRound className={registerStyles.fieldIcon} aria-hidden="true" />
+              </div>
+              <div className={registerStyles.fieldWithIcon}>
+                <BirthDateField />
+                <CalendarDays className={registerStyles.fieldIcon} aria-hidden="true" />
+              </div>
             </div>
 
-            <label>
-              E-mail
-              <input type="email" name="email" autoComplete="email" maxLength={254} required />
-              <span className={styles.muted}>Você receberá um e-mail para confirmar a conta.</span>
-            </label>
+            <div className={registerStyles.fieldWithIcon}>
+              <label>
+                E-mail
+                <input type="email" name="email" autoComplete="email" maxLength={254} placeholder="Digite seu e-mail" required />
+                <span className={styles.muted}>Você receberá um e-mail para confirmar a conta.</span>
+              </label>
+              <Mail className={registerStyles.fieldIcon} aria-hidden="true" />
+            </div>
 
-            <label>
-              CPF ou CNPJ
-              <input
-                type="text"
-                name="document"
-                inputMode="numeric"
-                autoComplete="off"
-                maxLength={18}
-                placeholder="CPF ou CNPJ"
-                required
-              />
-              <span className={styles.muted}>Obrigatório para identificação e login. O número não fica visível no perfil e é armazenado somente em formato protegido.</span>
-            </label>
+            <div className={registerStyles.fieldWithIcon}>
+              <label>
+                CPF ou CNPJ
+                <input
+                  type="text"
+                  name="document"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  maxLength={18}
+                  placeholder="Digite seu CPF ou CNPJ"
+                  required
+                />
+                <span className={styles.muted}>Obrigatório para identificação e login. O número não fica visível no perfil e é armazenado somente em formato protegido.</span>
+              </label>
+              <IdCard className={registerStyles.fieldIcon} aria-hidden="true" />
+            </div>
 
-            <RegisterPasswordFields minLength={MIN_PASSWORD_LENGTH} />
+            <RegisterPasswordFields minLength={MIN_PASSWORD_LENGTH} leadingIcons />
 
             <div className={styles.captcha}><AuthCaptcha action="register" /></div>
 
@@ -136,16 +159,16 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
               </label>
             </div>
 
-            <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Criando conta...">
-              Criar minha conta
+            <AuthSubmitButton className={[styles.primary, styles.full, registerStyles.submitButton].join(" ")} pendingText="Criando conta...">
+              Criar minha conta <ArrowRight size={18} aria-hidden="true" />
             </AuthSubmitButton>
           </form>
 
-          <div className={styles.authFooterCentered}>
+          <div className={[styles.authFooterCentered, registerStyles.authFooter].join(" ")}>
             Já possui uma conta? <Link className={styles.inlineLink} href="/login">Entrar</Link>
           </div>
         </>
       )}
-    </AuthShell>
+    </RegisterShell>
   );
 }

@@ -1,0 +1,365 @@
+
+.page{
+  min-height:100vh;
+  padding:clamp(20px,3.5vh,42px) 22px;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(ellipse 650px 450px at 25% 36%,rgba(0,169,157,.13),transparent 78%),
+    radial-gradient(ellipse 470px 470px at 83% 77%,rgba(0,134,167,.12),transparent 82%),#071822;
+  color:#f5fcfa;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  isolation:isolate;
+}
+.page::before{
+  content:"";
+  position:fixed;
+  z-index:-1;
+  inset:0;
+  pointer-events:none;
+  opacity:.17;
+  filter:brightness(2.3);
+  background:url("/brand/envista-pattern-original.png") center/390px auto repeat;
+  mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.45) 22%,transparent 41%,transparent 67%,rgba(0,0,0,.3) 85%,#000 100%);
+}
+.page *{box-sizing:border-box}
+.page :is(a,button,input,summary):focus-visible{outline:2px solid #67f8c9;outline-offset:3px}
+.shell{
+  width:min(100%,1130px);
+  min-height:790px;
+  display:grid;
+  grid-template-columns:minmax(290px,33%) minmax(0,1fr);
+  border:1px solid rgba(25,209,165,.39);
+  border-radius:20px;
+  overflow:hidden;
+  background:#071d25;
+  box-shadow:0 36px 105px rgba(0,5,13,.46),0 0 0 1px rgba(1,88,89,.10);
+}
+.brandPanel{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  background:radial-gradient(circle at 75% 4%,rgba(4,201,138,.23),transparent 31%),
+    linear-gradient(145deg,#07453e,#053d39 48%,#02222b);
+  border-right:1px solid rgba(45,226,187,.25);
+  padding:35px 31px 27px;
+}
+.brandPanel::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:url("/brand/envista-texture-original.png") center/cover;
+  mix-blend-mode:screen;
+  opacity:.17;
+  pointer-events:none;
+}
+.brandPanel::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  width:380px;
+  height:380px;
+  border:1px solid rgba(0,241,181,.82);
+  border-radius:50%;
+  top:-290px;
+  right:-210px;
+  box-shadow:0 0 42px rgba(0,236,174,.21);
+  pointer-events:none;
+}
+.brand{
+  position:relative;
+  z-index:3;
+  display:inline-flex;
+  align-items:center;
+  width:fit-content;
+  text-decoration:none;
+  color:#fff;
+  gap:10px;
+}
+.brand img{width:35px;height:47px;object-fit:contain}
+.brand span{font-size:22px;font-weight:890;letter-spacing:.018em}
+.brandCopy{
+  position:relative;
+  z-index:2;
+  padding:64px 0 125px;
+  margin:auto 0;
+}
+.kicker{
+  display:block;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.13em;
+  color:#3defb9;
+  margin-bottom:18px;
+}
+.brandCopy h2{
+  font-size:clamp(32px,3.3vw,40px);
+  line-height:1.08;
+  font-weight:870;
+  letter-spacing:-.055em;
+  margin:0 0 19px;
+  text-wrap:balance;
+}
+.brandCopy h2 em{color:#00e6b5;font-style:normal}
+.brandCopy p{
+  max-width:310px;
+  font-size:13.5px;
+  line-height:1.72;
+  color:#d5eae5;
+  margin:0;
+}
+.benefits{display:grid;gap:11px;margin-top:27px}
+.benefits>span{display:flex;align-items:center;gap:11px;color:#edfffb;font-size:12px}
+.benefits strong{font-size:11.5px;font-weight:770}
+.benefits svg{
+  width:38px;
+  height:38px;
+  padding:9px;
+  flex:0 0 auto;
+  color:#2ff0bf;
+  border:1px solid rgba(48,229,180,.35);
+  border-radius:10px;
+  background:rgba(4,100,88,.38);
+}
+.brandEarth{
+  position:absolute;
+  z-index:0;
+  bottom:-125px;
+  left:-190px;
+  width:710px;
+  height:375px;
+  opacity:.95;
+  background:url("/brand/envista-earth-horizon.svg") center bottom/contain no-repeat;
+  filter:drop-shadow(0 -12px 30px rgba(0,238,174,.13));
+  pointer-events:none;
+}
+.formPanel{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:center;
+  padding:27px clamp(24px,3.2vw,41px) 32px;
+  background:
+    radial-gradient(ellipse at 100% 0%,rgba(0,169,157,.09),transparent 50%),
+    linear-gradient(125deg,#061b24,#041b22 77%);
+  min-width:0;
+}
+.formPanel::after{
+  content:"";
+  position:absolute;
+  inset:12px;
+  border:1px solid rgba(37,200,178,.06);
+  border-radius:14px;
+  pointer-events:none;
+}
+.progress{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  max-width:480px;
+  width:90%;
+  align-self:center;
+  margin:0 0 20px;
+}
+.progress::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:15px;
+  left:15%;
+  right:15%;
+  height:1px;
+  background:linear-gradient(90deg,#00d9a5,#1b5e66 45%,#44737b);
+}
+.progressStep{
+  display:grid;
+  justify-items:center;
+  text-align:center;
+  gap:6px;
+  min-width:82px;
+  color:#9fbfc1;
+  font-size:11px;
+  font-weight:700;
+}
+.stepCircle{
+  display:grid;
+  place-items:center;
+  width:31px;
+  height:31px;
+  border:1px solid rgba(182,222,224,.53);
+  border-radius:50%;
+  background:#08242b;
+  color:#daedeb;
+  font-size:12px;
+}
+.progressActive{color:#40edc2}
+.progressActive .stepCircle{
+  color:#05352e;
+  font-weight:900;
+  border-color:#00e6b5;
+  background:#00e6b5;
+  box-shadow:0 0 23px rgba(0,230,181,.43);
+}
+.progressDone .stepCircle{color:#061d26;background:#70edc8;border-color:#70edc8}
+.formArea{position:relative;z-index:1;max-width:670px;width:100%;align-self:center}
+.intro{margin-bottom:22px}
+.formKicker{display:none;color:#41e7be;letter-spacing:.15em;font-size:10px;font-weight:850}
+.intro h1{
+  margin:0 0 7px;
+  color:#fff;
+  font-weight:850;
+  letter-spacing:-.04em;
+  line-height:1.15;
+  font-size:clamp(26px,2.3vw,31px);
+}
+.intro p{margin:0;color:#b5d0d4;font-size:12.5px;line-height:1.6}
+.formArea form{gap:15px}
+.formArea form label{color:#eef8fa;font-size:12px;font-weight:740}
+.formArea form input:not([type="radio"]):not([type="checkbox"]),
+.formArea form select{
+  background:rgba(2,24,31,.72);
+  border:1px solid rgba(78,179,169,.35);
+  border-radius:9px;
+  min-height:43px;
+  padding:11px 12px;
+  color:#ecfffb;
+  font-size:12px;
+  box-shadow:inset 0 1px 0 rgba(179,251,241,.04);
+}
+.formArea form input:not([type="radio"]):not([type="checkbox"]):hover{
+  border-color:rgba(68,215,179,.56);
+}
+.formArea form input:not([type="radio"]):not([type="checkbox"]):focus{
+  border-color:#00d6b3;
+  box-shadow:0 0 0 3px rgba(0,220,170,.13);
+  outline:none;
+}
+.formArea form input::placeholder{color:#789fa8}
+.formArea fieldset{margin:0;padding:0;border:0}
+.formArea legend{font-size:12px;color:#e8f4f6;font-weight:800;margin-bottom:11px}
+.roleCardBody{
+  position:relative;
+  display:flex;
+  gap:11px;
+  align-items:flex-start;
+  min-height:88px;
+  padding:15px 12px;
+  border-radius:11px;
+  border:1px solid rgba(54,152,148,.34);
+  background:rgba(2,31,38,.72);
+  transition:background .15s,border-color .15s,box-shadow .15s;
+}
+.roleCardBody:hover{border-color:rgba(29,226,175,.70)}
+.roleIcon{
+  flex:0 0 auto;
+  color:#29ecc0;
+  margin-top:3px;
+}
+.roleText{display:grid;gap:6px;min-width:0}
+.roleText strong{font-size:12px;color:#fff;font-weight:800}
+.roleText small{font-size:10.5px;color:#afcbd0;line-height:1.45;font-weight:500}
+.roleCheckedIcon{
+  flex:0 0 auto;
+  margin-left:auto;
+  color:#00eeb9;
+  opacity:0;
+}
+.formArea input[type="radio"]:checked + .roleCardBody{
+  border-color:#00e4b2;
+  background:linear-gradient(125deg,rgba(0,140,117,.23),rgba(2,53,61,.67));
+  box-shadow:0 0 0 1px rgba(0,230,181,.23),0 0 22px rgba(0,215,160,.12);
+}
+.formArea input[type="radio"]:checked + .roleCardBody .roleCheckedIcon{opacity:1}
+.fieldWithIcon{position:relative}
+.fieldIcon{
+  position:absolute;
+  left:13px;
+  top:34px;
+  width:17px;
+  height:17px;
+  color:#9cdbd4;
+  pointer-events:none;
+}
+.fieldWithIcon input:not([type="radio"]):not([type="checkbox"]){padding-left:39px!important}
+.formArea form :is(input[name="password"],input[name="password_confirmation"]){min-height:43px}
+.formArea form :is(input[name="password"],input[name="password_confirmation"]){padding-right:43px}
+.formArea form label a,.formArea a{
+  color:#4cefc7;
+  text-decoration:none;
+}
+.formArea a:hover{text-decoration:underline;text-underline-offset:3px}
+.formArea form button[type="submit"]{min-height:45px}
+.submitButton{
+  display:inline-flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:16px!important;
+  color:#022a2d!important;
+  font-size:13px!important;
+  font-weight:850!important;
+  letter-spacing:-.01em;
+  border:1px solid rgba(0,221,189,.5)!important;
+  border-radius:10px!important;
+  background:linear-gradient(100deg,#22b573,#00dba9 55%,#0086a7)!important;
+  box-shadow:0 9px 28px rgba(0,183,156,.19)!important;
+  transition:transform .15s,filter .15s;
+  cursor:pointer;
+}
+.submitButton:hover{transform:translateY(-2px);filter:brightness(1.09)}
+.submitButton:disabled{cursor:not-allowed;filter:saturate(.5);opacity:.7;transform:none}
+.submitButton svg{flex:0 0 auto}
+.authFooter{
+  margin-top:17px;
+  padding-top:18px;
+  border-top:1px solid rgba(100,214,198,.14);
+  color:#a5c4c8;
+  font-size:12px;
+  text-align:center;
+}
+.authFooter a{font-size:12px;font-weight:800;margin-left:6px}
+.mobileBrand{display:none}
+.formArea form input[type="checkbox"]{accent-color:#00e1b0}
+.formArea form label:has(> input[type="checkbox"]){font-size:11.5px;line-height:1.5;font-weight:450}
+.formArea form input[aria-invalid="true"]{border-color:rgba(255,123,136,.65)}
+.formArea form input:focus-visible{outline-offset:1px}
+@media(max-width:1030px){
+  .shell{grid-template-columns:minmax(255px,32%) minmax(0,1fr)}
+  .brandPanel{padding:27px 24px}
+  .brandCopy h2{font-size:33px}
+  .formPanel{padding-inline:27px}
+  .roleCardBody{padding:13px 10px}
+}
+@media(max-width:830px){
+  .page{padding:0;display:block}
+  .shell{display:block;min-height:100vh;border:0;border-radius:0}
+  .brandPanel{display:none}
+  .formPanel{min-height:100vh;padding:27px 19px 35px}
+  .mobileBrand{display:flex;align-self:center;align-items:center;justify-content:center;gap:9px;margin:6px 0 31px;color:#fff;text-decoration:none}
+  .mobileBrand strong{font-size:21px;letter-spacing:.04em}
+  .formArea{max-width:660px}
+  .progress{margin-bottom:30px}
+  .formKicker{display:block;margin-bottom:8px}
+}
+@media(max-width:540px){
+  .formPanel{padding:19px 16px 30px}
+  .progress{width:100%;margin-bottom:21px}
+  .progressStep{font-size:10px;min-width:65px}
+  .intro{margin-bottom:21px}
+  .intro h1{font-size:27px}
+  .intro p{font-size:12px}
+  .formArea form{gap:14px}
+  .roleCardBody{min-height:70px}
+  .roleText strong{font-size:12px}
+  .roleText small{font-size:10px}
+  .fieldIcon{top:33px}
+}
+@media(prefers-reduced-motion:reduce){
+  .page *{scroll-behavior:auto!important;transition:none!important}
+}
