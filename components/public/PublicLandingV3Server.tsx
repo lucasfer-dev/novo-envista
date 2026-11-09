@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./PublicLandingV3.module.css";
+import PublicSiteHeader from "./PublicSiteHeader";
 
 type PublicProject = {
   slug: string;
@@ -57,33 +58,6 @@ function Brand({ footer = false }: { footer?: boolean }) {
   );
 }
 
-function Header() {
-  return (
-    <header className={styles.header}>
-      <div className={styles.headerInner}>
-        <Brand />
-        <nav className={styles.desktopNav} aria-label="Navegação principal">
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#ecossistema">Aprender</a>
-          <Link href="/schools">Para escolas</Link>
-          <Link className={styles.login} href="/login">Entrar</Link>
-          <Link className={styles.primarySmall} href="/register">Começar agora <ArrowRight size={17} aria-hidden="true" /></Link>
-        </nav>
-        <details className={styles.mobileMenu}>
-          <summary aria-label="Abrir navegação"><Menu size={22} aria-hidden="true" /></summary>
-          <nav aria-label="Navegação móvel">
-            <a href="#como-funciona">Como funciona</a>
-            <a href="#ecossistema">Aprender</a>
-            <Link href="/schools">Para escolas</Link>
-            <Link href="/login">Entrar</Link>
-            <Link href="/register">Começar agora</Link>
-          </nav>
-        </details>
-      </div>
-    </header>
-  );
-}
-
 function ProjectCard({ project, index }: { project: PublicProject | null; index: number }) {
   const sample = sampleProjects[index] ?? sampleProjects[0];
   const isSample = !project;
@@ -129,7 +103,7 @@ export default async function PublicLandingV3Server() {
   return (
     <div className={styles.page} data-envista-public-shell>
       <a href="#conteudo" className={styles.skip}>Pular para o conteúdo</a>
-      <Header />
+      <PublicSiteHeader />
       <main id="conteudo">
         <section className={styles.hero} aria-labelledby="envista-hero">
           <div className={styles.heroPattern} aria-hidden="true" />
