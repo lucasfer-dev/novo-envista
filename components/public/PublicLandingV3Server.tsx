@@ -38,8 +38,8 @@ const features = [
 const audiences = [
   { Icon: GraduationCap, title: "Estudantes", text: "Tire suas ideias do papel, aprenda na prática e construa um portfólio real.", href: "/register" },
   { Icon: UsersRound, title: "Equipes", text: "Colabore, divida responsabilidades e desenvolva projetos com impacto.", href: "/register" },
-  { Icon: School, title: "Escolas", text: "Incentive a inovação e acompanhe projetos e aprendizados.", href: "/schools" },
-  { Icon: Rocket, title: "Mentores e investidores", text: "Descubra talentos, oriente projetos e encontre soluções com potencial.", href: "/projects" },
+  { Icon: School, title: "Escolas", text: "Incentive a inovação e acompanhe projetos e aprendizados.", href: null },
+  { Icon: Rocket, title: "Mentores e investidores", text: "Descubra talentos, oriente projetos e encontre soluções com potencial.", href: null },
 ];
 
 const sampleProjects = [
@@ -65,9 +65,7 @@ function ProjectCard({ project, index }: { project: PublicProject | null; index:
   const description = project?.short_description || (isSample ? sample.description : "Veja o percurso e os próximos passos deste projeto.");
   const category = project?.category || (isSample ? sample.category : "Em desenvolvimento");
   return (
-    <Link href={project ? "/p/" + encodeURIComponent(project.slug) : "/projects"}
-      className={styles.projectCard}
-      aria-label={isSample ? "Exemplo ilustrativo: " + title + ". Explorar projetos" : "Abrir projeto " + title}>
+    <a className={styles.projectCard}>
       <div className={[styles.projectArt, styles["art" + index]].join(" ")}>
         {index === 0 ? <div className={styles.forestShape} aria-hidden="true"><span /><span /><span /><span /><span /></div> : null}
         {index === 1 ? <div className={styles.robotShape} aria-hidden="true"><Sparkles size={86} strokeWidth={1.15} /></div> : null}
@@ -80,7 +78,7 @@ function ProjectCard({ project, index }: { project: PublicProject | null; index:
         <p>{description}</p>
         <span className={styles.projectTag}>{category}</span>
       </div>
-    </Link>
+    </a>
   );
 }
 
@@ -160,7 +158,7 @@ export default async function PublicLandingV3Server() {
                 <span className={styles.kicker}>EM DESTAQUE NO ENVISTA</span>
                 <h2 id="featured-title">Projetos que transformam ideias em <em>impacto.</em></h2>
                 <p>Descubra iniciativas que ganham forma, conectam pessoas e evoluem com apoio do ecossistema.</p>
-                <Link href="/projects" className={styles.textLink}>Explorar todos os projetos <ArrowRight size={17} aria-hidden="true" /></Link>
+                <a className={styles.textLink}>Explorar todos os projetos <ArrowRight size={17} aria-hidden="true" /></a>
               </div>
               <div className={styles.projectsGrid}>
                 {[0, 1, 2].map(index => <ProjectCard key={index} index={index} project={projects[index] ?? null} />)}
@@ -209,12 +207,12 @@ export default async function PublicLandingV3Server() {
               <p>Um ambiente para aprender, colaborar, orientar e transformar ideias em projetos reais.</p>
             </div>
             <div className={styles.audienceGrid}>
-              {audiences.map(({ Icon, title, text, href }) => (
-                <Link className={styles.audienceCard} key={title} href={href}>
-                  <Icon size={28} aria-hidden="true" /><h3>{title}</h3><p>{text}</p>
-                  <span className={styles.audienceArrow}><ArrowRight size={17} aria-hidden="true" /></span>
-                </Link>
-              ))}
+              {audiences.map(({ Icon, title, text, href }) => {
+                 const content = <><Icon size={28} aria-hidden="true" /><h3>{title}</h3><p>{text}</p><span className={styles.audienceArrow}><ArrowRight size={17} aria-hidden="true" /></span></>;
+                 return href
+                   ? <Link className={styles.audienceCard} key={title} href={href}>{content}</Link>
+                   : <a className={styles.audienceCard} key={title}>{content}</a>;
+               })}
             </div>
           </div>
         </section>
@@ -235,8 +233,8 @@ export default async function PublicLandingV3Server() {
         <div className={styles.container}>
           <div className={styles.footerColumns}>
             <div className={styles.footerIntro}><Brand footer /><p>Ecossistema de inovação para ideias que ganham vida.</p></div>
-            <div><h3>Produto</h3><nav aria-label="Produto"><a href="#como-funciona">Como funciona</a><Link href="/projects">Explorar projetos</Link><a href="#ecossistema">Aprender</a></nav></div>
-            <div><h3>Para escolas</h3><nav aria-label="Escolas"><Link href="/schools">Soluções educacionais</Link><Link href="/schools">Conhecer mais</Link></nav></div>
+            <div><h3>Produto</h3><nav aria-label="Produto"><a href="#como-funciona">Como funciona</a><a>Explorar projetos</a><a href="#ecossistema">Aprender</a></nav></div>
+            <div><h3>Para escolas</h3><nav aria-label="Escolas"><a>Soluções educacionais</a><a>Conhecer mais</a></nav></div>
             <div><h3>Institucional</h3><nav aria-label="Institucional"><Link href="/about">Sobre o Envista</Link><Link href="/privacy">Privacidade</Link><Link href="/terms">Termos de uso</Link></nav></div>
           </div>
           <div className={styles.footerBottom}>© {new Date().getFullYear()} Envista. Projetos que continuam.</div>
