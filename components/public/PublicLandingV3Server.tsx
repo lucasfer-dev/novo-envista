@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight, BookOpen, Compass, FolderKanban, GraduationCap,
-  Lightbulb, Menu, Network, Rocket, School, Sparkles,
+  Lightbulb, Menu, Network, Rocket, School ,
   Target, TrendingUp, Trophy, UsersRound,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -39,12 +39,6 @@ const audiences = [
   { Icon: UsersRound, title: "Equipes", text: "Colabore, divida responsabilidades e desenvolva projetos com impacto.", href: "/register" },
   { Icon: School, title: "Escolas", text: "Incentive a inovação e acompanhe projetos e aprendizados.", href: "/schools" },
   { Icon: Rocket, title: "Mentores e investidores", text: "Descubra talentos, oriente projetos e encontre soluções com potencial.", href: "/projects" },
-];
-
-const sampleProjects = [
-  { title: "EcoTrack", description: "Conceito de monitoramento ambiental com inteligência artificial.", category: "Sustentabilidade", art: "eco" },
-  { title: "AcessIA", description: "Conceito de tecnologia assistiva para experiências mais acessíveis.", category: "Inclusão", art: "tech" },
-  { title: "BioCiclo", description: "Conceito de reaproveitamento inteligente de resíduos.", category: "Inovação", art: "nature" },
 ];
 
 function Brand({ footer = false }: { footer?: boolean }) {
@@ -84,27 +78,21 @@ function Header() {
   );
 }
 
-function ProjectCard({ project, index }: { project: PublicProject | null; index: number }) {
-  const sample = sampleProjects[index] ?? sampleProjects[0];
-  const isSample = !project;
-  const title = project?.title || sample.title;
-  const description = project?.short_description || (isSample ? sample.description : "Veja o percurso e os próximos passos deste projeto.");
-  const category = project?.category || (isSample ? sample.category : "Em desenvolvimento");
+
+function ProjectCard({ project }: { project: PublicProject }) {
   return (
-    <Link href={project ? "/p/" + encodeURIComponent(project.slug) : "/projects"}
-      className={styles.projectCard}
-      aria-label={isSample ? "Exemplo ilustrativo: " + title + ". Explorar projetos" : "Abrir projeto " + title}>
-      <div className={[styles.projectArt, styles["art" + index]].join(" ")}>
-        {index === 0 ? <div className={styles.forestShape} aria-hidden="true"><span /><span /><span /><span /><span /></div> : null}
-        {index === 1 ? <div className={styles.robotShape} aria-hidden="true"><Sparkles size={86} strokeWidth={1.15} /></div> : null}
-        {index === 2 ? <div className={styles.sproutShape} aria-hidden="true"><span /><span /><i /></div> : null}
-        <span className={styles.cardArtworkSeal}><Image src="/brand/envista-symbol-white.svg" alt="" width={18} height={24} /></span>
-        {isSample ? <span className={styles.demoTag}>Exemplo ilustrativo</span> : null}
+    <Link href={"/p/" + encodeURIComponent(project.slug)} className={styles.projectCard} aria-label={"Abrir projeto: " + project.title}>
+      <div className={styles.projectArt} aria-hidden="true">
+        <div className={styles.realProjectArtwork}>
+          <Image src="/brand/envista-symbol-gradient.svg" alt="" width={52} height={69} />
+          <span>PROJETO PUBLICADO NO ENVISTA</span>
+        </div>
+        {project.category?.trim() ? <span className={styles.actualProjectCategory}>{project.category}</span> : null}
       </div>
       <div className={styles.projectCardContent}>
-        <div className={styles.cardTitleLine}><h3>{title}</h3><ArrowRight size={18} aria-hidden="true" /></div>
-        <p>{description}</p>
-        <span className={styles.projectTag}>{category}</span>
+        <div className={styles.cardTitleLine}><h3>{project.title}</h3><ArrowRight size={18} aria-hidden="true" /></div>
+        {project.short_description?.trim() ? <p>{project.short_description}</p> : null}
+        {project.stage?.trim() ? <span className={styles.projectTag}>{project.stage}</span> : null}
       </div>
     </Link>
   );
@@ -120,7 +108,7 @@ export default async function PublicLandingV3Server() {
         .select("slug,title,short_description,stage,category,tags,updated_at")
         .eq("visibility", "platform")
         .order("updated_at", { ascending: false }).limit(3);
-      projects = (data ?? []) as PublicProject[];
+      projects = ((data ?? []) as PublicProject[]).filter((project) => Boolean(project.slug?.trim() && project.title?.trim()));
     } catch {
       projects = [];
     }
@@ -144,7 +132,7 @@ export default async function PublicLandingV3Server() {
                 <a className={styles.secondary} href="#como-funciona"><span className={styles.play} aria-hidden="true">▶</span> Ver como funciona</a>
               </div>
             </div>
-            <div className={styles.heroVisual} aria-label="Prévia ilustrativa do Envista no celular">
+            <div className={styles.heroVisual} aria-label="Identidade visual do Envista e, quando disponível, projeto público">
               <Image className={styles.brandGhost} src="/brand/envista-symbol-gradient.svg" alt="" width={280} height={380} aria-hidden="true" />
               <span className={[styles.orbit, styles.orbitOne].join(" ")} aria-hidden="true" />
               <span className={[styles.orbit, styles.orbitTwo].join(" ")} aria-hidden="true" />
@@ -152,23 +140,40 @@ export default async function PublicLandingV3Server() {
               <div className={[styles.floatCard, styles.floatTwo].join(" ")}><BookOpen size={23} aria-hidden="true" /><strong>Conhecimento<br />para evoluir</strong></div>
               <div className={[styles.floatCard, styles.floatThree].join(" ")}><UsersRound size={24} aria-hidden="true" /><strong>Conexões que<br />aceleram</strong></div>
               <div className={[styles.floatCard, styles.floatFour].join(" ")}><Trophy size={23} aria-hidden="true" /><strong>Oportunidades<br />reais</strong></div>
-              <div className={styles.phone} aria-hidden="true">
-                <div className={styles.phoneScreen}>
-                  <div className={styles.phoneStatus}><span>9:41</span><span className={styles.phoneNotch} /><span>● ▰ ▰</span></div>
-                  <div className={styles.phoneNav}><span><Image src="/brand/envista-symbol-gradient.svg" alt="" width={18} height={23} /> ENVISTA</span><Menu size={17} /></div>
-                  <div className={styles.phoneContent}>
-                    <span className={styles.phoneCaption}>PRÉVIA DA EXPERIÊNCIA</span>
-                    <h2>Meus projetos</h2>
-                    <div className={styles.phoneProjectCover}><span>EcoTrack</span></div>
-                    <h3>EcoTrack</h3>
-                    <p>Monitoramento ambiental com IA e dados em tempo real.</p>
-                    <div className={styles.phoneTags}><span>Sustentabilidade</span><span>Tecnologia</span></div>
-                    <div className={styles.phoneProgressLabel}>Evolução do projeto <strong>60%</strong></div>
-                    <div className={styles.phoneProgress}><i /></div>
+
+              {projects[0] ? (
+                <div className={styles.phone} aria-hidden="true">
+                  <div className={styles.phoneScreen}>
+                    <div className={styles.phoneStatus}><span>9:41</span><span className={styles.phoneNotch} /><span>● ▰ ▰</span></div>
+                    <div className={styles.phoneNav}>
+                      <span><Image src="/brand/envista-symbol-gradient.svg" alt="" width={18} height={23} /> ENVISTA</span><Menu size={17} />
+                    </div>
+                    <div className={styles.phoneContent}>
+                      <span className={styles.phoneCaption}>PROJETO PUBLICADO NO ENVISTA</span>
+                      <h2>Projeto da comunidade</h2>
+                      <div className={styles.phoneProjectCover}><span>{projects[0].title}</span></div>
+                      <h3>{projects[0].title}</h3>
+                      {projects[0].short_description?.trim() ? <p>{projects[0].short_description}</p> : null}
+                      <div className={styles.phoneTags}>
+                        {projects[0].category?.trim() ? <span>{projects[0].category}</span> : null}
+                        {(projects[0].tags ?? []).filter(Boolean).slice(0, 1).map((tag) => <span key={tag}>{tag}</span>)}
+                      </div>
+                      {projects[0].stage?.trim() ? (
+                        <div className={styles.phoneProgressLabel}>Estágio do projeto <strong>{projects[0].stage}</strong></div>
+                      ) : null}
+                    </div>
+                    <div className={styles.phoneBottom}>
+                      <span>⌂<small>Início</small></span><span>▣<small>Projetos</small></span>
+                      <span className={styles.phonePlus}>+</span>
+                      <span>♧<small>Aprender</small></span><span>♙<small>Perfil</small></span>
+                    </div>
                   </div>
-                  <div className={styles.phoneBottom}><span>⌂<small>Início</small></span><span>▣<small>Projetos</small></span><span className={styles.phonePlus}>+</span><span>♧<small>Aprender</small></span><span>♙<small>Perfil</small></span></div>
                 </div>
-              </div>
+              ) : (
+                <div className={styles.emptyHeroBrand} aria-hidden="true">
+                  <Image src="/brand/envista-symbol-gradient.svg" alt="" width={220} height={300} />
+                </div>
+              )}
             </div>
           </div>
           <div className={styles.journey} aria-label="Da ideia às oportunidades">
@@ -179,22 +184,24 @@ export default async function PublicLandingV3Server() {
           </div>
         </section>
 
-        <section className={styles.featured} id="projetos" aria-labelledby="featured-title">
-          <div className={styles.container}>
-            <div className={styles.featuredLayout}>
-              <div className={styles.featuredIntro}>
-                <span className={styles.kicker}>EM DESTAQUE NO ENVISTA</span>
-                <h2 id="featured-title">Projetos que transformam ideias em <em>impacto.</em></h2>
-                <p>Descubra iniciativas que ganham forma, conectam pessoas e evoluem com apoio do ecossistema.</p>
-                <Link href="/projects" className={styles.textLink}>Explorar todos os projetos <ArrowRight size={17} aria-hidden="true" /></Link>
-              </div>
-              <div className={styles.projectsGrid}>
-                {[0, 1, 2].map(index => <ProjectCard key={index} index={index} project={projects[index] ?? null} />)}
+
+        {projects.length > 0 ? (
+          <section className={styles.featured} id="projetos" aria-labelledby="featured-title">
+            <div className={styles.container}>
+              <div className={styles.featuredLayout}>
+                <div className={styles.featuredIntro}>
+                  <span className={styles.kicker}>PROJETOS PUBLICADOS NO ENVISTA</span>
+                  <h2 id="featured-title">Projetos que transformam ideias em <em>impacto.</em></h2>
+                  <p>Conheça projetos publicados por pessoas e equipes do ecossistema.</p>
+                  <Link href="/projects" className={styles.textLink}>Ver todos os projetos <ArrowRight size={17} aria-hidden="true" /></Link>
+                </div>
+                <div className={styles.projectsGrid}>
+                  {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
+                </div>
               </div>
             </div>
-            {projects.length < 3 ? <p className={styles.demoDisclaimer}>As prévias identificadas como “Exemplo ilustrativo” demonstram possibilidades de uso, não projetos publicados por usuários.</p> : null}
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         <section className={styles.process} id="como-funciona" aria-labelledby="process-title">
           <div className={styles.container}>
@@ -261,7 +268,7 @@ export default async function PublicLandingV3Server() {
         <div className={styles.container}>
           <div className={styles.footerColumns}>
             <div className={styles.footerIntro}><Brand footer /><p>Ecossistema de inovação para ideias que ganham vida.</p></div>
-            <div><h3>Produto</h3><nav aria-label="Produto"><a href="#como-funciona">Como funciona</a><Link href="/projects">Explorar projetos</Link><a href="#ecossistema">Aprender</a></nav></div>
+            <div><h3>Produto</h3><nav aria-label="Produto"><a href="#como-funciona">Como funciona</a>{projects.length > 0 ? <Link href="/projects">Explorar projetos</Link> : null}<a href="#ecossistema">Aprender</a></nav></div>
             <div><h3>Para escolas</h3><nav aria-label="Escolas"><Link href="/schools">Soluções educacionais</Link><Link href="/schools">Conhecer mais</Link></nav></div>
             <div><h3>Institucional</h3><nav aria-label="Institucional"><Link href="/about">Sobre o Envista</Link><Link href="/privacy">Privacidade</Link><Link href="/terms">Termos de uso</Link></nav></div>
           </div>
