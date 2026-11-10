@@ -172,38 +172,64 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
   const showTeams = type === "all" || type === "teams";
   const showPeople = type === "all" || type === "people";
   const filteredTotal = (showProjects ? projectTotal : 0) + (showTeams ? teamTotal : 0) + (showPeople ? profileTotal : 0);
-  const featured = projects.slice(0, 3);
-  const suggestions = projects.slice(3, 6);
+  const visibleProjects = type === "all" ? projects.slice(0, 5) : projects;
+  const visibleTeams = type === "all" ? teams.slice(0, 4) : teams;
+  const visibleProfiles = type === "all" ? profiles.slice(0, 4) : profiles;
+  const sections = [
+    { kind: "all", label: "Descobrir", count: null },
+    { kind: "projects", label: "Projetos", count: projectTotal },
+    { kind: "teams", label: "Equipes", count: teamTotal },
+    { kind: "people", label: "Pessoas", count: profileTotal },
+  ] as const;
 
   return <div className={styles.page} data-envista-explore-redesign>
     <div className={styles.columns}>
       <div className={styles.content}>
-        <header className={styles.pageHeading}>
-          <h1>Explorar</h1>
-          <p>Descubra projetos, pessoas, equipes e oportunidades.</p>
+        <header className={styles.exploreHeader}>
+          <div className={styles.pageHeading}>
+            <span className={styles.eyebrow}>O ECOSSISTEMA ESTÁ AQUI</span>
+            <h1>Explorar<span aria-hidden="true">.</span></h1>
+            <p>Descubra projetos, pessoas e equipes para construir algo novo.</p>
+          </div>
+          <form className={styles.searchForm} action={base} method="get" role="search">
+            <Search size={20} aria-hidden="true" />
+            <label className={styles.srOnly} htmlFor="envista-explore-search">Buscar na comunidade do Envista</label>
+            <input
+              id="envista-explore-search"
+              key={q}
+              type="search"
+              name="q"
+              defaultValue={q}
+              maxLength={120}
+              placeholder="Busque projetos, pessoas, equipes ou ideias..."
+            />
+            {type !== "all" ? <input type="hidden" name="type" value={type} /> : null}
+            {stage !== "Todos" && (type === "all" || type === "projects") ? <input type="hidden" name="stage" value={stage} /> : null}
+            <button type="submit" aria-label="Buscar no Envista">Buscar <ArrowRight size={16} aria-hidden="true" /></button>
+          </form>
         </header>
 
-        <section className={styles.hero} aria-labelledby="explore-hero-title">
-          <span className={styles.heroPattern} aria-hidden="true" />
-          <span className={styles.heroAngle} aria-hidden="true" />
-          <img className={styles.heroImage} src="/brand/envista-explore-hero.webp" width="385" height="243" alt="" aria-hidden="true" />
-          <div className={styles.heroContent}>
-            <span className={styles.eyebrow}>PROJETOS · EQUIPES · COMPETIÇÕES</span>
-            <h2 id="explore-hero-title">Encontre ideias que geram<br /><span>impacto real.</span></h2>
-            <p>Navegue por projetos, conecte-se com pessoas e participe de competições que impulsionam a inovação.</p>
-            <div className={styles.heroActions}>
-              <Link className={styles.primaryAction} href={exploreUrl(base, q, stage, "projects") + "#explore-projects"}><Search size={18} aria-hidden="true" /> Explorar projetos</Link>
-              <Link className={styles.outlineAction} href={exploreUrl(base, q, "Todos", "people") + "#explore-people"}><Users size={17} aria-hidden="true" /> Encontrar pessoas</Link>
-            </div>
-          </div>
-        </section>
+        <nav className={styles.typeTabs} aria-label="Categorias de resultados">
+          {sections.map(item =>
+            <Link
+              key={item.kind}
+              href={exploreUrl(base, q, stage, item.kind)}
+              className={styles.typeTab}
+              aria-current={type === item.kind ? "page" : undefined}
+            >
+              {item.label}
+              {item.count !== null ? <span>{item.count}</span> : null}
+            </Link>
+          )}
+        </nav>
 
         <nav className={styles.quickFilters} aria-label="Explorar por área">
+          <span className={styles.quickLabel}>Assuntos:</span>
           {quickFilters.map(({ label, term, Icon }) =>
-            <Link key={label} href={exploreUrl(base, term, "Todos", "all")} className={styles.filterChip} aria-current={q.toLocaleLowerCase("pt-BR") === term.toLocaleLowerCase("pt-BR") ? "true" : undefined}>
-              {Icon && <Icon size={16} aria-hidden="true" />}{label}
+            <Link key={label} href={exploreUrl(base, term, "Todos", "all")} className={styles.filterChip} aria-current={q.toLocaleLowerCase("pt-BR") === term.toLocaleLowerCase("pt-BR") && type === "all" && stage === "Todos" ? "true" : undefined}>
+              {Icon && <Icon size={15} aria-hidden="true" />}{label}
             </Link>)}
-          <a className={styles.filterChip} href="#explore-categories">Mais <ArrowRight size={14} aria-hidden="true" /></a>
+          <a className={styles.filterChip} href="#explore-categories">Mais áreas <ArrowRight size={14} aria-hidden="true" /></a>
         </nav>
 
         {loadError && <div className={styles.loadError} role="alert">Parte dos resultados não pôde ser carregada. Tente novamente.</div>}
@@ -214,33 +240,25 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
 
         {showProjects && <section className={styles.section} id="explore-projects" aria-labelledby="explore-projects-heading">
           <div className={styles.sectionHeading}>
-            <h2 id="explore-projects-heading"><Star size={20} aria-hidden="true" /> Projetos em destaque</h2>
-            <Link href="#explore-more-projects">Ver todos <ArrowRight size={16} aria-hidden="true" /></Link>
+            <div>
+              <span className={styles.sectionEyebrow}>PROJETOS DA COMUNIDADE</span>
+              <h2 id="explore-projects-heading">Ideias que estão ganhando forma</h2>
+            </div>
+            {type === "all"
+              ? <Link href={exploreUrl(base, q, stage, "projects")}>Ver projetos <ArrowRight size={16} aria-hidden="true" /></Link>
+              : <span>{projectTotal} {projectTotal === 1 ? "projeto" : "projetos"}</span>}
           </div>
-          {featured.length ? <div className={styles.projectsGrid}>
-            {featured.map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} />)}
-          </div> : <EmptyExploreState kind="projects" filtered={filtered} base={base} role={expectedRole} />}
-        </section>}
-
-        <section className={styles.topics} id="explore-categories" aria-labelledby="explore-categories-heading">
-          <div className={styles.sectionHeading}><h2 id="explore-categories-heading"><BookOpen size={20} aria-hidden="true" /> Mais para explorar</h2></div>
-          <div className={styles.topicGrid}>
-            {topics.map(({ label, term, Icon, color }) => <Link key={label} href={exploreUrl(base, term, "Todos", "all")} className={styles.topicCard} data-tone={color}>
-              <Icon size={42} strokeWidth={1.3} aria-hidden="true" />
-              <strong>{label}</strong>
-            </Link>)}
-          </div>
-        </section>
-
-        {showProjects && <section className={styles.section} id="explore-more-projects" aria-labelledby="more-projects-heading">
-          <div className={styles.sectionHeading}>
-            <h2 id="more-projects-heading"><FolderKanban size={20} aria-hidden="true" /> Outros projetos da comunidade</h2>
-            <span>{projectTotal} no total</span>
-          </div>
-          {projects.length > 3 ? <div className={styles.projectsGrid}>
-            {projects.slice(3).map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} />)}
-          </div> : <div className={styles.sectionNote}>Explore novas áreas ou compartilhe uma ideia para ampliar a comunidade.</div>}
-          <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="projects_page" total={projectTotal} />
+          {visibleProjects.length ? (
+            <div className={styles.projectsGrid}>
+              {visibleProjects.map(project => <ProjectCard key={project.key} project={project} expectedRole={expectedRole} />)}
+            </div>
+          ) : <EmptyExploreState kind="projects" filtered={filtered} base={base} role={expectedRole} />}
+          {type === "all" && projectTotal > visibleProjects.length
+            ? <Link className={styles.seeMore} href={exploreUrl(base, q, stage, "projects")}>Ver todos os projetos <ArrowRight size={16} aria-hidden="true" /></Link>
+            : null}
+          {type === "projects"
+            ? <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="projects_page" total={projectTotal} />
+            : null}
         </section>}
 
         {showTeams && <section className={styles.section} id="explore-teams" aria-labelledby="explore-teams-heading">
@@ -248,7 +266,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             <h2 id="explore-teams-heading"><Users size={20} aria-hidden="true" /> Equipes para conhecer</h2>
             <span>{teamTotal} {teamTotal === 1 ? "equipe" : "equipes"}</span>
           </div>
-          {teams.length ? <div className={styles.communityGrid}>{teams.map(team => {
+          {visibleTeams.length ? <div className={styles.communityGrid}>{visibleTeams.map(team => {
             const href = team.real
               ? (expectedRole === "investor" ? "/investor" : "") + "/teams/" + encodeURIComponent(team.slug) + "?from=explore"
               : entityRoute({ type: "team", id: team.slug, source: "explore", context });
@@ -260,7 +278,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
               <ArrowUpRight size={16} className={styles.communityArrow} aria-hidden="true" />
             </article>;
           })}</div> : <EmptyExploreState kind="teams" filtered={filtered} base={base} role={expectedRole} />}
-          <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="teams_page" total={teamTotal} />
+          {type === "teams" ? <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="teams_page" total={teamTotal} /> : teamTotal > visibleTeams.length ? <Link className={styles.seeMore} href={exploreUrl(base, q, "Todos", "teams")}>Ver todas as equipes <ArrowRight size={15} /></Link> : null}
         </section>}
 
         {showPeople && <section className={styles.section} id="explore-people" aria-labelledby="explore-people-heading">
@@ -268,7 +286,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             <h2 id="explore-people-heading"><UserRound size={20} aria-hidden="true" /> Pessoas da comunidade</h2>
             <span>{profileTotal} {profileTotal === 1 ? "pessoa" : "pessoas"}</span>
           </div>
-          {profiles.length ? <div className={styles.communityGrid}>{profiles.map(profile => {
+          {visibleProfiles.length ? <div className={styles.communityGrid}>{visibleProfiles.map(profile => {
             const href = entityRoute({ type: profile.role, id: profile.username, source: "explore", context });
             return <article className={styles.communityCard} key={profile.id}>
               <Link href={href} className={styles.cardHit} aria-label={"Abrir perfil de " + profile.name} />
@@ -278,28 +296,26 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
               <ArrowUpRight size={16} className={styles.communityArrow} aria-hidden="true" />
             </article>;
           })}</div> : <EmptyExploreState kind="people" filtered={filtered} base={base} role={expectedRole} />}
-          <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="people_page" total={profileTotal} />
+          {type === "people" ? <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="people_page" total={profileTotal} /> : profileTotal > visibleProfiles.length ? <Link className={styles.seeMore} href={exploreUrl(base, q, "Todos", "people")}>Ver todas as pessoas <ArrowRight size={15} /></Link> : null}
         </section>}
       </div>
 
       <aside className={styles.rail} aria-label="Competições, filtros e recomendações">
         <ExploreCompetitionSpotlight />
         <ExploreFiltersClient key={q + "|" + stage + "|" + type} base={base} initialQuery={q} initialStage={stage} initialType={type} />
-        <section className={styles.recommendations} aria-labelledby="explore-recommendations-heading">
+        <section className={styles.topics} id="explore-categories" aria-labelledby="explore-categories-heading">
           <div className={styles.panelHeading}>
-            <h2 id="explore-recommendations-heading"><Sparkles size={19} aria-hidden="true" /> Para você explorar</h2>
-            <Link href="#explore-more-projects">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
+            <h2 id="explore-categories-heading"><Sparkles size={19} aria-hidden="true" /> Explore por área</h2>
           </div>
-          {suggestions.length ? <div className={styles.suggestionList}>
-            {suggestions.map(project => <Link className={styles.suggestion} key={project.key} href={(expectedRole === "investor" ? "/investor" : "") + "/projects/" + encodeURIComponent(project.slug) + "?from=explore"}>
-              <span className={styles.suggestionArtwork}><ProjectArtwork title={project.title} category={project.category} /></span>
-              <span><strong>{project.title}</strong><small>{project.category || "Projeto"} · {project.stage || "Ideia"}</small></span>
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </Link>)}
-          </div> : <div className={styles.railEmpty}>
-            <Compass size={22} aria-hidden="true" />
-            <p>Descubra mais projetos conforme a comunidade compartilha suas ideias.</p>
-          </div>}
+          <div className={styles.topicList}>
+            {topics.map(({ label, term, Icon }) =>
+              <Link key={label} href={exploreUrl(base, term, "Todos", "all")} className={styles.topicCard}>
+                <span className={styles.topicIcon}><Icon size={20} strokeWidth={1.75} aria-hidden="true" /></span>
+                <span><strong>{label}</strong><small>Ver projetos e conexões</small></span>
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            )}
+          </div>
         </section>
       </aside>
     </div>
