@@ -812,15 +812,16 @@
 /* Shared registration shell, third step: full profile onboarding. */
 .profileShell{
   width:min(100%,1210px);
+  min-height:750px;
   grid-template-columns:minmax(290px,31%) minmax(0,1fr);
 }
 .profilePanel{
   justify-content:flex-start;
-  padding:29px clamp(25px,3vw,47px) 42px;
+  padding:24px clamp(25px,3vw,47px) 30px;
 }
 .profileArea{max-width:740px}
-.profilePanel .progress{margin:5px auto 25px}
-.profilePanel .intro{margin-bottom:17px}
+.profilePanel .progress{margin:3px auto 17px}
+.profilePanel .intro{margin-bottom:13px}
 .profilePanel .intro h1{font-size:clamp(28px,2.5vw,32px)}
 .profilePanel .intro p{max-width:660px}
 .profilePanel .brandCopy h2{max-width:300px}

@@ -55,6 +55,28 @@ describe("transactional onboarding", () => {
     expect(actions).toContain('interest_tags: interestTags(formData)');
     expect(sql).toContain("pg_catalog.jsonb_array_length(payload -> 'interest_tags') > 12");
   });
+  it("uses progressive disclosure for optional profile fields without removing their submission names", () => {
+    expect(onboarding).toContain("className={styles.optionalDetails}");
+    expect(onboarding).toContain("Sobre você");
+    expect(onboarding).toContain("profile.bio || profile.public_school");
+    expect(onboarding).toContain('name="bio"');
+    expect(onboarding).toContain('name="public_school"');
+    expect(onboarding).toContain('name="organization"');
+    expect(onboarding).toContain('name="organization_type"');
+    expect(onboarding).toContain("<BrazilLocationFields");
+    expect(onboarding).toContain('name="age_band"');
+    expect(onboarding).toContain("onboardingAction");
+  });
+  it("shows eight featured interest choices and safely reveals more", () => {
+    expect(tagsUi).toContain("const FEATURED_TAG_COUNT = 8");
+    expect(tagsUi).toContain("const [showAll, setShowAll] = useState(false)");
+    expect(tagsUi).toContain("index < FEATURED_TAG_COUNT || selected.includes(tag)");
+    expect(tagsUi).toContain("aria-expanded={showAll}");
+    expect(tagsUi).toContain("Ver todos os interesses");
+    expect(tagsUi).toContain("Mostrar menos interesses");
+    expect(tagsUi).toContain('type="hidden" key={tag} name="interest_tags"');
+    expect(tagsUi).toContain('name="interest_tags_other"');
+  });
   it("only records currently active terms and privacy versions", () => {
     expect(sql).toContain("where document_type='terms' and document_version=v_terms and active=true");
     expect(sql).toContain("where document_type='privacy' and document_version=v_privacy and active=true");

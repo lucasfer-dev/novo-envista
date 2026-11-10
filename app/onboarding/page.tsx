@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { RegisterShell } from "@/components/auth/RegisterShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { InterestTagsField } from "@/components/auth/InterestTagsField";
-import { ArrowRight, AtSign, Building2, GraduationCap, Info, LockKeyhole, MapPin, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, AtSign, Building2, ChevronDown, GraduationCap, Info, LockKeyhole, MapPin, ShieldCheck, UserRound } from "lucide-react";
 import styles from "./Onboarding.module.css";
 import { onboardingAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -100,6 +100,10 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
       <form id="onboarding-form" action={onboardingAction} className={styles.form} noValidate>
         <OnboardingDraftRestore formId="onboarding-form" storageKey={`envista:onboarding-draft:${userId}`} />
 
+        <div className={styles.sectionHeading}>
+          <span className={styles.sectionIndex} aria-hidden="true">01</span>
+          <div><h2>Informações principais</h2><p>O essencial para identificar seu perfil.</p></div>
+        </div>
         <div className={styles.formGrid}>
           <label className={styles.field}>
             Nome de exibição <span className={styles.inputWrap}>
@@ -134,49 +138,60 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
           <span className={styles.help}>Esta informação é privada e usada para aplicar as proteções adequadas à sua idade.</span>
         </label>
 
-        <label className={styles.field}>
-          Apresentação <span className={styles.optional}>(opcional)</span>
-          <textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} rows={3} placeholder="Fale sobre seus interesses, habilidades e o que está construindo..." />
-        </label>
-
-        <div className={styles.formGrid}>
-          {participant ? (
+        <details
+          className={styles.optionalDetails}
+          open={Boolean(profile.bio || profile.public_school || profile.organization || profile.organization_type || profile.public_city || profile.public_state)}
+        >
+          <summary>
+            <span className={styles.optionalSummary}>
+              <span className={styles.optionalSummaryIcon}><MapPin size={18} aria-hidden="true" /></span>
+              <span><strong>Sobre você</strong><small>Apresentação, instituição e localização · opcional</small></span>
+            </span>
+            <ChevronDown className={styles.optionalChevron} size={18} aria-hidden="true" />
+          </summary>
+          <div className={styles.optionalBody}>
             <label className={styles.field}>
-              Escola / instituição <span className={styles.optional}>(opcional)</span>
-              <span className={styles.inputWrap}>
-                <GraduationCap aria-hidden="true" size={18} />
-                <input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} placeholder="Digite o nome da instituição" />
-              </span>
+              Apresentação <span className={styles.optional}>(opcional)</span>
+              <textarea name="bio" defaultValue={profile.bio || ""} maxLength={500} rows={3} placeholder="Fale sobre seus interesses, habilidades e o que está construindo..." />
             </label>
-          ) : (
-            <>
+            {participant ? (
               <label className={styles.field}>
-                Organização <span className={styles.optional}>(opcional)</span>
+                Escola / instituição <span className={styles.optional}>(opcional)</span>
                 <span className={styles.inputWrap}>
-                  <Building2 aria-hidden="true" size={18} />
-                  <input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} placeholder="Nome da organização" />
+                  <GraduationCap aria-hidden="true" size={18} />
+                  <input name="public_school" autoComplete="organization" defaultValue={profile.public_school || ""} maxLength={160} placeholder="Digite o nome da instituição" />
                 </span>
               </label>
-              <label className={styles.field}>
-                Tipo de organização <span className={styles.optional}>(opcional)</span>
-                <input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} placeholder="Empresa, ONG, fundo, escola..." />
-              </label>
-            </>
-          )}
-          <div className={styles.locationNote}>
-            <MapPin size={17} aria-hidden="true" />
-            <span>Adicione sua localização para receber oportunidades mais relevantes.</span>
+            ) : (
+              <div className={styles.formGrid}>
+                <label className={styles.field}>
+                  Organização <span className={styles.optional}>(opcional)</span>
+                  <span className={styles.inputWrap}>
+                    <Building2 aria-hidden="true" size={18} />
+                    <input name="organization" autoComplete="organization" defaultValue={profile.organization || ""} maxLength={160} placeholder="Nome da organização" />
+                  </span>
+                </label>
+                <label className={styles.field}>
+                  Tipo de organização <span className={styles.optional}>(opcional)</span>
+                  <input name="organization_type" defaultValue={profile.organization_type || ""} maxLength={100} placeholder="Empresa, ONG, fundo, escola..." />
+                </label>
+              </div>
+            )}
+            <BrazilLocationFields
+              defaultCity={profile.public_city || ""}
+              defaultState={profile.public_state || ""}
+              gridClassName={styles.formGrid}
+              fieldClassName={styles.field}
+              helperClassName={styles.help}
+            />
+            <p className={styles.locationHelp}><MapPin size={14} aria-hidden="true" /> Localização opcional, usada para sugerir oportunidades relevantes.</p>
           </div>
+        </details>
+
+        <div className={styles.sectionHeading}>
+          <span className={styles.sectionIndex} aria-hidden="true">02</span>
+          <div><h2>Seus interesses</h2><p>Escolha os temas que mais combinam com você.</p></div>
         </div>
-
-        <BrazilLocationFields
-          defaultCity={profile.public_city || ""}
-          defaultState={profile.public_state || ""}
-          gridClassName={styles.formGrid}
-          fieldClassName={styles.field}
-          helperClassName={styles.help}
-        />
-
         <InterestTagsField
           initialTags={profile.interest_tags || []}
           draftKey={`envista:onboarding-tags:${userId}`}

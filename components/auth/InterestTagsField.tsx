@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Plus, X } from "lucide-react";
+import { Check, ChevronDown, Plus, X } from "lucide-react";
 import styles from "@/app/onboarding/Onboarding.module.css";
 
 export const MAX_INTEREST_TAGS = 12;
+const FEATURED_TAG_COUNT = 8;
 
 const SUGGESTED_TAGS = [
   "Tecnologia", "Programação", "Games", "IA", "Robótica", "Design",
@@ -39,10 +40,14 @@ export function InterestTagsField({ initialTags, draftKey }: InterestTagsFieldPr
   const [customTags, setCustomTags] = useState(() => deduplicate(originalCustom));
   const [selected, setSelected] = useState(() => deduplicate(initialTags.filter((tag) => suggestions.includes(tag))));
   const [draft, setDraft] = useState("");
+  const [showAll, setShowAll] = useState(false);
   const [error, setError] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const allTags = deduplicate([...selected, ...customTags]);
+  // Always keep selected interests visible when the complete list is collapsed.
+  const visibleSuggestions = suggestions.filter((tag, index) => showAll || index < FEATURED_TAG_COUNT || selected.includes(tag));
+  const remainingSuggestions = suggestions.length - visibleSuggestions.length;
 
   useEffect(() => {
     try {
@@ -106,8 +111,8 @@ export function InterestTagsField({ initialTags, draftKey }: InterestTagsFieldPr
     <fieldset className={styles.interests} aria-describedby="interest-instructions interest-counter">
       <legend>Interesses e tags <span>(opcional)</span></legend>
       <p id="interest-instructions" className={styles.tagIntro}>Escolha os assuntos que combinam com você ou adicione os seus.</p>
-      <div className={styles.tagOptions}>
-        {suggestions.map((tag) => {
+      <div id="interest-options" className={styles.tagOptions}>
+        {visibleSuggestions.map((tag) => {
           const active = selected.includes(tag);
           return (
             <button
@@ -123,6 +128,16 @@ export function InterestTagsField({ initialTags, draftKey }: InterestTagsFieldPr
           );
         })}
       </div>
+      <button
+        type="button"
+        className={styles.tagBrowseButton}
+        aria-expanded={showAll}
+        aria-controls="interest-options"
+        onClick={() => setShowAll((current) => !current)}
+      >
+        {showAll ? "Mostrar menos interesses" : `Ver todos os interesses (+${remainingSuggestions})`}
+        <ChevronDown size={16} aria-hidden="true" className={showAll ? styles.tagBrowseChevronOpen : ""} />
+      </button>
       <div className={styles.tagAddRow}>
         <div className={styles.tagInput}>
           <Plus size={18} aria-hidden="true" />
@@ -135,7 +150,7 @@ export function InterestTagsField({ initialTags, draftKey }: InterestTagsFieldPr
             onKeyDown={(event) => {
               if (event.key === "Enter") { event.preventDefault(); addTag(); }
             }}
-            placeholder="Outra tag: ex. fotografia, saúde, astronomia..."
+            placeholder="Adicionar interesse personalizado..."
             aria-label="Nova tag personalizada"
             aria-describedby="interest-counter"
           />
