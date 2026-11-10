@@ -452,3 +452,265 @@
   .learningVisual {width:50px;min-width:50px;}
   .learningCopy h2 {font-size:17px;}
 }
+/* Home visual 2026-11 — composição aprovada: arte editorial e padrão original. */
+.home {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: 34px;
+}
+.home::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: -24px -22px -40px;
+  background: url("/brand/envista-pattern-original.png") center top / 600px repeat;
+  opacity: .095;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 17%, #000 84%, transparent);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 17%, #000 84%, transparent);
+}
+.columns { position: relative; }
+.hero {
+  border-color: rgba(0, 197, 176, .55);
+  background:
+    radial-gradient(ellipse at 72% 54%, rgba(11, 184, 150, .20), transparent 45%),
+    linear-gradient(108deg, #042d37 0%, #03483f 53%, #052932 100%);
+  box-shadow: inset 0 0 75px rgba(0, 221, 166, .035);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 13, 22, .13), transparent 58%);
+}
+.heroPattern {
+  inset: 0;
+  background-position: center;
+  background-size: 440px auto;
+  opacity: .13;
+  -webkit-mask-image: linear-gradient(to right, transparent 6%, #000 56%, #000);
+  mask-image: linear-gradient(to right, transparent 6%, #000 56%, #000);
+}
+.heroAngle {
+  right: 31%;
+  width: 15%;
+  background: linear-gradient(90deg, transparent, rgba(0, 18, 26, .3), transparent);
+  border: 0;
+  opacity: .78;
+}
+.heroHorizon {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  bottom: -50%;
+  right: -10%;
+  width: 85%;
+  height: 105%;
+  background: url("/brand/envista-earth-horizon.svg") center top / 100% auto no-repeat;
+  opacity: .84;
+  filter: drop-shadow(0 -2px 13px rgba(0, 245, 191, .19));
+}
+.heroSymbol {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  top: -14%;
+  right: 9%;
+  width: 34%;
+  max-width: 370px;
+  height: 130%;
+  max-height: none;
+  object-fit: contain;
+  opacity: .92;
+  filter: drop-shadow(0 0 14px rgba(0, 255, 205, .26));
+}
+.heroPortrait {
+  z-index: 2;
+  width: 42%;
+  object-position: right center;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 22%);
+  mask-image: linear-gradient(to right, transparent, #000 22%);
+}
+.heroContent { position: relative; z-index: 3; max-width: 66%; }
+.heroEyebrow { color: #26e9cb; }
+.hero h1 { text-wrap: balance; }
+.stats { gap: 14px; }
+.statCard {
+  border-color: rgba(29, 188, 175, .36);
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(0, 169, 157, .14), transparent 75%),
+    linear-gradient(132deg, #0b2b35, #081d29);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.statCard:hover { transform: translateY(-2px); border-color: rgba(0, 220, 195, .67); }
+.statIcon { background: linear-gradient(145deg, #065650, #0b3342); }
+.statTrend { opacity: .95; }
+.showcaseGrid { align-items: stretch; }
+.projectGrid { grid-template-columns: minmax(0, 1fr); }
+.projectCard {
+  position: relative;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 207px;
+  border-color: rgba(0, 169, 157, .46);
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(0, 172, 142, .24), transparent 64%),
+    linear-gradient(116deg, #073039, #072530 67%, #093f3e);
+}
+.projectCard::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: 55%;
+  height: 100%;
+  right: -10%;
+  bottom: 0;
+  opacity: .14;
+  background: url("/brand/envista-pattern-original.png") center / 340px repeat;
+}
+.projectCover {
+  position: relative;
+  z-index: 1;
+  height: auto;
+  min-height: 0;
+  flex: 0 0 30%;
+  margin: 16px 0 16px 17px;
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 33% 12%, rgba(162, 255, 115, .5), transparent 58%),
+    linear-gradient(145deg, #146a49, #0a2a39);
+}
+.projectCover :global(.dashboard-project-mark) { background: transparent; }
+.projectCover :global(.dashboard-project-mark img) { width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.projectInfo {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  gap: 0;
+  min-width: 0;
+  padding: 23px 20px 17px;
+}
+.projectBadge {
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  margin-bottom: 11px;
+  padding: 5px 10px;
+  border: 1px solid rgba(40, 230, 181, .72);
+  border-radius: 999px;
+  color: #46f2c4;
+  background: rgba(1, 37, 40, .7);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.projectInfo h3 { font-size: clamp(17px, 1.5vw, 21px); line-height: 1.2; }
+.projectInfo p { font-size: 12px; line-height: 1.45; max-width: 390px; min-height: 0; }
+.projectMeta { align-items: center; gap: 10px; font-size: 11px; color: #c4e0da; }
+.projectMeta > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.projectVisit {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  height: 36px;
+  margin-left: auto;
+  border: 1px solid rgba(4, 225, 188, .84);
+  border-radius: 9px;
+  color: #2df2cd;
+  background: rgba(0, 21, 30, .65);
+}
+.featuredEmpty {
+  min-height: 207px;
+  position: relative;
+  overflow: hidden;
+  border-style: solid;
+  border-color: rgba(0, 169, 157, .36);
+  background: linear-gradient(125deg, rgba(3, 62, 58, .55), #0a2632);
+}
+.featuredEmpty::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .095;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") center / 360px repeat;
+}
+.featuredEmpty > * { position: relative; }
+.featuredEmpty > svg { color: #3be4ca; flex: 0 0 auto; }
+.featuredEmpty .viewAll { margin-left: auto; }
+.opportunityPanel { border-color: rgba(0, 169, 157, .44); }
+.opportunityFeature {
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(35, 194, 105, .25), transparent 58%),
+    linear-gradient(112deg, #095c4d, #0a674e 65%, #05563e);
+}
+.opportunityFeature::after { opacity: .16; }
+.opportunityDetails {
+  background:
+    radial-gradient(ellipse at 100% 120%, rgba(0, 182, 144, .1), transparent 60%),
+    #082733;
+}
+.progressPanel, .railPanel {
+  border-color: rgba(31, 166, 171, .4);
+  background:
+    radial-gradient(ellipse at top right, rgba(0, 170, 151, .08), transparent 72%),
+    linear-gradient(135deg, #092d36, #0a232f);
+}
+.progressRing {
+  background: conic-gradient(#25e5a9 0 var(--home-progress), #164958 var(--home-progress) 100%);
+}
+.activityIcon { border-radius: 10px; }
+.learningBanner {
+  background:
+    radial-gradient(ellipse at 78% 100%, rgba(10, 183, 159, .18), transparent 56%),
+    linear-gradient(105deg, #095b4b, #044039 48%, #063039);
+}
+.learningBanner::before { opacity: .09; }
+.learningBanner::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -2%;
+  bottom: -90%;
+  width: 58%;
+  height: 150%;
+  opacity: .79;
+  pointer-events: none;
+  background: url("/brand/envista-earth-horizon.svg") center top / contain no-repeat;
+}
+@media (max-width: 1450px) {
+  .heroSymbol { right: 8%; max-width: 300px; }
+  .projectCover { flex-basis: 30%; }
+  .projectInfo { padding: 17px 15px 14px; }
+}
+@media (max-width: 1200px) {
+  .heroSymbol { width: 32%; right: 12%; }
+  .projectCard { min-height: 195px; }
+  .featuredEmpty { min-height: 195px; }
+}
+@media (max-width: 850px) {
+  .projectCover { flex-basis: 32%; }
+  .projectCard { min-height: 178px; }
+}
+@media (max-width: 620px) {
+  .home::before { background-size: 430px; opacity: .065; }
+  .hero { min-height: 325px; }
+  .heroContent { max-width: 100%; }
+  .heroSymbol { width: 250px; max-width: none; height: 95%; right: -13%; top: 8%; opacity: .28; }
+  .heroHorizon { width: 125%; right: -40%; opacity: .32; }
+  .heroPortrait { opacity: .16; width: 85%; }
+  .projectCard { flex-direction: column; }
+  .projectCover { flex: none; width: auto; height: 158px; min-height: 158px; margin: 12px 12px 0; }
+  .projectInfo { padding: 15px; }
+  .projectInfo p { max-width: none; }
+  .featuredEmpty { min-height: 175px; flex-wrap: wrap; }
+  .featuredEmpty .viewAll { margin-left: 0; }
+  .learningBanner::after { width: 80%; }
+}
