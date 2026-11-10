@@ -33,6 +33,7 @@ import {
 import { isNavItemActive } from "@/lib/navigation";
 import TaxonomyNavigationEnhancer from "@/components/explore/TaxonomyNavigationEnhancer";
 import NotificationsBell from "@/components/real/NotificationsBell";
+import SidebarNavIcon from "@/components/social/SidebarNavIcon";
 import GlobalSearchCommand from "@/components/product/GlobalSearchCommand";
 import type { User } from "@/types";
 import type { ProductRole } from "@/lib/auth/require-product-user";
@@ -258,7 +259,7 @@ export default function LegacySocialShell({
                 title={role === "participant" ? label : undefined}
                 aria-label={label}
               >
-                <Icon size={25} strokeWidth={active ? 2.4 : 1.9} fill={active && href === "/home" ? "currentColor" : "none"} aria-hidden="true" />
+                <SidebarNavIcon href={href} active={active} OutlineIcon={Icon} />
                 <span>{label}</span>
               </Link>
             );
@@ -294,7 +295,7 @@ export default function LegacySocialShell({
                 title={label as string}
                 aria-label={label as string}
               >
-                <Icon size={18} aria-hidden="true" /> <span>{label as string}</span>
+                <SidebarNavIcon href={href as string} active={active} OutlineIcon={Icon as typeof Home} size={18} /> <span>{label as string}</span>
               </Link>
             );
           })}
@@ -379,7 +380,7 @@ export default function LegacySocialShell({
               className={cx(active && "active")}
               aria-current={active ? "page" : undefined}
             >
-              <Icon size={19} aria-hidden="true" />
+              <SidebarNavIcon href={href} active={active} OutlineIcon={Icon} size={19} />
               <span>{label}</span>
             </Link>
           );
