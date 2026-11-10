@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 
 const sql = readFileSync("supabase/migrations/20261105160000_complete_onboarding_atomic.sql", "utf8");
 const actions = readFileSync("app/auth/actions.ts", "utf8");
+const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
+const tagsUi = readFileSync("components/auth/InterestTagsField.tsx", "utf8");
+const registerShell = readFileSync("components/auth/RegisterShell.tsx", "utf8");
+
 
 describe("transactional onboarding", () => {
   it("allows only the authenticated account to update its own profile", () => {
@@ -27,6 +31,29 @@ describe("transactional onboarding", () => {
     expect(section).not.toContain('.from("profiles").update');
     expect(section).not.toContain('.from("onboarding_completions").insert');
     expect(section).toContain("auth.onboarding_atomic_failed");
+  });
+  it("uses the shared registration identity in profile step", () => {
+    expect(onboarding).toContain('phase="profile"');
+    expect(onboarding).toContain("<RegisterShell");
+    expect(onboarding).toContain("<InterestTagsField");
+    expect(registerShell).toContain('phase === "profile" ? 3');
+    expect(onboarding).toContain('name="terms"');
+    expect(onboarding).toContain('name="privacy"');
+    expect(onboarding).toContain("onboardingAction");
+  });
+  it("offers more interests, custom tags and preserves the atomic payload contract", () => {
+    expect(tagsUi).toContain('export const MAX_INTEREST_TAGS = 12');
+    expect(tagsUi).toContain('"Impacto social"');
+    expect(tagsUi).toContain('"Cibersegurança"');
+    expect(tagsUi).toContain('"Audiovisual"');
+    expect(tagsUi).toContain('"Meio ambiente"');
+    expect(tagsUi).toContain('name="interest_tags"');
+    expect(tagsUi).toContain('name="interest_tags_other"');
+    expect(tagsUi).toContain('aria-pressed={active}');
+    expect(tagsUi).toContain('aria-label={`Remover interesse ${tag}`}');
+    expect(tagsUi).toContain("localStorage.setItem");
+    expect(actions).toContain('interest_tags: interestTags(formData)');
+    expect(sql).toContain("pg_catalog.jsonb_array_length(payload -> 'interest_tags') > 12");
   });
   it("only records currently active terms and privacy versions", () => {
     expect(sql).toContain("where document_type='terms' and document_version=v_terms and active=true");

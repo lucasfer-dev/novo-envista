@@ -8,7 +8,7 @@ type RegisterShellProps = {
   title: string;
   description: string;
   children: ReactNode;
-  phase?: "account" | "verify" | "unavailable";
+  phase?: "account" | "verify" | "profile" | "unavailable";
 };
 
 const milestones = [
@@ -18,11 +18,11 @@ const milestones = [
 ];
 
 export function RegisterShell({ title, description, children, phase = "account" }: RegisterShellProps) {
-  const activeStep = phase === "verify" ? 2 : 1;
+  const activeStep = phase === "profile" ? 3 : phase === "verify" ? 2 : 1;
 
   return (
     <main className={styles.page + " envista-auth-page"}>
-      <div className={[styles.shell, phase === "verify" ? styles.verifyShell : ""].filter(Boolean).join(" ")}>
+      <div className={[styles.shell, phase === "verify" ? styles.verifyShell : "", phase === "profile" ? styles.profileShell : ""].filter(Boolean).join(" ")}>
         <aside className={styles.brandPanel} aria-label="Sobre o Envista">
           <Link href="/" className={styles.brand} aria-label="Voltar à página inicial do Envista">
             <Image src="/brand/envista-symbol-gradient.svg" alt="" width={36} height={48} priority />
@@ -41,7 +41,7 @@ export function RegisterShell({ title, description, children, phase = "account" 
           <div className={styles.brandEarth} aria-hidden="true" />
         </aside>
 
-        <section className={[styles.formPanel, phase === "verify" ? styles.verifyPanel : ""].filter(Boolean).join(" ")} aria-labelledby="register-title">
+        <section className={[styles.formPanel, phase === "verify" ? styles.verifyPanel : "", phase === "profile" ? styles.profilePanel : ""].filter(Boolean).join(" ")} aria-labelledby="register-title">
           <Link className={styles.mobileBrand} href="/" aria-label="Voltar à página inicial do Envista">
             <Image src="/brand/envista-symbol-gradient.svg" alt="" width={29} height={39} />
             <strong>ENVISTA</strong>
@@ -64,7 +64,7 @@ export function RegisterShell({ title, description, children, phase = "account" 
               })}
             </nav>
           ) : null}
-          <div className={[styles.formArea, phase === "verify" ? styles.verifyArea : ""].filter(Boolean).join(" ")}>
+          <div className={[styles.formArea, phase === "verify" ? styles.verifyArea : "", phase === "profile" ? styles.profileArea : ""].filter(Boolean).join(" ")}>
             {phase !== "verify" ? (
               <div className={styles.intro}>
                 <span className={styles.formKicker}>SEU PRÓXIMO CAPÍTULO</span>
