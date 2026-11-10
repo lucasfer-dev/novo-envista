@@ -24,6 +24,8 @@ import {
   MessageCircle,
   MoreHorizontal,
   PanelsTopLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
   Plus,
   Rocket,
   Settings,
@@ -143,6 +145,15 @@ export default function LegacySocialShell({
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useEffect(() => {
+    if (role !== "participant") return;
+    try {
+      setSidebarCollapsed(window.localStorage.getItem("envista:sidebar:collapsed") === "true");
+    } catch {
+      setSidebarCollapsed(false);
+    }
+  }, [role]);
   const navigationRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -196,6 +207,13 @@ export default function LegacySocialShell({
     role === "investor" ? "/investor/profile" : "/account/profile";
 
   const closeMobile = () => setMobileOpen(false);
+  const toggleSidebar = () => {
+    const next = !sidebarCollapsed;
+    setSidebarCollapsed(next);
+    try {
+      window.localStorage.setItem("envista:sidebar:collapsed", String(next));
+    } catch {}
+  };
   const logout = async () => {
     await fetch("/auth/signout", {
       method: "POST",
@@ -205,7 +223,7 @@ export default function LegacySocialShell({
   };
 
   return (
-    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined} data-envista-x-sidebar={role === "participant" ? "true" : undefined}>
+    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined} data-envista-x-sidebar={role === "participant" ? "true" : undefined} data-sidebar-collapsed={role === "participant" && sidebarCollapsed ? "true" : undefined}>
       <a className="a11y-skip-link" href="#main-content">
         Pular para o conteúdo
       </a>
@@ -217,6 +235,19 @@ export default function LegacySocialShell({
           onClick={closeMobile}
         />
       )}
+      {role === "participant" ? (
+        <button
+          type="button"
+          className="envista-sidebar-handle"
+          aria-label={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+          title={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+          aria-controls="app-navigation"
+          aria-expanded={!sidebarCollapsed}
+          onClick={toggleSidebar}
+        >
+          {sidebarCollapsed ? <PanelLeftOpen size={17} aria-hidden="true" /> : <PanelLeftClose size={17} aria-hidden="true" />}
+        </button>
+      ) : null}
 
       <aside
         ref={navigationRef}
@@ -259,6 +290,7 @@ export default function LegacySocialShell({
                 onClick={closeMobile}
                 className={cx(active && "active")}
                 aria-current={active ? "page" : undefined}
+                title={role === "participant" ? label : undefined}
               >
                 <Icon size={25} strokeWidth={active ? 2.4 : 1.9} fill={active && href === "/home" ? "currentColor" : "none"} aria-hidden="true" />
                 <span>{label}</span>
@@ -271,15 +303,15 @@ export default function LegacySocialShell({
         {dashboardHome ? <>
           <div className="dashboard-home-group">
             <span className="dashboard-home-label">CRIAR</span>
-            <Link className="dashboard-new-project" href="/app/projects/new" onClick={closeMobile}>
+            <Link className="dashboard-new-project" href="/app/projects/new" onClick={closeMobile} title="Novo projeto" aria-label="Novo projeto">
               <Plus size={24} aria-hidden="true" /><span>Novo projeto</span>
             </Link>
           </div>
           <div className="dashboard-home-group dashboard-home-community">
             <span className="dashboard-home-label">COMUNIDADE</span>
             <nav aria-label="Comunidade">
-              <Link href="/social" onClick={closeMobile}><GitBranch size={20} aria-hidden="true" /><span>Social</span></Link>
-              <Link href="/messages" onClick={closeMobile}><MessageCircle size={20} aria-hidden="true" /><span>Mensagens</span></Link>
+              <Link href="/social" onClick={closeMobile} title="Social"><GitBranch size={20} aria-hidden="true" /><span>Social</span></Link>
+              <Link href="/messages" onClick={closeMobile} title="Mensagens"><MessageCircle size={20} aria-hidden="true" /><span>Mensagens</span></Link>
             </nav>
           </div>
           <div className="dashboard-home-promo">
@@ -294,14 +326,19 @@ export default function LegacySocialShell({
             <nav aria-label="Espaço de trabalho">
               {participantHomeWorkspace.map(([href, Icon, label]) => {
                 const active = isNavItemActive(normalizedPathname, href);
-                return <Link key={href} href={href} onClick={closeMobile} className={cx(active && "active")} aria-current={active ? "page" : undefined}>
+                return <Link key={href} href={href} onClick={closeMobile} className={cx(active && "active")} aria-current={active ? "page" : undefined} title={label}>
                   <Icon size={18} aria-hidden="true" /><span>{label}</span>
                 </Link>;
               })}
             </nav>
           </div>
           <details className="home-more-menu">
-            <summary>Mais opções</summary>
+            <summary title="Mais opções" onClick={(event) => {
+              if (sidebarCollapsed && window.matchMedia("(min-width: 981px)").matches) {
+                event.preventDefault();
+                toggleSidebar();
+              }
+            }}><MoreHorizontal size={21} aria-hidden="true" /><span>Mais opções</span></summary>
             <div className="home-more-links">
               <Link href="/interests" onClick={closeMobile}>Interesses recebidos</Link>
               <Link href="/calendar" onClick={closeMobile}>Calendário</Link>
@@ -334,8 +371,9 @@ export default function LegacySocialShell({
                 onClick={closeMobile}
                 className={cx(active && "active")}
                 aria-current={active ? "page" : undefined}
+                title={label as string}
               >
-                <Icon size={18} aria-hidden="true" /> {label as string}
+                <Icon size={18} aria-hidden="true" /> <span>{label as string}</span>
               </Link>
             );
           })}
