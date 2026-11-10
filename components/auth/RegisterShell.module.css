@@ -838,3 +838,153 @@
   .profilePanel .intro h1{font-size:28px}
   .profilePanel .intro p{font-size:12px}
 }
+
+
+/* Login: visual alinhado ao cadastro, com layout editorial e assets vetoriais. */
+.loginShell {
+  width: min(100%, 1310px);
+  min-height: min(790px, calc(100dvh - 60px));
+  grid-template-columns: minmax(390px, 46%) minmax(0, 54%);
+  border: 1px solid rgba(19, 232, 192, .70);
+  box-shadow: 0 28px 100px rgba(0, 8, 16, .63), 0 0 52px rgba(0, 224, 169, .08);
+  border-radius: 26px;
+  background: #061c25;
+}
+.loginBrand {
+  overflow: hidden;
+  padding: 42px 52px 46px;
+  background:
+    radial-gradient(ellipse at 12% 8%, rgba(0, 221, 171, .19), transparent 58%),
+    radial-gradient(ellipse at 79% 65%, rgba(3, 181, 151, .17), transparent 65%),
+    linear-gradient(145deg, #064638 0%, #043f3a 55%, #022831 100%);
+}
+.loginBrand::before {
+  inset: 0;
+  opacity: .20;
+  background:
+    linear-gradient(180deg, transparent 10%, rgba(0, 30, 30, .27) 100%),
+    url("/brand/envista-pattern-original.png") 45% center / 520px repeat;
+  mix-blend-mode: screen;
+}
+.loginBrand::after {
+  top: -290px;
+  right: auto;
+  left: -215px;
+  height: 410px;
+  width: 410px;
+  box-shadow: 0 0 60px rgba(0, 237, 188, .28), inset 0 0 25px rgba(9, 219, 185, .10);
+}
+.loginBrand .brand { gap: 13px; }
+.loginBrand .brand img { width: 44px; height: 55px; }
+.loginBrand .brand span { font-size: 28px; letter-spacing: .07em; }
+.loginBrandCopy { margin: auto 0; padding: 30px 0 105px; }
+.loginBrandCopy .kicker { font-size: 12px; letter-spacing: .15em; margin-bottom: 26px; }
+.loginBrandCopy h2 {
+  max-width: 495px;
+  margin-bottom: 24px;
+  font-size: clamp(35px, 3.2vw, 49px);
+  line-height: 1.12;
+  letter-spacing: -.047em;
+  text-wrap: balance;
+}
+.loginBrandCopy p {
+  max-width: 475px;
+  color: #ebf8f5;
+  font-size: 15px;
+  line-height: 1.63;
+}
+.loginBenefits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 11px;
+  margin-top: 28px;
+}
+.loginBenefits span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 7px 14px;
+  border-radius: 99px;
+  border: 1px solid rgba(30, 249, 204, .7);
+  color: #f7fffe;
+  background: linear-gradient(120deg, rgba(2, 77, 69, .77), rgba(0, 60, 61, .52));
+  font-size: 12px;
+  font-weight: 760;
+}
+.loginBenefits svg { color: #3afad5; }
+.loginBrand .brandEarth {
+  left: -32%;
+  width: 164%;
+  height: 260px;
+  bottom: -2px;
+  opacity: .95;
+  background:
+    url("/brand/envista-register-globe.svg") 50% bottom / 100% 100% no-repeat,
+    radial-gradient(ellipse at 50% 98%, rgba(0, 235, 184, .19), transparent 66%);
+  filter: drop-shadow(0 -7px 24px rgba(0, 242, 194, .25));
+}
+.loginBrandFooter {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: auto;
+  color: #e0f9f4;
+  font-size: 12px;
+}
+.loginPanel {
+  padding: 35px clamp(32px, 3.4vw, 58px);
+  background:
+    radial-gradient(ellipse at 96% 8%, rgba(0, 169, 157, .12), transparent 45%),
+    linear-gradient(126deg, #051f28 0%, #031c25 82%);
+}
+.loginPanel::after { inset: 20px; border-color: rgba(29, 212, 181, .025); }
+.loginArea {
+  position: relative;
+  width: min(100%, 650px);
+  max-width: 650px;
+  padding: clamp(27px, 3vw, 45px);
+  border: 1px solid rgba(11, 204, 181, .65);
+  border-radius: 22px;
+  background: linear-gradient(155deg, rgba(4, 38, 48, .97), rgba(2, 27, 36, .96));
+  box-shadow: 0 22px 65px rgba(0, 9, 18, .28), inset 0 1px 0 rgba(46, 250, 215, .10);
+}
+.loginArea::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -2px;
+  height: 5px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #1ef3ae 8%, #00d6ca 55%, #0086a7 89%, transparent);
+  box-shadow: 0 0 20px rgba(0, 242, 189, .33);
+  pointer-events: none;
+}
+.loginArea .intro { margin-bottom: 26px; }
+.loginArea .intro h1 { font-size: clamp(27px, 2.65vw, 34px); letter-spacing: -.04em; margin-bottom: 9px; }
+.loginArea .intro p { max-width: 470px; font-size: 14px; line-height: 1.57; color: #ccedef; }
+@media (max-width: 1160px) {
+  .loginShell { grid-template-columns: minmax(315px, 42%) minmax(0, 58%); min-height: 745px; }
+  .loginBrand { padding: 35px 33px 38px; }
+  .loginBrandCopy h2 { font-size: 38px; }
+  .loginBrandCopy p { font-size: 13px; }
+  .loginBenefits { gap: 7px; }
+  .loginBenefits span { padding: 6px 10px; font-size: 11px; }
+  .loginPanel { padding: 26px; }
+  .loginArea { padding: 31px; }
+}
+@media (max-width: 830px) {
+  .loginShell { display: block; width: 100%; min-height: 100dvh; border: 0; border-radius: 0; }
+  .loginBrand { display: none; }
+  .loginPanel { display: flex; padding: 25px 18px 50px; min-height: 100dvh; }
+  .loginArea { padding: clamp(22px, 5vw, 38px); margin: 0 auto; }
+}
+@media (max-width: 480px) {
+  .loginPanel { padding: 20px 12px 32px; }
+  .loginArea { border-radius: 16px; padding: 25px 19px; }
+  .loginArea .intro h1 { font-size: 27px; }
+}
