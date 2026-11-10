@@ -859,3 +859,19 @@
   pointer-events: none;
 }
 .journeyPanel > * { position: relative; z-index: 1; }
+
+.heroPattern {
+  background-size: 780px auto;
+  filter: brightness(5.3);
+  opacity: .29;
+}
+.journeyPanel::before {
+  width: min(40%, 285px);
+  background-size: 690px auto;
+  filter: brightness(5.4);
+  opacity: .41;
+}
+@media (max-width: 620px) {
+  .heroPattern { opacity: .17; }
+  .journeyPanel::before { opacity: .23; }
+}

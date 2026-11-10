@@ -1046,3 +1046,50 @@
 @media(max-width:720px) {
   .discoveryEmpty::before { width: 48%; opacity: .10; }
 }
+
+/* Keep the real Envista doodle texture legible; its source strokes are nearly black. */
+.exploreHeader::before {
+  width: 310px;
+  height: 116px;
+  background-size: 690px auto;
+  filter: brightness(5.4);
+  opacity: .39;
+}
+.rail .competitionPanel::before {
+  background-size: 680px auto;
+  filter: brightness(5.2);
+  opacity: .37;
+  -webkit-mask-image: linear-gradient(90deg, transparent 20%, #000);
+  mask-image: linear-gradient(90deg, transparent 20%, #000);
+}
+.discoveryEmpty::before {
+  width: min(46%, 370px);
+  background-size: 720px auto;
+  filter: brightness(5.4);
+  opacity: .49;
+}
+.topics {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.topics::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(56%, 235px);
+  height: 70px;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") right center / 620px auto repeat;
+  filter: brightness(5.4);
+  opacity: .32;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+.topics > * { position: relative; z-index: 1; }
+@media (max-width: 720px) {
+  .discoveryEmpty::before { opacity: .28; }
+  .exploreHeader::before { opacity: .24; }
+  .topics::before { opacity: .22; }
+}

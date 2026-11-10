@@ -2832,3 +2832,26 @@
 @media(max-width:640px) {
   .emptyFeed::before { width: 44%; opacity: .08; }
 }
+
+.competitionLink::before {
+  background-size: 720px auto;
+  filter: brightness(5.4);
+  opacity: .33;
+  -webkit-mask-image: linear-gradient(to right, transparent 10%, #000);
+  mask-image: linear-gradient(to right, transparent 10%, #000);
+}
+.timelineUpdate .updateArtwork::before {
+  background-size: 740px auto;
+  filter: brightness(5.2);
+  opacity: .34;
+}
+.emptyFeed::before {
+  width: min(44%, 310px);
+  background-size: 690px auto;
+  filter: brightness(5.5);
+  opacity: .48;
+}
+@media (max-width: 640px) {
+  .emptyFeed::before { opacity: .28; }
+  .competitionLink::before { opacity: .23; }
+}

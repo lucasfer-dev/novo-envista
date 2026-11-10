@@ -377,3 +377,19 @@
   .head::after { width: 28%; opacity: .065; }
   .empty::before { opacity: .07; }
 }
+
+.head::after {
+  width: min(39%, 275px);
+  background-size: 620px auto;
+  filter: brightness(5.2);
+  opacity: .38;
+}
+.empty::before {
+  background-size: 690px auto;
+  filter: brightness(5.4);
+  opacity: .47;
+}
+@media (max-width: 560px) {
+  .head::after { opacity: .22; }
+  .empty::before { opacity: .28; }
+}
