@@ -1,0 +1,44 @@
+/* Envista identity: the official PNG is transparent with near-black strokes (#1b1b1b).
+   Brighten the stroke pixels before compositing, then fade the pattern away from copy.
+   Keep X-like layout geometry untouched. */
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+  background: url("/brand/envista-pattern-original.png") center bottom / 670px auto repeat !important;
+  filter: brightness(5.4);
+  opacity: .34 !important;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 3%, rgba(0,0,0,.45) 38%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 3%, rgba(0,0,0,.45) 38%, #000 100%);
+}
+.app-shell[data-envista-product-shell] .page-head {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.app-shell[data-envista-product-shell] .page-head::before {
+  display: block !important;
+  content: "";
+  position: absolute;
+  inset: -12px 0 -12px auto;
+  width: min(37%, 360px);
+  height: calc(100% + 24px);
+  z-index: 0;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") right center / 700px auto repeat;
+  filter: brightness(5.2);
+  opacity: .36;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000);
+  mask-image: linear-gradient(to right, transparent, #000);
+}
+.app-shell[data-envista-product-shell] .page-head > * {
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 720px) {
+  .app-shell[data-envista-product-shell] .page-head::before {
+    width: 27%;
+    opacity: .23;
+  }
+}
+@media (prefers-contrast: more) {
+  .app-shell[data-envista-product-shell] .page-head::before { opacity: .2; }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before { opacity: .16 !important; }
+}

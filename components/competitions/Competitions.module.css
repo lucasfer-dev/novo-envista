@@ -190,3 +190,20 @@
   pointer-events: none;
 }
 .empty > * { position: relative; z-index: 1; }
+
+.banner::before {
+  background-size: 700px auto;
+  filter: brightness(5.2);
+  opacity: .4;
+  -webkit-mask-image: linear-gradient(90deg, transparent 15%, #000);
+  mask-image: linear-gradient(90deg, transparent 15%, #000);
+}
+.empty::before {
+  background-size: 710px auto;
+  filter: brightness(5.4);
+  opacity: .48;
+}
+@media (max-width: 700px) {
+  .banner::before { opacity: .25; }
+  .empty::before { opacity: .27; }
+}

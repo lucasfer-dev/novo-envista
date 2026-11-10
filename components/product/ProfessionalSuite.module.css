@@ -65,3 +65,10 @@
   pointer-events: none;
 }
 .metric:first-child > * { position: relative; z-index: 1; }
+
+.metric:first-child::after {
+  width: min(44%, 140px);
+  background-size: 560px auto;
+  filter: brightness(5.3);
+  opacity: .38;
+}
