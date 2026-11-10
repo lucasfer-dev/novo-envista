@@ -334,3 +334,46 @@
 @media (prefers-reduced-motion: reduce) {
   .page *, .page *::before, .page *::after { transition: none !important; }
 }
+
+.head {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(100deg, transparent 47%, rgba(0,134,167,.065) 82%, rgba(34,181,115,.07));
+}
+.head::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(34%, 240px);
+  height: 100%;
+  background: url("/brand/envista-pattern-original.png") center / 315px auto repeat;
+  opacity: .12;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.head > * { position: relative; z-index: 1; }
+.empty {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 95% 48%, rgba(0,169,157,.065), transparent 50%);
+}
+.empty::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(38%, 300px);
+  background: url("/brand/envista-pattern-original.png") center / 385px auto repeat;
+  opacity: .11;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.empty > * { position: relative; z-index: 1; }
+@media(max-width:560px) {
+  .head::after { width: 28%; opacity: .065; }
+  .empty::before { opacity: .07; }
+}

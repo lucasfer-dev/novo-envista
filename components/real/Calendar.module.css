@@ -60,3 +60,42 @@
 .weekNotice { border-color: rgba(0,169,157,.21); background: linear-gradient(110deg,rgba(0,134,167,.06),rgba(34,181,115,.04)),#0b2630; }
 .card:hover { border-color: rgba(0,169,157,.30); }
 .emptyIcon { background: rgba(0,169,157,.09); color: #79dccb; }
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(90deg, transparent 58%, rgba(0,169,157,.055));
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(32%, 250px);
+  height: 100%;
+  background: url("/brand/envista-pattern-original.png") center / 340px auto repeat;
+  opacity: .11;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.hero > * { position: relative; z-index: 1; }
+.empty {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 100% 50%, rgba(0,134,167,.07), transparent 45%);
+}
+.empty::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(30%, 230px);
+  background: url("/brand/envista-pattern-original.png") center / 350px auto repeat;
+  opacity: .085;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.empty > * { position: relative; z-index: 1; }

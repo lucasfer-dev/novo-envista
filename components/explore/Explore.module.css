@@ -1019,3 +1019,30 @@
   .discoveryEmpty { flex-direction: column; gap: 13px; }
   .discoveryEmpty h2 { font-size: 18px; }
 }
+
+.discoveryEmpty {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 94% 52%, rgba(0,134,167,.115), transparent 51%), #071c25;
+}
+.discoveryEmpty::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(45%, 350px);
+  background: url("/brand/envista-pattern-original.png") center / 400px auto repeat;
+  opacity: .19;
+  -webkit-mask-image: linear-gradient(90deg, transparent 5%, #000 95%);
+  mask-image: linear-gradient(90deg, transparent 5%, #000 95%);
+  pointer-events: none;
+}
+.discoveryEmpty > * { position: relative; z-index: 1; }
+.rail .competitionPanel {
+  background: radial-gradient(circle at 100% 0%, rgba(34,181,115,.12), transparent 65%), #0d2a31 !important;
+  border-color: rgba(0,169,157,.23);
+}
+.rail .competitionPanel::before { opacity: .08; }
+@media(max-width:720px) {
+  .discoveryEmpty::before { width: 48%; opacity: .10; }
+}
