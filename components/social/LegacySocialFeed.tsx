@@ -7,16 +7,13 @@ import {
   Activity,
   ArrowRight,
   Bookmark,
-  ImagePlus,
   TrendingUp,
   CalendarDays,
   ChevronDown,
   Clock3,
-  Code2,
   Compass,
   Flame,
   Settings2,
-  Trophy,
   FolderKanban,
   Heart,
   MessageCircle,
@@ -303,12 +300,50 @@ export default function LegacySocialFeed({
 
       <div className={styles.socialLayout}>
         <section className={styles.mainColumn}>
-      <div className={styles.feedHeader}>
-        <div>
-          <h1>Social</h1>
-          <p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p>
-        </div>
-      </div>
+      <header className={styles.feedHeader}><h1>Social</h1></header>
+
+          <div className={styles.timelineToolbar}>
+            <nav className={styles.feedTabs} aria-label="Filtrar publicações">
+              <button
+                type="button"
+                aria-pressed={feedMode === "for-you"}
+                className={feedMode === "for-you" ? styles.activeTab : ""}
+                onClick={() => changeMode("for-you")}
+              >
+                Descobrir
+              </button>
+              <button
+                type="button"
+                aria-pressed={feedMode === "following"}
+                className={feedMode === "following" ? styles.activeTab : ""}
+                onClick={() => changeMode("following")}
+              >
+                Seguindo
+              </button>
+            </nav>
+
+            <div className={styles.toolbarRight}>
+              <details className={styles.feedSearchToggle}>
+                <summary aria-label="Pesquisar no feed" title="Pesquisar no feed"><Search size={17} aria-hidden="true" /></summary>
+            <form className={styles.feedSearch} onSubmit={submitSearch}>
+              <Search size={16} />
+              <input
+                aria-label="Pesquisar no feed"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Buscar no feed"
+                maxLength={120}
+              />
+              {query && (
+                <button type="button" aria-label="Limpar pesquisa" onClick={clearSearch}>
+                  <X size={15} />
+                </button>
+              )}
+            </form>
+              </details>
+            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Recentes</span>
+            </div>
+          </div>
 
           <div className={`panel ${styles.composer}`}>
             <form action={createPostAction}>
@@ -373,69 +408,14 @@ export default function LegacySocialFeed({
               </div>
               </details>
               <div className={styles.composerFooter}>
-                <div className={styles.composerShortcuts} aria-label="Acessos rápidos">
-                  <span className={styles.unavailableShortcut} title="Publicar fotos diretamente no feed ainda não está disponível" aria-label="Mídia: em breve">
-                    <ImagePlus size={18} aria-hidden="true" /> Mídia
-                  </span>
-                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(true)}>
-                    <Code2 size={17} aria-hidden="true" /> Código
+                <div className={styles.composerShortcuts}>
+                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(value => !value)}>
+                    <Settings2 size={17} aria-hidden="true" /> Personalizar publicação
                   </button>
-                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(true)}>
-                    <FolderKanban size={17} aria-hidden="true" /> Projeto
-                  </button>
-                  <Link href="/competitions"><Trophy size={17} aria-hidden="true" /> Competição</Link>
-                  <Link href="/calendar"><CalendarDays size={17} aria-hidden="true" /> Evento</Link>
                 </div>
                 <button className={styles.publishButton} type="submit"><Send size={16} aria-hidden="true" /> Publicar</button>
               </div>
             </form>
-          </div>
-
-          <div className={styles.timelineToolbar}>
-            <div className={styles.feedTabs} role="tablist" aria-label="Filtrar feed">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={feedMode === "for-you"}
-                className={feedMode === "for-you" ? styles.activeTab : ""}
-                onClick={() => changeMode("for-you")}
-              >
-                Para você
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={feedMode === "following"}
-                className={feedMode === "following" ? styles.activeTab : ""}
-                onClick={() => changeMode("following")}
-              >
-                Seguindo
-              </button>
-              <Link className={styles.discoverTab} href="/explore?type=people">Comunidade</Link>
-              <Link className={styles.discoverTab} href="/explore?type=projects">Projetos</Link>
-            </div>
-
-            <div className={styles.toolbarRight}>
-              <details className={styles.feedSearchToggle}>
-                <summary aria-label="Pesquisar no feed" title="Pesquisar no feed"><Search size={17} aria-hidden="true" /></summary>
-            <form className={styles.feedSearch} onSubmit={submitSearch}>
-              <Search size={16} />
-              <input
-                aria-label="Pesquisar no feed"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Buscar no feed"
-                maxLength={120}
-              />
-              {query && (
-                <button type="button" aria-label="Limpar pesquisa" onClick={clearSearch}>
-                  <X size={15} />
-                </button>
-              )}
-            </form>
-              </details>
-            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Mais recentes <ChevronDown size={13} aria-hidden="true" /></span>
-            </div>
           </div>
 
           <div className={styles.timeline}>
@@ -629,9 +609,12 @@ export default function LegacySocialFeed({
                   {initialQuery
                     ? "Tente outro termo ou limpe a pesquisa."
                     : feedMode === "following"
-                      ? "Siga participantes, investidores, equipes e projetos para montar sua timeline."
-                      : "Quando alguém publicar no Envista, a publicação vai aparecer aqui."}
+                      ? "Encontre pessoas e projetos para acompanhar as atualizações por aqui."
+                      : "Quando a comunidade compartilhar novidades, elas aparecerão aqui. Você também pode iniciar a conversa."}
                 </p>
+                <Link className={styles.emptyFeedAction} href={initialQuery ? feedHref(path, feedMode, "", 1) : "/explore"}>
+                  {initialQuery ? "Limpar busca" : "Explorar comunidade"} <ArrowRight size={15} aria-hidden="true" />
+                </Link>
               </div>
             )}
           </div>
@@ -652,7 +635,7 @@ export default function LegacySocialFeed({
         <aside className={styles.sideColumn} aria-label="Descobertas da comunidade">
           <SocialCompetitionSpotlight />
 
-          <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
+          {topicStats.length > 0 && <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
             <div className={styles.railTitle}>
               <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
               <Link href="/explore">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
@@ -666,9 +649,9 @@ export default function LegacySocialFeed({
                 </Link>)}
               </div>
             </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>Os temas aparecerão conforme a comunidade publicar novas atividades.</p></div>}
-          </section>
+          </section>}
 
-          <section className={[styles.sideCard, styles.peoplePanel].join(" ")} aria-labelledby="social-suggestions-title">
+          {visibleSuggestions.some(suggestion => suggestion.targetType === "profile") && <section className={[styles.sideCard, styles.peoplePanel].join(" ")} aria-labelledby="social-suggestions-title">
             <div className={styles.railTitle}>
               <h2 id="social-suggestions-title"><Users size={20} aria-hidden="true" /> Sugestões de pessoas</h2>
               <Link href="/explore?type=people">Ver todas <ArrowRight size={14} aria-hidden="true" /></Link>
@@ -691,9 +674,9 @@ export default function LegacySocialFeed({
               ))}
               {!visibleSuggestions.some(suggestion => suggestion.targetType === "profile") && <p className={styles.searchResultLabel}>Sem novas pessoas para sugerir agora.</p>}
             </div>
-          </section>
+          </section>}
 
-          <section className={[styles.sideCard, styles.eventsPanel].join(" ")} aria-labelledby="social-events-title">
+          {agenda.length > 0 && <section className={[styles.sideCard, styles.eventsPanel].join(" ")} aria-labelledby="social-events-title">
             <div className={styles.railTitle}>
               <h2 id="social-events-title"><CalendarDays size={20} aria-hidden="true" /> Próximos eventos</h2>
               <Link href="/calendar">Ver agenda <ArrowRight size={14} aria-hidden="true" /></Link>
@@ -709,7 +692,7 @@ export default function LegacySocialFeed({
                 </Link>;
               })}
             </div> : <div className={styles.railEmpty}><CalendarDays size={19} aria-hidden="true" /><p>Nenhum evento próximo no calendário.</p></div>}
-          </section>
+          </section>}
         </aside>
       </div>
     </div>
