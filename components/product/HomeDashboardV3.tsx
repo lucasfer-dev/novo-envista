@@ -27,6 +27,7 @@ type Props = {
   learningCount?: number;
   competitionParticipations?: number;
   todayISO?: string;
+  nowISO?: string;
 };
 
 const HERO_SLIDES = [
@@ -187,7 +188,7 @@ function EventRow({ event, small = false }: { event: DashboardAgendaEvent; small
 export default function HomeDashboardV3({
   name, projects, teams, agenda = [], profileSteps = [], course,
   courseProgress, learningCount = 0, competitionParticipations = 0,
-  todayISO = "2026-11-10",
+  todayISO = "2026-11-10", nowISO,
 }: Props) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [competitions, setCompetitions] = useState<LiveCompetition[] | null>(null);
@@ -218,7 +219,7 @@ export default function HomeDashboardV3({
   const currentStep = firstPending === -1 ? null : journey[firstPending];
   const slide = HERO_SLIDES[slideIndex];
   const upcoming = agenda
-    .filter(event => new Date(event.starts_at).getTime() >= new Date(todayISO + "T00:00:00-03:00").getTime())
+    .filter(event => new Date(event.starts_at).getTime() >= (nowISO ? new Date(nowISO).getTime() : new Date(todayISO + "T00:00:00-03:00").getTime()))
     .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
   const nearestEvent = upcoming[0];
   const featuredCompetition = competitions?.[0];
