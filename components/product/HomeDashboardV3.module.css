@@ -599,3 +599,66 @@
 @media (max-width: 620px) {
   .heroPerson { width: 66%; height: 100%; opacity: .13; }
 }
+
+/* Agenda lateral: três blocos empilhados, sem duplicar a jornada central. */
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 15px;
+  min-width: 0;
+}
+.nextEventPanel,
+.calendarPanel,
+.eventListPanel {
+  width: 100%;
+  min-width: 0;
+}
+.nextEventPanel { min-height: 118px; }
+.calendarPanel { min-height: 308px; }
+.eventListPanel { min-height: 126px; }
+.calendarPanel .daysGrid { grid-auto-flow: row; }
+@media (min-width: 1024px) and (max-width: 1470px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(245px, 24vw);
+    gap: 17px;
+    align-items: start;
+  }
+  .rail {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    gap: 13px;
+    padding-top: 4px;
+  }
+  .calendarPanel { grid-row: auto; }
+  .nextEventPanel, .calendarPanel, .eventListPanel { padding: 15px 13px; }
+  .railHeading { gap: 6px; }
+  .railHeading h2 { font-size: 15px; }
+  .monthNav { gap: 3px; }
+  .monthNav > span { font-size: 10px; }
+  .monthNav button { width: 17px; }
+  .eventEmpty { flex-wrap: wrap; }
+  .eventEmpty a { margin-left: 0; }
+}
+@media (min-width: 1024px) and (max-width: 1249px) {
+  .contentGrid { grid-template-columns: minmax(0, 1fr); }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .heroContent { width: 78%; }
+  .heroContent h2 { font-size: clamp(26px, 2.75vw, 33px); }
+  .heroContent p { max-width: 390px; font-size: 12px; }
+  .heroPerson { opacity: .48; width: 42%; }
+  .journeyTop { flex-wrap: wrap; }
+  .journeySummary { flex: 0 1 100%; width: 100%; text-align: left; }
+  .journeySummary > div { justify-content: flex-start; }
+}
+@media (max-width: 1023px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .rail {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+    padding-top: 0;
+  }
+  .calendarPanel { grid-row: auto; }
+}
