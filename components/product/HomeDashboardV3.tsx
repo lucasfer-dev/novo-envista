@@ -240,7 +240,7 @@ export default function HomeDashboardV3({
             <span className={styles.heroPattern} aria-hidden="true" />
             <span className={styles.heroGlobe} aria-hidden="true" />
             <img className={styles.heroSymbol} src="/brand/envista-symbol-gradient.svg" alt="" width="270" height="270" aria-hidden="true" />
-            <img className={styles.heroPerson} src="/brand/envista-dashboard-person.svg" alt="" width="900" height="1100" aria-hidden="true" />
+            <img className={styles.heroPerson} src="/brand/envista-hero-reference.webp" alt="" width="390" height="276" aria-hidden="true" />
             <div className={styles.heroContent}>
               <span className={styles.eyebrow}>{slide.eyebrow}</span>
               <h2>{slide.first}<br /><span>{slide.accent}</span></h2>
