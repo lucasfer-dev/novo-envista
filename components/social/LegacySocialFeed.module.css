@@ -2807,3 +2807,28 @@
 @media (prefers-reduced-motion: reduce) {
   .socialPage * { transition: none !important; animation: none !important; }
 }
+
+.emptyFeed {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 88% 40%, rgba(0,134,167,.10), transparent 48%), transparent !important;
+}
+.emptyFeed::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(40%, 270px);
+  background: url("/brand/envista-pattern-original.png") center / 385px auto repeat;
+  opacity: .14;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.emptyFeed > * { position: relative; z-index: 1; }
+.sideColumn .competitionPanel {
+  background: radial-gradient(circle at 95% 7%, rgba(34,181,115,.11), transparent 62%), #0c2830 !important;
+}
+@media(max-width:640px) {
+  .emptyFeed::before { width: 44%; opacity: .08; }
+}
