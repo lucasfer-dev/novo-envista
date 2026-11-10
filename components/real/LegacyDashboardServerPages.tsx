@@ -118,7 +118,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       .order("joined_at", { ascending: false });
     const teamIds = (memberships ?? []).map((item: any) => item.team_id);
 
-    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult, followersResult] = await Promise.all([
+    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult, followersResult, learningCountResult] = await Promise.all([
       supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("owner_user_id", userId).order("updated_at", { ascending: false }).limit(6),
       teamIds.length
         ? supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").in("owner_team_id", teamIds).order("updated_at", { ascending: false }).limit(8)
@@ -126,9 +126,10 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       supabase.from("course_enrollments").select("course_id,enrolled_at,courses(id,slug,title,description)").eq("user_id", userId).order("enrolled_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("notifications").select("id,title,body,href,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(4),
       supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("visibility", "platform").order("updated_at", { ascending: false }).limit(4),
-      supabase.from("platform_calendar_events").select("id,title,starts_at,href").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(3),
+      supabase.from("platform_calendar_events").select("id,title,starts_at,href").gte("starts_at", new Date(Date.now() - 40 * 86400000).toISOString()).order("starts_at", { ascending: true }).limit(120),
       supabase.from("profiles").select("username,display_name,bio,public_city,public_state,public_school,interest_tags").eq("id", userId).maybeSingle(),
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("target_profile_id", userId),
+      supabase.from("course_enrollments").select("course_id", { count: "exact", head: true }).eq("user_id", userId),
     ]);
 
     const projects = new Map<string, ProjectCardRow>();
@@ -162,7 +163,9 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
             { label: "Instituição", done: Boolean(profileResult.data?.public_school) },
             { label: "Áreas de interesse", done: Boolean(profileResult.data?.interest_tags?.length) },
           ]}
-          course={course} courseProgress={courseProgress} />
+          course={course} courseProgress={courseProgress}
+          learningCount={learningCountResult.count ?? (course ? 1 : 0)}
+          todayISO={new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())} />
       </LegacySocialShell>
     );
   }
