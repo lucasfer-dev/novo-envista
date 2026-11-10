@@ -842,3 +842,10 @@
 /* Branded only in the main editorial hero, not in journey or metrics. */
 .heroPattern { background-size: 760px auto; filter: brightness(3.3); opacity: .15; }
 @media (max-width: 620px) { .heroPattern { opacity: .09; } }
+
+.heroPattern {
+  background-size: 740px auto;
+  filter: brightness(3.6);
+  opacity: .19;
+}
+@media (max-width:620px) { .heroPattern { opacity: .11; } }

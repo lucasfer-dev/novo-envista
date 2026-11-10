@@ -162,3 +162,24 @@
     linear-gradient(135deg, rgba(0,134,167,.075), rgba(34,181,115,.04)),
     #0b2a32;
 }
+
+.recommendationPanel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.recommendationPanel::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 0 auto;
+  width: min(34%, 265px);
+  background: url("/brand/envista-pattern-original.png") right center / 750px auto repeat;
+  filter: brightness(3.5);
+  opacity: .16;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.recommendationPanel > * { position: relative; z-index: 1; }
+@media (max-width:700px) { .recommendationPanel::before { opacity: .09; } }
