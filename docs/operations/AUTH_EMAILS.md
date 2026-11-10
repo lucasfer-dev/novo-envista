@@ -36,6 +36,7 @@ O código usa `emailRedirectTo` e `redirectTo` explicitamente. A allowlist do Su
 Os templates visuais prontos e versionados ficam em:
 
 - confirmação de cadastro: `supabase/email-templates/confirm-signup.html`
+- símbolo PNG para compatibilidade com clientes de e-mail: `public/brand/envista-email-mark.png` (publicado em `https://useenvista.com.br/brand/envista-email-mark.png`)
 - recuperação de senha: `supabase/email-templates/reset-password.html`
 
 Assuntos recomendados:
@@ -45,14 +46,16 @@ Assuntos recomendados:
 
 > Importante: versionar os arquivos no repositório não altera automaticamente o template hospedado pelo Supabase Auth. Em produção, copie o HTML correspondente para **Authentication → Email Templates** (ou aplique a mesma configuração por uma API administrativa autorizada) e confirme o assunto antes do release.
 
+Para atualizar o e-mail de confirmação em produção: escolha **Confirm sign up**, copie o conteúdo integral do arquivo versionado, mantenha o assunto **Confirme seu e-mail no Envista**, salve e envie um cadastro de teste. Verifique a imagem PNG externa, o botão e a página intermediária antes de considerar a alteração ativa. O navegador e a Vercel não atualizam o template hospedado no Supabase automaticamente.
+
 ## Template — Confirm signup
 
 O botão deve apontar diretamente para a página visual do Envista e carregar `token_hash` + `type=email`. Não use `{{ .ConfirmationURL }}` neste template porque esse URL pode ser consumido por scanners de e-mail.
 
-O arquivo versionado usa:
+O arquivo versionado usa (o HTML final codifica `&` como `&amp;`, que o navegador de e-mail decodifica corretamente):
 
 ```html
-<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email">
+<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=email">
   Confirmar meu e-mail
 </a>
 ```

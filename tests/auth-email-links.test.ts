@@ -16,6 +16,7 @@ const proxy = readFileSync("proxy.ts", "utf8");
 const serverClient = readFileSync("lib/supabase/server.ts", "utf8");
 const recoveryIntent = readFileSync("lib/auth/recovery-intent.ts", "utf8");
 const runbook = readFileSync("docs/operations/AUTH_EMAILS.md", "utf8");
+const signupTemplate = readFileSync("supabase/email-templates/confirm-signup.html", "utf8");
 
 describe("auth email links", () => {
   it("never emits localhost from a Vercel production environment", () => {
@@ -125,6 +126,17 @@ describe("auth email links", () => {
     expect(recoveryPage).toContain("params.code");
     expect(emailActions).toContain("exchangeCodeForSession");
     expect(runbook).toContain("Compatibilidade com e-mails antigos");
+  });
+
+  it("uses branded confirmation mail and a scanner-safe token-hash link", () => {
+    expect(signupTemplate).toContain('lang="pt-BR"');
+    expect(signupTemplate).toContain("https://useenvista.com.br/brand/envista-email-mark.png");
+    expect(signupTemplate).toContain("#00a99d");
+    expect(signupTemplate).toContain("#22b573");
+    expect(signupTemplate).toContain("#0086a7");
+    expect(signupTemplate).toContain('{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=email');
+    expect(signupTemplate).not.toContain("{{ .ConfirmationURL }}");
+    expect(signupTemplate).toContain("Não criou uma conta no Envista?");
   });
 
   it("documents token-hash templates that point directly at Envista", () => {
