@@ -368,3 +368,53 @@
     flex-shrink: 0;
   }
 }
+
+/* Home only: atmospheric pattern, readable navigation, and controlled spacing. */
+.app-shell[data-envista-home-page="true"] .main {
+  background-color: #051822;
+  background-image:
+    linear-gradient(180deg, rgba(2, 18, 27, .94) 0%, rgba(2, 18, 27, .84) 75%, rgba(2, 18, 27, .82) 100%),
+    url("/brand/envista-pattern-original.png");
+  background-position: center, center top;
+  background-size: auto, 520px auto;
+}
+.app-shell[data-envista-home-page="true"] .sidebar {
+  background-color: #061923 !important;
+}
+.app-shell[data-envista-home-page="true"] .sidebar::before {
+  background-size: 390px auto;
+  background-position: center bottom;
+  opacity: .28;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 15%, #000 92%);
+  mask-image: linear-gradient(to bottom, transparent 15%, #000 92%);
+}
+.app-shell[data-envista-home-page="true"] .sidebar nav a {
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 11px;
+}
+.app-shell[data-envista-home-page="true"] .sidebar nav a[aria-current="page"] {
+  color: #fff;
+  font-weight: 750;
+  background: linear-gradient(95deg, #087a89, #02c5a8);
+}
+.app-shell[data-envista-home-page="true"] .home-nav-promo {
+  border-color: rgba(0, 216, 181, .45);
+  background: linear-gradient(130deg, #07584d, #063e46);
+}
+.app-shell[data-envista-home-page="true"] .topbar {
+  background: #061c26 !important;
+}
+.app-shell[data-envista-home-page="true"] .page-wrap {
+  padding: 17px 20px 58px 22px;
+}
+.app-shell[data-envista-home-page="true"] .global-search {
+  background: #0b2532;
+  border-color: rgba(118, 170, 188, .39);
+}
+@media (max-width: 980px) {
+  .app-shell[data-envista-home-page="true"] .page-wrap { padding: 16px 16px 80px; }
+}
+@media (max-width: 480px) {
+  .app-shell[data-envista-home-page="true"] .page-wrap { padding: 13px 12px 86px; }
+}
