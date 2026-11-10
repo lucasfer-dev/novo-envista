@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Check, Eye, EyeOff, LockKeyhole } from "lucide-react";
 import styles from "./Auth.module.css";
+import { MAX_PASSWORD_LENGTH } from "@/lib/auth/validation";
 
 export function RegisterPasswordFields({ minLength, leadingIcons = false }: { minLength: number; leadingIcons?: boolean }) {
   const [password, setPassword] = useState("");
@@ -10,7 +11,7 @@ export function RegisterPasswordFields({ minLength, leadingIcons = false }: { mi
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const longEnough = password.length >= minLength;
+  const validLength = password.length >= minLength && password.length <= MAX_PASSWORD_LENGTH;
   const matches = useMemo(
     () => confirmation.length > 0 && password === confirmation,
     [confirmation, password],
@@ -29,7 +30,7 @@ export function RegisterPasswordFields({ minLength, leadingIcons = false }: { mi
               name="password"
               autoComplete="new-password"
               minLength={minLength}
-              maxLength={128}
+              maxLength={MAX_PASSWORD_LENGTH}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
@@ -56,7 +57,7 @@ export function RegisterPasswordFields({ minLength, leadingIcons = false }: { mi
               name="password_confirmation"
               autoComplete="new-password"
               minLength={minLength}
-              maxLength={128}
+              maxLength={MAX_PASSWORD_LENGTH}
               value={confirmation}
               onChange={(event) => setConfirmation(event.target.value)}
               required
@@ -75,9 +76,9 @@ export function RegisterPasswordFields({ minLength, leadingIcons = false }: { mi
       </div>
 
       <div className={styles.passwordRules} aria-live="polite">
-        <span className={longEnough ? styles.ruleOk : undefined}>
+        <span className={validLength ? styles.ruleOk : undefined}>
           <Check size={14} aria-hidden="true" />
-          Pelo menos {minLength} caracteres
+          Entre {minLength} e {MAX_PASSWORD_LENGTH} caracteres
         </span>
         <span className={matches ? styles.ruleOk : undefined}>
           <Check size={14} aria-hidden="true" />

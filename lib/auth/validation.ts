@@ -4,7 +4,8 @@ export type PrivateDocumentKind = "cpf" | "cnpj";
 
 export const INTERNAL_TERMS_VERSION = "2026-09-25-v6";
 export const INTERNAL_PRIVACY_VERSION = "2026-09-25-v6";
-export const MIN_PASSWORD_LENGTH = 12;
+export const MIN_PASSWORD_LENGTH = 8;
+export const MAX_PASSWORD_LENGTH = 16;
 
 const PARTICIPANT_ROUTE_ROOTS = [
   "/home",
@@ -153,7 +154,7 @@ export function ageBandFromBirthDate(value: unknown, now = new Date()): Declared
 export function validatePassword(value: unknown) {
   if (typeof value !== "string") return "A senha é obrigatória.";
   if (value.length < MIN_PASSWORD_LENGTH) return `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`;
-  if (value.length > 128) return "A senha deve ter no máximo 128 caracteres.";
+  if (value.length > MAX_PASSWORD_LENGTH) return `A senha deve ter no máximo ${MAX_PASSWORD_LENGTH} caracteres.`;
   return null;
 }
 

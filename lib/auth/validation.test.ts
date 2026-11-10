@@ -7,6 +7,7 @@ import {
   isValidEmail,
   isValidUsername,
   MIN_PASSWORD_LENGTH,
+  MAX_PASSWORD_LENGTH,
   normalizeCpf,
   parseBirthDate,
   pathAllowedForRole,
@@ -39,11 +40,13 @@ describe("credenciais", () => {
   it("valida email de forma básica e senha por comprimento", () => {
     expect(isValidEmail("pessoa@example.com")).toBe(true);
     expect(isValidEmail("invalido@")).toBe(false);
-    expect(MIN_PASSWORD_LENGTH).toBe(12);
-    expect(validatePassword("12345678901")).toBeTruthy();
-    expect(validatePassword("123456789012")).toBeNull();
-    expect(validatePassword("uma-senha-comprida")).toBeNull();
-    expect(validatePassword("x".repeat(129))).toBeTruthy();
+    expect(MIN_PASSWORD_LENGTH).toBe(8);
+    expect(MAX_PASSWORD_LENGTH).toBe(16);
+    expect(validatePassword("1234567")).toBeTruthy();
+    expect(validatePassword("12345678")).toBeNull();
+    expect(validatePassword("1234567890123456")).toBeNull();
+    expect(validatePassword("uma-senha-comprida")).toBeTruthy();
+    expect(validatePassword("x".repeat(17))).toBeTruthy();
   });
 
   it("normaliza e valida CPF pelos dígitos verificadores", () => {

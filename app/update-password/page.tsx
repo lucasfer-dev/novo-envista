@@ -3,7 +3,7 @@ import { AuthShell, authStyles as styles } from "@/components/auth/AuthShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { updateRecoveryPasswordAction } from "@/app/auth/email-actions";
 import { hasValidRecoveryIntent } from "@/lib/auth/recovery-intent";
-import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
+import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/auth/validation";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -27,12 +27,12 @@ export default async function UpdatePasswordPage({
       <form action={updateRecoveryPasswordAction} className={styles.form}>
         <label>
           Nova senha
-          <input type="password" name="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required />
-          <span className={styles.muted}>Use uma senha exclusiva com pelo menos {MIN_PASSWORD_LENGTH} caracteres.</span>
+          <input type="password" name="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={MAX_PASSWORD_LENGTH} required />
+          <span className={styles.muted}>Use uma senha exclusiva com {MIN_PASSWORD_LENGTH} a {MAX_PASSWORD_LENGTH} caracteres.</span>
         </label>
         <label>
           Confirmar nova senha
-          <input type="password" name="password_confirmation" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={128} required />
+          <input type="password" name="password_confirmation" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} maxLength={MAX_PASSWORD_LENGTH} required />
         </label>
         <AuthSubmitButton className={`${styles.primary} ${styles.full}`} pendingText="Atualizando...">
           Atualizar senha

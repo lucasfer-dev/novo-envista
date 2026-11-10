@@ -85,7 +85,7 @@
 .brandCopy{
   position:relative;
   z-index:2;
-  padding:64px 0 125px;
+  padding:56px 0 152px;
   margin:auto 0;
 }
 .kicker{
@@ -128,13 +128,24 @@
 .brandEarth{
   position:absolute;
   z-index:0;
-  bottom:-125px;
-  left:-190px;
-  width:710px;
-  height:375px;
+  bottom:-1px;
+  left:-25%;
+  width:150%;
+  height:215px;
   opacity:.95;
-  background:url("/brand/envista-earth-horizon.svg") center bottom/contain no-repeat;
-  filter:drop-shadow(0 -12px 30px rgba(0,238,174,.13));
+  pointer-events:none;
+  background:
+    url("/brand/envista-register-globe.svg") center bottom / 100% 100% no-repeat,
+    radial-gradient(ellipse at 50% 87%,rgba(0,230,174,.17),transparent 67%);
+  filter:drop-shadow(0 -8px 22px rgba(0,214,170,.12));
+  mask-image:linear-gradient(180deg,transparent 0%,#000 17%,#000 100%);
+}
+.brandEarth::after{
+  content:"";
+  position:absolute;
+  inset:auto 10% 0;
+  height:30px;
+  background:linear-gradient(90deg,transparent,rgba(0,169,157,.1),transparent);
   pointer-events:none;
 }
 .formPanel{

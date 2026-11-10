@@ -3,14 +3,15 @@ import Link from "next/link";
 import { authStyles as styles } from "@/components/auth/AuthShell";
 import { RegisterShell } from "@/components/auth/RegisterShell";
 import registerStyles from "@/components/auth/RegisterShell.module.css";
-import { ArrowRight, Building2, CalendarDays, CircleCheck, GraduationCap, IdCard, Mail, UserRound } from "lucide-react";
+import { ArrowRight, Building2, CalendarDays, CircleCheck, GraduationCap, Mail, UserRound } from "lucide-react";
+import { PrivateDocumentField } from "@/components/auth/PrivateDocumentField";
 import { AuthCaptcha } from "@/components/auth/AuthCaptcha";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { RegisterPasswordFields } from "@/components/auth/RegisterPasswordFields";
 import { BirthDateField } from "@/components/auth/BirthDateField";
 import { registerProductAction, resendSignupConfirmationAction } from "@/app/auth/register-product-action";
 import { isPublicSignupReady } from "@/lib/auth/signup-readiness";
-import { MIN_PASSWORD_LENGTH } from "@/lib/auth/validation";
+import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/auth/validation";
 
 export const metadata: Metadata = { title: "Criar conta", description: "Crie sua conta no Envista." };
 
@@ -20,7 +21,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const error = typeof params.error === "string" ? params.error : "";
   const status = typeof params.status === "string" ? params.status : "";
   const errorMessage =
-    error === "password" ? `Confira as senhas. Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`
+    error === "password" ? `Confira as senhas. Use entre ${MIN_PASSWORD_LENGTH} e ${MAX_PASSWORD_LENGTH} caracteres.`
       : error === "document" ? "Informe um CPF ou CNPJ válido."
       : error === "birth-date" ? "Informe uma data de nascimento válida."
       : error === "exists" ? "Já existe uma conta com esses dados. Tente entrar ou recuperar a senha."
@@ -127,22 +128,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
               <Mail className={registerStyles.fieldIcon} aria-hidden="true" />
             </div>
 
-            <div className={registerStyles.fieldWithIcon}>
-              <label>
-                CPF ou CNPJ
-                <input
-                  type="text"
-                  name="document"
-                  inputMode="numeric"
-                  autoComplete="off"
-                  maxLength={18}
-                  placeholder="Digite seu CPF ou CNPJ"
-                  required
-                />
-                <span className={styles.muted}>Obrigatório para identificação e login. O número não fica visível no perfil e é armazenado somente em formato protegido.</span>
-              </label>
-              <IdCard className={registerStyles.fieldIcon} aria-hidden="true" />
-            </div>
+            <PrivateDocumentField />
 
             <RegisterPasswordFields minLength={MIN_PASSWORD_LENGTH} leadingIcons />
 
