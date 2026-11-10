@@ -124,33 +124,52 @@ export async function registerProductAction(formData: FormData) {
 }
 
 
+type ResendResult = "resent" | "resend-rate" | "resend-temporary" | "resend-invalid";
+
+function redirectAfterResend(result: ResendResult): never {
+  // A non-sensitive request identifier ensures a fresh notification after
+  // consecutive attempts, even if the same result repeats.
+  redirect(`/register?status=${result}&feedback=${Date.now().toString(36)}`);
+}
+
 export async function resendSignupConfirmationAction(formData: FormData) {
   const email = value(formData, "email").toLowerCase();
 
-  // Keep the response intentionally generic to avoid revealing whether an
-  // address is already registered.
-  if (!isValidEmail(email)) redirect("/register?status=resent");
+  if (!isValidEmail(email)) redirectAfterResend("resend-invalid");
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.resend({
-    type: "signup",
-    email,
-    options: {
-      emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
-    },
-  });
+  let resendFailure: "rate" | "temporary" | null = null;
 
-  if (error) {
-    const code = authFailureCode(error);
-    logServerEvent(code === "temporary" ? "error" : "warn", "auth.signup_confirmation_resend_failed", {
-      auth_status: error.status ?? null,
-      failure_class: code,
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${resolveSiteUrl()}/confirm-email`,
+      },
     });
-    if (code === "rate") redirect("/register?status=resend-rate");
-    if (code === "temporary") redirect("/register?status=resend-temporary");
-  } else {
-    logServerEvent("info", "auth.signup_confirmation_resent");
+
+    if (error) {
+      const code = authFailureCode(error);
+      logServerEvent(code === "temporary" ? "error" : "warn", "auth.signup_confirmation_resend_failed", {
+        auth_status: error.status ?? null,
+        failure_class: code,
+      });
+      resendFailure = code === "rate" ? "rate" : "temporary";
+    }
+  } catch (error) {
+    logServerEvent("error", "auth.signup_confirmation_resend_exception", {
+      error_name: error instanceof Error ? error.name : "UnknownError",
+    });
+    resendFailure = "temporary";
   }
 
-  redirect("/register?status=resent");
+  // Redirects must occur outside the catch: Next.js redirect throws.
+  if (resendFailure === "rate") redirectAfterResend("resend-rate");
+  if (resendFailure === "temporary") redirectAfterResend("resend-temporary");
+
+  // Supabase may intentionally hide whether an address exists.
+  // A successful API response confirms request acceptance, not delivery.
+  logServerEvent("info", "auth.signup_confirmation_resend_accepted");
+  redirectAfterResend("resent");
 }

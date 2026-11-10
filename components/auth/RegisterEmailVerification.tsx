@@ -1,16 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, CircleAlert, Inbox, Mail, MailCheck, RefreshCw, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Inbox, Mail, MailCheck, RefreshCw } from "lucide-react";
+import { ResendStatusNotice, type ResendStatus } from "./ResendStatusNotice";
 import { AuthSubmitButton } from "./AuthSubmitButton";
 import { resendSignupConfirmationAction } from "@/app/auth/register-product-action";
 import styles from "./RegisterShell.module.css";
 
-type VerificationStatus = "check-email" | "resent" | "resend-rate" | "resend-temporary";
+type VerificationStatus = "check-email" | ResendStatus;
 
-export function RegisterEmailVerification({ status }: { status: VerificationStatus }) {
-  const isRateLimited = status === "resend-rate";
-  const isTemporaryFailure = status === "resend-temporary";
-  const hasError = isRateLimited || isTemporaryFailure;
-  const isResent = status === "resent";
+export function RegisterEmailVerification({ status, feedbackKey = "" }: { status: VerificationStatus; feedbackKey?: string }) {
+  const hasError = status === "resend-rate" || status === "resend-temporary" || status === "resend-invalid";
 
   return (
     <section className={styles.verifyContent} aria-labelledby="register-title">
@@ -22,29 +20,10 @@ export function RegisterEmailVerification({ status }: { status: VerificationStat
         </div>
         <span className={styles.verifyEyebrow}>VERIFICAÇÃO DE E-MAIL · ETAPA 02/03</span>
         <h1 id="register-title">Agora é só confirmar <span>seu e-mail.</span></h1>
-        <p>
-          {isResent
-            ? "Se houver uma conta aguardando confirmação, enviaremos um novo link para o endereço informado."
-            : "Enviamos as instruções para o endereço usado no cadastro. Confirme o e-mail para ativar sua conta e continuar."}
-        </p>
+        <p>Enviamos as instruções para o endereço usado no cadastro. Confirme o e-mail para ativar sua conta e continuar.</p>
       </div>
 
-      {isResent ? (
-        <div className={styles.verifyNotice} role="status">
-          <ShieldCheck size={18} aria-hidden="true" />
-          <span><strong>Solicitação recebida.</strong> Confira sua caixa de entrada nos próximos minutos.</span>
-        </div>
-      ) : null}
-
-      {hasError ? (
-        <div className={styles.verifyError} role="alert">
-          <CircleAlert size={19} aria-hidden="true" />
-          <span>
-            <strong>{isRateLimited ? "Muitas solicitações em sequência." : "Não foi possível reenviar agora."}</strong>
-            {" "}{isRateLimited ? "Espere alguns minutos antes de tentar novamente." : "Tente novamente em instantes."}
-          </span>
-        </div>
-      ) : null}
+      {status !== "check-email" ? <ResendStatusNotice key={status + ":" + feedbackKey} status={status} /> : null}
 
       <div className={styles.verifyGuide}>
         <div className={styles.verifyGuideHeading}>

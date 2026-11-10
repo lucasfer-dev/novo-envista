@@ -75,6 +75,14 @@ O arquivo versionado usa:
 </a>
 ```
 
+## UX das telas de confirmação e reenvio
+
+- A página `/confirm-email` usa a identidade visual do cadastro (azul-marinho, teal, pattern e globo). A leitura do GET é segura: só `confirmEmailAction` valida o token após um clique explícito.
+- `/confirm-email?status=confirmed` só apresenta sucesso quando `getUser()` encontra um usuário com e-mail confirmado. A URL isolada não comprova autenticação.
+- O formulário de reenvio fica em `/register?status=check-email`. A ação classifica resultado aceito, limite de tentativas, endereço inválido e falha temporária.
+- O feedback de reenvio usa um aviso temporário com ícone, texto acessível, fechamento manual e duração de 8 segundos para aceitação ou 11 segundos para erros. A URL é limpa após o aviso desaparecer, evitando repetição após recarregar.
+- Um resultado aceito no Supabase significa **solicitação aceita**, não comprovante de entrega. O texto não revela se uma conta existe para aquele endereço.
+
 ## Sequência de confirmação
 
 1. `signUp` envia `emailRedirectTo=https://useenvista.com.br/confirm-email`.

@@ -21,6 +21,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const enabled = isPublicSignupReady();
   const error = typeof params.error === "string" ? params.error : "";
   const status = typeof params.status === "string" ? params.status : "";
+  const feedbackKey = typeof params.feedback === "string" ? params.feedback.slice(0,32) : "";
   const errorMessage =
     error === "password" ? `Confira as senhas. Use entre ${MIN_PASSWORD_LENGTH} e ${MAX_PASSWORD_LENGTH} caracteres.`
       : error === "document" ? "Informe um CPF ou CNPJ válido."
@@ -37,16 +38,17 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
     <RegisterShell
       title="Crie sua conta"
       description="Entre no Envista para aprender, construir projetos e se conectar a oportunidades."
-      phase={!enabled || status === "closed" ? "unavailable" : ["check-email", "resent", "resend-rate", "resend-temporary"].includes(status) ? "verify" : "account"}
+      phase={!enabled || status === "closed" ? "unavailable" : ["check-email", "resent", "resend-rate", "resend-temporary", "resend-invalid"].includes(status) ? "verify" : "account"}
     >
       {!enabled || status === "closed" ? (
         <>
           <div className={styles.notice}>O cadastro está temporariamente fechado. Contas existentes continuam podendo entrar normalmente.</div>
           <div className={styles.actions}><Link className={`${styles.primary} ${styles.full}`} href="/login">Já tenho uma conta</Link></div>
         </>
-      ) : status === "check-email" || status === "resent" || status === "resend-rate" || status === "resend-temporary" ? (
+      ) : status === "check-email" || status === "resent" || status === "resend-rate" || status === "resend-temporary" || status === "resend-invalid" ? (
         <RegisterEmailVerification
-          status={status === "resent" || status === "resend-rate" || status === "resend-temporary" ? status : "check-email"}
+          status={status === "resent" || status === "resend-rate" || status === "resend-temporary" || status === "resend-invalid" ? status : "check-email"}
+          feedbackKey={feedbackKey}
         />
       ) : (
         <>

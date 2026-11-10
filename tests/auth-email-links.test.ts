@@ -17,6 +17,10 @@ const serverClient = readFileSync("lib/supabase/server.ts", "utf8");
 const recoveryIntent = readFileSync("lib/auth/recovery-intent.ts", "utf8");
 const runbook = readFileSync("docs/operations/AUTH_EMAILS.md", "utf8");
 const signupTemplate = readFileSync("supabase/email-templates/confirm-signup.html", "utf8");
+const resendAction = readFileSync("app/auth/register-product-action.ts", "utf8");
+const registerPage = readFileSync("app/register/page.tsx", "utf8");
+const resendNotice = readFileSync("components/auth/ResendStatusNotice.tsx", "utf8");
+const resendVerification = readFileSync("components/auth/RegisterEmailVerification.tsx", "utf8");
 
 describe("auth email links", () => {
   it("never emits localhost from a Vercel production environment", () => {
@@ -147,6 +151,31 @@ describe("auth email links", () => {
     expect(signupTemplate).toContain("https://useenvista.com.br/brand/envista-pattern-original.png");
     expect(signupTemplate).toContain("@media only screen and (max-width:720px)");
     expect(signupTemplate.split('href="{{ .RedirectTo }}').length - 1).toBe(1);
+  });
+
+  it("requires a verified authenticated session before displaying confirmation success", () => {
+    expect(confirmPage).toContain('params.status === "confirmed"');
+    expect(confirmPage).toContain("auth.getUser()");
+    expect(confirmPage).toContain("email_confirmed_at");
+    expect(confirmPage).toContain("confirmEmailAction");
+    expect(confirmPage).toContain('href="/onboarding"');
+    expect(confirmPage).toContain('href="/register?status=check-email"');
+    expect(confirmPage).toContain("ConfirmEmail.module.css");
+  });
+
+  it("shows resend feedback only for actual request outcomes and never mistakes failures for acceptance", () => {
+    expect(resendAction).toContain('resendFailure = code === "rate" ? "rate" : "temporary"');
+    expect(resendAction).toContain('redirectAfterResend("resend-rate")');
+    expect(resendAction).toContain('redirectAfterResend("resend-temporary")');
+    expect(resendAction).toContain('redirectAfterResend("resend-invalid")');
+    expect(resendAction).toContain('redirectAfterResend("resent")');
+    expect(resendAction).toContain("A successful API response confirms request acceptance, not delivery");
+    expect(registerPage).toContain("feedbackKey={feedbackKey}");
+    expect(resendVerification).toContain("<ResendStatusNotice");
+    expect(resendNotice).toContain("Se existir uma conta aguardando confirmação");
+    expect(resendNotice).toContain("window.setTimeout");
+    expect(resendNotice).toContain("window.history.replaceState");
+    expect(resendNotice).toContain('role={message.type === "error" ? "alert" : "status"}');
   });
 
   it("documents token-hash templates that point directly at Envista", () => {
