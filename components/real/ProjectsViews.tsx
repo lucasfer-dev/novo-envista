@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FolderKanban } from "lucide-react";
 import ProjectArtwork from "@/components/product/ProjectArtwork";
 import ProjectFilesPanel from "@/components/storage/ProjectFilesPanel";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
@@ -21,7 +22,11 @@ export function ProjectsIndex({role,projects,status,error}:{role:Role;projects:P
  return <>
   <div className={`page-head ${styles.head}`}><div><h1>Meus projetos</h1><p className={styles.muted}>Seus projetos pessoais e os projetos que você constrói em equipe.</p></div><Link className={styles.primary} href={`${base}/new`}>Criar projeto</Link></div>
   {notice&&<div className={styles.notice}>{notice}</div>}{failure&&<div className={styles.error}>{failure}</div>}
-  {projects.length===0?<div className={styles.empty}>Você ainda não possui projetos reais. Crie o primeiro para começar.</div>:<div className={styles.grid}>{projects.map(project=><article className={styles.card} key={project.id}><div className="project-card-artwork"><ProjectArtwork title={project.title} category={project.category} /><Link href={`${base}/${project.slug}`}><h2>{project.title}</h2></Link></div><p className={styles.muted}>{project.short_description||"Sem descrição curta."}</p><p className={styles.owner}>{project.ownerLabel||"Autoria não informada"}</p><div className={styles.meta}><span className={styles.pill}>{project.stage}</span>{project.category&&<span className={styles.pill}>{project.category}</span>}<span className={styles.pill}>{project.visibility==="private"?"Privado":"Na plataforma"}</span>{project.tags.slice(0,3).map(tag=><span className={styles.pill} key={tag}>{tag}</span>)}</div></article>)}</div>}
+  {projects.length===0?<div className={styles.empty}>
+    <span className={styles.emptySymbol} aria-hidden="true"><FolderKanban size={22} /></span>
+    <strong>Seu primeiro projeto começa aqui.</strong>
+    <p>Crie um projeto para reunir sua ideia, sua equipe e suas conquistas.</p>
+  </div>:<div className={styles.grid}>{projects.map(project=><article className={styles.card} key={project.id}><div className="project-card-artwork"><ProjectArtwork title={project.title} category={project.category} /><Link href={`${base}/${project.slug}`}><h2>{project.title}</h2></Link></div><p className={styles.muted}>{project.short_description||"Sem descrição curta."}</p><p className={styles.owner}>{project.ownerLabel||"Autoria não informada"}</p><div className={styles.meta}><span className={styles.pill}>{project.stage}</span>{project.category&&<span className={styles.pill}>{project.category}</span>}<span className={styles.pill}>{project.visibility==="private"?"Privado":"Na plataforma"}</span>{project.tags.slice(0,3).map(tag=><span className={styles.pill} key={tag}>{tag}</span>)}</div></article>)}</div>}
  </>;
 }
 

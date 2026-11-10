@@ -48,3 +48,24 @@ A heurística de minimalismo da Nielsen Norman Group e as diretrizes de ilustra�
 **Locais sem pattern:** cabeçalhos globais, feeds e mensagens, notificações, filtros, listas e cards de projetos/equipes/competições, métricas, calendários, estados vazios repetidos. Usar ícones, paleta (#0086a7, #00a99d, #22b573), tipografia e contraste para comunicar a marca.
 
 Revisar em desktop/mobile, com e sem dados, contraste e foco. Critérios são decisões de projeto, não percentuais cientificamente validados. Referências: https://www.nngroup.com/articles/ten-usability-heuristics/ ; https://www.nngroup.com/articles/signal-noise-ratio/ ; https://atlassian.design/foundations/illustrations ; https://linear.app/docs/projects .
+
+## Auditoria de composição por tela — 10/11/2026
+
+O pattern não deve ser aplicado em toda a página nem removido de todos os componentes. Cada uso abaixo foi escolhido a partir do componente React e da estrutura CSS atual, com atenção a estados vazios e áreas promocionais. A prévia de build não substitui inspeção visual autenticada no navegador.
+
+| Tela | Local do pattern | Condição | Onde não usar |
+| --- | --- | --- | --- |
+| Home | Hero principal com personagem/globo | Sempre | Métricas, jornada, calendário lateral |
+| Explorar | Painel de oportunidade; estado vazio de descoberta suaviza o painel lateral | Painel sempre, vazio apenas sem comunidade | Filtros, resultados, lista de categorias |
+| Social | Link do desafio em destaque na coluna lateral | Apenas com competição real | Feed, composer, comentários |
+| Notificações | Lateral do estado vazio | Apenas sem notificações | Itens, abas, cabeçalho |
+| Projetos | Faixa direita do estado vazio | Apenas sem projetos | Cartões, formulário, listagem |
+| Equipes | Faixa direita do estado vazio | Apenas sem equipes | Convites, lista de membros, formulário |
+| Aprender | Área ilustrada do curso em destaque | Apenas se houver curso destacado | Catálogo, aula, player |
+| Competições | Painel contextual de recomendação de oportunidade | Apenas com match de projetos/equipes | Cards repetidos, regulamento, filtros |
+| Calendário | Detalhe no estado vazio | Apenas sem eventos | Eventos reais, datas, controles |
+| Mensagens | Nenhum | — | Mensagens, composer |
+| Workspace/Insights | Nenhum: utilizar cores e linhas de status | — | Métricas e tarefas |
+| Sidebar | Marca d'água leve no rodapé | Global | Sobre os links e ícones |
+
+Atenção: a intensidade visual real depende do contraste do PNG original e deve ser revisada em desktop e mobile. Não duplicar patterns em uma mesma área sem contexto. Princípios: Nielsen Norman Group (heurística 8 de minimalismo) e Atlassian Design System (ambient pattern para áreas promocionais, spot illustrations contextualizadas).

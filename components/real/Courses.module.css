@@ -96,3 +96,10 @@
 /* The featured course visual can carry one quiet official motif. */
 .featuredVisual::before { background-size: 720px auto; filter: brightness(3.8); opacity: .17; }
 @media (max-width: 700px) { .featuredVisual::before { opacity: .10; } }
+
+.featuredVisual::before {
+  background-size: 700px auto;
+  filter: brightness(3.9);
+  opacity: .24;
+}
+@media (max-width:700px) { .featuredVisual::before { opacity: .13; } }

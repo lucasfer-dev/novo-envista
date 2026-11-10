@@ -334,3 +334,25 @@
 @media (prefers-reduced-motion: reduce) {
   .page *, .page *::before, .page *::after { transition: none !important; }
 }
+
+.empty {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 94% 54%, rgba(0,134,167,.055), transparent 53%);
+}
+.empty::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 0 auto;
+  width: min(29%, 260px);
+  background: url("/brand/envista-pattern-original.png") right center / 720px auto repeat;
+  filter: brightness(3.4);
+  opacity: .18;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
+}
+.empty > * { position: relative; z-index: 1; }
+@media (max-width:560px) { .empty::before { width: 26%; opacity: .10; } }

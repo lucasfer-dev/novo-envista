@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Users } from "lucide-react";
 import TeamLogoPanel from "@/components/storage/TeamLogoPanel";
 import FollowEntityButton from "@/components/real/FollowEntityButton";
 import EntityPostsPanel from "@/components/real/EntityPostsPanel";
@@ -137,7 +138,11 @@ export function TeamsIndex({ role, memberships, invitations, status, error }: { 
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Equipes</h2>
-        {memberships.length === 0 ? <div className={styles.empty}>Você ainda não participa de nenhuma equipe real. Crie uma equipe para começar.</div> : (
+        {memberships.length === 0 ? <div className={styles.empty}>
+            <span className={styles.emptySymbol} aria-hidden="true"><Users size={22} /></span>
+            <strong>As melhores ideias podem começar em equipe.</strong>
+            <p>Crie uma equipe ou aceite um convite para colaborar em um projeto.</p>
+          </div> : (
           <div className={styles.grid}>
             {memberships.map((membership) => {
               const team = one(membership.teams);
