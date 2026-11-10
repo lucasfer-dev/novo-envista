@@ -19,6 +19,7 @@ import './sidebar-x.css'
 import './product-x-minimal.css'
 import './product-brand-alive.css'
 import './sidebar-unified.css'
+import './pattern-visibility.css'
 import type { Metadata, Viewport } from 'next'
 
 const siteUrl = 'https://useenvista.com.br'
