@@ -988,3 +988,10 @@
   .loginArea { border-radius: 16px; padding: 25px 19px; }
   .loginArea .intro h1 { font-size: 27px; }
 }
+
+/* The shared registration input padding must not override login field icons. */
+.loginArea.formArea form input[name="identifier"],
+.loginArea.formArea form input[name="password"] {
+  padding-left: 52px;
+  padding-right: 56px;
+}
