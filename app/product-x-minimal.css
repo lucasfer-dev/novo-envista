@@ -1,0 +1,242 @@
+/* Minimal interface language for authenticated Envista screens. */
+.app-shell[data-envista-product-shell] {
+  --ev-brand-blue: #0086a7;
+  --ev-brand-teal: #00a99d;
+  --ev-brand-green: #22b573;
+  --ev-brand-gradient: linear-gradient(105deg, #00a99d, #00a99d);
+  --ev-bg: #061a23;
+  --ev-bg-subtle: #0b2430;
+  --ev-sidebar: #061a23;
+  --ev-surface: #0b2430;
+  --ev-surface-gradient: #0b2430;
+  --ev-surface-raised: #102e38;
+  --ev-surface-hover: #122f39;
+  --ev-header-bg: #071c25;
+  --ev-border: rgba(160, 188, 194, .16);
+  --ev-border-strong: rgba(170, 197, 201, .26);
+  --ev-text: #f0f6f7;
+  --ev-text-secondary: #c4d5db;
+  --ev-muted: #96afb8;
+  --ev-muted-subtle: #8da5af;
+  --ev-accent: #00a99d;
+  --ev-accent-hover: #24bfb1;
+  --ev-accent-soft: rgba(0,169,157,.10);
+  --ev-font-page: clamp(22px,1.9vw,27px);
+  --ev-font-section: 16px;
+  --ev-font-card: 14px;
+  --ev-radius-control: 10px;
+  --ev-radius-item: 11px;
+  --ev-radius-surface: 13px;
+  --ev-shadow-raised: none;
+  background: var(--ev-bg);
+  color: var(--ev-text);
+}
+.app-shell[data-envista-product-shell] .main {
+  background: var(--ev-bg) !important;
+}
+.app-shell[data-envista-product-shell] .topbar {
+  height: 56px;
+  min-height: 56px;
+  padding-inline: 22px;
+  background: rgba(6,26,35,.98) !important;
+  border-bottom: 1px solid var(--ev-border) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .top-actions { gap: 11px; }
+.app-shell[data-envista-product-shell] .global-search {
+  min-height: 37px;
+  border-radius: 999px;
+  background: #0c2732 !important;
+  border-color: var(--ev-border) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .global-search:hover {
+  border-color: rgba(0,169,157,.29) !important;
+}
+.app-shell[data-envista-product-shell] .page-wrap {
+  width: min(100%, 1290px);
+  max-width: 1290px;
+  padding: 22px 28px 68px;
+}
+.app-shell[data-envista-product-shell] .page-head {
+  min-height: 0;
+  padding: 0 !important;
+  margin: 0 0 19px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  gap: 14px;
+}
+.app-shell[data-envista-product-shell] .page-head::before,
+.app-shell[data-envista-product-shell] .page-head::after {
+  display: none !important;
+  content: none !important;
+}
+.app-shell[data-envista-product-shell] .page-head h1 {
+  margin: 0 0 6px !important;
+  color: #f1f7f8 !important;
+  font-size: var(--ev-font-page) !important;
+  line-height: 1.2;
+  font-weight: 760;
+  letter-spacing: -.03em;
+  text-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .page-head p {
+  color: var(--ev-muted) !important;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.app-shell[data-envista-product-shell] .section-row h2,
+.app-shell[data-envista-product-shell] .panel-title {
+  font-weight: 720;
+  color: #eaf3f5;
+}
+.app-shell[data-envista-product-shell] .section-row { margin-bottom: 12px; }
+.app-shell[data-envista-product-shell] :is(.panel,.card,.project-card,.team-card) {
+  background: var(--ev-surface) !important;
+  border-color: var(--ev-border) !important;
+  border-radius: var(--ev-radius-surface) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] :is(a.panel,button.panel,a.project-card,button.project-card,a.team-card,button.team-card):hover {
+  background: var(--ev-surface-hover) !important;
+  border-color: var(--ev-border-strong) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary) {
+  min-height: 37px;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #00a99d !important;
+  color: #052522 !important;
+  box-shadow: none !important;
+  font-size: 12.5px;
+  font-weight: 740;
+  filter: none !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary):hover {
+  background: #27beaf !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.app-shell[data-envista-product-shell] .primary.square {
+  width: 39px;
+  padding: 0;
+  border-radius: 50% !important;
+}
+.app-shell[data-envista-product-shell] :is(.secondary,button.secondary,a.secondary) {
+  min-height: 37px;
+  border: 1px solid var(--ev-border) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #d5e5e8 !important;
+  font-size: 12.5px;
+  font-weight: 610;
+}
+.app-shell[data-envista-product-shell] :is(.secondary,button.secondary,a.secondary):hover {
+  background: rgba(255,255,255,.045) !important;
+  border-color: var(--ev-border-strong) !important;
+  transform: none !important;
+}
+.app-shell[data-envista-product-shell] :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+  border: 1px solid rgba(150,185,190,.22) !important;
+  border-radius: 10px !important;
+  background: #0a202a !important;
+  color: #eaf4f5 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select):focus {
+  border-color: rgba(0,169,157,.76) !important;
+  box-shadow: 0 0 0 3px rgba(0,169,157,.12) !important;
+  outline: none !important;
+}
+.app-shell[data-envista-product-shell] ::placeholder {
+  color: #859ea8 !important;
+}
+.app-shell[data-envista-product-shell] :is(a,button,summary,input,select,textarea):focus-visible {
+  outline: 2px solid #65e0d2 !important;
+  outline-offset: 3px !important;
+}
+.app-shell[data-envista-product-shell] :is(.stage,.badge,.pill) {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] :is(.progress i) {
+  background: #00a99d !important;
+}
+.app-shell[data-envista-product-shell] :is(.empty,.empty-state) {
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .sidebar {
+  background: #061a23 !important;
+  border-right-color: var(--ev-border) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a[aria-current="page"] {
+  background: rgba(0,169,157,.09) !important;
+  box-shadow: none !important;
+  color: #f4fbfa !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project {
+  background: #00a99d !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project:hover {
+  background: #27c0ad !important;
+}
+/* All three discovery views intentionally retain their locally authored feed layout. */
+.app-shell[data-envista-social-reference="true"] .page-wrap,
+.app-shell[data-envista-clean-explore="true"] .page-wrap {
+  width: 100%;
+  max-width: none;
+  padding: 9px 18px 55px;
+}
+.app-shell[data-envista-home-page="true"] .page-wrap {
+  width: 100%;
+  max-width: none;
+  padding: 16px 22px 57px;
+}
+.app-shell[data-envista-social-reference="true"] .main,
+.app-shell[data-envista-home-page="true"] .main {
+  background: var(--ev-bg) !important;
+}
+/* Keep the Social composer and feed flat rather than forcing the generic panel decoration. */
+.app-shell[data-envista-social-reference="true"] .panel {
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+@media (max-width: 980px) {
+  .app-shell[data-envista-product-shell] .main { margin-left: 0 !important; }
+  .app-shell[data-envista-product-shell] .page-wrap {
+    padding: 17px 15px 85px;
+  }
+  .app-shell[data-envista-product-shell] .topbar {
+    padding-inline: 14px;
+  }
+  .app-shell[data-envista-social-reference="true"] .page-wrap,
+  .app-shell[data-envista-clean-explore="true"] .page-wrap,
+  .app-shell[data-envista-home-page="true"] .page-wrap {
+    padding: 12px 13px 94px;
+  }
+}
+@media (max-width: 520px) {
+  .app-shell[data-envista-product-shell] .page-wrap { padding: 13px 11px 90px; }
+  .app-shell[data-envista-product-shell] .page-head { flex-wrap: wrap; align-items: flex-start; }
+  .app-shell[data-envista-product-shell] .page-head h1 { font-size: 22px !important; }
+  .app-shell[data-envista-social-reference="true"] .page-wrap,
+  .app-shell[data-envista-clean-explore="true"] .page-wrap,
+  .app-shell[data-envista-home-page="true"] .page-wrap {
+    padding: 8px 0 92px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-envista-product-shell] :is(a,button,.panel,.card,.project-card,.team-card) {
+    transition: none !important;
+    animation: none !important;
+  }
+}

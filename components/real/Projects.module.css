@@ -3,3 +3,29 @@
 .form{display:grid;gap:15px;max-width:760px}.form label{display:grid;gap:7px;font-weight:650;font-size:13px;color:#cbd6e2}.form input,.form textarea,.form select{width:100%;box-sizing:border-box;border:1px solid var(--ev-border);border-radius:10px;padding:11px 12px;background:rgba(10,22,34,.68);color:#f5f7fb;font:inherit;transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease}.form textarea{min-height:125px;resize:vertical;line-height:1.55}.form input:hover,.form textarea:hover,.form select:hover{border-color:rgba(148,163,184,.25)}.form input:focus,.form textarea:focus,.form select:focus{outline:0;border-color:rgba(0,169,157,.62);box-shadow:0 0 0 3px rgba(0,169,157,.11);background:rgba(10,22,34,.86)}.form input::placeholder,.form textarea::placeholder{color: var(--ev-muted)}.actions{display:flex;gap:9px;flex-wrap:wrap}.notice{padding:12px 14px;border:1px solid rgba(0,169,157,.2);border-radius:10px;background:rgba(0,169,157,.09);color:#65e5d4;margin-bottom:16px}.error{padding:12px 14px;border:1px solid rgba(255,111,134,.2);border-radius:10px;background:rgba(255,111,134,.08);color:#ff9bad;margin-bottom:16px}
 .twoCol{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,.75fr);gap:22px;align-items:start}.stack{display:grid;gap:14px}.body{white-space:pre-wrap;line-height:1.7;color:#c4cfdb}.section{margin-top:22px;padding-top:20px;border-top:1px solid var(--ev-border)}.back{font-size:13px;color: var(--ev-muted);text-decoration:none}.back:hover{color:#65e5d4}.owner{font-size:13px;color: var(--ev-muted);margin-top:7px}
 @media(max-width:850px){.head{flex-direction:column;align-items:flex-start;margin-bottom:24px}.twoCol{grid-template-columns:1fr}.actions>*{width:100%}.grid{grid-template-columns:1fr}}
+
+
+/* Project index presents real work as a readable activity list. */
+.head h1 { font-size: var(--ev-font-page); font-weight: 770; }
+.grid { grid-template-columns: minmax(0,1fr); gap: 0; border-top: 1px solid var(--ev-border); }
+.grid > .card {
+  padding: 18px 6px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ev-border);
+  border-radius: 0;
+  box-shadow: none;
+  transition: background-color .14s ease;
+}
+.grid > .card:hover { background: rgba(255,255,255,.025); border-color: var(--ev-border); transform: none; }
+.grid .card h2, .grid .card h3 { font-size: 16px; font-weight: 740; margin-bottom: 5px; }
+.grid .card p { margin: 6px 0; color: #a9c0c7; font-size: 12.5px; line-height: 1.5; }
+.grid .card :global(.project-card-artwork) { margin-bottom: 6px; gap: 12px; }
+.grid .card :global(.dashboard-project-mark) { width: 48px; height: 48px; flex-basis: 48px; border: 1px solid rgba(0,169,157,.16); border-radius: 10px; box-shadow: none; }
+.grid .card .meta { margin-top: 9px; gap: 6px; }
+.pill { background: rgba(255,255,255,.035); border-color: rgba(155,181,188,.15); color: #a9c1c7; font-weight: 550; }
+.primary,.secondary { border-radius: 999px; box-shadow: none; min-height: 37px; font-size: 12px; }
+.primary:hover,.secondary:hover { transform: none; box-shadow: none; }
+.form { background: #0b2630; border: 1px solid var(--ev-border); border-radius: 12px; box-shadow: none; }
+.empty { background: transparent; border: 0; border-radius: 0; box-shadow: none; text-align: center; padding: 50px 18px; }
+@media (max-width:650px) { .grid > .card { padding: 16px 2px; } }
