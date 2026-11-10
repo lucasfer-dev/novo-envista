@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import ProjectArtwork from "./ProjectArtwork";
 import HomeOpportunitiesRedesign from "./HomeOpportunitiesRedesign";
+import HomeRecentActivity from "./HomeRecentActivity";
 import styles from "./HomeDashboardRedesign.module.css";
 
 export type DashboardProject = {
@@ -86,7 +87,6 @@ export default function HomeDashboard({
   const stepsDone = profileSteps.filter(item => item.done).length;
   const profilePercentage = profileSteps.length
     ? Math.round(stepsDone * 100 / profileSteps.length) : null;
-  // O projeto principal ocupa o cartão editorial; os demais seguem em Explorar.
   const displayProjects = (featuredProjects.length ? featuredProjects : projects).slice(0, 1);
   const profileDone = profilePercentage === 100;
   return (
@@ -97,7 +97,7 @@ export default function HomeDashboard({
             <span className={styles.heroPattern} aria-hidden="true" />
             <span className={styles.heroAngle} aria-hidden="true" />
             <span className={styles.heroHorizon} aria-hidden="true" />
-            <img className={styles.heroSymbol} src="/brand/envista-symbol-gradient.svg" width="340" height="340" alt="" aria-hidden="true" />
+            <img className={styles.heroSymbol} src="/brand/envista-symbol-gradient.svg" width="220" height="220" alt="" aria-hidden="true" />
             <img className={styles.heroPortrait} src="/brand/envista-hero-reference.webp" width="390" height="276" alt="" aria-hidden="true" />
             <div className={styles.heroContent}>
               <span className={styles.heroEyebrow}>IDEIAS · PESSOAS · PROJETOS · IMPACTO</span>
@@ -152,9 +152,20 @@ export default function HomeDashboard({
                   </Link>;
                 })}
               </div> : <div className={styles.featuredEmpty}>
-                <FolderKanban size={26} aria-hidden="true" />
-                <div><h3>Seus projetos começam aqui.</h3><p>Publique sua primeira ideia ou descubra os projetos da comunidade.</p></div>
-                <Link className={styles.viewAll} href="/explore">Explorar <ArrowRight size={15} aria-hidden="true" /></Link>
+                <div className={styles.emptyVisual} aria-hidden="true">
+                  <span className={styles.emptyVisualMain}><FolderKanban size={51} strokeWidth={1.5} /></span>
+                  <span className={styles.emptyOrbitOne}><Sparkles size={21} /></span>
+                  <span className={styles.emptyOrbitTwo}><Users size={20} /></span>
+                </div>
+                <div className={styles.emptyContent}>
+                  <span className={styles.emptyEyebrow}>TODO PROJETO COMEÇA COM UMA IDEIA</span>
+                  <h3>O próximo projeto pode ser o seu.</h3>
+                  <p>Ainda não há projetos públicos em destaque. Compartilhe uma ideia e ajude a construir essa comunidade.</p>
+                  <div className={styles.emptyActions}>
+                    <Link className={styles.primaryAction} href="/app/projects/new"><Plus size={17} aria-hidden="true" /> Criar projeto</Link>
+                    <Link className={styles.emptyExplore} href="/explore">Explorar <ArrowRight size={16} aria-hidden="true" /></Link>
+                  </div>
+                </div>
               </div>}
             </section>
             <HomeOpportunitiesRedesign />
@@ -163,7 +174,7 @@ export default function HomeDashboard({
           <section className={styles.learningBanner} aria-labelledby="learning-heading">
             <span className={styles.learningVisual}><img src="/brand/learning-books.svg" width="88" height="77" alt="" loading="lazy" /></span>
             <div className={styles.learningCopy}>
-              <h2 id="learning-heading">Continue aprendendo</h2>
+              <h2 id="learning-heading">{course ? "Continue aprendendo" : "Aprenda a levar suas ideias mais longe"}</h2>
               <p>{course?.description || "Trilhas, aulas e conteúdos práticos para evoluir suas ideias e projetos."}</p>
             </div>
             {course && <div className={styles.learningProgress}>
@@ -197,8 +208,8 @@ export default function HomeDashboard({
                 <span className={styles.activityIcon}><Icon size={18} aria-hidden="true" /></span>
                 <span className={styles.activityCopy}><strong>{item.title}</strong><small>{item.body || "Confira a atualização na sua conta."}</small><time dateTime={item.created_at}>{when(item.created_at)}</time></span>
               </Link>;
-            })}</div> : <div className={styles.railEmpty}><Bell size={21} aria-hidden="true" /><p>Você está em dia. Novas atividades vão aparecer aqui.</p></div>}
-            <Link className={styles.railFooterLink} href="/activity">Ver mais atividades <ArrowRight size={14} aria-hidden="true" /></Link>
+            })}</div> : <HomeRecentActivity />}
+            <Link className={styles.railFooterLink} href={notifications.length ? "/activity" : "/competitions"}>{notifications.length ? "Ver mais atividades" : "Ver competições"} <ArrowRight size={14} aria-hidden="true" /></Link>
           </section>
 
           <section className={styles.railPanel} aria-labelledby="agenda-heading">
@@ -210,7 +221,7 @@ export default function HomeDashboard({
                 <span className={styles.calendarDate}><strong>{date.day}</strong><small>{date.month}</small></span>
                 <span><strong>{event.title}</strong><small>{timeOnly(event.starts_at)}</small></span>
               </Link>;
-            })}</div> : <div className={styles.railEmpty}><CalendarDays size={21} aria-hidden="true" /><p>Nenhum evento próximo no calendário.</p></div>}
+            })}</div> : <div className={styles.calendarEmpty}><CalendarDays size={23} aria-hidden="true" /><div><strong>Sua agenda está livre</strong><p>As próximas datas que você acompanhar aparecerão aqui.</p><Link href="/competitions">Encontrar oportunidades <ArrowRight size={14} aria-hidden="true" /></Link></div></div>}
           </section>
         </aside>
       </div>

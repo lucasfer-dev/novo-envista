@@ -190,7 +190,7 @@ export default function LegacySocialShell({
   };
 
   return (
-    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined}>
+    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined}>
       <a className="a11y-skip-link" href="#main-content">
         Pular para o conteúdo
       </a>
