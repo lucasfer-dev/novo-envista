@@ -1,55 +1,77 @@
-/* Navegação inspirada no X, preservando a marca e as rotas do Envista. */
-.app-shell[data-envista-x-sidebar="true"] {
-  --ev-sidebar-width: 264px;
-}
 
+.app-shell[data-envista-x-sidebar="true"] {
+  --ev-sidebar-width: 216px;
+  --ev-sidebar-text: #dcebee;
+  --ev-sidebar-accent: #00a99d;
+}
 .app-shell[data-envista-x-sidebar="true"] .sidebar {
-  width: 264px !important;
-  padding: 12px 13px 15px !important;
-  background: #030405 !important;
-  border-right: 1px solid #24272b !important;
+  width: var(--ev-sidebar-width) !important;
+  padding: 11px 10px 12px !important;
+  background: linear-gradient(175deg, #061923 0%, #061e24 60%, #082920 100%) !important;
+  border-right: 1px solid rgba(0,169,157,.28) !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #343b40 transparent;
+  scrollbar-color: #24464a transparent;
+  isolation: isolate;
+  transition: width .2s ease, padding .2s ease;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar::before {
-  display: none !important;
+  display: block !important;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/brand/envista-pattern-original.png") center bottom / 360px repeat;
+  opacity: .075 !important;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 5%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 5%, #000 100%);
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 1px;
+  background: linear-gradient(#0086a733, #00a99d99, #22b57340);
+  pointer-events: none;
 }
 .app-shell[data-envista-x-sidebar="true"] .main {
-  margin-left: 264px;
+  margin-left: var(--ev-sidebar-width) !important;
+  transition: margin-left .2s ease;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > .brand {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  width: 58px;
-  height: 62px;
-  min-height: 62px;
-  margin: 0 0 8px 0 !important;
-  padding: 0 12px !important;
-  border-radius: 999px;
+  width: 46px;
+  min-height: 46px !important;
+  height: 46px;
+  margin: 0 0 11px 4px !important;
+  padding: 0 9px !important;
+  border-radius: 12px;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > .brand:hover {
-  background: #17191d;
+  background: rgba(0,169,157,.1) !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > .brand img {
   display: block;
-  width: 33px;
-  height: 38px;
+  width: 27px !important;
+  height: 31px !important;
   max-width: none;
-  object-fit: contain;
   border-radius: 0;
-  filter: grayscale(1) brightness(0) invert(1);
+  object-fit: contain;
+  filter: none !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > .brand strong {
   display: none !important;
 }
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav {
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav,
+.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav,
+.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav {
   display: flex;
   flex-direction: column;
-  gap: 1px !important;
+  gap: 2px !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a,
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a,
@@ -58,85 +80,86 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 17px !important;
-  min-width: 0;
+  gap: 12px !important;
   width: 100%;
-  height: 50px !important;
-  min-height: 50px !important;
-  margin: 0;
-  padding: 0 14px !important;
+  height: 41px !important;
+  min-height: 41px !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
   border: 0 !important;
-  border-radius: 999px !important;
+  border-radius: 12px !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #e7e9ea !important;
-  font-size: 18px !important;
-  font-weight: 430 !important;
-  letter-spacing: -.025em;
+  color: var(--ev-sidebar-text) !important;
+  font-size: 14px !important;
+  font-weight: 480 !important;
+  line-height: 1.2;
+  letter-spacing: -.015em;
   text-decoration: none;
-  transition: background-color .16s ease;
+  transition: background-color .15s ease, color .15s ease;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a:hover,
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a:hover,
 .app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a:hover,
 .app-shell[data-envista-x-sidebar="true"] .side-section a:hover {
-  background: #181a1d !important;
+  background: rgba(0,169,157,.085) !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"],
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a[aria-current="page"],
 .app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a[aria-current="page"],
 .app-shell[data-envista-x-sidebar="true"] .side-section a[aria-current="page"] {
-  background: transparent !important;
-  color: #fff !important;
-  font-weight: 790 !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"]:hover {
-  background: #181a1d !important;
+  color: #f7fffe !important;
+  font-weight: 720 !important;
+  background: linear-gradient(100deg, rgba(0,134,167,.2), rgba(0,169,157,.12)) !important;
+  box-shadow: inset 0 0 0 1px rgba(0,169,157,.12) !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a svg,
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a svg,
 .app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a svg,
 .app-shell[data-envista-x-sidebar="true"] .side-section a svg {
-  width: 25px !important;
-  height: 25px !important;
+  width: 20px !important;
+  height: 20px !important;
+  flex: 0 0 20px;
   color: currentColor !important;
-  flex: 0 0 25px;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"] svg {
+  color: #2bdacb !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[href="/home"][aria-current="page"]::after {
   content: "";
   position: absolute;
   top: 7px;
-  left: 36px;
-  width: 7px;
-  height: 7px;
+  left: 26px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #1d9bf0;
+  background: #22b573;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar .sidebar-notification-symbol {
   position: relative;
   display: grid;
   place-items: center;
-  width: 25px;
-  height: 25px;
-  flex: 0 0 25px;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
 }
 .app-shell[data-envista-x-sidebar="true"] .sidebar .sidebar-notification-count {
   position: absolute;
   top: -7px;
-  right: -11px;
+  right: -9px;
   display: grid;
   place-items: center;
-  min-width: 17px;
-  height: 17px;
-  padding: 0 4px;
-  border: 1.5px solid #030405;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border: 1.5px solid #061923;
   border-radius: 999px;
+  background: #0086a7;
   color: #fff;
-  background: #1d9bf0;
-  font-size: 10px;
-  font-weight: 740;
-  letter-spacing: 0;
+  font-size: 9px;
+  font-weight: 750;
   line-height: 1;
+  letter-spacing: 0;
 }
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-group,
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community,
@@ -151,251 +174,134 @@
 }
 .app-shell[data-envista-x-sidebar="true"] .dashboard-new-project {
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: calc(100% - 22px);
-  min-height: 46px;
-  margin: 14px 11px 11px;
-  padding: 9px 15px;
-  border: none !important;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 12px);
+  min-height: 39px;
+  height: 39px;
+  margin: 11px 6px 9px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
   border-radius: 999px !important;
-  background: #eff3f4 !important;
+  background: linear-gradient(105deg, #00a99d, #22b573) !important;
+  color: #032624 !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+  text-decoration: none;
   box-shadow: none !important;
-  color: #0f1419 !important;
-  font-size: 15px;
-  font-weight: 780;
-}
-.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project svg {
-  width: 22px;
-  height: 22px;
-  color: #0f1419 !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .dashboard-new-project:hover {
-  background: #d7dbdc !important;
+  background: linear-gradient(105deg, #20c2b4, #38c788) !important;
 }
-.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav {
-  display: flex;
-  flex-direction: column;
-  gap: 1px !important;
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project svg {
+  width: 19px !important;
+  height: 19px !important;
+  color: #032624 !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-promo,
 .app-shell[data-envista-x-sidebar="true"] .home-nav-promo {
   display: none !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .home-more-menu {
-  margin: 10px 12px 0;
-  color: #a8b0b7;
-}
-.app-shell[data-envista-x-sidebar="true"] .home-more-menu summary {
-  border-radius: 999px;
-  padding: 12px 13px;
-  font-size: 14px;
-}
-.app-shell[data-envista-x-sidebar="true"] .home-more-menu summary:hover {
-  background: #181a1d;
-}
-.app-shell[data-envista-x-sidebar="true"] .home-more-menu[open] .home-more-links {
-  background: #101214;
-  border-color: #34383b;
-}
-.app-shell[data-envista-x-sidebar="true"] .side-section {
-  margin-top: 10px;
-}
-.app-shell[data-envista-x-sidebar="true"] .side-section > span {
-  color: #858f96;
-}
-.app-shell[data-envista-x-sidebar="true"] .side-bottom {
-  display: block !important;
-  flex-shrink: 0;
-  margin-top: auto !important;
-  padding-top: 12px !important;
-  border-top: 0 !important;
-  background: transparent !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .user-card {
-  min-height: 60px;
-  padding: 8px !important;
-  border-radius: 999px;
-}
-.app-shell[data-envista-x-sidebar="true"] .user-card:hover {
-  background: #17191d;
-}
-.app-shell[data-envista-x-sidebar="true"] .user-card small {
-  color: #89949c;
-}
-@media (max-width: 980px) {
-  .app-shell[data-envista-x-sidebar="true"] .sidebar {
-    width: min(290px, 88vw) !important;
-    height: 100dvh !important;
-    padding-top: 17px !important;
-  }
-  .app-shell[data-envista-x-sidebar="true"] .main {
-    margin-left: 0 !important;
-  }
-}
-@media (max-width: 480px) {
-  .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a,
-  .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a,
-  .app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a,
-  .app-shell[data-envista-x-sidebar="true"] .side-section a {
-    height: 47px !important;
-    min-height: 47px !important;
-    font-size: 17px !important;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .app-shell[data-envista-x-sidebar="true"] .sidebar a {
-    transition: none !important;
-  }
-}
-
-
-/* Identidade Envista: o menu mantém a composição do X, mas usa a marca original. */
-.app-shell[data-envista-x-sidebar="true"] {
-  --ev-sidebar-width: 264px;
-  --envista-sidebar-cyan: #0086a7;
-  --envista-sidebar-teal: #00a99d;
-  --envista-sidebar-green: #22b573;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar {
-  width: var(--ev-sidebar-width) !important;
-  background: linear-gradient(178deg, #061923 0%, #051b23 55%, #072720 100%) !important;
-  border-right: 1px solid rgba(0, 169, 157, .35) !important;
-  transition: width .24s cubic-bezier(.2,.75,.3,1), padding .24s ease;
-  isolation: isolate;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar::before {
-  display: block !important;
-  background: url("/brand/envista-pattern-original.png") center bottom / 370px auto repeat;
-  opacity: .13 !important;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 12%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 12%, #000 100%);
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(0,134,167,.18), rgba(0,169,157,.62), rgba(34,181,115,.28));
-  pointer-events: none;
-}
-.app-shell[data-envista-x-sidebar="true"] .main {
-  margin-left: var(--ev-sidebar-width) !important;
-  transition: margin-left .24s cubic-bezier(.2,.75,.3,1);
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > .brand img {
-  filter: none !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > .brand:hover {
-  background: rgba(0,169,157,.11) !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a,
-.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a,
-.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a,
-.app-shell[data-envista-x-sidebar="true"] .side-section a {
-  color: #e4f3f4 !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a:hover,
-.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a:hover,
-.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a:hover,
-.app-shell[data-envista-x-sidebar="true"] .side-section a:hover {
-  background: rgba(0, 169, 157, .12) !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"],
-.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a[aria-current="page"],
-.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a[aria-current="page"],
-.app-shell[data-envista-x-sidebar="true"] .side-section a[aria-current="page"] {
-  color: #fff !important;
-  background: linear-gradient(105deg, rgba(0,134,167,.21), rgba(0,169,157,.15) 70%, rgba(34,181,115,.12)) !important;
-  box-shadow: inset 0 0 0 1px rgba(0,169,157,.18) !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"] svg,
-.app-shell[data-envista-x-sidebar="true"] .sidebar nav a[aria-current="page"] svg {
-  color: #36e0cc !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[href="/home"][aria-current="page"]::after {
-  background: var(--envista-sidebar-green);
-}
-.app-shell[data-envista-x-sidebar="true"] .sidebar .sidebar-notification-count {
-  background: var(--envista-sidebar-cyan);
-  border-color: #061923;
-}
-.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project {
-  color: #031e24 !important;
-  background: linear-gradient(105deg, #00a99d, #22b573) !important;
-  box-shadow: 0 6px 18px rgba(0,169,157,.13) !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project svg {
-  color: #031e24 !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project:hover {
-  background: linear-gradient(105deg, #23c2af, #36c785) !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .user-card {
-  border-top-color: rgba(0,169,157,.22) !important;
-}
-.app-shell[data-envista-x-sidebar="true"] .user-card:hover,
-.app-shell[data-envista-x-sidebar="true"] .home-more-menu summary:hover {
-  background: rgba(0,169,157,.1) !important;
+  margin: 7px 0 0 !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .home-more-menu summary {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #d5e9e9;
+  padding: 9px 11px;
+  border-radius: 12px;
+  color: #bcd6d8;
+  font-size: 13px;
+  cursor: pointer;
 }
 .app-shell[data-envista-x-sidebar="true"] .home-more-menu summary::before {
-  display: none;
+  display: none !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .home-more-menu summary svg {
-  flex: 0 0 23px;
-  width: 23px;
-  color: #d5e9e9;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+.app-shell[data-envista-x-sidebar="true"] .home-more-menu summary:hover {
+  background: rgba(0,169,157,.085);
+}
+.app-shell[data-envista-x-sidebar="true"] .home-more-menu[open] .home-more-links {
+  z-index: 15;
+  border-color: rgba(0,169,157,.28);
+  background: #082b31;
+}
+.app-shell[data-envista-x-sidebar="true"] .side-section {
+  margin-top: 8px;
+}
+.app-shell[data-envista-x-sidebar="true"] .side-section > span {
+  color: #90aaaf;
+}
+.app-shell[data-envista-x-sidebar="true"] .side-bottom {
+  display: block !important;
+  flex-shrink: 0;
+  margin-top: auto !important;
+  padding-top: 8px !important;
+  border: 0 !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 49px;
+  margin: 0 !important;
+  padding: 5px !important;
+  border: 1px solid rgba(0,169,157,.15);
+  border-radius: 13px;
+  background: rgba(0,169,157,.035);
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card:hover {
+  background: rgba(0,169,157,.08);
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card b {
+  font-size: 11px;
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card small {
+  color: #9cb6ba;
+  font-size: 10px;
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card .avatar {
+  width: 29px;
+  height: 29px;
 }
 .app-shell[data-envista-x-sidebar="true"] .envista-sidebar-handle {
   position: fixed;
   z-index: 42;
-  top: 23px;
-  left: calc(var(--ev-sidebar-width) - 14px);
+  top: 19px;
+  left: calc(var(--ev-sidebar-width) - 13px);
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 35px;
+  width: 26px;
+  height: 30px;
   padding: 0;
-  border: 1px solid rgba(0,169,157,.5);
-  border-radius: 10px;
-  background: linear-gradient(155deg, #0a3340, #08272e);
-  color: #72f0dc;
-  box-shadow: 0 5px 16px rgba(0,0,0,.25);
-  cursor: pointer;
-  transition: left .24s cubic-bezier(.2,.75,.3,1), background .15s ease;
+  border: 1px solid rgba(0,169,157,.4);
+  border-radius: 9px;
+  background: #0a343b;
+  color: #66e8d8;
+  box-shadow: 0 3px 10px rgba(0,0,0,.2);
+  transition: left .2s ease, background-color .15s ease;
 }
 .app-shell[data-envista-x-sidebar="true"] .envista-sidebar-handle:hover {
-  background: #0c4650;
-  color: #fff;
-}
-.app-shell[data-envista-x-sidebar="true"] .envista-sidebar-handle:focus-visible {
-  outline: 2px solid #4aefdc;
-  outline-offset: 3px;
+  background: #11515a;
 }
 @media (min-width: 981px) {
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] {
-    --ev-sidebar-width: 78px;
+    --ev-sidebar-width: 64px;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar {
-    width: var(--ev-sidebar-width) !important;
-    padding: 12px 10px 13px !important;
+    padding: 11px 6px 12px !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > .brand {
-    width: 52px;
-    height: 62px;
-    min-height: 62px;
-    margin: 0 auto 8px !important;
-    padding: 0 !important;
     justify-content: center;
+    width: 46px;
+    margin: 0 auto 11px !important;
+    padding: 0 !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > nav a,
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .dashboard-home-community nav a,
@@ -403,11 +309,8 @@
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .side-section a {
     justify-content: center;
     gap: 0 !important;
-    width: 52px;
-    height: 50px !important;
-    min-height: 50px !important;
-    margin-left: auto;
-    margin-right: auto;
+    width: 42px;
+    margin: 0 auto !important;
     padding: 0 !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > nav a > span:last-child,
@@ -418,48 +321,40 @@
     display: none !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > nav a[href="/home"][aria-current="page"]::after {
-    left: 36px;
+    left: 27px;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .dashboard-new-project {
-    width: 52px;
-    height: 52px;
-    min-height: 52px;
-    margin: 12px auto 8px;
-    padding: 0;
-    border-radius: 999px !important;
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+    margin: 11px auto 9px !important;
+    padding: 0 !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .dashboard-new-project > span {
     display: none !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .home-more-menu {
-    width: 52px;
-    margin: 9px auto 0;
+    width: 42px;
+    margin: 7px auto 0 !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .home-more-menu summary {
-    display: grid;
-    place-items: center;
-    width: 52px;
-    height: 50px;
-    padding: 0;
+    justify-content: center;
+    width: 42px;
+    padding: 10px 0;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .home-more-menu summary > span,
-  .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .home-more-menu .home-more-links {
+  .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .home-more-links {
     display: none !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .side-section {
-    margin: 9px 0 0;
     padding: 0;
     border: 0;
   }
-  .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .side-bottom {
-    padding-top: 10px !important;
-  }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .user-card {
-    display: flex;
     justify-content: center;
-    width: 52px;
-    margin: 0 auto;
-    padding: 7px 0 !important;
+    width: 42px;
+    margin: 0 auto !important;
+    padding: 5px 0 !important;
   }
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .user-card > div,
   .app-shell[data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .user-card > button {
@@ -475,7 +370,8 @@
     transition: none;
   }
   .app-shell[data-envista-x-sidebar="true"] .sidebar {
-    width: min(290px, 88vw) !important;
+    width: min(270px, 88vw) !important;
+    height: 100dvh;
     transition: transform .2s ease, visibility .2s ease;
   }
 }
