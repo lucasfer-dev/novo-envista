@@ -149,7 +149,7 @@ function EmptyExploreState({ kind, filtered, base, role }: {
   const titles = { projects: "Nenhum projeto por aqui ainda", teams: "Nenhuma equipe por aqui ainda", people: "Nenhum perfil encontrado" };
   const Icon = kind === "projects" ? FolderKanban : kind === "teams" ? Users : UserRound;
   const href = filtered ? base : kind === "projects"
-    ? (role === "investor" ? "/investor/projects/new" : "/projects/new")
+    ? (role === "investor" ? "/investor/projects/new" : "/app/projects/new")
     : kind === "teams" ? (role === "investor" ? "/investor/teams/new" : "/teams/new") : null;
   return <div className={styles.empty}>
     <span className={styles.emptyIcon}>{filtered ? <SearchX size={22} /> : <Icon size={22} />}</span>
@@ -172,11 +172,12 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
   const showTeams = type === "all" || type === "teams";
   const showPeople = type === "all" || type === "people";
   const filteredTotal = (showProjects ? projectTotal : 0) + (showTeams ? teamTotal : 0) + (showPeople ? profileTotal : 0);
+  const isNewCommunity = type === "all" && !filtered && projectTotal === 0 && teamTotal === 0 && profileTotal === 0 && !loadError;
   const visibleProjects = type === "all" ? projects.slice(0, 5) : projects;
   const visibleTeams = type === "all" ? teams.slice(0, 4) : teams;
   const visibleProfiles = type === "all" ? profiles.slice(0, 4) : profiles;
   const sections = [
-    { kind: "all", label: "Descobrir", count: null },
+    { kind: "all", label: "Para você", count: null },
     { kind: "projects", label: "Projetos", count: projectTotal },
     { kind: "teams", label: "Equipes", count: teamTotal },
     { kind: "people", label: "Pessoas", count: profileTotal },
@@ -234,12 +235,21 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
           <Link href={base}>Limpar filtros</Link>
         </div>}
 
-        {showProjects && <section className={styles.section} id="explore-projects" aria-labelledby="explore-projects-heading">
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.sectionEyebrow}>PROJETOS DA COMUNIDADE</span>
-              <h2 id="explore-projects-heading">Ideias que estão ganhando forma</h2>
+        {isNewCommunity && <section className={styles.discoveryEmpty} aria-labelledby="explore-start-title">
+          <span className={styles.discoveryEmptyIcon}><Compass size={26} aria-hidden="true" /></span>
+          <div className={styles.discoveryEmptyBody}>
+            <h2 id="explore-start-title">Tudo começa com uma ideia.</h2>
+            <p>A comunidade ainda não tem publicações públicas. Descubra os desafios disponíveis ou dê o primeiro passo com seu projeto.</p>
+            <div className={styles.discoveryEmptyActions}>
+              {expectedRole === "participant" && <Link className={styles.discoveryPrimary} href="/app/projects/new">Criar um projeto <ArrowRight size={16} aria-hidden="true" /></Link>}
+              <Link className={styles.discoverySecondary} href={expectedRole === "investor" ? "/investor/competitions" : "/competitions"}>Ver competições <ArrowRight size={15} aria-hidden="true" /></Link>
             </div>
+          </div>
+        </section>}
+
+        {showProjects && !isNewCommunity && <section className={styles.section} id="explore-projects" aria-labelledby="explore-projects-heading">
+          <div className={styles.sectionHeading}>
+            <h2 id="explore-projects-heading">Projetos</h2>
             {type === "all"
               ? <Link href={exploreUrl(base, q, stage, "projects")}>Ver projetos <ArrowRight size={16} aria-hidden="true" /></Link>
               : <span>{projectTotal} {projectTotal === 1 ? "projeto" : "projetos"}</span>}
@@ -257,9 +267,9 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             : null}
         </section>}
 
-        {showTeams && <section className={styles.section} id="explore-teams" aria-labelledby="explore-teams-heading">
+        {showTeams && !isNewCommunity && <section className={styles.section} id="explore-teams" aria-labelledby="explore-teams-heading">
           <div className={styles.sectionHeading}>
-            <h2 id="explore-teams-heading"><Users size={20} aria-hidden="true" /> Equipes para conhecer</h2>
+            <h2 id="explore-teams-heading">Equipes</h2>
             <span>{teamTotal} {teamTotal === 1 ? "equipe" : "equipes"}</span>
           </div>
           {visibleTeams.length ? <div className={styles.communityGrid}>{visibleTeams.map(team => {
@@ -277,9 +287,9 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
           {type === "teams" ? <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="teams_page" total={teamTotal} /> : teamTotal > visibleTeams.length ? <Link className={styles.seeMore} href={exploreUrl(base, q, "Todos", "teams")}>Ver todas as equipes <ArrowRight size={15} /></Link> : null}
         </section>}
 
-        {showPeople && <section className={styles.section} id="explore-people" aria-labelledby="explore-people-heading">
+        {showPeople && !isNewCommunity && <section className={styles.section} id="explore-people" aria-labelledby="explore-people-heading">
           <div className={styles.sectionHeading}>
-            <h2 id="explore-people-heading"><UserRound size={20} aria-hidden="true" /> Pessoas da comunidade</h2>
+            <h2 id="explore-people-heading">Pessoas</h2>
             <span>{profileTotal} {profileTotal === 1 ? "pessoa" : "pessoas"}</span>
           </div>
           {visibleProfiles.length ? <div className={styles.communityGrid}>{visibleProfiles.map(profile => {
@@ -297,7 +307,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
       </div>
 
       <aside className={styles.rail} aria-label="Filtros, desafios e áreas de interesse">
-        <ExploreFiltersClient key={q + "|" + stage + "|" + type} base={base} initialQuery={q} initialStage={stage} initialType={type} />
+        {(type === "all" || type === "projects") && <ExploreFiltersClient key={q + "|" + stage + "|" + type} base={base} initialQuery={q} initialStage={stage} initialType={type} />}
         <ExploreCompetitionSpotlight />
         <section className={styles.topics} id="explore-categories" aria-labelledby="explore-categories-heading">
           <div className={styles.panelHeading}>
