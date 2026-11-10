@@ -177,7 +177,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
   const visibleTeams = type === "all" ? teams.slice(0, 4) : teams;
   const visibleProfiles = type === "all" ? profiles.slice(0, 4) : profiles;
   const sections = [
-    { kind: "all", label: "Para você", count: null },
+    { kind: "all", label: "Descobrir", count: null },
     { kind: "projects", label: "Projetos", count: projectTotal },
     { kind: "teams", label: "Equipes", count: teamTotal },
     { kind: "people", label: "Pessoas", count: profileTotal },
