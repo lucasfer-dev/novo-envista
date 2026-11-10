@@ -281,7 +281,7 @@ export default function HomeDashboardV3({
             </Link>
           </div>
 
-          <section className={styles.journeyPanel} aria-labelledby="journey-title">
+          {doneCount < 4 ? <section className={styles.journeyPanel} aria-labelledby="journey-title">
             <div className={styles.journeyTop}>
               <div className={styles.journeyIntro}>
                 <span className={styles.journeyIcon}><Layers3 size={28} /></span>
@@ -306,7 +306,7 @@ export default function HomeDashboardV3({
                 </Link>
               ))}
             </div>
-          </section>
+          </section> : null}
 
           <div className={styles.contentGrid}>
             <section className={styles.panel} aria-label="Meus projetos">
