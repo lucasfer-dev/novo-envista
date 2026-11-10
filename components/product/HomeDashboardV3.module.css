@@ -397,3 +397,205 @@
 }
 
 .day.hasEvent:not(.today) { color: #d9fff4 !important; }
+
+/* Envista clean Home — desktop reference, open spacing and quiet surfaces. */
+.dashboard {
+  --ev-border: rgba(60, 126, 139, .36);
+  color: #f3fafb;
+}
+.layout { grid-template-columns: minmax(0, 1fr) minmax(335px, 390px); gap: 24px; }
+.primaryColumn { gap: 14px; }
+.greeting { min-height: 55px; }
+.greeting h1 { font-size: 25px; }
+.greeting p { font-size: 13px; margin-top: 6px; }
+.hero {
+  min-height: 252px;
+  border-color: rgba(54, 141, 147, .48);
+  background:
+    radial-gradient(ellipse at 82% 76%, rgba(0, 124, 105, .18), transparent 47%),
+    linear-gradient(110deg, #06212d 0%, #042f34 63%, #053e36 100%);
+  box-shadow: none;
+}
+.heroPattern { opacity: .065; }
+.heroGlobe {
+  width: 75%; height: 235%; left: 45%; top: 54%;
+  border: 2px solid rgba(24, 222, 183, .69);
+  box-shadow: 0 -2px 16px rgba(9, 198, 159, .2);
+  opacity: .68;
+}
+.heroSymbol { right: 10%; width: 30%; max-width: 250px; opacity: .64; filter: none; }
+.heroPerson {
+  right: 0;
+  bottom: 0;
+  width: 39%;
+  height: 111%;
+  max-width: 410px;
+  object-fit: contain;
+  object-position: right bottom;
+  filter: drop-shadow(-8px 6px 12px rgba(0, 15, 19, .22));
+}
+.heroContent { width: 66%; padding: 24px 0 29px 30px; }
+.eyebrow { margin-bottom: 12px; font-size: 11px; letter-spacing: .115em; color: #33dfc8; }
+.heroContent h2 { font-size: clamp(30px, 2.4vw, 38px); line-height: 1.07; letter-spacing: -.038em; }
+.heroContent p { margin-top: 12px; max-width: 525px; font-size: 13px; line-height: 1.46; color: #e1f2f1; }
+.heroActions { margin-top: 16px; gap: 12px; }
+.btnPrimary,.btnSecondary { min-height: 42px; padding: 9px 17px; font-size: 12px; }
+.heroPagination { left: auto; right: 22px; bottom: 14px; transform: none; }
+.metrics { gap: 14px; }
+.metric {
+  height: 74px;
+  gap: 12px;
+  padding: 12px 15px;
+  border-color: rgba(55, 126, 138, .42);
+  background: linear-gradient(125deg, #0b2530, #092530);
+}
+.metric::after { opacity: .18; }
+.metricPurple { background: linear-gradient(125deg, #172235, #1b203d); border-color: rgba(107, 77, 156, .45); }
+.metricIcon { width: 44px; height: 45px; flex-basis: 44px; background: #0a3a3d; }
+.metricPurple .metricIcon { background: #33274d; }
+.metric strong { font-size: 25px; }
+.metric small { font-size: 12px; color: #dcecee; }
+.journeyPanel {
+  min-height: 181px;
+  padding: 18px 21px 18px;
+  border-color: var(--ev-border);
+  background: linear-gradient(123deg, #0a2531 0%, #08232f 100%);
+}
+.journeyIntro h2 { font-size: 19px; }
+.journeyIntro p { font-size: 12px; }
+.journeySummary { font-size: 12px; }
+.journeySteps { margin-top: 19px; }
+.journeyLine { height: 2px; background: #44626d; }
+.stepBubble { background: #082531; }
+.journeyStep { gap: 5px; }
+.journeyStep strong { font-size: 12px; }
+.journeyStep small { font-size: 11px; color: #bdd0d5; }
+.contentGrid { gap: 15px 16px; }
+.panel,.learnPanel {
+  min-height: 201px;
+  border-color: var(--ev-border);
+  background: linear-gradient(135deg, #092430, #0a2531);
+}
+.panel { padding: 15px 18px 16px; }
+.panelHeading { min-height: 30px; padding-bottom: 10px; }
+.panelHeading h2 { font-size: 17px; }
+.panelHeading a { font-size: 12px; }
+.projectList { margin-top: 8px; }
+.projectRow { min-height: 56px; gap: 11px; }
+.projectInfo strong { font-size: 13px; }
+.projectInfo small { font-size: 11px; }
+.projectEmpty {
+  min-height: 97px;
+  display: grid;
+  grid-template-columns: 53px minmax(0,1fr);
+  grid-template-rows: auto auto;
+  justify-content: start;
+  justify-items: start;
+  align-content: center;
+  align-items: center;
+  text-align: left;
+  column-gap: 13px;
+  padding: 8px 4px;
+}
+.projectEmpty > span {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 53px; height: 53px;
+  border-radius: 14px;
+  background: rgba(0, 140, 126, .13);
+  color: #21dec5;
+}
+.projectEmpty strong { font-size: 13px; }
+.projectEmpty p { font-size: 12px; color: #c7d9de; line-height: 1.35; }
+.createOutline { min-height: 39px; margin-top: 5px; border-style: solid; font-size: 12px; }
+.competitionCard {
+  min-height: 135px; margin-top: 8px;
+  border-color: rgba(50, 130, 134, .49);
+  background:
+    radial-gradient(ellipse at 96% 108%, rgba(129, 54, 157, .26), transparent 52%),
+    linear-gradient(125deg,#0a3034,#0b2835);
+}
+.competitionMain strong { font-size: 13px; }
+.competitionMain small { font-size: 12px; }
+.competitionBadge { color: #03272b; background: linear-gradient(100deg, #2bf0bd, #21cfc7); }
+.competitionMeta { margin-top: auto; }
+.rail { padding-top: 4px; gap: 15px; }
+.progressPanel,.nextEventPanel,.calendarPanel,.eventListPanel {
+  border-color: var(--ev-border);
+  background: linear-gradient(135deg, #0b2632, #0b2531);
+}
+.progressPanel { min-height: 234px; padding: 17px 20px; }
+.railHeading h2 { font-size: 17px; }
+.railHeading a { font-size: 12px; }
+.progressBody { gap: 20px; padding-top: 17px; }
+.progressDetail > p { font-size: 12px; }
+.checklist a { min-height: 27px; font-size: 11px; }
+.nextEventPanel { min-height: 118px; padding: 17px 20px; }
+.eventRow { padding-top: 12px; }
+.eventCopy strong { font-size: 12px; }
+.eventCopy small { font-size: 12px; }
+.calendarPanel { padding: 17px 20px 20px; }
+.weekdays { margin-top: 13px; }
+.weekdays span { font-size: 11px; }
+.daysGrid { margin-top: 10px; }
+.day { min-height: 31px; font-size: 12px; }
+.eventListPanel { padding: 17px 20px 15px; min-height: 126px; }
+.eventsEmpty { min-height: 67px; font-size: 12px; }
+
+@media (max-width: 1650px) {
+  .layout { grid-template-columns: minmax(0, 1fr) minmax(320px, 370px); gap: 20px; }
+  .heroContent h2 { font-size: clamp(30px, 2.35vw, 36px); }
+  .heroPerson { width: 41%; }
+}
+@media (max-width: 1470px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .hero { min-height: 270px; }
+  .heroContent { width: 64%; }
+  .heroPerson { width: 36%; height: 116%; }
+  .heroContent h2 { font-size: clamp(32px, 3vw, 39px); }
+  .heroContent p { font-size: 14px; }
+  .rail { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; padding: 0; }
+  .progressPanel { min-height: 236px; }
+  .calendarPanel { grid-row: auto; }
+}
+@media (max-width: 850px) {
+  .heroContent { width: 68%; }
+  .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .contentGrid { grid-template-columns: 1fr; }
+  .rail { grid-template-columns: 1fr; }
+  .journeyTop { gap: 16px; }
+}
+@media (max-width: 620px) {
+  .hero { min-height: 320px; }
+  .heroContent { width: 100%; padding: 24px 20px 45px; }
+  .heroContent h2 { font-size: clamp(28px, 6.4vw, 34px); max-width: 390px; }
+  .heroContent p { font-size: 13px; max-width: 350px; }
+  .heroPerson { width: 58%; right: -14%; bottom: -5%; height: 95%; opacity: .13; }
+  .heroSymbol { opacity: .1; }
+  .heroGlobe { opacity: .22; }
+  .journeyPanel { padding: 16px 13px; }
+  .journeySteps { gap: 20px 7px; }
+  .metrics { gap: 10px; }
+  .metric { height: 71px; }
+  .metric small { font-size: 11px; }
+}
+
+/* Keep the portrait visually integrated with the original Envista hero. */
+.heroPerson {
+  object-fit: cover;
+  object-position: 54% center;
+  height: 100%;
+  width: 37%;
+  max-width: none;
+  bottom: 0;
+  right: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.8) 21%, #000 39%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.8) 21%, #000 39%);
+}
+@media (max-width: 1470px) {
+  .heroPerson { width: 36%; height: 100%; }
+}
+@media (max-width: 620px) {
+  .heroPerson { width: 66%; height: 100%; opacity: .13; }
+}
