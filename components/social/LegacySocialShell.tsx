@@ -39,9 +39,10 @@ import type { User } from "@/types";
 import type { ProductRole } from "@/lib/auth/require-product-user";
 
 const participantNav = [
-  ["/home", Home, "Início"],
-  ["/social", Activity, "Social"],
+  ["/home", Home, "Página Inicial"],
   ["/explore", Compass, "Explorar"],
+  ["/notifications", Bell, "Notificações"],
+  ["/social", Activity, "Social"],
   ["/app/projects", FolderKanban, "Meus projetos"],
   ["/teams", Users, "Minhas equipes"],
   ["/workspace", PanelsTopLeft, "Workspace"],
@@ -54,8 +55,9 @@ const participantNav = [
 ] as const;
 
 const participantHomeNav = [
-  ["/home", Home, "Início"],
+  ["/home", Home, "Página Inicial"],
   ["/explore", Compass, "Explorar"],
+  ["/notifications", Bell, "Notificações"],
   ["/social", Activity, "Social"],
   ["/app/projects", FolderKanban, "Projetos"],
   ["/teams", Users, "Equipes"],
@@ -65,8 +67,9 @@ const participantHomeNav = [
 ] as const;
 
 const participantDashboardNav = [
-  ["/home", Home, "Dashboard"],
+  ["/home", Home, "Página Inicial"],
   ["/explore", Compass, "Explorar"],
+  ["/notifications", Bell, "Notificações"],
   ["/app/projects", FolderKanban, "Projetos"],
   ["/teams", Users, "Equipes"],
   ["/competitions", Trophy, "Competições"],
@@ -202,7 +205,7 @@ export default function LegacySocialShell({
   };
 
   return (
-    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined}>
+    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined} data-envista-x-sidebar={role === "participant" ? "true" : undefined}>
       <a className="a11y-skip-link" href="#main-content">
         Pular para o conteúdo
       </a>
@@ -246,6 +249,9 @@ export default function LegacySocialShell({
                 ? href.slice(4)
                 : href;
             const active = isNavItemActive(normalizedPathname, activeHref);
+            if (href === "/notifications") {
+              return <NotificationsBell key={href} userId={user.id} prefix={prefix} variant="sidebar" active={active} onNavigate={closeMobile} />;
+            }
             return (
               <Link
                 key={href}
@@ -254,7 +260,7 @@ export default function LegacySocialShell({
                 className={cx(active && "active")}
                 aria-current={active ? "page" : undefined}
               >
-                <Icon size={18} aria-hidden="true" />
+                <Icon size={25} strokeWidth={active ? 2.4 : 1.9} fill={active && href === "/home" ? "currentColor" : "none"} aria-hidden="true" />
                 <span>{label}</span>
               </Link>
             );
