@@ -45,3 +45,50 @@
 .empty { border: 0; background: transparent; border-radius: 0; padding: 47px 15px; box-shadow: none; }
 .progress > span, .progress > i { background: #00a99d; }
 @media(max-width:700px) { .featured { grid-template-columns: minmax(0,1fr); } .featuredContent { padding: 20px; } }
+
+
+/* Branded learning surfaces: a touch of colour, the content stays primary. */
+.featured {
+  background:
+    radial-gradient(circle at 89% 24%, rgba(0,134,167,.15), transparent 36%),
+    linear-gradient(115deg, #0b2934 0%, #0b3035 64%, #10372e 100%);
+  border-color: rgba(0,169,157,.26);
+}
+.featuredGlow {
+  background: rgba(34,181,115,.12);
+  opacity: .40;
+}
+.featuredVisual {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: radial-gradient(circle at center, rgba(0,169,157,.09), transparent 69%);
+}
+.featuredVisual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/brand/envista-pattern-original.png") center/330px auto repeat;
+  opacity: .12;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000);
+  mask-image: linear-gradient(to right, transparent, #000);
+  pointer-events: none;
+}
+.featuredVisual > * { position: relative; z-index: 1; }
+.visualMark {
+  color: #8ee5d8;
+  border-color: rgba(0,169,157,.31);
+  background: linear-gradient(145deg, rgba(0,134,167,.14), rgba(34,181,115,.12));
+}
+.featuredLabel { color: #82e8d8; background: rgba(0,169,157,.10); }
+.progress > span { background: linear-gradient(90deg,#0086a7,#00a99d,#22b573); }
+.courseCover {
+  background:
+    radial-gradient(circle at 10% 20%, rgba(0,134,167,.12), transparent 48%),
+    linear-gradient(110deg, #0b2935, #0d3330);
+}
+.courseCard:nth-child(3n+1) .coverIcon { color: #86d4e5; background: rgba(0,134,167,.11); border-color: rgba(0,134,167,.23); }
+.courseCard:nth-child(3n+2) .coverIcon { color: #7ce3d2; background: rgba(0,169,157,.11); border-color: rgba(0,169,157,.23); }
+.courseCard:nth-child(3n) .coverIcon { color: #88e0af; background: rgba(34,181,115,.11); border-color: rgba(34,181,115,.23); }
+.courseCard:hover { border-color: rgba(0,169,157,.33); }
+.levelBadge { color: #b9eae3; }

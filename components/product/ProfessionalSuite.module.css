@@ -19,3 +19,26 @@
 }
 .activityItem:hover { background: rgba(255,255,255,.025); border-color: var(--ev-border); }
 .activityDot { box-shadow: none; }
+
+
+/* Business-like workspaces with delicate visual categorisation. */
+.metric {
+  background: linear-gradient(135deg, rgba(0,169,157,.035), transparent 75%), #0b2630;
+  border-color: rgba(156,185,194,.18);
+}
+.metric:nth-child(3n+1) { border-top: 2px solid rgba(0,134,167,.66); }
+.metric:nth-child(3n+2) { border-top: 2px solid rgba(0,169,157,.70); }
+.metric:nth-child(3n) { border-top: 2px solid rgba(34,181,115,.70); }
+.scoreRing { border-color: #22b573; background: rgba(34,181,115,.075); color: #cbf7dc; }
+.progress i { background: linear-gradient(90deg,#0086a7,#00a99d,#22b573); }
+.column, .pipelineColumn {
+  background: #0c2831;
+  border: 1px solid rgba(153,182,189,.17);
+}
+.task, .pipelineCard {
+  background: #102b35;
+  box-shadow: none;
+}
+.task:hover, .pipelineCard:hover { border-color: rgba(0,169,157,.28); transform: none; }
+.teamSelect a[data-active="true"] { color: #93e5d9; background: rgba(0,169,157,.10); border-color: rgba(0,169,157,.29); }
+.activityDot { background: #22b573; }
