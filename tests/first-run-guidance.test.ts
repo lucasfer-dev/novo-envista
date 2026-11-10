@@ -17,7 +17,7 @@ describe("first-run product guidance", () => {
     expect(dashboard).toContain('<HomeDashboard');
     expect(home).toContain("Boas ideias merecem");
     expect(home).toContain("Criar novo projeto");
-    expect(home).toContain('href="/projects/new"');
+    expect(home).toContain('href="/app/projects/new"');
     expect(home).toContain('href="/explore"');
     expect(home).toContain('href="/account/profile"');
     expect(home).toContain("profileSteps.length - stepsDone");
