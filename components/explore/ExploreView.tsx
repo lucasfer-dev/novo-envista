@@ -235,7 +235,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
           <Link href={base}>Limpar filtros</Link>
         </div>}
 
-        {isNewCommunity && <section className={styles.discoveryEmpty} aria-labelledby="explore-start-title">
+        {isNewCommunity && <section className={styles.discoveryEmpty} id="explore-people" aria-labelledby="explore-start-title">
           <span className={styles.discoveryEmptyIcon}><Compass size={26} aria-hidden="true" /></span>
           <div className={styles.discoveryEmptyBody}>
             <h2 id="explore-start-title">Tudo começa com uma ideia.</h2>
@@ -247,7 +247,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
           </div>
         </section>}
 
-        {showProjects && !isNewCommunity && <section className={styles.section} id="explore-projects" aria-labelledby="explore-projects-heading">
+        {showProjects && !isNewCommunity && (type === "projects" || projectTotal > 0) && <section className={styles.section} id="explore-projects" aria-labelledby="explore-projects-heading">
           <div className={styles.sectionHeading}>
             <h2 id="explore-projects-heading">Projetos</h2>
             {type === "all"
@@ -267,7 +267,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             : null}
         </section>}
 
-        {showTeams && !isNewCommunity && <section className={styles.section} id="explore-teams" aria-labelledby="explore-teams-heading">
+        {showTeams && !isNewCommunity && (type === "teams" || teamTotal > 0) && <section className={styles.section} id="explore-teams" aria-labelledby="explore-teams-heading">
           <div className={styles.sectionHeading}>
             <h2 id="explore-teams-heading">Equipes</h2>
             <span>{teamTotal} {teamTotal === 1 ? "equipe" : "equipes"}</span>
@@ -287,7 +287,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
           {type === "teams" ? <Pagination base={base} q={q} stage={stage} type={type} pages={pages} pageKey="teams_page" total={teamTotal} /> : teamTotal > visibleTeams.length ? <Link className={styles.seeMore} href={exploreUrl(base, q, "Todos", "teams")}>Ver todas as equipes <ArrowRight size={15} /></Link> : null}
         </section>}
 
-        {showPeople && !isNewCommunity && <section className={styles.section} id="explore-people" aria-labelledby="explore-people-heading">
+        {showPeople && !isNewCommunity && (type === "people" || profileTotal > 0) && <section className={styles.section} id="explore-people" aria-labelledby="explore-people-heading">
           <div className={styles.sectionHeading}>
             <h2 id="explore-people-heading">Pessoas</h2>
             <span>{profileTotal} {profileTotal === 1 ? "pessoa" : "pessoas"}</span>
