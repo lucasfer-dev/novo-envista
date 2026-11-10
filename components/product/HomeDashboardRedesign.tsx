@@ -79,19 +79,15 @@ function panelHeading(id: string, label: string, Icon: typeof Star, href: string
   </div>;
 }
 export default function HomeDashboard({
-  name, projects, featuredProjects = [], teams, notifications, agenda = [], followerCount = 0,
+  projects, featuredProjects = [], teams, notifications, agenda = [], followerCount = 0,
   profileSteps = [], course, courseProgress,
 }: Props) {
-  const firstName = name.trim().split(/\s+/)[0] || "criador";
-  const unread = notifications.filter(item => !item.read_at).length;
   const progress = Math.max(0, Math.min(100, courseProgress));
   const stepsDone = profileSteps.filter(item => item.done).length;
   const profilePercentage = profileSteps.length
     ? Math.round(stepsDone * 100 / profileSteps.length) : null;
-  const showcase = (featuredProjects.length ? featuredProjects : projects).slice(0, 4);
-  const ownProject = projects[0];
-
-  const displayProjects = (featuredProjects.length ? featuredProjects : projects).slice(0, 3);
+  // O projeto principal ocupa o cartão editorial; os demais seguem em Explorar.
+  const displayProjects = (featuredProjects.length ? featuredProjects : projects).slice(0, 1);
   const profileDone = profilePercentage === 100;
   return (
     <div className={styles.home} data-envista-home-redesign>
@@ -100,13 +96,15 @@ export default function HomeDashboard({
           <header className={styles.hero}>
             <span className={styles.heroPattern} aria-hidden="true" />
             <span className={styles.heroAngle} aria-hidden="true" />
+            <span className={styles.heroHorizon} aria-hidden="true" />
+            <img className={styles.heroSymbol} src="/brand/envista-symbol-gradient.svg" width="340" height="340" alt="" aria-hidden="true" />
             <img className={styles.heroPortrait} src="/brand/envista-hero-reference.webp" width="390" height="276" alt="" aria-hidden="true" />
             <div className={styles.heroContent}>
               <span className={styles.heroEyebrow}>IDEIAS · PESSOAS · PROJETOS · IMPACTO</span>
               <h1>Boas ideias merecem<br /><span>sair do papel.</span></h1>
               <p>Crie projetos, forme equipes, participe de competições e conecte-se com pessoas e investidores para transformar suas ideias em impacto.</p>
               <div className={styles.heroActions}>
-                <Link className={styles.primaryAction} href="/projects/new"><Plus size={20} aria-hidden="true" /> Criar novo projeto</Link>
+                <Link className={styles.primaryAction} href="/app/projects/new"><Plus size={20} aria-hidden="true" /> Criar novo projeto</Link>
                 <Link className={styles.outlineAction} href="/explore"><Compass size={19} aria-hidden="true" /> Explorar oportunidades</Link>
               </div>
             </div>
@@ -144,12 +142,12 @@ export default function HomeDashboard({
                     <div className={styles.projectCover} data-tone={index}>
                       {referenceCover ? <img className={styles.projectImage} src={referenceCover} alt="" loading="lazy" /> :
                         <ProjectArtwork title={project.title} category={project.category} />}
-                      <span className={styles.projectCategory}>{project.category || "Projeto"}</span>
                     </div>
                     <div className={styles.projectInfo}>
+                      <span className={styles.projectBadge}>{project.category || "Projeto"}</span>
                       <h3>{project.title}</h3>
                       <p>{project.short_description || "Conheça este projeto da comunidade Envista."}</p>
-                      <div className={styles.projectMeta}><span>{project.stage || "Em desenvolvimento"}</span><ArrowRight size={15} aria-hidden="true" /></div>
+                      <div className={styles.projectMeta}><span><FolderKanban size={14} aria-hidden="true" /> {project.stage || "Em desenvolvimento"}</span><span className={styles.projectVisit}><ArrowRight size={18} aria-hidden="true" /></span></div>
                     </div>
                   </Link>;
                 })}
