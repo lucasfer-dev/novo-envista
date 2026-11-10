@@ -8,9 +8,27 @@ import { createClient } from "@/lib/supabase/client";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type NotificationPrefix = "" | "/investor";
-type Props = { userId: string; prefix: NotificationPrefix; dark?: boolean };
+type Props = { userId: string; prefix: NotificationPrefix; dark?: boolean; variant?: "icon" | "sidebar"; active?: boolean; onNavigate?: () => void };
 
-function BellLink({ count, prefix, dark = false }: { count: number; prefix: NotificationPrefix; dark?: boolean }) {
+function BellLink({ count, prefix, dark = false, variant = "icon", active = false, onNavigate }: Omit<Props, "userId"> & { count: number }) {
+  if (variant === "sidebar") {
+    return (
+      <Link
+        href={`${prefix}/notifications`}
+        prefetch={false}
+        onClick={onNavigate}
+        className={active ? "nav-notifications active" : "nav-notifications"}
+        aria-current={active ? "page" : undefined}
+        aria-label={count ? `Notificações, ${count} não lidas` : "Notificações"}
+      >
+        <span className="sidebar-notification-symbol">
+          <Bell size={25} strokeWidth={active ? 2.4 : 1.9} aria-hidden="true" />
+          {count > 0 ? <span className="sidebar-notification-count">{count > 99 ? "99+" : count}</span> : null}
+        </span>
+        <span>Notificações</span>
+      </Link>
+    );
+  }
   return (
     <Link
       href={`${prefix}/notifications`}
@@ -40,7 +58,7 @@ function BellLink({ count, prefix, dark = false }: { count: number; prefix: Noti
   );
 }
 
-function LiveNotificationsBell({ userId, prefix, dark = false }: Props) {
+function LiveNotificationsBell({ userId, prefix, dark = false, variant, active, onNavigate }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const [count, setCount] = useState(0);
 
@@ -77,10 +95,10 @@ function LiveNotificationsBell({ userId, prefix, dark = false }: Props) {
     };
   }, [refresh, supabase, userId]);
 
-  return <BellLink count={count} prefix={prefix} dark={dark} />;
+  return <BellLink count={count} prefix={prefix} dark={dark} variant={variant} active={active} onNavigate={onNavigate} />;
 }
 
-export default function NotificationsBell({ userId, prefix, dark = false }: Props) {
-  if (!UUID_RE.test(userId)) return <BellLink count={0} prefix={prefix} dark={dark} />;
-  return <LiveNotificationsBell userId={userId} prefix={prefix} dark={dark} />;
+export default function NotificationsBell({ userId, prefix, dark = false, variant = "icon", active = false, onNavigate }: Props) {
+  if (!UUID_RE.test(userId)) return <BellLink count={0} prefix={prefix} dark={dark} variant={variant} active={active} onNavigate={onNavigate} />;
+  return <LiveNotificationsBell userId={userId} prefix={prefix} dark={dark} variant={variant} active={active} onNavigate={onNavigate} />;
 }
