@@ -377,3 +377,14 @@
   .head::after { width: 28%; opacity: .065; }
   .empty::before { opacity: .07; }
 }
+
+.head::after,
+.empty::before {
+  mix-blend-mode: screen;
+  filter: brightness(2.3) contrast(1.1);
+  opacity: .72;
+}
+@media (max-width:560px) {
+  .head::after { opacity: .42; }
+  .empty::before { opacity: .37; }
+}

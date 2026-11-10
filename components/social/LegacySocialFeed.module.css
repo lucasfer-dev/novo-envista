@@ -2832,3 +2832,13 @@
 @media(max-width:640px) {
   .emptyFeed::before { width: 44%; opacity: .08; }
 }
+
+.emptyFeed::before {
+  opacity: .72;
+  filter: brightness(2.3) contrast(1.12);
+  mix-blend-mode: screen;
+  width: min(44%, 320px);
+}
+@media (max-width:640px) {
+  .emptyFeed::before { opacity: .42; }
+}

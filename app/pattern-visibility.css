@@ -1,0 +1,51 @@
+/* Envista art: original line-art pattern remains visible against the dark UI.
+   The source file is dark-grey on black: screen blend + brightness is essential. */
+.app-shell[data-envista-product-shell] .page-wrap {
+  position: relative;
+  isolation: isolate;
+}
+.app-shell[data-envista-product-shell] .page-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 2px;
+  right: 0;
+  width: min(47%, 500px);
+  height: 310px;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") right top / 440px auto repeat;
+  mix-blend-mode: screen;
+  filter: brightness(2.3) contrast(1.14);
+  opacity: .68;
+  -webkit-mask-image: linear-gradient(to left, #000 12%, transparent 100%), linear-gradient(to bottom, #000 15%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 12%, transparent 100%), linear-gradient(to bottom, #000 15%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+/* The sidebar now shows the actual pattern rather than nearly invisible dark noise. */
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+  background: url("/brand/envista-pattern-original.png") center bottom / 390px auto repeat !important;
+  mix-blend-mode: screen;
+  filter: brightness(2.35) contrast(1.12);
+  opacity: .7 !important;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 7%, rgba(0,0,0,.65) 48%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 7%, rgba(0,0,0,.65) 48%, #000 100%);
+}
+@media (max-width: 980px) {
+  .app-shell[data-envista-product-shell] .page-wrap::before {
+    width: min(55%, 300px);
+    height: 220px;
+    opacity: .48;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+    opacity: .52 !important;
+  }
+}
+@media (max-width: 540px) {
+  .app-shell[data-envista-product-shell] .page-wrap::before {
+    width: 50%;
+    height: 150px;
+    background-size: 330px auto;
+    opacity: .32;
+  }
+}

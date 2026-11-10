@@ -859,3 +859,12 @@
   pointer-events: none;
 }
 .journeyPanel > * { position: relative; z-index: 1; }
+
+.journeyPanel::before {
+  opacity: .58;
+  mix-blend-mode: screen;
+  filter: brightness(2.3) contrast(1.1);
+}
+@media (max-width:620px) {
+  .journeyPanel::before { opacity: .34; }
+}

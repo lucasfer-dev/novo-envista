@@ -190,3 +190,10 @@
   pointer-events: none;
 }
 .empty > * { position: relative; z-index: 1; }
+
+.banner::before,
+.empty::before {
+  opacity: .68;
+  filter: brightness(2.2) contrast(1.12);
+  mix-blend-mode: screen;
+}

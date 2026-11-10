@@ -99,3 +99,10 @@
   pointer-events: none;
 }
 .empty > * { position: relative; z-index: 1; }
+
+.hero::after,
+.empty::before {
+  opacity: .67;
+  mix-blend-mode: screen;
+  filter: brightness(2.25) contrast(1.12);
+}

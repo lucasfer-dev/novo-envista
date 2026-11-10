@@ -1046,3 +1046,15 @@
 @media(max-width:720px) {
   .discoveryEmpty::before { width: 48%; opacity: .10; }
 }
+
+/* The full branded illustration was imperceptible at 0.19 opacity.
+   Screen blending cancels its black background and brings forward the original strokes. */
+.discoveryEmpty::before {
+  opacity: .78;
+  filter: brightness(2.25) contrast(1.15);
+  mix-blend-mode: screen;
+  background-size: 430px auto;
+}
+@media (max-width:720px) {
+  .discoveryEmpty::before { opacity: .48; }
+}

@@ -65,3 +65,9 @@
   pointer-events: none;
 }
 .metric:first-child > * { position: relative; z-index: 1; }
+
+.metric:first-child::after {
+  opacity: .6;
+  mix-blend-mode: screen;
+  filter: brightness(2.25) contrast(1.1);
+}
