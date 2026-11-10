@@ -418,13 +418,15 @@ export default function LegacySocialShell({
           >
             <Menu aria-hidden="true" />
           </button>
-          <GlobalSearchCommand
-            label={
-              role === "investor"
-                ? "Buscar projetos, equipes e pessoas"
-                : dashboardHome ? "Buscar projetos, pessoas, equipes, competições, conteúdos..." : socialReference ? "Buscar projetos, pessoas, equipes ou competições..." : "Buscar no Envista"
-            }
-          />
+          <div className={cx("topbar-search-command", role === "participant" && pathname === "/explore" && "topbar-search-command--hidden")}>
+            <GlobalSearchCommand
+              label={
+                role === "investor"
+                  ? "Buscar projetos, equipes e pessoas"
+                  : dashboardHome ? "Buscar projetos, pessoas, equipes, competições, conteúdos..." : socialReference ? "Buscar projetos, pessoas, equipes ou competições..." : "Buscar no Envista"
+              }
+            />
+          </div>
           <div className="top-actions">
             <NotificationsBell userId={user.id} prefix={prefix} dark />
             {dashboardHome ? <Link className="dashboard-top-user" href={profile} aria-label="Abrir meu perfil">
