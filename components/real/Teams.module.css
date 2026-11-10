@@ -71,3 +71,24 @@
 }
 .empty strong { font-size: 15px; font-weight: 740; color: #f0f8f8; }
 .empty p { max-width: 390px; font-size: 12.5px; line-height: 1.5; color: #a9c0c7; }
+
+/* Only the first-team invitation uses texture, not people or team cards. */
+.empty {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.empty::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(32%, 250px);
+  z-index: -1;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") right center / 720px auto repeat;
+  filter: brightness(3.6);
+  opacity: .16;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+@media (max-width: 650px) { .empty::before { opacity: .09; } }

@@ -356,3 +356,26 @@
 }
 .empty > * { position: relative; z-index: 1; }
 @media (max-width:560px) { .empty::before { width: 26%; opacity: .10; } }
+
+/* Only an empty inbox gets an ambient mark. Real notifications stay plain. */
+.empty {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.empty::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(34%, 260px);
+  z-index: -1;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") right center / 730px auto repeat;
+  filter: brightness(3.4);
+  opacity: .14;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+@media (max-width: 560px) { .empty::before { opacity: .08; } }
