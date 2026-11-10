@@ -16,6 +16,7 @@ import './landing-brand-sections.css'
 import './landing-brand-accessibility.css'
 import './social-reference-shell.css'
 import './sidebar-x.css'
+import './product-x-minimal.css'
 import type { Metadata, Viewport } from 'next'
 
 const siteUrl = 'https://useenvista.com.br'
