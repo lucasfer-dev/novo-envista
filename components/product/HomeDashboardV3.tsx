@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight,
   Code2, Compass, FolderKanban, GraduationCap, Layers3, Leaf, Plus,
@@ -368,25 +368,7 @@ export default function HomeDashboardV3({
           </div>
         </div>
 
-        <aside className={styles.rail} aria-label="Seu progresso e calendário">
-          <section className={styles.progressPanel}>
-            <div className={styles.railHeading}><h2>Seu progresso no Envista</h2><Link href={currentStep?.href || "/account/profile"} aria-label="Continuar sua jornada"><ChevronRight size={19} /></Link></div>
-            <div className={styles.progressBody}>
-              <div className={styles.progressCircle} style={{ "--value": journeyPercent + "%" } as CSSProperties}><strong>{journeyPercent}%</strong></div>
-              <div className={styles.progressDetail}>
-                <p>{doneCount === journey.length ? "Você concluiu sua jornada inicial!" : "Faltam " + (journey.length - doneCount) + " etapa(s) para completar sua jornada."}</p>
-                <div className={styles.checklist}>
-                  {journey.map(step => (
-                    <Link href={step.href} key={step.label}>
-                      <span className={step.done ? styles.checkDone : styles.checkPending}>{step.done ? <Check size={13} /> : null}</span>
-                      <span>{step.label}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
+        <aside className={styles.rail} aria-label="Agenda, calendário e próximos eventos">
           <section className={styles.nextEventPanel}>
             <div className={styles.railHeading}><h2><CalendarDays size={21} /> Próximo evento</h2><Link href="/calendar">Ver agenda <ArrowRight size={14} /></Link></div>
             {nearestEvent ? <EventRow event={nearestEvent} /> :
