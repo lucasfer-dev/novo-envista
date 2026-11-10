@@ -150,14 +150,6 @@
     radial-gradient(ellipse at 80% 15%, rgba(34,181,115,.12), transparent 55%),
     linear-gradient(120deg, #0b2d3a, #0b3638 59%, #10352d);
 }
-.banner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("/brand/envista-pattern-original.png") center/310px auto repeat;
-  opacity: .085;
-  pointer-events: none;
-}
 .banner > * { position: relative; z-index: 1; }
 .card { border-color: rgba(158,191,198,.18); }
 .card:hover { border-color: rgba(0,169,157,.31); background: #0d2d35; }
@@ -169,41 +161,4 @@
   background:
     linear-gradient(135deg, rgba(0,134,167,.075), rgba(34,181,115,.04)),
     #0b2a32;
-}
-
-.empty {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  min-height: 180px;
-  background: radial-gradient(ellipse at 97% 50%, rgba(34,181,115,.08), transparent 47%);
-}
-.empty::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: min(35%, 290px);
-  background: url("/brand/envista-pattern-original.png") center / 370px auto repeat;
-  opacity: .11;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
-  mask-image: linear-gradient(90deg, transparent, #000);
-  pointer-events: none;
-}
-.empty > * { position: relative; z-index: 1; }
-
-.banner::before {
-  background-size: 700px auto;
-  filter: brightness(5.2);
-  opacity: .4;
-  -webkit-mask-image: linear-gradient(90deg, transparent 15%, #000);
-  mask-image: linear-gradient(90deg, transparent 15%, #000);
-}
-.empty::before {
-  background-size: 710px auto;
-  filter: brightness(5.4);
-  opacity: .48;
-}
-@media (max-width: 700px) {
-  .banner::before { opacity: .25; }
-  .empty::before { opacity: .27; }
 }
