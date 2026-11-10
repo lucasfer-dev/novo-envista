@@ -1354,12 +1354,6 @@
   color:#f7ffff;
   text-decoration:none;
 }
-.competitionLink::before {
-  content:"";
-  position:absolute;inset:0;
-  opacity:.18;z-index:-1;
-  background:url("/brand/envista-pattern-original.png") center / 360px repeat;
-}
 .competitionLink:hover {border-color:#28f5c2;}
 .competitionText {min-width:0;flex:1;z-index:1;}
 .competitionText strong {display:block;font-size:17px;line-height:1.16;letter-spacing:-.025em;font-weight:850;}
@@ -2023,11 +2017,6 @@
     radial-gradient(ellipse at 72% 38%,rgba(0,169,157,.23),transparent 66%),
     linear-gradient(120deg,#0a424b,#062a3a 65%,#0c3e43);
 }
-.timelineUpdate .updateArtwork::before {
-  position:absolute;inset:0;content:"";
-  background:url("/brand/envista-pattern-original.png") center/420px repeat;
-  opacity:.16;
-}
 .timelineUpdate .updateArtwork :global(.dashboard-project-mark) {
   border:0;background:transparent;
   display:grid;place-items:center;
@@ -2137,7 +2126,6 @@
     radial-gradient(ellipse at 70% 44%,rgba(17,208,173,.18),transparent 60%),
     linear-gradient(120deg,#082c38,#063f42 65%,#0b2636);
 }
-.timelineUpdate .updateArtwork::before {opacity:.12;}
 .timelineUpdate .updateArtworkCopy {
   position:relative;
   z-index:1;
@@ -2585,7 +2573,6 @@
 .timelineUpdate .updateArtwork {
   background: linear-gradient(110deg,#0e3039,#09232d 70%,#0b3435);
 }
-.timelineUpdate .updateArtwork::before { opacity: .045; }
 .timelineUpdate .updateArtworkKicker { color: #73d6c8; }
 .timelineUpdate .updateArtworkCopy strong { font-size: clamp(20px,2vw,29px); font-weight: 760; }
 .timelineUpdate .updateArtworkCopy small {
@@ -2806,52 +2793,4 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .socialPage * { transition: none !important; animation: none !important; }
-}
-
-.emptyFeed {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: radial-gradient(ellipse at 88% 40%, rgba(0,134,167,.10), transparent 48%), transparent !important;
-}
-.emptyFeed::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: min(40%, 270px);
-  background: url("/brand/envista-pattern-original.png") center / 385px auto repeat;
-  opacity: .14;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
-  mask-image: linear-gradient(90deg, transparent, #000);
-  pointer-events: none;
-}
-.emptyFeed > * { position: relative; z-index: 1; }
-.sideColumn .competitionPanel {
-  background: radial-gradient(circle at 95% 7%, rgba(34,181,115,.11), transparent 62%), #0c2830 !important;
-}
-@media(max-width:640px) {
-  .emptyFeed::before { width: 44%; opacity: .08; }
-}
-
-.competitionLink::before {
-  background-size: 720px auto;
-  filter: brightness(5.4);
-  opacity: .33;
-  -webkit-mask-image: linear-gradient(to right, transparent 10%, #000);
-  mask-image: linear-gradient(to right, transparent 10%, #000);
-}
-.timelineUpdate .updateArtwork::before {
-  background-size: 740px auto;
-  filter: brightness(5.2);
-  opacity: .34;
-}
-.emptyFeed::before {
-  width: min(44%, 310px);
-  background-size: 690px auto;
-  filter: brightness(5.5);
-  opacity: .48;
-}
-@media (max-width: 640px) {
-  .emptyFeed::before { opacity: .28; }
-  .competitionLink::before { opacity: .23; }
 }

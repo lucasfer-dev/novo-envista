@@ -93,51 +93,6 @@
 .courseCard:hover { border-color: rgba(0,169,157,.33); }
 .levelBadge { color: #b9eae3; }
 
-.featured {
-  position: relative;
-  isolation: isolate;
-  background:
-    radial-gradient(circle at 88% 18%, rgba(0,134,167,.16), transparent 38%),
-    linear-gradient(115deg, #0b2934, #0b3035 64%, #10372e);
-}
-.featured::after {
-  content: "";
-  position: absolute;
-  inset: auto 12% 0 12%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #0086a7 20%, #00a99d 51%, #22b573 80%, transparent);
-  pointer-events: none;
-}
-.empty {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: radial-gradient(ellipse at 100% 50%, rgba(0,169,157,.08), transparent 47%);
-}
-.empty::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: min(32%, 230px);
-  background: url("/brand/envista-pattern-original.png") center / 350px auto repeat;
-  opacity: .10;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
-  mask-image: linear-gradient(90deg, transparent, #000);
-  pointer-events: none;
-}
-.empty > * { position: relative; z-index: 1; }
-
-.featuredVisual::before {
-  background-size: 690px auto;
-  filter: brightness(5.4);
-  opacity: .43;
-}
-.empty::before {
-  background-size: 700px auto;
-  filter: brightness(5.3);
-  opacity: .46;
-}
-@media (max-width: 700px) {
-  .featuredVisual::before { opacity: .26; }
-  .empty::before { opacity: .26; }
-}
+/* The featured course visual can carry one quiet official motif. */
+.featuredVisual::before { background-size: 720px auto; filter: brightness(3.8); opacity: .17; }
+@media (max-width: 700px) { .featuredVisual::before { opacity: .10; } }

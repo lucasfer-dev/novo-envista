@@ -39,3 +39,12 @@ O produto usa a clareza de navegação e conteúdo encontrada em interfaces como
 - A página ainda fica bonita se não houver registros?
 
 Os estilos compartilhados vivem em `app/product-x-minimal.css` e `app/product-brand-alive.css`, com refinamentos de cada módulo no seu próprio CSS Module.
+
+## Governança de patterns (10/11/2026)
+A heurística de minimalismo da Nielsen Norman Group e as diretrizes de ilustrações da Atlassian recomendam preservar a tarefa e a mensagem, usando padrões ambientais com intenção.
+
+**Locais permitidos no produto:** banner principal da Home, detalhe visual de curso em destaque em Aprender, painel de oportunidade do Explorar, textura pequena no rodapé da sidebar.
+
+**Locais sem pattern:** cabeçalhos globais, feeds e mensagens, notificações, filtros, listas e cards de projetos/equipes/competições, métricas, calendários, estados vazios repetidos. Usar ícones, paleta (#0086a7, #00a99d, #22b573), tipografia e contraste para comunicar a marca.
+
+Revisar em desktop/mobile, com e sem dados, contraste e foco. Critérios são decisões de projeto, não percentuais cientificamente validados. Referências: https://www.nngroup.com/articles/ten-usability-heuristics/ ; https://www.nngroup.com/articles/signal-noise-ratio/ ; https://atlassian.design/foundations/illustrations ; https://linear.app/docs/projects .

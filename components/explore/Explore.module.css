@@ -54,20 +54,6 @@
   min-width: 0;
   padding: 6px 10px 12px;
 }
-.exploreHeader::before {
-  position: absolute;
-  content: "";
-  top: -4px;
-  right: 0;
-  width: 230px;
-  height: 105px;
-  z-index: -1;
-  pointer-events: none;
-  opacity: .07;
-  background: url("/brand/envista-pattern-original.png") right top / 270px repeat;
-  mask-image: linear-gradient(90deg, transparent, #000);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
-}
 .pageHeading {
   display: flex;
   flex-direction: column;
@@ -599,15 +585,6 @@
   padding: 18px 16px;
   background: linear-gradient(130deg, #0b3440, #07392f) !important;
 }
-.competitionPanel::before {
-  position: absolute;
-  content: "";
-  inset: 0;
-  z-index: -1;
-  background: url("/brand/envista-pattern-original.png") right top / 310px repeat;
-  opacity: .1;
-  pointer-events: none;
-}
 .competitionPanel h2 { display: flex; align-items: center; gap: 9px; color: #f4fffd; font-size: 15px; font-weight: 810; }
 .competitionPanel h2 svg { color: #4ae5c9; }
 .competitionBody { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; min-height: 65px; margin: 15px 0 10px; }
@@ -722,7 +699,6 @@
   padding: 12px 18px 13px;
   background: transparent;
 }
-.exploreHeader::before { display: none; }
 .searchForm {
   height: 43px;
   border: 1px solid rgba(157, 189, 194, .21);
@@ -964,7 +940,6 @@
   background: #0d2a31 !important;
   padding: 17px;
 }
-.competitionPanel::before { opacity: .035; }
 .competitionBody { margin: 12px 0 10px; }
 .competitionBody h3 { font-weight: 710; }
 .competitionBody p { color: #adc7cd; }
@@ -1020,76 +995,13 @@
   .discoveryEmpty h2 { font-size: 18px; }
 }
 
-.discoveryEmpty {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: radial-gradient(ellipse at 94% 52%, rgba(0,134,167,.115), transparent 51%), #071c25;
-}
-.discoveryEmpty::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: min(45%, 350px);
-  background: url("/brand/envista-pattern-original.png") center / 400px auto repeat;
-  opacity: .19;
-  -webkit-mask-image: linear-gradient(90deg, transparent 5%, #000 95%);
-  mask-image: linear-gradient(90deg, transparent 5%, #000 95%);
-  pointer-events: none;
-}
-.discoveryEmpty > * { position: relative; z-index: 1; }
-.rail .competitionPanel {
-  background: radial-gradient(circle at 100% 0%, rgba(34,181,115,.12), transparent 65%), #0d2a31 !important;
-  border-color: rgba(0,169,157,.23);
-}
-.rail .competitionPanel::before { opacity: .08; }
-@media(max-width:720px) {
-  .discoveryEmpty::before { width: 48%; opacity: .10; }
-}
-
-/* Keep the real Envista doodle texture legible; its source strokes are nearly black. */
-.exploreHeader::before {
-  width: 310px;
-  height: 116px;
-  background-size: 690px auto;
-  filter: brightness(5.4);
-  opacity: .39;
-}
-.rail .competitionPanel::before {
-  background-size: 680px auto;
-  filter: brightness(5.2);
-  opacity: .37;
-  -webkit-mask-image: linear-gradient(90deg, transparent 20%, #000);
-  mask-image: linear-gradient(90deg, transparent 20%, #000);
-}
-.discoveryEmpty::before {
-  width: min(46%, 370px);
-  background-size: 720px auto;
-  filter: brightness(5.4);
-  opacity: .49;
-}
-.topics {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-.topics::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: min(56%, 235px);
-  height: 70px;
-  pointer-events: none;
-  background: url("/brand/envista-pattern-original.png") right center / 620px auto repeat;
-  filter: brightness(5.4);
-  opacity: .32;
+/* One intentional accent for a featured opportunity. Results remain free of patterns. */
+.competitionPanel::before {
+  position: absolute; content: ""; top: 0; right: 0; bottom: 0; width: 48%; z-index: -1;
+  background: url("/brand/envista-pattern-original.png") right center / 710px auto repeat;
+  filter: brightness(3.7); opacity: .18;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000);
   mask-image: linear-gradient(90deg, transparent, #000);
+  pointer-events: none;
 }
-.topics > * { position: relative; z-index: 1; }
-@media (max-width: 720px) {
-  .discoveryEmpty::before { opacity: .28; }
-  .exploreHeader::before { opacity: .24; }
-  .topics::before { opacity: .22; }
-}
+@media (max-width: 720px) { .competitionPanel::before { opacity: .10; } }
