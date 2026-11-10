@@ -3,7 +3,7 @@
   --ev-brand-blue: #0086a7;
   --ev-brand-teal: #00a99d;
   --ev-brand-green: #22b573;
-  --ev-brand-gradient: #00a99d;
+  --ev-brand-gradient: linear-gradient(105deg, #00a99d, #00a99d);
   --ev-bg: #061a23;
   --ev-bg-subtle: #0b2430;
   --ev-sidebar: #061a23;
