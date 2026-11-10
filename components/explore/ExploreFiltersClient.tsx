@@ -22,7 +22,6 @@ export default function ExploreFiltersClient({
   base: string; initialQuery: string; initialStage: string; initialType?: ExploreKind;
 }) {
   const router = useRouter();
-  const [query, setQuery] = useState(initialQuery);
   const [stage, setStage] = useState(initialStage || "Todos");
   const [type, setType] = useState<ExploreKind>(initialType);
   const enabledStages = type === "all" || type === "projects";
@@ -30,17 +29,17 @@ export default function ExploreFiltersClient({
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(filterUrl(base, query, enabledStages ? stage : "Todos", type), { scroll: false });
+    router.push(filterUrl(base, initialQuery, enabledStages ? stage : "Todos", type), { scroll: false });
   };
 
   return <section className={styles.filtersPanel} aria-labelledby="explore-filters-heading">
     <div className={styles.panelHeading}>
-      <h2 id="explore-filters-heading"><Filter size={18} aria-hidden="true" /> Filtrar resultados</h2>
+      <h2 id="explore-filters-heading"><Filter size={18} aria-hidden="true" /> Refinar resultados</h2>
       {active && <Link href={base}>Limpar <ArrowRight size={13} aria-hidden="true" /></Link>}
     </div>
     <form onSubmit={submit} data-envista-server-explore="true">
       <label className={styles.filterField}>
-        <span>Tipo</span>
+        <span>Mostrar</span>
         <select aria-label="Tipo de resultado" value={type} onChange={event => setType(event.target.value as ExploreKind)}>
           <option value="all">Todos</option>
           <option value="projects">Projetos</option>
@@ -59,12 +58,7 @@ export default function ExploreFiltersClient({
           <option value="Projeto ativo">Projeto ativo</option>
         </select>
       </label>
-      <label className={styles.filterField}>
-        <span>Buscar por área, nome ou palavra-chave</span>
-        <input aria-label="Buscar projetos, pessoas ou equipes" value={query} onChange={event => setQuery(event.target.value)}
-          placeholder="Ex.: tecnologia, impacto..." autoComplete="off" maxLength={120} />
-      </label>
-      <p className={styles.filterHint}>Os resultados são consultados no Envista e organizados pelas informações publicadas.</p>
+      <p className={styles.filterHint}>Use a busca principal para encontrar áreas, projetos e pessoas. Estes filtros refinam os resultados reais da comunidade.</p>
       <div className={styles.filterActions}>
         <button type="submit">Aplicar filtros</button>
         {active && <Link href={base}>Limpar</Link>}
