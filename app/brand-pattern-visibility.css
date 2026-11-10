@@ -15,7 +15,7 @@
 }
 .app-shell[data-envista-product-shell] .page-head::before {
   display: block !important;
-  content: "";
+  content: "" !important;
   position: absolute;
   inset: -12px 0 -12px auto;
   width: min(37%, 360px);
