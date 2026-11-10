@@ -37,6 +37,9 @@ Os templates visuais prontos e versionados ficam em:
 
 - confirmação de cadastro: `supabase/email-templates/confirm-signup.html`
 - símbolo PNG para compatibilidade com clientes de e-mail: `public/brand/envista-email-mark.png` (publicado em `https://useenvista.com.br/brand/envista-email-mark.png`)
+- ilustração de envelope oficial: `public/brand/envista-email-envelope.png`
+- ilustração do globo da lateral: `public/brand/envista-email-globe.png`
+- textura e pattern: `public/brand/envista-texture-original.png` e `public/brand/envista-pattern-original.png`
 - recuperação de senha: `supabase/email-templates/reset-password.html`
 
 Assuntos recomendados:
@@ -46,7 +49,9 @@ Assuntos recomendados:
 
 > Importante: versionar os arquivos no repositório não altera automaticamente o template hospedado pelo Supabase Auth. Em produção, copie o HTML correspondente para **Authentication → Email Templates** (ou aplique a mesma configuração por uma API administrativa autorizada) e confirme o assunto antes do release.
 
-Para atualizar o e-mail de confirmação em produção: escolha **Confirm sign up**, copie o conteúdo integral do arquivo versionado, mantenha o assunto **Confirme seu e-mail no Envista**, salve e envie um cadastro de teste. Verifique a imagem PNG externa, o botão e a página intermediária antes de considerar a alteração ativa. O navegador e a Vercel não atualizam o template hospedado no Supabase automaticamente.
+Para atualizar o e-mail de confirmação em produção: escolha **Confirm sign up**, copie o conteúdo integral do arquivo versionado, mantenha o assunto **Confirme seu e-mail no Envista**, salve e envie um cadastro de teste. Confira as imagens externas (símbolo, envelope e globo), o botão e a página intermediária antes de considerar a alteração ativa. O navegador e a Vercel não atualizam o template hospedado no Supabase automaticamente.
+
+A versão atual do e-mail reproduz a arte aprovada com uma **lateral verde, globo, envelope central e cartão escuro**, mantendo texto e botão em HTML real. Use um template HTML com CSS inline e media queries responsivas; em clientes sem suporte a gradientes e imagens externas o fundo sólido e o texto devem continuar legíveis. Nunca transforme o e-mail inteiro em uma imagem, pois isso impediria uso com imagens bloqueadas e dificultaria a acessibilidade.
 
 ## Template — Confirm signup
 

@@ -136,7 +136,17 @@ describe("auth email links", () => {
     expect(signupTemplate).toContain("#0086a7");
     expect(signupTemplate).toContain('{{ .RedirectTo }}?token_hash={{ .TokenHash }}&amp;type=email');
     expect(signupTemplate).not.toContain("{{ .ConfirmationURL }}");
-    expect(signupTemplate).toContain("Não criou uma conta no Envista?");
+    expect(signupTemplate).toContain("Se você não criou uma conta no Envista");
+    expect(signupTemplate).toContain("Confirme seu");
+    expect(signupTemplate).toContain("e-mail</span>");
+    expect(signupTemplate).toContain("Ideias que");
+    expect(signupTemplate).toContain("evoluem em");
+    expect(signupTemplate).toContain("impacto.");
+    expect(signupTemplate).toContain("https://useenvista.com.br/brand/envista-email-envelope.png");
+    expect(signupTemplate).toContain("https://useenvista.com.br/brand/envista-email-globe.png");
+    expect(signupTemplate).toContain("https://useenvista.com.br/brand/envista-pattern-original.png");
+    expect(signupTemplate).toContain("@media only screen and (max-width:720px)");
+    expect(signupTemplate.split('href="{{ .RedirectTo }}').length - 1).toBe(1);
   });
 
   it("documents token-hash templates that point directly at Envista", () => {
