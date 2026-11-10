@@ -580,3 +580,22 @@
   .metric { height: 71px; }
   .metric small { font-size: 11px; }
 }
+
+/* Keep the portrait visually integrated with the original Envista hero. */
+.heroPerson {
+  object-fit: cover;
+  object-position: 54% center;
+  height: 100%;
+  width: 37%;
+  max-width: none;
+  bottom: 0;
+  right: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.8) 21%, #000 39%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.8) 21%, #000 39%);
+}
+@media (max-width: 1470px) {
+  .heroPerson { width: 36%; height: 100%; }
+}
+@media (max-width: 620px) {
+  .heroPerson { width: 66%; height: 100%; opacity: .13; }
+}
