@@ -186,11 +186,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
     <div className={styles.columns}>
       <div className={styles.content}>
         <header className={styles.exploreHeader}>
-          <div className={styles.pageHeading}>
-            <span className={styles.eyebrow}>O ECOSSISTEMA ESTÁ AQUI</span>
-            <h1>Explorar<span aria-hidden="true">.</span></h1>
-            <p>Descubra projetos, pessoas e equipes para construir algo novo.</p>
-          </div>
+          <h1 className={styles.srOnly}>Explorar</h1>
           <form className={styles.searchForm} action={base} method="get" role="search">
             <Search size={20} aria-hidden="true" />
             <label className={styles.srOnly} htmlFor="envista-explore-search">Buscar na comunidade do Envista</label>
