@@ -81,3 +81,26 @@
 }
 .empty > * { position: relative; z-index: 1; }
 @media (max-width:700px) { .empty::before { opacity: .08; } }
+
+/* A subtle calendar signature in the header, not behind the event schedule. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(29%, 220px);
+  pointer-events: none;
+  z-index: -1;
+  background: url("/brand/envista-pattern-original.png") right center / 730px auto repeat;
+  filter: brightness(3.6);
+  opacity: .16;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+@media (max-width: 700px) { .hero::after { opacity: .08; } }

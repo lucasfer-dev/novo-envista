@@ -2816,3 +2816,28 @@
 }
 .competitionLink > * { position: relative; z-index: 1; }
 @media (max-width:640px) { .competitionLink::before { opacity: .13; } }
+
+/* Social: one branded community opportunity, not texture behind posts. */
+.sideColumn .competitionPanel .competitionLink {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.sideColumn .competitionPanel .competitionLink::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 47%;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") right center / 710px auto repeat;
+  filter: brightness(3.6);
+  opacity: .16;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+@media (max-width: 720px) {
+  .sideColumn .competitionPanel .competitionLink::before { opacity: .1; }
+}
