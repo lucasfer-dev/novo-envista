@@ -1,0 +1,252 @@
+/* One navigation contract for every authenticated participant route.
+ * Keep component order in LegacySocialShell; do not restyle per page. */
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] {
+  --ev-sidebar-width: 216px;
+  --ev-sidebar-ink: #deeced;
+  --ev-sidebar-accent: #00a99d;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar {
+  box-sizing: border-box;
+  width: var(--ev-sidebar-width) !important;
+  min-width: 0;
+  padding: 11px 10px 12px !important;
+  background:
+    radial-gradient(ellipse 190px 240px at 10% 100%, rgba(34,181,115,.10), transparent 94%),
+    linear-gradient(175deg, #061923, #061e24 58%, #082920) !important;
+  border-right: 1px solid rgba(0,169,157,.27) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: #24464a transparent;
+  overscroll-behavior: contain;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+  display: block !important;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("/brand/envista-pattern-original.png") center bottom / 365px repeat;
+  opacity: .09 !important;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 9%, #000);
+  mask-image: linear-gradient(to bottom, transparent 9%, #000);
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 1px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,134,167,.12), rgba(0,169,157,.32), rgba(34,181,115,.20));
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .main {
+  margin-left: var(--ev-sidebar-width) !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > .brand {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 46px;
+  height: 46px;
+  min-height: 46px !important;
+  margin: 0 0 11px 4px !important;
+  padding: 0 9px !important;
+  border-radius: 12px;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > .brand img {
+  width: 27px !important;
+  height: 31px !important;
+  max-width: none;
+  object-fit: contain;
+  filter: none !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > .brand strong {
+  display: none !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px !important;
+  margin: 0;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 41px !important;
+  min-height: 41px !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
+  gap: 12px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  color: var(--ev-sidebar-ink) !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  font-weight: 510 !important;
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  text-decoration: none;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a:hover {
+  background: rgba(0,169,157,.08) !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"] {
+  background: linear-gradient(96deg, rgba(0,134,167,.15), rgba(0,169,157,.12) 62%, rgba(34,181,115,.08)) !important;
+  color: #fff !important;
+  font-weight: 750 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"] svg {
+  color: #48dfce !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a svg {
+  flex: 0 0 20px;
+  width: 20px !important;
+  height: 20px !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a[href="/home"][aria-current="page"]::after {
+  top: 7px;
+  left: 26px;
+  width: 5px;
+  height: 5px;
+  background: #22b573;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar .sidebar-notification-symbol {
+  display: grid;
+  place-items: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .dashboard-home-group {
+  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .dashboard-home-label {
+  display: none !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .dashboard-new-project {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(100% - 12px);
+  height: 39px;
+  min-height: 39px;
+  margin: 11px 6px 9px !important;
+  padding: 0 12px !important;
+  gap: 8px;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(105deg, #00a99d, #16b69f 64%, #22b573) !important;
+  box-shadow: none !important;
+  color: #032624 !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .dashboard-new-project svg {
+  flex-shrink: 0;
+  width: 19px !important;
+  height: 19px !important;
+  color: #032624 !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .dashboard-new-project:hover {
+  background: linear-gradient(105deg, #21c2b1, #42c98f) !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom {
+  box-sizing: border-box;
+  display: block !important;
+  flex-shrink: 0;
+  margin-top: auto !important;
+  padding: 8px 0 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .user-card {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 49px;
+  margin: 0 !important;
+  padding: 5px !important;
+  border: 0 !important;
+  border-radius: 13px;
+  background: transparent !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .user-card:hover {
+  background: rgba(0,169,157,.08) !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .envista-sidebar-handle {
+  left: calc(var(--ev-sidebar-width) - 13px);
+}
+@media (min-width: 981px) {
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] {
+    --ev-sidebar-width: 64px;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar {
+    padding: 11px 6px 12px !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > .brand {
+    justify-content: center;
+    margin: 0 auto 11px !important;
+    padding: 0 !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > nav a {
+    justify-content: center;
+    width: 42px;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .sidebar > nav a > span:last-child {
+    display: none !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .dashboard-new-project {
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+    margin: 11px auto 9px !important;
+    padding: 0 !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .dashboard-new-project > span {
+    display: none !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .user-card {
+    justify-content: center;
+    width: 42px;
+    margin: 0 auto !important;
+    padding: 5px 0 !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .user-card > div,
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"] .user-card > button {
+    display: none !important;
+  }
+}
+@media (max-width: 980px) {
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar {
+    width: min(270px, 88vw) !important;
+    max-width: 88vw;
+    height: 100dvh !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .main {
+    margin-left: 0 !important;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .envista-sidebar-handle {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar,
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .main,
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .envista-sidebar-handle {
+    transition: none !important;
+  }
+}
