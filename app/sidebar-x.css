@@ -382,3 +382,91 @@
     transition: none !important;
   }
 }
+
+
+.app-shell[data-envista-x-sidebar="true"] .sidebar {
+  background: #071b24 !important;
+  border-right-color: rgba(156,190,194,.15) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar::before {
+  opacity: .045 !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar::after {
+  width: 1px;
+  background: rgba(151,187,191,.14);
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a,
+.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a,
+.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a,
+.app-shell[data-envista-x-sidebar="true"] .side-section a {
+  border-radius: 999px !important;
+  font-weight: 510 !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .side-section a[aria-current="page"] {
+  background: rgba(0,169,157,.085) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-weight: 750 !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a:hover,
+.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a:hover,
+.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a:hover,
+.app-shell[data-envista-x-sidebar="true"] .side-section a:hover {
+  background: rgba(255,255,255,.05) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"]:hover {
+  background: rgba(0,169,157,.13) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+}
+.app-shell[data-envista-x-sidebar="true"] .user-card:hover {
+  background: rgba(255,255,255,.045);
+}
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project {
+  background: #00a99d !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project:hover {
+  background: #29c3b0 !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .topbar {
+  background: #071b24 !important;
+  border-bottom-color: rgba(151,185,191,.14) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .main {
+  background: #071922 !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .envista-sidebar-handle {
+  background: #0b2932;
+  box-shadow: none;
+  color: #91d9cf;
+}
+@media (min-width: 981px) {
+  .app-shell[data-envista-clean-explore="true"] .topbar {
+    display: none;
+  }
+  .app-shell[data-envista-clean-explore="true"] .page-wrap {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 8px 18px 38px;
+  }
+}
+@media (max-width: 980px) {
+  .app-shell[data-envista-clean-explore="true"] .page-wrap {
+    width: 100%;
+    max-width: none;
+    padding: 9px 12px 90px;
+  }
+}
+@media (max-width: 480px) {
+  .app-shell[data-envista-clean-explore="true"] .page-wrap {
+    padding: 8px 0 91px;
+  }
+}
