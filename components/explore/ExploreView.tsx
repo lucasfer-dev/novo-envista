@@ -300,9 +300,9 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
         </section>}
       </div>
 
-      <aside className={styles.rail} aria-label="Competições, filtros e recomendações">
-        <ExploreCompetitionSpotlight />
+      <aside className={styles.rail} aria-label="Filtros, desafios e áreas de interesse">
         <ExploreFiltersClient key={q + "|" + stage + "|" + type} base={base} initialQuery={q} initialStage={stage} initialType={type} />
+        <ExploreCompetitionSpotlight />
         <section className={styles.topics} id="explore-categories" aria-labelledby="explore-categories-heading">
           <div className={styles.panelHeading}>
             <h2 id="explore-categories-heading"><Sparkles size={19} aria-hidden="true" /> Explore por área</h2>
