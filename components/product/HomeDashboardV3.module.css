@@ -395,3 +395,5 @@
 @media (prefers-reduced-motion: reduce) {
   .dashboard *, .dashboard *::before, .dashboard *::after { transition: none !important; scroll-behavior: auto !important; }
 }
+
+.day.hasEvent:not(.today) { color: #d9fff4 !important; }
