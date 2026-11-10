@@ -32,3 +32,20 @@
 .composer textarea { background: #0a202a; border-color: rgba(155,183,190,.19); border-radius: 18px; }
 .sendButton { background: #00a99d; color: #052522; }
 @media (max-width:900px) { .inboxLayout { grid-template-columns: minmax(0,1fr); } }
+
+
+/* Accent only where messages need attention. */
+.threadUnread {
+  background: linear-gradient(90deg, rgba(0,134,167,.07), rgba(0,169,157,.03), transparent);
+}
+.threadUnread::before { background: linear-gradient(#0086a7,#00a99d,#22b573); }
+.threadRow:hover { background: rgba(0,169,157,.04); }
+.avatar, .miniAvatar, .avatarLarge {
+  background: linear-gradient(145deg, #0b4652, #11513e);
+  border-color: rgba(0,169,157,.20);
+}
+.mine {
+  background: linear-gradient(145deg, #0f403e, #0d383b);
+  border-color: rgba(0,169,157,.24);
+}
+.sendButton { background: linear-gradient(105deg,#00a99d,#22b573); color: #06271f; }
