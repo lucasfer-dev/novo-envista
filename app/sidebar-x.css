@@ -470,3 +470,7 @@
     padding: 8px 0 91px;
   }
 }
+
+
+.app-shell .topbar-search-command { display: contents; }
+.app-shell .topbar-search-command--hidden { display: none; }
