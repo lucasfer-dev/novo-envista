@@ -378,7 +378,7 @@ export default function LegacySocialShell({
             label={
               role === "investor"
                 ? "Buscar projetos, equipes e pessoas"
-                : socialReference ? "Buscar projetos, pessoas, equipes ou competições..." : "Buscar no Envista"
+                : dashboardHome ? "Buscar projetos, pessoas, equipes, competições, conteúdos..." : socialReference ? "Buscar projetos, pessoas, equipes ou competições..." : "Buscar no Envista"
             }
           />
           <div className="top-actions">
