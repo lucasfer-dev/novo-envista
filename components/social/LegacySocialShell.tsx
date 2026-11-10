@@ -198,7 +198,8 @@ export default function LegacySocialShell({
   const homeReference = role === "participant" && (pathname === "/home" || pathname === "/explore" || pathname === "/social");
   const socialReference = role === "participant" && pathname === "/social";
   const dashboardHome = role === "participant" && pathname === "/home";
-  const nav = role === "investor" ? investorNav : dashboardHome ? participantDashboardNav : homeReference ? participantHomeNav : participantNav;
+  const notificationReference = role === "participant" && normalizedPathname === "/notifications";
+  const nav = role === "investor" ? investorNav : dashboardHome ? participantDashboardNav : homeReference || notificationReference ? participantHomeNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
   const prefix: "" | "/investor" = role === "investor" ? "/investor" : "";
@@ -321,7 +322,7 @@ export default function LegacySocialShell({
             <p>Desafios reais, oportunidades e visibilidade para o seu projeto.</p>
             <Link href="/competitions" onClick={closeMobile}>Ver competições <span aria-hidden="true">→</span></Link>
           </div>
-        </> : homeReference ? <>
+        </> : homeReference || notificationReference ? <>
           <div className="home-nav-section">
             <span>Seu espaço</span>
             <nav aria-label="Espaço de trabalho">
