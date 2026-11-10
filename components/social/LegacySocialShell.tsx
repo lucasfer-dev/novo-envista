@@ -10,6 +10,7 @@ import {
   Bookmark,
   BriefcaseBusiness,
   CalendarDays,
+  ChevronDown,
   CircleUserRound,
   Compass,
   Eye,
@@ -23,6 +24,7 @@ import {
   MessageCircle,
   MoreHorizontal,
   PanelsTopLeft,
+  Plus,
   Rocket,
   Settings,
   Trophy,
@@ -60,6 +62,15 @@ const participantHomeNav = [
   ["/competitions", Trophy, "Competições"],
   ["/learn", GraduationCap, "Aprender"],
   ["/explore#explore-people", CircleUserRound, "Investidores"],
+] as const;
+
+const participantDashboardNav = [
+  ["/home", Home, "Dashboard"],
+  ["/explore", Compass, "Explorar"],
+  ["/app/projects", FolderKanban, "Projetos"],
+  ["/teams", Users, "Equipes"],
+  ["/competitions", Trophy, "Competições"],
+  ["/learn", GraduationCap, "Aprender"],
 ] as const;
 
 const participantHomeWorkspace = [
@@ -172,7 +183,8 @@ export default function LegacySocialShell({
         : pathname;
   const homeReference = role === "participant" && (pathname === "/home" || pathname === "/explore" || pathname === "/social");
   const socialReference = role === "participant" && pathname === "/social";
-  const nav = role === "investor" ? investorNav : homeReference ? participantHomeNav : participantNav;
+  const dashboardHome = role === "participant" && pathname === "/home";
+  const nav = role === "investor" ? investorNav : dashboardHome ? participantDashboardNav : homeReference ? participantHomeNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
   const prefix: "" | "/investor" = role === "investor" ? "/investor" : "";
@@ -250,7 +262,27 @@ export default function LegacySocialShell({
         </nav>
 
 
-        {homeReference ? <>
+        {dashboardHome ? <>
+          <div className="dashboard-home-group">
+            <span className="dashboard-home-label">CRIAR</span>
+            <Link className="dashboard-new-project" href="/app/projects/new" onClick={closeMobile}>
+              <Plus size={24} aria-hidden="true" /><span>Novo projeto</span>
+            </Link>
+          </div>
+          <div className="dashboard-home-group dashboard-home-community">
+            <span className="dashboard-home-label">COMUNIDADE</span>
+            <nav aria-label="Comunidade">
+              <Link href="/social" onClick={closeMobile}><GitBranch size={20} aria-hidden="true" /><span>Social</span></Link>
+              <Link href="/messages" onClick={closeMobile}><MessageCircle size={20} aria-hidden="true" /><span>Mensagens</span></Link>
+            </nav>
+          </div>
+          <div className="dashboard-home-promo">
+            <Trophy size={32} strokeWidth={1.65} aria-hidden="true" />
+            <strong>Participe de<br/>competições</strong>
+            <p>Desafios reais, oportunidades e visibilidade para o seu projeto.</p>
+            <Link href="/competitions" onClick={closeMobile}>Ver competições <span aria-hidden="true">→</span></Link>
+          </div>
+        </> : homeReference ? <>
           <div className="home-nav-section">
             <span>Seu espaço</span>
             <nav aria-label="Espaço de trabalho">
@@ -351,13 +383,16 @@ export default function LegacySocialShell({
           />
           <div className="top-actions">
             <NotificationsBell userId={user.id} prefix={prefix} dark />
-            <Link
+            {dashboardHome ? <Link className="dashboard-top-user" href={profile} aria-label="Abrir meu perfil">
+              <Avatar name={user.name} src={avatarUrl} />
+              <span>{user.name}</span><ChevronDown size={17} aria-hidden="true" />
+            </Link> : <Link
               className="profile-avatar-btn"
               aria-label="Abrir meu perfil"
               href={profile}
             >
               <Avatar name={user.name} src={avatarUrl} />
-            </Link>
+            </Link>}
           </div>
         </header>
         <div className="page-wrap">{children}</div>
