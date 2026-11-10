@@ -5,7 +5,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Activity,
   BadgeCheck,
-  BarChart3,
   Bell,
   Bookmark,
   BriefcaseBusiness,
@@ -23,11 +22,9 @@ import {
   Menu,
   MessageCircle,
   MoreHorizontal,
-  PanelsTopLeft,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
-  Rocket,
   Settings,
   Trophy,
   Users,
@@ -45,43 +42,11 @@ const participantNav = [
   ["/explore", Compass, "Explorar"],
   ["/notifications", Bell, "Notificações"],
   ["/social", Activity, "Social"],
-  ["/app/projects", FolderKanban, "Meus projetos"],
-  ["/teams", Users, "Minhas equipes"],
-  ["/workspace", PanelsTopLeft, "Workspace"],
-  ["/insights", BarChart3, "Insights"],
-  ["/interests", BriefcaseBusiness, "Interesses recebidos"],
-  ["/competitions", Trophy, "Competições"],
-  ["/calendar", CalendarDays, "Calendário"],
-  ["/learn", GraduationCap, "Aprender"],
   ["/messages", MessageCircle, "Mensagens"],
-] as const;
-
-const participantHomeNav = [
-  ["/home", Home, "Página Inicial"],
-  ["/explore", Compass, "Explorar"],
-  ["/notifications", Bell, "Notificações"],
-  ["/social", Activity, "Social"],
   ["/app/projects", FolderKanban, "Projetos"],
   ["/teams", Users, "Equipes"],
   ["/competitions", Trophy, "Competições"],
   ["/learn", GraduationCap, "Aprender"],
-  ["/explore#explore-people", CircleUserRound, "Investidores"],
-] as const;
-
-const participantDashboardNav = [
-  ["/home", Home, "Página Inicial"],
-  ["/explore", Compass, "Explorar"],
-  ["/notifications", Bell, "Notificações"],
-  ["/app/projects", FolderKanban, "Projetos"],
-  ["/teams", Users, "Equipes"],
-  ["/competitions", Trophy, "Competições"],
-  ["/learn", GraduationCap, "Aprender"],
-] as const;
-
-const participantHomeWorkspace = [
-  ["/workspace", PanelsTopLeft, "Workspace"],
-  ["/messages", MessageCircle, "Mensagens"],
-  ["/insights", BarChart3, "Insights"],
 ] as const;
 
 const investorNav = [
@@ -198,8 +163,7 @@ export default function LegacySocialShell({
   const homeReference = role === "participant" && (pathname === "/home" || pathname === "/explore" || pathname === "/social");
   const socialReference = role === "participant" && pathname === "/social";
   const dashboardHome = role === "participant" && pathname === "/home";
-  const notificationReference = role === "participant" && normalizedPathname === "/notifications";
-  const nav = role === "investor" ? investorNav : dashboardHome ? participantDashboardNav : homeReference || notificationReference ? participantHomeNav : participantNav;
+  const nav = role === "investor" ? investorNav : participantNav;
   const mobileNav =
     role === "investor" ? investorMobileNav : participantMobileNav;
   const prefix: "" | "/investor" = role === "investor" ? "/investor" : "";
@@ -302,61 +266,15 @@ export default function LegacySocialShell({
         </nav>
 
 
-        {dashboardHome ? <>
+        {role === "participant" ? (
           <div className="dashboard-home-group">
             <span className="dashboard-home-label">CRIAR</span>
             <Link className="dashboard-new-project" href="/app/projects/new" onClick={closeMobile} title="Novo projeto" aria-label="Novo projeto">
               <Plus size={24} aria-hidden="true" /><span>Novo projeto</span>
             </Link>
           </div>
-          <div className="dashboard-home-group dashboard-home-community">
-            <span className="dashboard-home-label">COMUNIDADE</span>
-            <nav aria-label="Comunidade">
-              <Link href="/social" onClick={closeMobile} title="Social" aria-label="Social"><GitBranch size={20} aria-hidden="true" /><span>Social</span></Link>
-              <Link href="/messages" onClick={closeMobile} title="Mensagens" aria-label="Mensagens"><MessageCircle size={20} aria-hidden="true" /><span>Mensagens</span></Link>
-            </nav>
-          </div>
-          <div className="dashboard-home-promo">
-            <Trophy size={32} strokeWidth={1.65} aria-hidden="true" />
-            <strong>Participe de<br/>competições</strong>
-            <p>Desafios reais, oportunidades e visibilidade para o seu projeto.</p>
-            <Link href="/competitions" onClick={closeMobile}>Ver competições <span aria-hidden="true">→</span></Link>
-          </div>
-        </> : homeReference || notificationReference ? <>
-          <div className="home-nav-section">
-            <span>Seu espaço</span>
-            <nav aria-label="Espaço de trabalho">
-              {participantHomeWorkspace.map(([href, Icon, label]) => {
-                const active = isNavItemActive(normalizedPathname, href);
-                return <Link key={href} href={href} onClick={closeMobile} className={cx(active && "active")} aria-current={active ? "page" : undefined} title={label} aria-label={label}>
-                  <Icon size={18} aria-hidden="true" /><span>{label}</span>
-                </Link>;
-              })}
-            </nav>
-          </div>
-          <details className="home-more-menu">
-            <summary title="Mais opções" aria-label="Mais opções" onClick={(event) => {
-              if (sidebarCollapsed && window.matchMedia("(min-width: 981px)").matches) {
-                event.preventDefault();
-                toggleSidebar();
-              }
-            }}><MoreHorizontal size={21} aria-hidden="true" /><span>Mais opções</span></summary>
-            <div className="home-more-links">
-              <Link href="/interests" onClick={closeMobile}>Interesses recebidos</Link>
-              <Link href="/calendar" onClick={closeMobile}>Calendário</Link>
-              <Link href="/integrations/github" onClick={closeMobile}>Integrações</Link>
-              <Link href="/account/settings" onClick={closeMobile}>Configurações</Link>
-              <Link href="/account/feedback" onClick={closeMobile}>Feedback e suporte</Link>
-            </div>
-          </details>
-          <div className="home-nav-promo">
-            <span className="home-promo-icon" aria-hidden="true"><Rocket size={27} strokeWidth={1.8} /></span>
-            <strong>Envista</strong>
-            <p>{socialReference ? "Explore projetos, conexões e oportunidades." : "Ideias, pessoas e oportunidades para levar seus projetos mais longe."}</p>
-            <Link href={pathname === "/explore" ? "#explore-categories" : "/explore"} onClick={closeMobile}>{socialReference ? "Conhecer" : "Explorar projetos"} <span aria-hidden="true">→</span></Link>
-          </div>
-        </> : (
-        <div className="side-section">
+        ) : (
+          <div className="side-section">
           <span>Conta</span>
           {[
             [profile, CircleUserRound, "Perfil"],
@@ -381,7 +299,6 @@ export default function LegacySocialShell({
             );
           })}
         </div>
-
         )}
         <div className="side-bottom">
           <div className="user-card">
