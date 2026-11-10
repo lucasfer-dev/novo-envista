@@ -662,3 +662,112 @@
   }
   .calendarPanel { grid-row: auto; }
 }
+
+
+/* Minimal home: quieter dashboard surfaces, hierarchy focused on actions and activity. */
+.dashboard {
+  --ev-turquoise: #00a99d;
+  --ev-mint: #38c9aa;
+  --ev-teal: #00a99d;
+  --ev-deep: #061a23;
+  --ev-border: rgba(147,182,189,.17);
+  --ev-secondary: #9db8c0;
+  font-size: 13px;
+}
+.layout { grid-template-columns: minmax(0,1fr) minmax(275px,305px); gap: 20px; }
+.primaryColumn { gap: 13px; }
+.hero {
+  min-height: 188px;
+  border: 1px solid rgba(0,169,157,.18);
+  border-radius: 14px;
+  background: linear-gradient(115deg,#0b3038,#0b2b35 60%,#0b3332);
+  box-shadow: none;
+}
+.heroPattern { opacity: .055; }
+.heroGlobe, .heroSymbol { opacity: .25; }
+.heroPerson { opacity: .44; filter: saturate(.78); }
+.heroContent { position: relative; z-index: 3; padding-block: 22px; }
+.heroContent h2 { font-size: clamp(24px,2.45vw,33px); letter-spacing: -.035em; font-weight: 790; }
+.heroContent p { color: #c3d6d7; line-height: 1.55; font-size: 12px; }
+.eyebrow { color: #72d9cc; font-size: 10px; letter-spacing: .075em; }
+.heroActions { gap: 9px; }
+.btnPrimary, .btnSecondary {
+  min-height: 37px;
+  border-radius: 999px;
+  font-size: 12px;
+  box-shadow: none;
+}
+.btnPrimary { background: #00a99d; color: #05231f; }
+.btnPrimary:hover { background: #21c3b0; box-shadow: none; transform: none; }
+.btnSecondary { border: 1px solid rgba(142,186,191,.3); background: transparent; }
+.btnSecondary:hover { background: rgba(255,255,255,.045); box-shadow: none; transform: none; }
+.metrics { gap: 9px; }
+.metric, .metricPurple {
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+  background: #0a2731;
+  box-shadow: none;
+}
+.metricIcon {
+  background: rgba(0,169,157,.085);
+  border-color: rgba(0,169,157,.13);
+  color: #70ccbf;
+}
+.metricPurple { background: #0a2731; }
+.metricPurple .metricIcon { background: rgba(0,169,157,.075); color: #8dd8d0; border-color: rgba(0,169,157,.13); }
+.journeyPanel, .panel, .learnPanel,
+.nextEventPanel, .calendarPanel, .eventListPanel,
+.progressPanel {
+  border: 1px solid var(--ev-border);
+  border-radius: 13px;
+  background: #0a2630;
+  box-shadow: none;
+}
+.panelHeading h2, .railHeading h2 { font-size: 15px; font-weight: 750; }
+.panelHeading h2 svg, .railHeading h2 svg { color: #65cdbf; }
+.panelHeading a, .railHeading a { color: #72d9c8; }
+.journeyPanel { padding: 18px; }
+.journeyIcon { background: rgba(0,169,157,.075); border-color: rgba(0,169,157,.13); color: #75d7ca; }
+.stepBubble { background: #0a2630; border-color: rgba(150,181,188,.4); }
+.stepDone .stepBubble, .stepActive .stepBubble {
+  background: rgba(0,169,157,.12);
+  border-color: #00a99d;
+  color: #9debdc;
+  box-shadow: none;
+}
+.progressTrack { background: #163e45; }
+.progressTrack > span { background: #00a99d; }
+.projectRow, .eventRow, .compactEvent {
+  border-color: rgba(150,184,190,.13);
+  background: transparent;
+  box-shadow: none;
+}
+.projectRow:hover, .compactEvent:hover { background: rgba(255,255,255,.03); transform: none; }
+.competitionCard, .tile {
+  border: 1px solid var(--ev-border);
+  border-radius: 11px;
+  background: #0e2a33;
+  box-shadow: none;
+}
+.tileBlue, .tileViolet, .tileGold { background: #0e2a33; }
+.tile:hover, .competitionCard:hover { transform: none; box-shadow: none; }
+.rail { gap: 12px; }
+.nextEventPanel, .eventListPanel { min-height: 0; }
+.calendarPanel { min-height: 0; }
+.day[aria-current="date"], .day[data-today="true"] {
+  background: #00a99d;
+  color: #052522;
+}
+@media (max-width: 1280px) {
+  .layout { grid-template-columns: minmax(0,1fr) minmax(250px,27%); gap: 14px; }
+}
+@media (max-width: 1023px) {
+  .layout { grid-template-columns: minmax(0,1fr); }
+  .rail { gap: 12px; }
+}
+@media (max-width: 620px) {
+  .heroContent { padding: 21px 17px; }
+  .heroPerson { opacity: .15; }
+  .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .journeyPanel { padding: 15px; }
+}
