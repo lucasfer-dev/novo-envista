@@ -165,7 +165,8 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
           ]}
           course={course} courseProgress={courseProgress}
           learningCount={learningCountResult.count ?? (course ? 1 : 0)}
-          todayISO={new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())} />
+          todayISO={new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date())}
+          nowISO={new Date().toISOString()} />
       </LegacySocialShell>
     );
   }
