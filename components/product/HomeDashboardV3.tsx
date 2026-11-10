@@ -186,7 +186,7 @@ function EventRow({ event, small = false }: { event: DashboardAgendaEvent; small
 }
 
 export default function HomeDashboardV3({
-  name, projects, teams, agenda = [], profileSteps = [], course,
+  projects, teams, agenda = [], profileSteps = [], course,
   courseProgress, learningCount = 0, competitionParticipations = 0,
   todayISO = "2026-11-10", nowISO,
 }: Props) {
@@ -205,7 +205,6 @@ export default function HomeDashboardV3({
     return () => controller.abort();
   }, []);
 
-  const nameFirst = name.trim().split(/\s+/)[0] || "criador";
   const profileComplete = profileSteps.length > 0 && profileSteps.every(step => step.done);
   const journey = [
     { label: "Perfil completo", detail: "Seu perfil pronto para conexões", done: profileComplete, href: "/account/profile" },
@@ -231,11 +230,6 @@ export default function HomeDashboardV3({
     <div className={styles.dashboard} data-envista-home-v3>
       <div className={styles.layout}>
         <div className={styles.primaryColumn}>
-          <div className={styles.greeting}>
-            <h1>Olá, {nameFirst} <span aria-hidden="true">👋</span></h1>
-            <p>Bem-vindo de volta ao Envista.</p>
-          </div>
-
           <section className={styles.hero} aria-label="Comece sua jornada no Envista">
             <span className={styles.heroPattern} aria-hidden="true" />
             <span className={styles.heroGlobe} aria-hidden="true" />
