@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Bell } from "lucide-react";
+import SidebarNavIcon from "@/components/social/SidebarNavIcon";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -22,7 +23,7 @@ function BellLink({ count, prefix, dark = false, variant = "icon", active = fals
         aria-label={count ? `Notificações, ${count} não lidas` : "Notificações"}
       >
         <span className="sidebar-notification-symbol">
-          <Bell size={25} strokeWidth={active ? 2.4 : 1.9} aria-hidden="true" />
+          <SidebarNavIcon href={`${prefix}/notifications`} active={active} OutlineIcon={Bell} />
           {count > 0 ? <span className="sidebar-notification-count">{count > 99 ? "99+" : count}</span> : null}
         </span>
         <span>Notificações</span>
