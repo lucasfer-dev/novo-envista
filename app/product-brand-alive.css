@@ -1,0 +1,113 @@
+/* Envista product art direction: quiet X-like layouts, expressive brand details. */
+.app-shell[data-envista-product-shell] {
+  --ev-blue: #0086a7;
+  --ev-teal: #00a99d;
+  --ev-green: #22b573;
+  --ev-brand-line: linear-gradient(105deg, #0086a7 0%, #00a99d 51%, #22b573 100%);
+  --ev-brand-wash: linear-gradient(135deg, rgba(0,134,167,.11), rgba(0,169,157,.045) 55%, rgba(34,181,115,.055));
+  --ev-brand-soft-blue: rgba(0,134,167,.12);
+  --ev-brand-soft-teal: rgba(0,169,157,.11);
+  --ev-brand-soft-green: rgba(34,181,115,.10);
+  --ev-surface: #0a2430;
+  --ev-surface-raised: #102f39;
+  --ev-surface-hover: #102c36;
+  --ev-border: rgba(148,182,192,.18);
+  --ev-border-strong: rgba(0,169,157,.33);
+  --ev-accent: #21c8b5;
+  --ev-accent-hover: #50dcc9;
+  --ev-brand-gradient: var(--ev-brand-line);
+}
+
+/* A soft, multi-colour atmosphere; no artwork under copy or competing with data. */
+.app-shell[data-envista-product-shell] .main {
+  background:
+    radial-gradient(ellipse 580px 400px at 95% -4%, rgba(0,134,167,.09), transparent 72%),
+    radial-gradient(ellipse 470px 450px at 5% 93%, rgba(34,181,115,.045), transparent 75%),
+    #061a23 !important;
+}
+.app-shell[data-envista-product-shell] .topbar {
+  background: linear-gradient(105deg, #071b26 0%, #071e28 75%, #082723 100%) !important;
+  border-bottom-color: rgba(0,169,157,.18) !important;
+}
+.app-shell[data-envista-product-shell] .global-search:focus-within {
+  border-color: rgba(0,169,157,.65) !important;
+  box-shadow: 0 0 0 3px rgba(0,169,157,.10) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar {
+  background:
+    radial-gradient(ellipse 210px 220px at 0 100%, rgba(34,181,115,.085), transparent 92%),
+    linear-gradient(165deg, #061a23 0%, #071d26 58%, #082822 100%) !important;
+  border-right-color: rgba(0,169,157,.18) !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar::before {
+  display: block !important;
+  background: url("/brand/envista-pattern-original.png") center bottom / 365px auto repeat;
+  opacity: .105 !important;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 8%, #000 90%);
+  mask-image: linear-gradient(to bottom, transparent 8%, #000 90%);
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar::after {
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(0,134,167,.15), rgba(0,169,157,.32), rgba(34,181,115,.19));
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a[aria-current="page"],
+.app-shell[data-envista-x-sidebar="true"] .side-section a[aria-current="page"] {
+  background: linear-gradient(96deg, rgba(0,134,167,.15), rgba(0,169,157,.12) 62%, rgba(34,181,115,.085)) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .sidebar nav a[aria-current="page"] svg {
+  color: #47ddcb !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project {
+  background: linear-gradient(105deg, #00a99d, #16b59e 64%, #22b573) !important;
+  color: #05251f !important;
+}
+.app-shell[data-envista-x-sidebar="true"] .dashboard-new-project:hover {
+  background: linear-gradient(105deg, #26c5b5, #30c6a3 68%, #49cd90) !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary) {
+  background: linear-gradient(105deg, #00a99d, #16b69f 68%, #22b573) !important;
+  color: #06251f !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary):hover {
+  background: linear-gradient(105deg, #29c5b5, #3bc9ae 65%, #48d08e) !important;
+}
+.app-shell[data-envista-product-shell] :is(.panel,.card,.project-card,.team-card) {
+  border-color: var(--ev-border) !important;
+}
+.app-shell[data-envista-product-shell] :is(a.panel,button.panel,a.project-card,button.project-card,a.team-card,button.team-card):hover {
+  border-color: var(--ev-border-strong) !important;
+  background: #0d2a35 !important;
+}
+.app-shell[data-envista-product-shell] :is(.section-row h2,.panel-title svg) svg,
+.app-shell[data-envista-product-shell] :is(.section-row h2 svg,.panel-title > svg) {
+  color: #64daca;
+}
+.app-shell[data-envista-product-shell] .page-head p {
+  color: #aac0c6 !important;
+}
+.app-shell[data-envista-product-shell] :is(.stage,.badge,.pill)[data-active="true"],
+.app-shell[data-envista-product-shell] :is(.stage,.badge,.pill)[aria-current="page"] {
+  color: #83ead8;
+  border-color: rgba(0,169,157,.28);
+  background: rgba(0,169,157,.11);
+}
+.app-shell[data-envista-product-shell] :is(.progress i) {
+  background: var(--ev-brand-line) !important;
+}
+.app-shell[data-envista-product-shell] :is(a,button,summary) {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary) {
+    transition: background-color .15s ease, border-color .15s ease, filter .15s ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-envista-product-shell] :is(a,button,.panel,.card,.project-card,.team-card) {
+    transition: none !important;
+  }
+}
