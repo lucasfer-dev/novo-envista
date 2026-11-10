@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, Plus, X } from "lucide-react";
-import styles from "./Onboarding.module.css";
+import styles from "@/app/onboarding/Onboarding.module.css";
 
 export const MAX_INTEREST_TAGS = 12;
 
