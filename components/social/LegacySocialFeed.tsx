@@ -14,7 +14,6 @@ import {
   Compass,
   Flame,
   Globe2,
-  Sparkles,
   Lightbulb,
   Settings2,
   FolderKanban,
@@ -305,11 +304,10 @@ export default function LegacySocialFeed({
         <section className={styles.mainColumn}>
       <header className={styles.feedHeader}>
         <div className={styles.feedIntro}>
-          <span className={styles.feedEyebrow}><Sparkles size={14} aria-hidden="true" /> Comunidade Envista</span>
+          <span className={styles.feedEyebrow}>Comunidade Envista</span>
           <h1>Social</h1>
-          <p>Conecte-se, compartilhe ideias, acompanhe projetos e encontre pessoas para construir o próximo passo da sua ideia.</p>
+          <p>Compartilhe ideias, acompanhe projetos e converse com a comunidade.</p>
         </div>
-        <div className={styles.heroGlobe} aria-hidden="true" />
       </header>
 
           <div className={styles.timelineToolbar}>
