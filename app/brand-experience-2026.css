@@ -368,9 +368,13 @@
   :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]
   :is(svg, .sidebar-notification-symbol) {
   color: #38dcc4 !important;
-  fill: currentColor !important;
   background: rgba(0,165,153,.13);
   --envista-icon-knockout: #0a343b;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]
+  svg.envista-solid-nav-icon {
+  fill: currentColor;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
   :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]
