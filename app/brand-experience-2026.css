@@ -192,3 +192,118 @@
     animation:none !important;transition-duration:.01ms !important;
   }
 }
+
+/* Layout rhythm — shared 8px spacing system, purposeful brand treatment. */
+:root {
+  --ev-layout-gutter: clamp(20px, 2.4vw, 40px);
+  --ev-layout-section: 32px;
+  --ev-layout-card-pad: 24px;
+  --ev-layout-card-gap: 16px;
+  --ev-layout-control-height: 44px;
+}
+.app-shell[data-envista-product-shell] .page-wrap,
+.app-shell[data-envista-social-reference="true"] .page-wrap,
+.app-shell[data-envista-clean-explore="true"] .page-wrap,
+.app-shell[data-envista-home-page="true"] .page-wrap {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 1540px !important;
+  margin-inline: auto !important;
+  padding: 28px var(--ev-layout-gutter) 96px !important;
+  min-width: 0;
+}
+.app-shell[data-envista-product-shell] .page-wrap .page-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:24px 28px !important;
+  margin:0 0 28px !important;
+  border-color:rgba(76,150,160,.28) !important;
+  background:
+    radial-gradient(ellipse at 100% 105%,rgba(34,177,115,.11),transparent 56%),
+    linear-gradient(105deg,rgba(12,42,53,.98),rgba(13,41,52,.94)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.024) !important;
+}
+.app-shell[data-envista-product-shell] .page-wrap .page-head > * {min-width:0}
+.app-shell[data-envista-product-shell] .page-wrap .page-head h1 {
+  margin:0 0 8px !important;
+  font-size:clamp(26px,2vw,32px) !important;
+  font-weight:760;
+  line-height:1.18;
+  letter-spacing:-.03em;
+}
+.app-shell[data-envista-product-shell] .page-wrap .page-head p {
+  max-width:65ch;
+  margin:0;
+  line-height:1.6;
+}
+.app-shell[data-envista-product-shell] .section-block {
+  margin-top:var(--ev-layout-section);
+}
+.app-shell[data-envista-product-shell] .section-row {
+  gap:16px;
+  margin-bottom:16px;
+}
+.app-shell[data-envista-product-shell] :is(.panel,.section-block) {
+  border-color:rgba(73,145,155,.25) !important;
+  background:linear-gradient(145deg,#132a35,#102834) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018) !important;
+}
+.app-shell[data-envista-product-shell] .sidebar::before,
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+  opacity:.105 !important;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,.25) 79%,#000 100%) !important;
+  mask-image:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,.25) 79%,#000 100%) !important;
+}
+.app-shell[data-envista-product-shell] :is(.dashboard-new-project,.primary,button.primary,a.primary) {
+  box-shadow:0 4px 14px rgba(0,165,153,.1) !important;
+}
+.app-shell[data-envista-product-shell] :is(input,select,textarea,button,a):focus-visible {
+  outline:2px solid #50ddc8;
+  outline-offset:2px;
+}
+.app-shell[data-envista-product-shell] button:disabled {
+  cursor:not-allowed;
+}
+@media (min-width:1500px) {
+  .app-shell[data-envista-product-shell] .page-wrap,
+  .app-shell[data-envista-social-reference="true"] .page-wrap,
+  .app-shell[data-envista-clean-explore="true"] .page-wrap,
+  .app-shell[data-envista-home-page="true"] .page-wrap {
+    padding-top:36px !important;
+  }
+}
+@media (max-width:980px) {
+  :root {--ev-layout-gutter:20px;--ev-layout-section:24px;--ev-layout-card-pad:20px}
+  .app-shell[data-envista-product-shell] .page-wrap,
+  .app-shell[data-envista-social-reference="true"] .page-wrap,
+  .app-shell[data-envista-clean-explore="true"] .page-wrap,
+  .app-shell[data-envista-home-page="true"] .page-wrap {
+    padding:24px var(--ev-layout-gutter) 88px !important;
+  }
+  .app-shell[data-envista-product-shell] .page-wrap .page-head {
+    padding:20px !important;
+    margin-bottom:24px !important;
+  }
+}
+@media (max-width:640px) {
+  :root {--ev-layout-gutter:16px;--ev-layout-section:24px;--ev-layout-card-pad:16px;--ev-layout-card-gap:12px}
+  .app-shell[data-envista-product-shell] .page-wrap,
+  .app-shell[data-envista-social-reference="true"] .page-wrap,
+  .app-shell[data-envista-clean-explore="true"] .page-wrap,
+  .app-shell[data-envista-home-page="true"] .page-wrap {
+    padding:18px 16px 92px !important;
+  }
+  .app-shell[data-envista-product-shell] .page-wrap .page-head {
+    padding:18px !important;
+    gap:12px;
+    margin-bottom:20px !important;
+    flex-wrap:wrap;
+    align-items:flex-start;
+  }
+  .app-shell[data-envista-product-shell] .page-wrap .page-head h1 {font-size:24px !important}
+}
+@media (prefers-contrast:more) {
+  .app-shell[data-envista-product-shell] .page-wrap .page-head {background:#102b35 !important}
+}

@@ -120,3 +120,34 @@
   border-color:rgba(70,140,154,.33) !important;
 }
 .progressFill {background:linear-gradient(90deg,#0082a3,#00a599,#22b173) !important;}
+
+/* Layout spacing refinement — November 2026 */
+.page {gap:28px}
+.layout {gap:22px}
+.summary {padding:28px;gap:28px;grid-template-columns:minmax(0,1fr) minmax(215px,290px)}
+.summaryMain {gap:18px}
+.identity {gap:18px}
+.bio {line-height:1.7}
+.metaList {gap:12px 20px}
+.workspace {min-width:0}
+.form {gap:22px}
+.card {padding:26px;border-radius:14px}
+.cardHeader {margin-bottom:22px;gap:14px}
+.fields {gap:20px}
+.twoColumn,.grid2,.gridCity {gap:18px}
+.field {gap:9px}
+.field input,.field textarea,.field select {min-height:44px}
+.actionBar {gap:16px}
+.primary,.secondary {min-height:44px}
+@media(max-width:860px) {
+ .page {gap:24px}
+ .summary {padding:22px;gap:20px;grid-template-columns:minmax(0,1fr)}
+ .card {padding:22px}
+ .form {gap:18px}
+}
+@media(max-width:520px) {
+ .page {gap:20px}
+ .summary,.card {padding:18px}
+ .twoColumn,.grid2,.gridCity {gap:14px}
+ .cardHeader {margin-bottom:18px}
+}

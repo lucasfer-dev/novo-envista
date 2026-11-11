@@ -381,3 +381,27 @@
   background:linear-gradient(108deg,rgba(12,42,52,.96),rgba(11,34,44,.93)),url("/brand/manual-wave-blue.svg") right center/cover no-repeat;
 }
 @media(max-width:560px){.head{padding:13px;}}
+
+/* Layout spacing refinement — November 2026 */
+.page {max-width:860px;margin:0 auto 44px}
+.head {padding:22px 24px;margin-bottom:18px;gap:18px}
+.headingText {min-width:0}
+.tabs {gap:8px;padding-inline:16px}
+.tab {min-height:44px;padding:10px 14px}
+.feed {margin-top:16px}
+.item {padding:20px 22px;gap:14px}
+.content {min-width:0}
+.titleRow {gap:12px}
+.actions {gap:10px;margin-top:12px}
+.primary,.secondary {min-height:40px}
+.empty {padding:48px 28px}
+.pagination {padding:20px 24px}
+@media(max-width:640px) {
+ .page {margin-bottom:28px}
+ .head {padding:18px;gap:12px}
+ .tabs {padding-inline:8px}
+ .tab {padding-inline:10px}
+ .item {padding:16px;gap:12px}
+ .empty {padding:36px 20px}
+ .pagination {padding:16px}
+}

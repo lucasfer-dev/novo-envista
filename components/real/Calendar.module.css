@@ -122,3 +122,28 @@
 .weekNotice {border-color:rgba(53,145,150,.36);background:linear-gradient(140deg,#10303b,#112c36);}
 .card {border-color:rgba(67,143,151,.33);background:linear-gradient(145deg,#102d38,#102a35);}
 @media(max-width:650px){.hero{padding:15px;}}
+
+/* Layout spacing refinement — November 2026 */
+.page {max-width:1160px;gap:24px;padding:0 0 44px}
+.hero {min-height:130px;padding:24px 28px;gap:20px}
+.heroCopy p {line-height:1.6}
+.weekNotice {padding:18px 20px;gap:14px}
+.groups {gap:32px}
+.group {gap:16px}
+.groupHeader {gap:14px}
+.grid {gap:16px}
+.card {gap:14px;padding:20px;border-radius:14px}
+.empty {padding:40px 26px}
+@media(max-width:760px) {
+ .page {gap:20px}
+ .hero {padding:20px;gap:14px}
+ .weekNotice {padding:16px}
+ .groups {gap:24px}
+ .grid {gap:12px}
+ .card {padding:18px}
+}
+@media(max-width:520px) {
+ .hero {padding:18px}
+ .card {padding:16px}
+ .empty {padding:30px 18px}
+}

@@ -111,3 +111,10 @@
   .privacyNote{padding:10px 11px}
 }
 @media(prefers-reduced-motion:reduce){.optionalDetails>summary,.optionalChevron,.tagBrowseButton svg{transition:none}}
+
+/* Product rhythm and responsive spacing */
+.form {gap:20px}
+.field {gap:8px}
+.field input:not([type="checkbox"]),.field select,.field textarea {min-height:44px}
+.privacyNote {padding:16px;gap:12px;margin-bottom:20px}
+@media(max-width:600px) {.form{gap:16px}.privacyNote{padding:14px;margin-bottom:16px}}

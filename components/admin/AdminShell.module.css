@@ -23,3 +23,11 @@
   background:radial-gradient(ellipse at 100% 0,rgba(0,165,153,.13),transparent 70%),#102a35 !important;
   border-bottom-color:rgba(65,145,154,.3) !important;
 }
+
+/* Product rhythm and responsive spacing */
+.content {max-width:1460px;margin-inline:auto;padding:32px clamp(24px,2.4vw,40px) 64px}
+.top {padding-inline:clamp(24px,2.4vw,40px)}
+.navigation {gap:16px}
+.securityCard {padding:16px}
+@media(max-width:980px) {.content{padding:28px 24px 54px}.top{padding-inline:24px}}
+@media(max-width:760px) {.content{padding:22px 16px 48px}.top{padding-inline:16px}}

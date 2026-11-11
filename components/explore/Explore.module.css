@@ -1097,3 +1097,41 @@
 .projectCard:hover,.communityCard:hover {border-color:rgba(28,188,162,.47);}
 .cardCover {background:radial-gradient(ellipse at 94% 97%,rgba(34,177,115,.19),transparent 57%),linear-gradient(140deg,#0b3440,#0c2936);}
 @media(max-width:650px){.discoveryEmpty::before{opacity:.08 !important;}}
+
+/* Exploration is search-first: generous gutter, separated filters, legible results. */
+.columns {gap:24px;align-items:start}
+.rail {gap:16px;padding-top:0}
+.exploreHeader {padding:0 0 18px !important}
+.searchForm {min-height:52px;height:auto;margin-top:12px;padding:6px 7px 6px 16px}
+.searchForm button {min-height:40px;padding:9px 16px}
+.typeTabs {margin-top:10px;min-height:52px}
+.typeTab {min-height:50px;padding:10px 12px}
+.quickFilters {gap:9px;padding:18px 2px 22px}
+.filterChip {min-height:34px;padding:7px 12px}
+.section {margin-top:28px}
+.sectionHeading {margin-bottom:16px;gap:16px}
+.projectsGrid,.communityGrid {gap:16px}
+.projectCard,.communityCard {border-radius:12px}
+.cardContent {padding:18px}
+.filtersPanel,.competitionPanel {padding:20px !important}
+.topics {padding:18px 0 10px}
+.topics .panelHeading {padding:0 20px 16px}
+.topicCard {min-height:56px;padding:12px 16px}
+.discoveryEmpty {padding:32px !important;min-height:212px}
+.discoveryEmptyActions {gap:12px;margin-top:20px}
+@media(max-width:1080px){.columns {gap:18px}}
+@media(max-width:760px) {
+  .columns {gap:20px}
+  .exploreHeader {padding-bottom:14px !important}
+  .quickFilters {padding:14px 0 18px}
+  .section {margin-top:24px}
+  .discoveryEmpty {padding:24px !important}
+}
+@media(max-width:480px) {
+  .searchForm {padding:5px 6px 5px 12px;gap:8px}
+  .searchForm button {min-height:40px;padding:8px 11px}
+  .typeTab {padding-inline:6px;font-size:11px}
+  .filtersPanel,.competitionPanel {padding:16px !important}
+  .discoveryEmpty {padding:20px !important}
+  .cardContent {padding:16px}
+}
