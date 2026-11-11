@@ -1,4 +1,4 @@
-/* Envista official identity: #0086a7 · #00a99d · #22b573 · #0f1923.
+/* Envista official identity: #0082a3 · #00a599 · #22b173 · #0f1923.
    Brand composition and semantic actions. Component geometry lives in modules. */
 :root {
   --envista-blue: var(--ev-brand-blue);
@@ -31,8 +31,8 @@
   --ev-sidebar-width: 250px;
   --ev-header-bg: linear-gradient(
     110deg,
-    rgba(0, 169, 157, 0.13),
-    rgba(0, 134, 167, 0.04) 55%,
+    rgba(0,165,153, 0.13),
+    rgba(0,130,163, 0.04) 55%,
     transparent
   );
 }
@@ -41,7 +41,7 @@ body {
   background: var(--ev-bg);
 }
 ::selection {
-  background: rgba(0, 169, 157, 0.35);
+  background: rgba(0,165,153, 0.35);
   color: #fff;
 }
 
@@ -115,14 +115,14 @@ body {
 }
 .app-shell .sidebar nav a:hover,
 .app-shell .side-section a:hover {
-  background: rgba(0, 169, 157, 0.08);
+  background: rgba(0,165,153, 0.08);
   color: #f4fbff;
 }
 .app-shell .sidebar :is(nav, .side-section) a[aria-current="page"] {
   background: linear-gradient(
     90deg,
-    rgba(0, 169, 157, 0.22),
-    rgba(0, 134, 167, 0.08)
+    rgba(0,165,153, 0.22),
+    rgba(0,130,163, 0.08)
   );
   color: #fff;
   box-shadow: inset 3px 0 0 #00bfb0;
@@ -144,7 +144,7 @@ body {
   margin-left: var(--ev-sidebar-width);
   min-width: 0;
   background:
-    radial-gradient(ellipse at 85% 0, rgba(0, 134, 167, 0.1), transparent 45%),
+    radial-gradient(ellipse at 85% 0, rgba(0,130,163, 0.1), transparent 45%),
     var(--ev-bg);
 }
 .app-shell .topbar {
@@ -226,20 +226,20 @@ body {
 }
 .app-shell .avatar {
   background: linear-gradient(135deg, #0b534f, #133446);
-  border-color: rgba(0, 169, 157, 0.42);
+  border-color: rgba(0,165,153, 0.42);
   color: #e7fffb;
 }
 .app-shell .stage {
   color: #6bf1c8;
-  border-color: rgba(34, 181, 115, 0.35);
-  background: rgba(34, 181, 115, 0.1);
+  border-color: rgba(34,177,115, 0.35);
+  background: rgba(34,177,115, 0.1);
 }
 .app-shell .project-cover {
   background: var(--ev-header-bg), #102c3b !important;
 }
 .app-shell .project-initial {
   background: #081b27 !important;
-  border: 1px solid rgba(0, 169, 157, 0.35);
+  border: 1px solid rgba(0,165,153, 0.35);
   color: #49dfcd;
 }
 .app-shell .progress {
@@ -294,7 +294,7 @@ body {
   font-weight: 800;
   text-decoration: none;
   line-height: 1.3;
-  box-shadow: 0 5px 20px rgba(0, 169, 157, 0.16);
+  box-shadow: 0 5px 20px rgba(0,165,153, 0.16);
   transition:
     filter 150ms ease,
     box-shadow 150ms ease;
@@ -365,7 +365,7 @@ body {
   background:
     radial-gradient(
       circle at 10% 10%,
-      rgba(34, 181, 115, 0.13),
+      rgba(34,177,115, 0.13),
       transparent 35%
     ),
     var(--envista-ink) !important;
