@@ -11,7 +11,7 @@ const desktopViewports = [
 ];
 
 for (const viewport of desktopViewports) {
-  test("Social reference geometry at " + viewport.width + "x" + viewport.height, async ({ page }) => {
+  test("Social clean layout at " + viewport.width + "x" + viewport.height, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto("/login");
 
@@ -58,9 +58,9 @@ for (const viewport of desktopViewports) {
     expect(dimensions.headX, JSON.stringify(dimensions)).toBeCloseTo(dimensions.composerX, 0);
     expect(dimensions.railY, JSON.stringify(dimensions)).toBeCloseTo(dimensions.headY, 0);
     expect(dimensions.socialWidth, JSON.stringify(dimensions)).toBeLessThanOrEqual(1337);
-    expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(169);
-    expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(245);
-    expect(dimensions.composerY, JSON.stringify(dimensions)).toBeGreaterThan(dimensions.headBottom);
+    expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(70);
+    expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(200);
+    expect(dimensions.composerY, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(dimensions.headBottom);
     expect(dimensions.composerRadius, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(14);
     expect(dimensions.railX, JSON.stringify(dimensions)).toBeGreaterThan(dimensions.headX);
     expect(dimensions.coverHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(239);

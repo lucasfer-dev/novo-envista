@@ -42,12 +42,6 @@ const audiences = [
   { Icon: Rocket, title: "Mentores e investidores", text: "Descubra talentos, oriente projetos e encontre soluções com potencial.", href: null },
 ];
 
-const sampleProjects = [
-  { title: "EcoTrack", description: "Conceito de monitoramento ambiental com inteligência artificial.", category: "Sustentabilidade", art: "eco" },
-  { title: "AcessIA", description: "Conceito de tecnologia assistiva para experiências mais acessíveis.", category: "Inclusão", art: "tech" },
-  { title: "BioCiclo", description: "Conceito de reaproveitamento inteligente de resíduos.", category: "Inovação", art: "nature" },
-];
-
 function Brand({ footer = false }: { footer?: boolean }) {
   return (
     <Link href="/" className={footer ? styles.footerBrand : styles.brand} aria-label="Envista — início">
@@ -58,27 +52,15 @@ function Brand({ footer = false }: { footer?: boolean }) {
   );
 }
 
-function ProjectCard({ project, index }: { project: PublicProject | null; index: number }) {
-  const sample = sampleProjects[index] ?? sampleProjects[0];
-  const isSample = !project;
-  const title = project?.title || sample.title;
-  const description = project?.short_description || (isSample ? sample.description : "Veja o percurso e os próximos passos deste projeto.");
-  const category = project?.category || (isSample ? sample.category : "Em desenvolvimento");
+function ProjectCard({ project }: { project: PublicProject }) {
   return (
-    <a className={styles.projectCard}>
-      <div className={[styles.projectArt, styles["art" + index]].join(" ")}>
-        {index === 0 ? <div className={styles.forestShape} aria-hidden="true"><span /><span /><span /><span /><span /></div> : null}
-        {index === 1 ? <div className={styles.robotShape} aria-hidden="true"><Sparkles size={86} strokeWidth={1.15} /></div> : null}
-        {index === 2 ? <div className={styles.sproutShape} aria-hidden="true"><span /><span /><i /></div> : null}
-        <span className={styles.cardArtworkSeal}><Image src="/brand/envista-symbol-white.svg" alt="" width={18} height={24} /></span>
-        {isSample ? <span className={styles.demoTag}>Exemplo ilustrativo</span> : null}
-      </div>
+    <Link className={styles.projectCard} href={`/p/${encodeURIComponent(project.slug)}`}>
       <div className={styles.projectCardContent}>
-        <div className={styles.cardTitleLine}><h3>{title}</h3><ArrowRight size={18} aria-hidden="true" /></div>
-        <p>{description}</p>
-        <span className={styles.projectTag}>{category}</span>
+        <span className={styles.projectTag}>{project.category || project.stage || "Projeto"}</span>
+        <div className={styles.cardTitleLine}><h3>{project.title}</h3><ArrowRight size={18} aria-hidden="true" /></div>
+        <p>{project.short_description || "Conheça o desenvolvimento e as próximas etapas deste projeto."}</p>
       </div>
-    </a>
+    </Link>
   );
 }
 
@@ -116,7 +98,7 @@ export default async function PublicLandingV3Server() {
                 <a className={styles.secondary} href="#como-funciona"><span className={styles.play} aria-hidden="true">▶</span> Ver como funciona</a>
               </div>
             </div>
-            <div className={styles.heroVisual} aria-label="Prévia ilustrativa do Envista no celular">
+            <div className={styles.heroVisual} aria-hidden="true">
               <Image className={styles.brandGhost} src="/brand/envista-symbol-gradient.svg" alt="" width={280} height={380} aria-hidden="true" />
               <span className={[styles.orbit, styles.orbitOne].join(" ")} aria-hidden="true" />
               <span className={[styles.orbit, styles.orbitTwo].join(" ")} aria-hidden="true" />
@@ -158,13 +140,18 @@ export default async function PublicLandingV3Server() {
                 <span className={styles.kicker}>EM DESTAQUE NO ENVISTA</span>
                 <h2 id="featured-title">Projetos que transformam ideias em <em>impacto.</em></h2>
                 <p>Descubra iniciativas que ganham forma, conectam pessoas e evoluem com apoio do ecossistema.</p>
-                <a className={styles.textLink}>Explorar todos os projetos <ArrowRight size={17} aria-hidden="true" /></a>
+                <Link href="/projects" className={styles.textLink}>Explorar todos os projetos <ArrowRight size={17} aria-hidden="true" /></Link>
               </div>
               <div className={styles.projectsGrid}>
-                {[0, 1, 2].map(index => <ProjectCard key={index} index={index} project={projects[index] ?? null} />)}
+                {projects.length
+                  ? projects.map(project => <ProjectCard key={project.slug} project={project} />)
+                  : <div className={styles.emptyProjects}>
+                      <strong>Os próximos projetos começam aqui.</strong>
+                      <span>Ainda não há projetos públicos para apresentar.</span>
+                      <Link href="/register">Criar meu projeto <ArrowRight size={16} aria-hidden="true" /></Link>
+                    </div>}
               </div>
             </div>
-            {projects.length < 3 ? <p className={styles.demoDisclaimer}>As prévias identificadas como “Exemplo ilustrativo” demonstram possibilidades de uso, não projetos publicados por usuários.</p> : null}
           </div>
         </section>
 

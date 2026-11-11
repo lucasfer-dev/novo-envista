@@ -25,7 +25,7 @@ export default function PublicSiteHeader({ context = "home" }: PublicSiteHeaderP
           <div className={styles.navLinks}>
             <a href={howHref} className={styles.navLink}>Como funciona</a>
             <a href={learnHref} className={styles.navLink}>Aprender</a>
-            <a className={styles.navLink}>Para escolas</a>
+            <a href="/#publicos" className={styles.navLink}>Para escolas</a>
           </div>
           <div className={styles.navActions}>
             <Link href="/login" className={styles.signIn}>Entrar</Link>
@@ -38,7 +38,7 @@ export default function PublicSiteHeader({ context = "home" }: PublicSiteHeaderP
           <nav aria-label="Navegação no celular">
             <a href={howHref}>Como funciona</a>
             <a href={learnHref}>Aprender</a>
-            <a>Para escolas</a>
+            <a href="/#publicos">Para escolas</a>
             <div className={styles.mobileDivider} />
             <Link href="/login">Entrar</Link>
             <Link href="/register" className={styles.mobileCta}>Começar agora <ArrowUpRight size={17} aria-hidden="true" /></Link>

@@ -3,7 +3,7 @@
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] {
   --ev-sidebar-width: 216px;
   --ev-sidebar-ink: #deeced;
-  --ev-sidebar-accent: #00a99d;
+  --ev-sidebar-accent: #00a599;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar {
   box-sizing: border-box;
@@ -11,9 +11,9 @@
   min-width: 0;
   padding: 11px 10px 12px !important;
   background:
-    radial-gradient(ellipse 190px 240px at 10% 100%, rgba(34,181,115,.10), transparent 94%),
+    radial-gradient(ellipse 190px 240px at 10% 100%, rgba(34,177,115,.10), transparent 94%),
     linear-gradient(175deg, #061923, #061e24 58%, #082920) !important;
-  border-right: 1px solid rgba(0,169,157,.27) !important;
+  border-right: 1px solid rgba(0,165,153,.27) !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
   scrollbar-width: thin;
@@ -37,7 +37,7 @@
   inset: 0 0 0 auto;
   width: 1px;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0,134,167,.12), rgba(0,169,157,.32), rgba(34,181,115,.20));
+  background: linear-gradient(to bottom, rgba(0,130,163,.12), rgba(0,165,153,.32), rgba(34,177,115,.20));
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .main {
   margin-left: var(--ev-sidebar-width) !important;
@@ -94,10 +94,10 @@
   text-decoration: none;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a:hover {
-  background: rgba(0,169,157,.08) !important;
+  background: rgba(0,165,153,.08) !important;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"] {
-  background: linear-gradient(96deg, rgba(0,134,167,.15), rgba(0,169,157,.12) 62%, rgba(34,181,115,.08)) !important;
+  background: linear-gradient(96deg, rgba(0,130,163,.15), rgba(0,165,153,.12) 62%, rgba(34,177,115,.08)) !important;
   color: #fff !important;
   font-weight: 750 !important;
   box-shadow: none !important;
@@ -115,7 +115,7 @@
   left: 26px;
   width: 5px;
   height: 5px;
-  background: #22b573;
+  background: #22b173;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar .sidebar-notification-symbol {
   display: grid;
@@ -146,7 +146,7 @@
   gap: 8px;
   border: 0 !important;
   border-radius: 999px !important;
-  background: linear-gradient(105deg, #00a99d, #16b69f 64%, #22b573) !important;
+  background: linear-gradient(105deg, #00a599, #16b69f 64%, #22b173) !important;
   box-shadow: none !important;
   color: #032624 !important;
   font-size: 13px !important;
@@ -182,7 +182,7 @@
   background: transparent !important;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .user-card:hover {
-  background: rgba(0,169,157,.08) !important;
+  background: rgba(0,165,153,.08) !important;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .envista-sidebar-handle {
   left: calc(var(--ev-sidebar-width) - 13px);

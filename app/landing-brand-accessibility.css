@@ -1,7 +1,7 @@
 /* Brand system QA: WCAG 2.2 AA + touch ergonomics + reduced motion. */
 .ev-page .ev-editorialCta,
 .ev-page .ev-headerCta{
-  color:#000b0f!important;
+  color:#000507!important;
   min-height:48px;
 }
 .ev-page .ev-editorialOutline{
@@ -18,7 +18,7 @@
 .ev-page .ev-opportunityStrip,
 .ev-page .ev-opportunityStrip p,
 .ev-page .ev-opportunityStrip .ev-kicker{
-  color:#000b0f;
+  color:#000507;
 }
 .ev-page .ev-manifestoSeal{
   height:44px;

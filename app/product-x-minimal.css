@@ -1,9 +1,9 @@
 /* Minimal interface language for authenticated Envista screens. */
 .app-shell[data-envista-product-shell] {
-  --ev-brand-blue: #0086a7;
-  --ev-brand-teal: #00a99d;
-  --ev-brand-green: #22b573;
-  --ev-brand-gradient: linear-gradient(105deg, #00a99d, #00a99d);
+  --ev-brand-blue: #0082a3;
+  --ev-brand-teal: #00a599;
+  --ev-brand-green: #22b173;
+  --ev-brand-gradient: linear-gradient(105deg, #00a599, #00a599);
   --ev-bg: #061a23;
   --ev-bg-subtle: #0b2430;
   --ev-sidebar: #061a23;
@@ -18,9 +18,9 @@
   --ev-text-secondary: #c4d5db;
   --ev-muted: #96afb8;
   --ev-muted-subtle: #8da5af;
-  --ev-accent: #00a99d;
+  --ev-accent: #00a599;
   --ev-accent-hover: #24bfb1;
-  --ev-accent-soft: rgba(0,169,157,.10);
+  --ev-accent-soft: rgba(0,165,153,.10);
   --ev-font-page: clamp(22px,1.9vw,27px);
   --ev-font-section: 16px;
   --ev-font-card: 14px;
@@ -51,7 +51,7 @@
   box-shadow: none !important;
 }
 .app-shell[data-envista-product-shell] .global-search:hover {
-  border-color: rgba(0,169,157,.29) !important;
+  border-color: rgba(0,165,153,.29) !important;
 }
 .app-shell[data-envista-product-shell] .page-wrap {
   width: min(100%, 1290px);
@@ -109,7 +109,7 @@
   min-height: 37px;
   border: 0 !important;
   border-radius: 999px !important;
-  background: #00a99d !important;
+  background: #00a599 !important;
   color: #052522 !important;
   box-shadow: none !important;
   font-size: 12.5px;
@@ -149,8 +149,8 @@
   box-shadow: none !important;
 }
 .app-shell[data-envista-product-shell] :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select):focus {
-  border-color: rgba(0,169,157,.76) !important;
-  box-shadow: 0 0 0 3px rgba(0,169,157,.12) !important;
+  border-color: rgba(0,165,153,.76) !important;
+  box-shadow: 0 0 0 3px rgba(0,165,153,.12) !important;
   outline: none !important;
 }
 .app-shell[data-envista-product-shell] ::placeholder {
@@ -165,7 +165,7 @@
   text-shadow: none !important;
 }
 .app-shell[data-envista-product-shell] :is(.progress i) {
-  background: #00a99d !important;
+  background: #00a599 !important;
 }
 .app-shell[data-envista-product-shell] :is(.empty,.empty-state) {
   box-shadow: none !important;
@@ -177,12 +177,12 @@
 .app-shell[data-envista-x-sidebar="true"] .sidebar > nav a[aria-current="page"],
 .app-shell[data-envista-x-sidebar="true"] .home-nav-section nav a[aria-current="page"],
 .app-shell[data-envista-x-sidebar="true"] .dashboard-home-community nav a[aria-current="page"] {
-  background: rgba(0,169,157,.09) !important;
+  background: rgba(0,165,153,.09) !important;
   box-shadow: none !important;
   color: #f4fbfa !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .dashboard-new-project {
-  background: #00a99d !important;
+  background: #00a599 !important;
   box-shadow: none !important;
 }
 .app-shell[data-envista-x-sidebar="true"] .dashboard-new-project:hover {

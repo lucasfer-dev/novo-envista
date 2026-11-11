@@ -1,7 +1,7 @@
 .dashboard {
   --ev-turquoise: #00dac4;
   --ev-mint: #1af1b6;
-  --ev-teal: #00a99d;
+  --ev-teal: #00a599;
   --ev-deep: #051b24;
   --ev-border: rgba(0, 187, 164, .59);
   --ev-secondary: #accad0;
@@ -666,9 +666,9 @@
 
 /* Minimal home: quieter dashboard surfaces, hierarchy focused on actions and activity. */
 .dashboard {
-  --ev-turquoise: #00a99d;
+  --ev-turquoise: #00a599;
   --ev-mint: #38c9aa;
-  --ev-teal: #00a99d;
+  --ev-teal: #00a599;
   --ev-deep: #061a23;
   --ev-border: rgba(147,182,189,.17);
   --ev-secondary: #9db8c0;
@@ -678,7 +678,7 @@
 .primaryColumn { gap: 13px; }
 .hero {
   min-height: 188px;
-  border: 1px solid rgba(0,169,157,.18);
+  border: 1px solid rgba(0,165,153,.18);
   border-radius: 14px;
   background: linear-gradient(115deg,#0b3038,#0b2b35 60%,#0b3332);
   box-shadow: none;
@@ -697,7 +697,7 @@
   font-size: 12px;
   box-shadow: none;
 }
-.btnPrimary { background: #00a99d; color: #05231f; }
+.btnPrimary { background: #00a599; color: #05231f; }
 .btnPrimary:hover { background: #21c3b0; box-shadow: none; transform: none; }
 .btnSecondary { border: 1px solid rgba(142,186,191,.3); background: transparent; }
 .btnSecondary:hover { background: rgba(255,255,255,.045); box-shadow: none; transform: none; }
@@ -709,12 +709,12 @@
   box-shadow: none;
 }
 .metricIcon {
-  background: rgba(0,169,157,.085);
-  border-color: rgba(0,169,157,.13);
+  background: rgba(0,165,153,.085);
+  border-color: rgba(0,165,153,.13);
   color: #70ccbf;
 }
 .metricPurple { background: #0a2731; }
-.metricPurple .metricIcon { background: rgba(0,169,157,.075); color: #8dd8d0; border-color: rgba(0,169,157,.13); }
+.metricPurple .metricIcon { background: rgba(0,165,153,.075); color: #8dd8d0; border-color: rgba(0,165,153,.13); }
 .journeyPanel, .panel, .learnPanel,
 .nextEventPanel, .calendarPanel, .eventListPanel,
 .progressPanel {
@@ -727,16 +727,16 @@
 .panelHeading h2 svg, .railHeading h2 svg { color: #65cdbf; }
 .panelHeading a, .railHeading a { color: #72d9c8; }
 .journeyPanel { padding: 18px; }
-.journeyIcon { background: rgba(0,169,157,.075); border-color: rgba(0,169,157,.13); color: #75d7ca; }
+.journeyIcon { background: rgba(0,165,153,.075); border-color: rgba(0,165,153,.13); color: #75d7ca; }
 .stepBubble { background: #0a2630; border-color: rgba(150,181,188,.4); }
 .stepDone .stepBubble, .stepActive .stepBubble {
-  background: rgba(0,169,157,.12);
-  border-color: #00a99d;
+  background: rgba(0,165,153,.12);
+  border-color: #00a599;
   color: #9debdc;
   box-shadow: none;
 }
 .progressTrack { background: #163e45; }
-.progressTrack > span { background: #00a99d; }
+.progressTrack > span { background: #00a599; }
 .projectRow, .eventRow, .compactEvent {
   border-color: rgba(150,184,190,.13);
   background: transparent;
@@ -755,7 +755,7 @@
 .nextEventPanel, .eventListPanel { min-height: 0; }
 .calendarPanel { min-height: 0; }
 .day[aria-current="date"], .day[data-today="true"] {
-  background: #00a99d;
+  background: #00a599;
   color: #052522;
 }
 @media (max-width: 1280px) {
@@ -776,9 +776,9 @@
 /* Brand accents without turning the home into a marketing landing page. */
 .hero {
   background:
-    radial-gradient(circle at 78% 28%, rgba(0,134,167,.18), transparent 42%),
+    radial-gradient(circle at 78% 28%, rgba(0,130,163,.18), transparent 42%),
     linear-gradient(116deg, #08252f 0%, #07343b 60%, #0b443e 100%);
-  border-color: rgba(0,169,157,.28);
+  border-color: rgba(0,165,153,.28);
 }
 .heroPattern { opacity: .12; }
 .heroSymbol { opacity: .36; }
@@ -787,49 +787,49 @@
 .heroContent h2 { color: #fff; }
 .heroContent h2 span { color: #36d5bb; }
 .btnPrimary {
-  background: linear-gradient(105deg, #00a99d, #11b7a4 65%, #22b573);
+  background: linear-gradient(105deg, #00a599, #11b7a4 65%, #22b173);
   color: #052721;
 }
 .btnPrimary:hover { background: linear-gradient(105deg, #2bc8b5, #4bd392); }
 .metric {
-  background: linear-gradient(140deg, rgba(0,134,167,.045), transparent 73%), #0a2731;
+  background: linear-gradient(140deg, rgba(0,130,163,.045), transparent 73%), #0a2731;
 }
 .metricPurple {
-  background: linear-gradient(135deg, rgba(34,181,115,.045), transparent 75%), #0a2731;
-  border-color: rgba(34,181,115,.20);
+  background: linear-gradient(135deg, rgba(34,177,115,.045), transparent 75%), #0a2731;
+  border-color: rgba(34,177,115,.20);
 }
 .metric:nth-child(4n+1) .metricIcon {
-  background: rgba(0,134,167,.12);
-  border-color: rgba(0,134,167,.23);
+  background: rgba(0,130,163,.12);
+  border-color: rgba(0,130,163,.23);
   color: #68c7e0;
 }
 .metric:nth-child(4n+2) .metricIcon {
-  background: rgba(0,169,157,.12);
-  border-color: rgba(0,169,157,.23);
+  background: rgba(0,165,153,.12);
+  border-color: rgba(0,165,153,.23);
   color: #6de1d2;
 }
 .metric:nth-child(4n+3) .metricIcon, .metricPurple .metricIcon {
-  background: rgba(34,181,115,.12);
-  border-color: rgba(34,181,115,.24);
+  background: rgba(34,177,115,.12);
+  border-color: rgba(34,177,115,.24);
   color: #72dfa8;
 }
 .metric:nth-child(4n) .metricIcon {
-  background: rgba(0,134,167,.10);
-  border-color: rgba(0,134,167,.20);
+  background: rgba(0,130,163,.10);
+  border-color: rgba(0,130,163,.20);
   color: #81d3e5;
 }
 .journeyPanel {
   background:
-    radial-gradient(ellipse 250px 150px at 97% 3%, rgba(0,134,167,.075), transparent 85%),
+    radial-gradient(ellipse 250px 150px at 97% 3%, rgba(0,130,163,.075), transparent 85%),
     #0a2630;
 }
 .journeyIcon { color: #59deca; }
 .stepDone .stepBubble, .stepActive .stepBubble {
-  background: rgba(0,169,157,.12);
+  background: rgba(0,165,153,.12);
   border-color: #25cbb8;
   color: #a8efdd;
 }
-.progressTrack > span { background: linear-gradient(90deg, #0086a7, #00a99d, #22b573); }
+.progressTrack > span { background: linear-gradient(90deg, #0082a3, #00a599, #22b173); }
 .calendarPanel, .nextEventPanel, .eventListPanel {
   border-color: rgba(148,182,189,.18);
 }
@@ -849,3 +849,59 @@
   opacity: .19;
 }
 @media (max-width:620px) { .heroPattern { opacity: .11; } }
+
+.dashboard {
+  --ev-turquoise: #00a599;
+  --ev-mint: #22b173;
+  --ev-teal: #00a599;
+  --ev-deep: #0f1923;
+  --ev-border: rgba(151,185,193,.17);
+  --ev-secondary: #b1c0c6;
+  color: #f4f7f8;
+}
+.layout { gap: 20px; }
+.primaryColumn { gap: 14px; }
+.greeting { min-height: 56px; }
+.greeting h1 { color: #f4f7f8; font-size: 23px; font-weight: 700; }
+.greeting p { color: #a7bac3; }
+.hero {
+  min-height: 194px;
+  border: 1px solid rgba(151,185,193,.18);
+  border-radius: 14px;
+  background: #172631;
+  box-shadow: none;
+}
+.heroPattern,.heroGlobe,.heroSymbol,.heroPerson { display: none !important; }
+.hero::after {
+  content: "";
+  position: absolute;
+  right: 8%; top: 13%;
+  width: 85px; height: 125px;
+  pointer-events: none;
+  background: url("/brand/envista-symbol-white.svg") center/contain no-repeat;
+  opacity: .075;
+}
+.heroContent { position: relative; z-index: 1; max-width: 76%; }
+.hero :is(h1,h2,h3) { color: #f4f7f8; font-weight: 700; }
+.hero :is(p,small) { color: #b5c5ca; }
+.eyebrow { color: #71cbbf; font-weight: 700; }
+.btnPrimary { background: #00a599 !important; color: #092422 !important; box-shadow: none !important; border-radius: 9px !important; }
+.btnPrimary:hover { background: #22b173 !important; }
+.btnSecondary { background: transparent !important; border-color: rgba(151,185,193,.3) !important; border-radius: 9px !important; }
+.metrics { gap: 12px; }
+.metric,.panel,.journeyPanel,.competitionCard,.learnPanel,.nextEventPanel,.calendarPanel,.eventListPanel,.progressPanel {
+  border: 1px solid rgba(151,185,193,.17) !important;
+  border-radius: 13px !important;
+  background: #172631 !important;
+  box-shadow: none !important;
+}
+.metric:hover,.panel:hover,.competitionCard:hover { transform: none !important; }
+.metricIcon,.journeyIcon { background: rgba(0,165,153,.09); border-color: rgba(0,165,153,.19); }
+.journeyPanel::before,.journeyPanel::after { opacity: 0 !important; }
+.journeyPanel { background: #172631 !important; }
+.rail { gap: 13px; }
+.railHeading h2,.panelHeading h2 { font-weight: 700; }
+@media(max-width:720px) {
+ .heroContent { max-width: 100%; }
+ .hero::after { opacity: .035; right: 4%; }
+}

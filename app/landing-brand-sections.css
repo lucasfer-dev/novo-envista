@@ -127,7 +127,7 @@
 }
 .ev-page .ev-audienceIcon{
   border-color:rgba(153,241,218,.46);
-  background:rgba(0,169,157,.18);
+  background:rgba(0,165,153,.18);
 }
 .ev-page .ev-audienceCard a{
   display:inline-flex;
@@ -189,7 +189,7 @@
   position:relative;
   isolation:isolate;
   background:#081720;
-  border-top:3px solid #00a99d;
+  border-top:3px solid #00a599;
   overflow:hidden;
 }
 .ev-page .ev-footer:after{
