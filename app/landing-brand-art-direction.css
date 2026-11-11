@@ -4,11 +4,11 @@
  * em superfícies limpas, pattern/textura atuam como assinatura de marca.
  */
 .ev-page{
-  --ev-brand-blue:#0086a7;
-  --ev-brand-teal:#00a99d;
-  --ev-brand-green:#22b573;
+  --ev-brand-blue:#0082a3;
+  --ev-brand-teal:#00a599;
+  --ev-brand-green:#22b173;
   --ev-brand-ink:#0f1923;
-  --ev-brand-gradient:linear-gradient(116deg,#22b573 0%,#00a99d 51%,#0086a7 100%);
+  --ev-brand-gradient:linear-gradient(116deg,#22b173 0%,#00a599 51%,#0082a3 100%);
   --ev-editorial-rule:rgba(155,233,213,.24);
 }
 .ev-page .ev-header{
@@ -85,7 +85,7 @@
 }
 .ev-page .ev-showcaseWindow{
   border:1px solid rgba(255,255,255,.95);
-  box-shadow:0 42px 105px rgba(0,5,11,.55),17px 18px 0 -7px rgba(0,169,157,.2),32px 33px 0 -15px rgba(34,181,115,.13);
+  box-shadow:0 42px 105px rgba(0,5,11,.55),17px 18px 0 -7px rgba(0,165,153,.2),32px 33px 0 -15px rgba(34,177,115,.13);
 }
 .ev-page .ev-showcaseCover{
   isolation:isolate;
@@ -118,7 +118,7 @@
   border-bottom:1px solid #dde9e5;
 }
 .ev-page .ev-showcaseBottom{
-  border-top:2px solid rgba(0,169,157,.15);
+  border-top:2px solid rgba(0,165,153,.15);
 }
 .ev-page .ev-manifestoStrip{
   position:relative;
@@ -203,13 +203,13 @@
   isolation:isolate;
   background:
     radial-gradient(ellipse at 75% 24%,rgba(167,249,199,.24),transparent 64%),
-    linear-gradient(118deg,#0b6e6b,#0086a7 85%);
+    linear-gradient(118deg,#0b6e6b,#0082a3 85%);
 }
 .ev-page .ev-projectCard:first-child .ev-projectArtwork{
   background:
     linear-gradient(100deg,rgba(3,59,62,.24),rgba(4,64,79,.13)),
     url("/brand/envista-texture-original.png") center/cover,
-    linear-gradient(115deg,#22b573,#00a99d,#0086a7);
+    linear-gradient(115deg,#22b173,#00a599,#0082a3);
 }
 .ev-page .ev-projectCard:nth-child(3n) .ev-projectArtwork{
   background:linear-gradient(112deg,#0e725f,#07878b 60%,#075877);
