@@ -319,6 +319,19 @@ export default function LegacySocialShell({
           </Link>
         )}
         <div className="side-bottom">
+          {role === "participant" && (
+            <Link
+              className="sidebar-settings-link"
+              href="/account/settings"
+              onClick={closeMobile}
+              aria-current={isNavItemActive(normalizedPathname, "/account/settings") ? "page" : undefined}
+              aria-label="Configurações"
+              title="Configurações"
+            >
+              <Settings size={19} strokeWidth={1.9} aria-hidden="true" />
+              <span>Configurações</span>
+            </Link>
+          )}
           <div className="user-card">
             <Link
               className="profile-avatar-btn"
