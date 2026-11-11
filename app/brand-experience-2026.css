@@ -152,14 +152,6 @@
   background:linear-gradient(105deg,#00a599,#22b173) !important;
   box-shadow:0 8px 20px rgba(0,165,153,.13) !important;
 }
-[data-envista-public-shell] {
-  background:radial-gradient(ellipse at 90% 3%,rgba(0,130,163,.12),transparent 57%),#0f1923 !important;
-}
-[data-envista-public-shell] [class*="primary"],
-[data-envista-public-shell] [class*="bannerButton"] {
-  background:linear-gradient(105deg,#00a599,#1bb98c,#22b173) !important;
-  box-shadow:0 9px 24px rgba(0,165,153,.15) !important;
-}
 [data-envista-admin-shell] {
   background:radial-gradient(ellipse at 92% 4%,rgba(0,130,163,.12),transparent 59%),#0f1923 !important;
 }
