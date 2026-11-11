@@ -86,3 +86,9 @@
   mask-image: linear-gradient(90deg, transparent, #000);
 }
 @media (max-width: 650px) { .empty::before { opacity: .09; } }
+
+.grid { gap: 14px; }
+.card { background: #172631 !important; border-color: rgba(151,185,193,.17) !important; box-shadow: none !important; border-radius: 13px !important; }
+.card:hover { transform: none !important; box-shadow: none !important; border-color: rgba(0,165,153,.3) !important; }
+.empty { background: #172631 !important; border-color: rgba(151,185,193,.2) !important; }
+.primary { background: #00a599 !important; color: #061f22 !important; box-shadow: none !important; }
