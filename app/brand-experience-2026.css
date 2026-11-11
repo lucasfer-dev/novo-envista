@@ -632,3 +632,76 @@
   }
   .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar > .sidebar-plans-promo:hover { transform: none; }
 }
+
+/* Account settings lives above the profile footer, separate from main navigation. */
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link {
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: center;
+  gap: 13px;
+  width: calc(100% - 12px);
+  min-height: 42px;
+  margin: 0 6px 10px !important;
+  padding: 10px 12px !important;
+  border: 0 !important;
+  border-radius: 11px;
+  background: transparent !important;
+  color: #bed2d8 !important;
+  text-decoration: none !important;
+  font-size: 12.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: background-color 170ms ease, color 170ms ease !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link > svg {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  color: #a6c7cb;
+  transition: color 170ms ease;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link:hover {
+  background: rgba(0,165,153,.11) !important;
+  color: #f5ffff !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link:hover > svg {
+  color: #57e2cd;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link[aria-current="page"] {
+  background: linear-gradient(90deg,rgba(0,165,153,.19),rgba(0,130,163,.065)) !important;
+  color: #f7ffff !important;
+  font-weight: 740;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link[aria-current="page"] > svg {
+  color: #38dcc4;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link:focus-visible {
+  outline: 2px solid #55dec9;
+  outline-offset: 3px;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link + .user-card {
+  border-top: 1px solid rgba(86,153,163,.17) !important;
+  padding-top: 11px !important;
+}
+@media (min-width: 981px) {
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"]
+    .side-bottom > .sidebar-settings-link {
+    justify-content: center;
+    width: 42px;
+    min-height: 42px;
+    height: 42px;
+    margin: 0 auto 8px !important;
+    padding: 0 !important;
+    gap: 0;
+  }
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"]
+    .side-bottom > .sidebar-settings-link > span {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link,
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .side-bottom > .sidebar-settings-link > svg {
+    transition: none !important;
+  }
+}
