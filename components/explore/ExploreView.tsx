@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {
   ArrowRight, ArrowUpRight, BookOpen, BrainCircuit, BriefcaseBusiness,
-  Code2, Compass, FolderKanban, GraduationCap, HeartHandshake, HeartPulse,
-  Leaf, Search, SearchX, Sparkles, Star, UserRound, Users,
+  Code2, Compass, Flame, FolderKanban, Gamepad2, GraduationCap, HeartHandshake, HeartPulse,
+  LayoutGrid, Leaf, Search, SearchX, Sparkles, Star, UserRound, Users,
 } from "lucide-react";
 import ProjectArtwork from "@/components/product/ProjectArtwork";
 import { entityRoute } from "@/lib/profiles";
@@ -54,7 +54,7 @@ export type PageState = {
 };
 
 const topics = [
-  { label: "Games", term: "games", Icon: Sparkles, color: "purple" },
+  { label: "Games", term: "games", Icon: Gamepad2, color: "purple" },
   { label: "Apps", term: "aplicativo", Icon: Code2, color: "violet" },
   { label: "IA", term: "Inteligência Artificial", Icon: BrainCircuit, color: "cyan" },
   { label: "Educação", term: "Educação", Icon: GraduationCap, color: "blue" },
@@ -71,6 +71,32 @@ const quickFilters = [
   { label: "Saúde", term: "Saúde", Icon: HeartPulse },
   { label: "Igreja", term: "Igreja", Icon: HeartHandshake },
 ] as const;
+
+const featuredTopics = [
+  { label: "inovação", term: "inovação" },
+  { label: "tecnologia", term: "Tecnologia" },
+  { label: "impacto-social", term: "Impacto Social" },
+  { label: "educação", term: "Educação" },
+  { label: "sustentabilidade", term: "Sustentabilidade" },
+] as const;
+
+function ExploreAreas({ base }: { base: string }) {
+  return <section className={styles.areasSection} id="explore-categories" aria-labelledby="explore-areas-heading">
+    <div className={styles.areasHeading}>
+      <h2 id="explore-areas-heading"><LayoutGrid size={23} aria-hidden="true" /> Explore por área</h2>
+      <a href="#explore-topics" className={styles.areasMore}>Ver todas as áreas <ArrowRight size={17} aria-hidden="true" /></a>
+    </div>
+    <div className={styles.areasGrid}>
+      {topics.map(({ label, term, Icon }) => (
+        <Link key={term} className={styles.areaTile} href={exploreUrl(base, term, "Todos", "all")}>
+          <Icon size={31} strokeWidth={1.85} aria-hidden="true" />
+          <strong>{label}</strong>
+          <span>Ver projetos<br />e conexões</span>
+        </Link>
+      ))}
+    </div>
+  </section>;
+}
 
 function exploreUrl(base: string, query: string, stage: string, type: ExploreKind) {
   const params = new URLSearchParams();
@@ -187,7 +213,11 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
     <div className={styles.columns}>
       <div className={styles.content}>
         <header className={styles.exploreHeader}>
-          <h1 className={styles.srOnly}>Explorar</h1>
+          <div className={styles.exploreIntro}>
+            <span className={styles.eyebrow}>EXPLORAR</span>
+            <h1>Descubra projetos, equipes e pessoas</h1>
+            <p>Encontre ideias, conecte-se com talentos e participe de desafios do ecossistema.</p>
+          </div>
           <form className={styles.searchForm} action={base} method="get" role="search">
             <Search size={20} aria-hidden="true" />
             <label className={styles.srOnly} htmlFor="envista-explore-search">Buscar na comunidade do Envista</label>
@@ -246,6 +276,8 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             </div>
           </div>
         </section>}
+
+        {type === "all" && !filtered && <ExploreAreas base={base} />}
 
         {showProjects && !isNewCommunity && (type === "projects" || projectTotal > 0) && <section className={styles.section} id="explore-projects" aria-labelledby="explore-projects-heading">
           <div className={styles.sectionHeading}>
@@ -309,18 +341,16 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
       <aside className={styles.rail} aria-label="Filtros, desafios e áreas de interesse">
         {(type === "all" || type === "projects") && <ExploreFiltersClient key={q + "|" + stage + "|" + type} base={base} initialQuery={q} initialStage={stage} initialType={type} />}
         <ExploreCompetitionSpotlight />
-        <section className={styles.topics} id="explore-categories" aria-labelledby="explore-categories-heading">
+        <section className={styles.topics} id="explore-topics" aria-labelledby="explore-topics-heading">
           <div className={styles.panelHeading}>
-            <h2 id="explore-categories-heading"><Sparkles size={19} aria-hidden="true" /> Explore por área</h2>
+            <h2 id="explore-topics-heading"><Flame size={19} aria-hidden="true" /> Tópicos em destaque</h2>
           </div>
-          <div className={styles.topicList}>
-            {topics.map(({ label, term, Icon }) =>
-              <Link key={label} href={exploreUrl(base, term, "Todos", "all")} className={styles.topicCard}>
-                <span className={styles.topicIcon}><Icon size={20} strokeWidth={1.75} aria-hidden="true" /></span>
-                <span><strong>{label}</strong><small>Ver projetos e conexões</small></span>
-                <ArrowUpRight size={17} aria-hidden="true" />
+          <div className={styles.hashtags}>
+            {featuredTopics.map(({ label, term }) => (
+              <Link key={term} href={exploreUrl(base, term, "Todos", "all")} className={styles.hashChip}>
+                <span aria-hidden="true">#</span> {label}
               </Link>
-            )}
+            ))}
           </div>
         </section>
       </aside>
