@@ -103,3 +103,12 @@
   opacity: .24;
 }
 @media (max-width:700px) { .featuredVisual::before { opacity: .13; } }
+
+.learnPage { color: #f4f7f8; }
+.featured { border: 1px solid rgba(151,185,193,.18) !important; border-radius: 14px !important; background: #172631 !important; box-shadow: none !important; }
+.featuredGlow { opacity: 0 !important; }
+.featuredVisual { opacity: .18 !important; }
+.courseCard,.lesson,.materials { border: 1px solid rgba(151,185,193,.17) !important; border-radius: 13px !important; background: #172631 !important; box-shadow: none !important; }
+.courseCard:hover { transform: none !important; box-shadow: none !important; }
+.primary { background: #00a599 !important; color: #061f22 !important; border-radius: 9px !important; }
+.empty { border-color: rgba(151,185,193,.2) !important; background: #172631 !important; }
