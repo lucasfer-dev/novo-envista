@@ -113,6 +113,17 @@ def optimize(original):
         updated = head + body
     for book, phase in IMPLEMENTATION_ROUTES:
         updated = set_implementation_provider(updated, book, phase)
+    # Complete/build tem uma excecao de escalonamento que escolhe Sonnet.
+    # Se o provider da fase e Codex, essa regra precisa fixar Claude explicitamente.
+    x, y = phase_bounds(updated, "complete", "build")
+    part = updated[x:y]
+    old = "use: { model: sonnet, effort: high }"
+    new = "use: { provider: claude, model: sonnet, effort: high }"
+    if part.count(old) == 1:
+        part = part.replace(old, new)
+    elif part.count(new) != 1:
+        raise ValueError("Regra deep/Sonnet desconhecida; preservando playbook")
+    updated = updated[:x] + part + updated[y:]
     updated = set_risk_review(updated)
     return updated
 
