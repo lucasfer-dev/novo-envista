@@ -22,6 +22,9 @@ playbooks:
       - id: build
         tier: standard
         provider: auto
+        rules:
+          - if: [deep, claude-opus-above:50]
+            use: { model: sonnet, effort: high }
       - id: review
         tier: standard
         provider: codex
@@ -61,6 +64,7 @@ class OptimizeAletheTests(unittest.TestCase):
         self.assertEqual(output.count("workers: 2"), 4)
         self.assertEqual(output.count("provider: codex"), 5)
         self.assertIn("use: { provider: claude, tier: standard }", output)
+        self.assertIn("use: { provider: claude, model: sonnet, effort: high }", output)
         self.assertIn("providers: [claude, codex, agy]", output)
         self.assertIn("profile: savings", output)
         self.assertEqual(optimize_alethe.optimize(output), output)
