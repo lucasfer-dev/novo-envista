@@ -256,7 +256,7 @@ export function ExploreView({ expectedRole, base, q, stage, type = "all", pages,
             <Link key={label} href={exploreUrl(base, term, "Todos", "all")} className={styles.filterChip} aria-current={q.toLocaleLowerCase("pt-BR") === term.toLocaleLowerCase("pt-BR") && type === "all" && stage === "Todos" ? "true" : undefined}>
               {Icon && <Icon size={15} aria-hidden="true" />}{label}
             </Link>)}
-          <a className={styles.filterChip} href="#explore-categories">Mais áreas <ArrowRight size={14} aria-hidden="true" /></a>
+          <Link className={styles.filterChip} href={type === "all" && !filtered ? "#explore-categories" : base + "#explore-categories"}>Mais áreas <ArrowRight size={14} aria-hidden="true" /></Link>
         </nav>
 
         {loadError && <div className={styles.loadError} role="alert">Parte dos resultados não pôde ser carregada. Tente novamente.</div>}
