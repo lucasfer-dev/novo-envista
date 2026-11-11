@@ -118,7 +118,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       .order("joined_at", { ascending: false });
     const teamIds = (memberships ?? []).map((item: any) => item.team_id);
 
-    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult, followersResult, learningCountResult] = await Promise.all([
+    const [personalResult, teamProjectsResult, enrollmentResult, notificationsResult, publicProjectsResult, agendaResult, profileResult, followersResult, learningCountResult, peopleResult] = await Promise.all([
       supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").eq("owner_user_id", userId).order("updated_at", { ascending: false }).limit(6),
       teamIds.length
         ? supabase.from("projects").select("id,slug,title,short_description,stage,category,location,tags").in("owner_team_id", teamIds).order("updated_at", { ascending: false }).limit(8)
@@ -130,6 +130,7 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
       supabase.from("profiles").select("username,display_name,bio,public_city,public_state,public_school,interest_tags").eq("id", userId).maybeSingle(),
       supabase.from("follows").select("id", { count: "exact", head: true }).eq("target_profile_id", userId),
       supabase.from("course_enrollments").select("course_id", { count: "exact", head: true }).eq("user_id", userId),
+      supabase.from("profiles").select("id,username,display_name,bio,role,interest_tags").eq("profile_visibility", "platform").neq("id", userId).limit(3),
     ]);
 
     const projects = new Map<string, ProjectCardRow>();
@@ -153,6 +154,14 @@ export async function RealHomeServerPage({ expectedRole, pathname }: { expectedR
         <HomeDashboard name={appUser.name} projects={[...projects.values()]} teams={teams}
           featuredProjects={publicProjectsResult.data ?? []}
           followerCount={followersResult.count ?? 0}
+          suggestedPeople={(peopleResult.data ?? []).filter(person => person.username && person.display_name).map(person => ({
+            id: person.id,
+            username: person.username,
+            display_name: person.display_name,
+            bio: person.bio,
+            role: person.role,
+            interest_tags: Array.isArray(person.interest_tags) ? person.interest_tags : [],
+          }))}
           notifications={notificationsResult.data ?? []}
           agenda={agendaResult.data ?? []}
           profileSteps={[
