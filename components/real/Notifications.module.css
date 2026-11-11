@@ -367,3 +367,17 @@
   mask-image: linear-gradient(90deg, transparent, #000);
 }
 @media (max-width: 560px) { .empty::before { opacity: .08; } }
+
+/* Notification items stay readable; header and empty state carry the brand. */
+.head {
+  padding:16px 18px;
+  border:1px solid rgba(58,147,153,.35);
+  border-radius:13px;
+  background:radial-gradient(ellipse at 96% 100%,rgba(34,177,115,.17),transparent 56%),linear-gradient(105deg,#0e2c37,#112a35);
+}
+.feed {border-color:rgba(70,144,155,.34);}
+.item:hover {background:rgba(0,165,153,.06);}
+.empty {
+  background:linear-gradient(108deg,rgba(12,42,52,.96),rgba(11,34,44,.93)),url("/brand/manual-wave-blue.svg") right center/cover no-repeat;
+}
+@media(max-width:560px){.head{padding:13px;}}
