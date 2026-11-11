@@ -1071,3 +1071,29 @@
   .pageHeading h1 { font-size: 24px; }
   .columns { gap: 14px; }
 }
+
+/* Discovery: editorial rich empty state, quiet functional filters. */
+.discoveryEmpty {
+  border:1px solid rgba(29,193,174,.41) !important;
+  border-radius:14px;
+  background:
+    radial-gradient(ellipse at 92% 100%,rgba(0,165,153,.22),transparent 56%),
+    linear-gradient(105deg,rgba(9,36,46,.98),rgba(9,45,53,.90)),
+    url("/brand/manual-wave-teal.svg") center/cover no-repeat !important;
+}
+.discoveryEmpty::before {opacity:.16 !important;}
+.filtersPanel,.topics {
+  background:linear-gradient(145deg,#102c38,#102b36) !important;
+  border-color:rgba(70,145,157,.32) !important;
+}
+.competitionPanel {
+  background:
+    radial-gradient(ellipse at 100% 100%,rgba(34,177,115,.23),transparent 59%),
+    linear-gradient(145deg,#0d303b,#102c36) !important;
+  border-color:rgba(54,149,152,.44) !important;
+  border-bottom-color:rgba(0,165,153,.56) !important;
+}
+.projectCard,.communityCard {background:linear-gradient(145deg,#102b37,#0d2934);border-color:rgba(63,142,151,.33);}
+.projectCard:hover,.communityCard:hover {border-color:rgba(28,188,162,.47);}
+.cardCover {background:radial-gradient(ellipse at 94% 97%,rgba(34,177,115,.19),transparent 57%),linear-gradient(140deg,#0b3440,#0c2936);}
+@media(max-width:650px){.discoveryEmpty::before{opacity:.08 !important;}}

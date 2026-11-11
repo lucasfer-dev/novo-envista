@@ -3236,3 +3236,34 @@
     animation: none !important; transition: none !important;
   }
 }
+
+/* Social: one expressive header and a readable, calm timeline. */
+.feedHeader {
+  padding:19px 21px;
+  border:1px solid rgba(62,144,155,.39);
+  border-radius:14px;
+  background:
+    radial-gradient(ellipse at 95% 100%,rgba(34,177,115,.20),transparent 53%),
+    linear-gradient(105deg,rgba(9,35,46,.98),rgba(9,43,52,.93)),
+    url("/brand/envista-pattern-original.png") right center/550px auto repeat;
+}
+.feedHeader p {color:#c5dce0;}
+.composer {
+  border-color:rgba(64,145,154,.39) !important;
+  background:radial-gradient(ellipse at 100% 0,rgba(0,165,153,.11),transparent 45%),linear-gradient(140deg,#112c37,#0e2934) !important;
+}
+.timelinePost,.timelineUpdate,.sideCard {
+  border-color:rgba(68,141,153,.34) !important;
+  background:linear-gradient(145deg,#102b36,#0e2935) !important;
+}
+.timelinePost:hover,.timelineUpdate:hover {border-color:rgba(24,190,166,.4) !important;}
+.competitionPanel {
+  border-bottom-color:rgba(34,177,115,.55) !important;
+  background:radial-gradient(ellipse at 100% 100%,rgba(34,177,115,.18),transparent 56%),linear-gradient(145deg,#10303c,#102c37) !important;
+}
+.emptyFeed {
+  background:
+    linear-gradient(110deg,rgba(11,41,52,.97),rgba(10,35,45,.93)),
+    url("/brand/envista-pattern-original.png") right center/560px auto repeat;
+}
+@media(max-width:700px){.feedHeader{padding:15px;}.emptyFeed{background:#0e2a35;}}

@@ -1060,3 +1060,50 @@
 @media (prefers-reduced-motion:reduce) {
   .heroLaptop,.heroPhone,.personCard { transition:none !important; }
 }
+
+/* Atmosphere V4: selective curves around live content. */
+.hero {
+  background:
+    radial-gradient(ellipse at 68% -5%,rgba(0,130,163,.29),transparent 56%),
+    linear-gradient(102deg,rgba(7,35,46,.96),rgba(8,51,55,.72)),
+    url("/brand/manual-wave-blue.svg") right center/cover no-repeat;
+  border-color:rgba(21,196,171,.55);
+}
+.heroPattern {opacity:.27;}
+.heroGlobe {filter:drop-shadow(0 0 14px rgba(0,207,168,.28));}
+.metric {
+  background:
+    radial-gradient(ellipse at 100% 110%,rgba(0,165,153,.21),transparent 55%),
+    linear-gradient(140deg,#0a2937,#0d3039);
+  border-bottom-color:rgba(0,165,153,.55);
+}
+.metric:nth-child(3) {
+  background:
+    radial-gradient(ellipse at 100% 110%,rgba(34,177,115,.22),transparent 56%),
+    linear-gradient(140deg,#0c3037,#0d2e36);
+}
+.metric::after {
+  bottom:-27%;right:-16%;width:77%;height:72%;
+  transform:rotate(-8deg);border-radius:0;
+  background:url("/brand/manual-wave-teal.svg") center/cover no-repeat;opacity:.35;
+}
+.journeyPanel {
+  background:
+    radial-gradient(ellipse 330px 155px at 100% 100%,rgba(34,177,115,.17),transparent 86%),
+    linear-gradient(120deg,rgba(10,38,50,.96),rgba(9,40,51,.91)),
+    url("/brand/manual-wave-green.svg") right bottom/cover no-repeat;
+  border-bottom-color:rgba(0,165,153,.5);
+}
+.panel,.learnPanel,.connectionsPanel,.railOpportunitiesPanel {
+  background:
+    radial-gradient(ellipse at 100% 102%,rgba(0,165,153,.13),transparent 53%),
+    linear-gradient(145deg,#0c2b37,#0f2b36);
+}
+.nextEventPanel,.calendarPanel,.eventListPanel {
+  background:
+    radial-gradient(ellipse at 100% 100%,rgba(34,177,115,.18),transparent 55%),
+    linear-gradient(140deg,rgba(11,43,54,.97),rgba(12,40,52,.97)),
+    url("/brand/manual-wave-teal.svg") right bottom/cover no-repeat;
+  border-bottom-color:rgba(0,165,153,.45);
+}
+@media(max-width:760px){.heroPattern{opacity:.13;}.metric::after{opacity:.24;}}
