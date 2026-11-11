@@ -57,7 +57,7 @@ SCRIPT = Path(optimize_alethe.__file__)
 class OptimizeAletheTests(unittest.TestCase):
     def test_balanced_routes_risk_review_and_idempotence(self):
         output = optimize_alethe.optimize(FIXTURE)
-        self.assertEqual(output.count("tier: standard"), 4)
+        self.assertEqual(output.count("\n        tier: standard"), 9)
         self.assertEqual(output.count("workers: 2"), 4)
         self.assertEqual(output.count("provider: codex"), 5)
         self.assertIn("use: { provider: claude, tier: standard }", output)
