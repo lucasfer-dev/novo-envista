@@ -48,9 +48,9 @@ describe("professional product suite", () => {
     expect(layout).not.toContain("product-polish.css");
     expect(layout).not.toContain("professional-polish.css");
     expect(read("components/auth/Auth.module.css")).toContain("#0f1923");
-    expect(read("components/auth/Auth.module.css")).toContain("#00a99d");
-    expect(read("app/brand-identity.css")).toContain("#22b573");
-    expect(read("app/brand-identity.css")).toContain("#0086a7");
+    expect(read("app/brand-manual-2026.css")).toContain("#00a599");
+    expect(read("app/brand-manual-2026.css")).toContain("#22b173");
+    expect(read("app/brand-manual-2026.css")).toContain("#0082a3");
     expect(read("lib/supabase/proxy.ts")).toContain("cacheHeaders");
     expect(read("app/login/page.tsx")).toContain("getClaims");
   });
