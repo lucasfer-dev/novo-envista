@@ -13,6 +13,12 @@ py -3 scripts/ai/optimize_alethe.py
 py -3 scripts/ai/optimize_alethe.py --apply
 ```
 
+Antes de aplicar, você também pode repetir os **4 testes automatizados** (estrutura, idempotência, sucesso do doctor e rollback):
+
+```powershell
+py -3 -m unittest discover -v -s scripts/ai -p "test_*.py"
+```
+
 O primeiro comando Python mostra o diff sem escrever. O segundo faz backup de `%APPDATA%\Alethe\alethe-playbooks.yaml`, aplica as alterações e executa `doctor`. **Mesmo que o processo do doctor termine com código 0, o script exige `playbooks.valid == true` e `policy.valid == true`; caso contrário, restaura o backup.**
 
 Se a versão do YAML local tiver formato inesperado, o script para antes de alterar. Não é necessário reinstalar Alethe.
