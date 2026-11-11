@@ -227,72 +227,7 @@
  .projectArt::before{opacity:.13}
 }
 
-.page {
-  --navy: #0f1923;
-  --deep: #0f1923;
-  --mint: #00a599;
-  --teal: #00a599;
-  --blue: #0082a3;
-  --ink: #0f1923;
-  --line: rgba(151,185,193,.2);
-  background: #0f1923 !important;
-  font-family: "Montserrat", Arial, sans-serif;
-}
-.hero {
-  border-bottom: 1px solid rgba(151,185,193,.15);
-  background: #0f1923 !important;
-}
-.heroPattern,.earth,.orbit,.brandGhost,.floatCard,.phone { display: none !important; }
-.heroInner { min-height: 535px; grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr); gap: 28px; }
-.heroCopy h1 { font-weight: 700; letter-spacing: -.047em; font-size: clamp(42px,5vw,66px); }
-.heroCopy h1 span,.page em { color: #56c2af; }
-.heroCopy > p { color: #c3d0d5; }
-.heroEyebrow,.kicker { color: #79d0c3; }
-.heroVisual {
-  display: block;
-  position: relative;
-  height: 410px;
-  min-height: 410px;
-  width: 100%;
-  border: 1px solid rgba(151,185,193,.22);
-  border-radius: 18px;
-  background: url("/brand/manual-wave-blue.svg") center / cover no-repeat !important;
-  box-shadow: none;
-}
-.heroVisual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: .7;
-  background: url("/brand/envista-symbol-white.svg") center / 112px auto no-repeat;
-  pointer-events: none;
-}
-.heroActions .primary,.primarySmall,.primary,.bannerButton {
-  background: #00a599 !important;
-  color: #061f22 !important;
-  border-radius: 9px !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-.heroActions .primary:hover,.primarySmall:hover,.primary:hover,.bannerButton:hover { background: #22b173 !important; transform: none !important; }
-.heroActions .secondary { border-color: rgba(151,185,193,.38); border-radius: 9px; background: #172631; }
-.featured,.process,.ecosystem,.audience,.finalSection { background: #0f1923 !important; }
-.featured::before,.process::before,.ecosystem::before,.audience::before,.finalSection::before { display: none !important; }
-.footer::before { opacity: .07 !important; filter: none !important; mix-blend-mode: normal !important; }
-.featured { border-color: rgba(151,185,193,.13); }
-.projectCard,.step,.feature,.audienceCard {
-  border-color: rgba(151,185,193,.17) !important;
-  background: #172631 !important;
-  box-shadow: none !important;
-}
-.projectCard:hover,.step:hover,.feature:hover,.audienceCard:hover { transform: none !important; }
-.banner { border: 1px solid rgba(151,185,193,.19); border-radius: 14px; box-shadow: none !important; }
-.banner::before {
-  background: url("/brand/manual-wave-teal.svg") right center / 60% 100% no-repeat !important;
-  opacity: .09 !important;
-}
+/* Real-data empty state retained from the current landing. */
 .emptyProjects {
   display: flex;
   flex-direction: column;
@@ -309,14 +244,3 @@
   line-height: 1.6;
 }
 .emptyProjects a { color: #78d1c3; font-size: 12px; font-weight: 700; }
-@media(max-width:860px) {
- .heroInner { grid-template-columns: minmax(0,1fr); min-height: 0; gap: 12px; }
- .heroCopy { padding-block: 36px; }
- .heroVisual { min-height: 220px; height: 270px; }
- .heroVisual::after { background-size: 75px auto; }
-}
-@media(max-width:560px) {
- .heroCopy h1 { font-size: 41px; }
- .heroVisual { display: none !important; }
- .heroCopy { padding-block: 26px; }
-}
