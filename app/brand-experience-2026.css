@@ -403,7 +403,7 @@
 }
 
 /* Global authenticated Envista lockup: existing text is no longer hidden. */
-.app-shell[data-envista-product-shell] .sidebar > .envista-brand-lockup {
+.app-shell[data-envista-product-shell] .sidebar > .brand.envista-brand-lockup {
   box-sizing: border-box;
   display: flex !important;
   align-items: center !important;
@@ -421,7 +421,7 @@
   overflow: hidden;
   white-space: nowrap;
 }
-.app-shell[data-envista-product-shell] .sidebar > .envista-brand-lockup img {
+.app-shell[data-envista-product-shell] .sidebar > .brand.envista-brand-lockup img {
   display: block;
   width: 30px !important;
   height: 34px !important;
@@ -431,7 +431,7 @@
   border-radius: 0;
   filter: none !important;
 }
-.app-shell[data-envista-product-shell] .sidebar > .envista-brand-lockup strong {
+.app-shell[data-envista-product-shell] .sidebar > .brand.envista-brand-lockup strong {
   display: block !important;
   color: #f7ffff;
   font-size: 20px;
@@ -440,12 +440,12 @@
   letter-spacing: -.05em;
   text-transform: uppercase;
 }
-.app-shell[data-envista-product-shell] .sidebar > .envista-brand-lockup:hover {
+.app-shell[data-envista-product-shell] .sidebar > .brand.envista-brand-lockup:hover {
   background: rgba(0,165,153,.075) !important;
 }
 @media (min-width: 981px) {
   .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"]
-  .sidebar > .envista-brand-lockup {
+  .sidebar > .brand.envista-brand-lockup {
     justify-content: center !important;
     gap: 0 !important;
     width: 46px !important;
@@ -454,12 +454,12 @@
     padding: 4px !important;
   }
   .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"][data-sidebar-collapsed="true"]
-  .sidebar > .envista-brand-lockup strong {
+  .sidebar > .brand.envista-brand-lockup strong {
     display: none !important;
   }
 }
 @media (max-width: 980px) {
-  .app-shell[data-envista-product-shell] .sidebar > .envista-brand-lockup {
+  .app-shell[data-envista-product-shell] .sidebar > .brand.envista-brand-lockup {
     margin: 3px 8px 17px !important;
   }
 }
