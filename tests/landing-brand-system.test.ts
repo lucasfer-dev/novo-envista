@@ -21,9 +21,9 @@ function contrast(a: string, b: string) {
 
 describe("Envista 2026 official visual identity and UX laws", () => {
   it("uses all official materials in distinct, deliberate roles", () => {
-    expect(style).toContain("#0086a7");
-    expect(style).toContain("#00a99d");
-    expect(style).toContain("#22b573");
+    expect(style).toContain("#0082a3");
+    expect(style).toContain("#00a599");
+    expect(style).toContain("#22b173");
     expect(style).toContain("#0f1923");
     expect(style).toContain("envista-pattern-original.png");
     expect(style).toContain("envista-texture-original.png");
@@ -48,10 +48,10 @@ describe("Envista 2026 official visual identity and UX laws", () => {
   });
 
   it("meets AA small-text contrast against the darkest gradient stop", () => {
-    // The blue stop is the darkest of the 3 official gradient stops.
-    expect(contrast("#000b0f", "#0086a7")).toBeGreaterThanOrEqual(4.5);
-    expect(contrast("#000b0f", "#00a99d")).toBeGreaterThanOrEqual(4.5);
-    expect(contrast("#000b0f", "#22b573")).toBeGreaterThanOrEqual(4.5);
+    // The blue stop remains the darkest of the three official gradient stops.
+    expect(contrast("#000b0f", "#0082a3")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("#000b0f", "#00a599")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("#000b0f", "#22b173")).toBeGreaterThanOrEqual(4.5);
     expect(style).toContain("color:#000b0f!important");
   });
 
