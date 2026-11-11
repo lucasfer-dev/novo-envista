@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ajusta playbooks locais do Alethe sem trocar modelos, contas ou permissões.
+"""Balanceia playbooks locais do Alethe sem trocar modelos, contas ou permissões.
 
 Por padrão, apenas mostra diff. --apply cria backup e valida com doctor.
 """
@@ -37,6 +37,59 @@ def subsection(text, heading_re, boundary_re, name):
     return start, end
 
 
+# Implementadores padrão: Codex para código; Gemini para pesquisa e cascata mecânica.
+# UI/UX: o lead pode selecionar Claude, com revisão visual em vez de rotear cegamente.
+IMPLEMENTATION_ROUTES = (
+    ("complete", "build"),
+    ("scout-then-build", "build"),
+    ("plan-execute", "execute"),
+    ("parallel-worktrees", "build"),
+)
+
+
+def phase_bounds(text, book, phase):
+    start, _ = subsection(text, r"^playbooks:\s*$", r"^[A-Za-z][A-Za-z0-9_-]*:\s*$", "playbooks")
+    body = text[start:]
+    a, b = subsection(body, rf"^  {re.escape(book)}:\s*$", r"^  [a-z0-9-]+:\s*$", book)
+    book_text = body[a:b]
+    x, y = subsection(book_text, rf"^      - id: {re.escape(phase)}\s*$", r"^      - id: [a-z0-9-]+\s*$", f"{book}/{phase}")
+    return start + a + x, start + a + y
+
+
+def set_implementation_provider(text, book, phase):
+    x, y = phase_bounds(text, book, phase)
+    part = text[x:y]
+    providers = list(re.finditer(r"^        provider:\s*(\w+)\s*$", part, re.M))
+    if len(providers) > 1:
+        raise ValueError(f"Provider duplicado em {book}/{phase}")
+    if providers:
+        current = providers[0].group(1)
+        if current not in ("auto", "codex"):
+            raise ValueError(f"{book}/{phase} ja tem provider: {current}; preservar escolha existente")
+        part = part[:providers[0].start(1)] + "codex" + part[providers[0].end(1):]
+    else:
+        match = re.search(r"^        tier:\s*(?:cheap|standard|strong)\s*$", part, re.M)
+        if not match:
+            raise ValueError(f"{book}/{phase} sem tier conhecido")
+        part = part[:match.end()] + "\n        provider: codex" + part[match.end():]
+    return text[:x] + part + text[y:]
+
+
+def set_risk_review(text):
+    x, y = phase_bounds(text, "complete", "review")
+    part = text[x:y]
+    rule = "        rules:\n          - if: risky\n            use: { provider: claude, tier: standard }\n"
+    if rule in part:
+        return text
+    if re.search(r"^        rules:\s*$", part, re.M):
+        raise ValueError("Complete/review ja tem rules personalizadas; nao sobrescrever")
+    if not re.search(r"^        provider:\s*codex\s*$", part, re.M):
+        raise ValueError("Complete/review nao usa Codex como reviewer normal")
+    # Acrescentar ao fim da fase, preservando as condicoes e o gate.
+    part = part.rstrip("\n") + "\n" + rule
+    return text[:x] + part + text[y:]
+
+
 def optimize(original):
     if not re.search(r"^playbooks:\s*$", original, re.M):
         raise ValueError("O arquivo nao parece ser um playbook do Alethe")
@@ -58,6 +111,9 @@ def optimize(original):
         book_text = book_text[:x] + phase_text + book_text[y:]
         body = body[:a] + book_text + body[b:]
         updated = head + body
+    for book, phase in IMPLEMENTATION_ROUTES:
+        updated = set_implementation_provider(updated, book, phase)
+    updated = set_risk_review(updated)
     return updated
 
 
@@ -80,7 +136,7 @@ def main():
         parser.error(str(exc))
     diff = "".join(difflib.unified_diff(original.splitlines(True), updated.splitlines(True), fromfile=str(config), tofile="otimizado", n=2))
     if not diff:
-        print("OK: configuracao ja possui os ajustes economicos; nada a fazer.")
+        print("OK: configuracao ja possui os ajustes de eficiencia e economia; nada a fazer.")
         return 0
     print(diff)
     if not args.apply:
