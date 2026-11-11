@@ -996,4 +996,48 @@
   padding-right: 56px;
 }
 
-.envistaUnusedSentinel { display:none; }
+.page {
+  background: #0f1923 !important;
+  color: #f4f7f8;
+  font-family: "Montserrat", Arial, sans-serif;
+}
+.page::before { display: none !important; }
+.shell,.loginShell {
+  border: 1px solid rgba(151,185,193,.19) !important;
+  border-radius: 16px;
+  background: #172631 !important;
+  box-shadow: 0 16px 42px rgba(0,0,0,.15) !important;
+}
+.brandPanel,.loginBrand {
+  background: linear-gradient(148deg, #17353d, #11252f 54%, #0f1923) !important;
+  border-color: rgba(151,185,193,.16) !important;
+}
+.brandPanel::before { opacity: .07 !important; mix-blend-mode: normal !important; }
+.brandPanel::after,.brandEarth { display: none !important; }
+.brandCopy h2,.loginBrandCopy h2 { color: #f4f7f8; font-weight: 700; letter-spacing: -.035em; }
+.brandCopy p,.loginBrandCopy p { color: #b1c3ca; }
+.kicker { color: #75cec0; font-weight: 700; }
+.benefits span,.loginBenefits span { border-color: rgba(151,185,193,.18) !important; background: rgba(0,165,153,.055) !important; }
+.formPanel,.loginPanel { background: #172631 !important; }
+.formArea,.loginArea,.verifyArea,.profileArea {
+  border-color: rgba(151,185,193,.16) !important;
+  border-radius: 14px !important;
+  background: #172631 !important;
+  box-shadow: none !important;
+}
+.intro h1,.verifyHeading h1 { color: #f4f7f8; font-weight: 700; }
+.intro p { color: #a7bac3; }
+.submitButton,.verifyPrimary {
+  border-radius: 9px !important;
+  background: #00a599 !important;
+  color: #061f22 !important;
+  box-shadow: none !important;
+}
+.submitButton:hover,.verifyPrimary:hover { background: #22b173 !important; }
+.fieldWithIcon input { border-color: rgba(151,185,193,.24) !important; background: #101e27 !important; }
+.verifyVisual { border-color: rgba(151,185,193,.2) !important; background: #13313a !important; }
+.verifyVisualOrbit { opacity: .2; }
+@media(max-width:830px) {
+  .shell,.loginShell { border: 0 !important; border-radius: 0; box-shadow: none !important; }
+  .formPanel,.loginPanel { background: #0f1923 !important; }
+}
