@@ -23,7 +23,7 @@ export function RegisterShell({ title, description, children, phase = "account" 
   return (
     <main className={styles.page + " envista-auth-page"}>
       <div className={[styles.shell, phase === "verify" ? styles.verifyShell : "", phase === "profile" ? styles.profileShell : "", phase === "login" ? styles.loginShell : ""].filter(Boolean).join(" ")}>
-        <aside className={[styles.brandPanel, phase === "login" ? styles.loginBrand : ""].filter(Boolean).join(" ")} aria-label="Sobre o Envista">
+        <aside className={[styles.brandPanel, phase === "login" ? styles.loginBrand : "", "envista-auth-brand"].filter(Boolean).join(" ")} aria-label="Sobre o Envista">
           <Link href="/" className={styles.brand} aria-label="Voltar à página inicial do Envista">
             <Image src="/brand/envista-symbol-gradient.svg" alt="" width={36} height={48} priority />
             <span>ENVISTA</span>
