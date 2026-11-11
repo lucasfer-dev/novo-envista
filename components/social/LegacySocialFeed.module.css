@@ -3267,3 +3267,46 @@
     url("/brand/envista-pattern-original.png") right center/560px auto repeat;
 }
 @media(max-width:700px){.feedHeader{padding:15px;}.emptyFeed{background:#0e2a35;}}
+
+/* Social is a reading surface, not a collection of hero banners. */
+.socialPage {width:100%;max-width:1280px;margin-inline:auto}
+.socialLayout {gap:24px;align-items:start}
+.mainColumn {min-width:0}
+.feedHeader {
+  padding:22px 24px !important;
+  margin-bottom:24px;
+  border-color:rgba(75,151,157,.28) !important;
+  background:linear-gradient(110deg,rgba(12,41,52,.98),rgba(12,44,53,.95)) !important;
+}
+.feedHeader h1 {font-size:clamp(26px,2.4vw,34px);line-height:1.2}
+.feedHeader p {max-width:65ch;line-height:1.6}
+.composer {padding:24px !important;margin-bottom:18px;border-radius:14px}
+.composerHead {gap:14px}
+.composerFooter {gap:12px}
+.composerActions {gap:10px}
+.timelineToolbar {margin-bottom:16px;gap:12px}
+.timeline {gap:16px}
+.timelinePost,.timelineUpdate {padding:24px !important;border-radius:14px}
+.postBody {line-height:1.7}
+.commentArea {margin-top:20px;padding-top:16px}
+.commentComposer {gap:10px}
+.sideColumn {gap:16px}
+.sideCard {padding:20px !important;border-radius:14px}
+.suggestion {min-height:58px;padding-block:10px}
+.emptyFeed {padding:28px !important}
+@media(max-width:900px) {
+ .socialLayout {gap:18px}
+ .sideColumn {gap:16px}
+}
+@media(max-width:760px) {
+ .feedHeader {padding:18px !important;margin-bottom:18px}
+ .composer {padding:18px !important;margin-bottom:16px}
+ .timelinePost,.timelineUpdate {padding:18px !important}
+ .sideCard {padding:18px !important}
+}
+@media(max-width:520px) {
+ .socialLayout,.sideColumn {gap:14px}
+ .feedHeader {padding:16px !important}
+ .composer,.timelinePost,.timelineUpdate,.sideCard {padding:16px !important}
+ .timeline {gap:14px}
+}

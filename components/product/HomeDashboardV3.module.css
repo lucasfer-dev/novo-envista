@@ -1107,3 +1107,83 @@
   border-bottom-color:rgba(0,165,153,.45);
 }
 @media(max-width:760px){.heroPattern{opacity:.13;}.metric::after{opacity:.24;}}
+
+/* Dashboard rhythm: create space between functional blocks, keep the artwork secondary. */
+.primaryColumn {gap:18px}
+.layout {column-gap:24px}
+.hero {min-height:284px;border-color:rgba(48,175,162,.45);box-shadow:none}
+.heroPattern {opacity:.13}
+.heroContent {width:66%;padding:32px 12px 40px 30px}
+.heroContent h2 {font-size:clamp(28px,2.35vw,36px);line-height:1.14;max-width:570px}
+.heroContent p {margin-top:14px;max-width:53ch;font-size:12.5px;line-height:1.65}
+.heroActions {gap:12px;margin-top:20px}
+.btnPrimary,.btnSecondary {min-height:44px;padding:10px 16px}
+.heroPagination {bottom:14px}
+.metrics {gap:14px}
+.metric,.metricPurple {min-height:90px;height:auto;padding:15px 14px;gap:12px}
+.metricIcon {width:46px;height:46px;flex-basis:46px}
+.metric::after {opacity:.12}
+.metric small {line-height:1.4}
+.journeyPanel {padding:22px 24px 24px;min-height:206px}
+.journeyTop {gap:24px;align-items:center}
+.journeySteps {margin-top:24px;gap:8px}
+.journeyStep {gap:6px}
+.journeyStep strong {line-height:1.35}
+.journeyStep small {line-height:1.45}
+.contentGrid {gap:16px}
+.panel {padding:20px;min-height:186px}
+.panelHeading {min-height:36px;padding-bottom:12px;gap:12px}
+.projectList {margin-top:12px}
+.projectRow {padding:12px 10px;gap:12px}
+.projectEmpty,.competitionEmpty {min-height:108px;gap:8px}
+.competitionCard {padding:14px;gap:12px;margin-top:12px}
+.competitionMain {gap:12px}
+.learnPanel {padding:20px 24px;min-height:140px}
+.learnCopy p {line-height:1.6}
+.learnAction {min-height:42px;padding:8px 14px}
+.rail {gap:16px;padding-top:0}
+.nextEventPanel,.calendarPanel,.eventListPanel {padding:20px;min-height:auto}
+.railHeading {padding-bottom:12px}
+.eventRow {padding-block:14px}
+.daysGrid {margin-top:12px;row-gap:4px}
+.day {min-height:34px}
+.connectionsPanel {padding:20px 22px}
+.connectionsHead {gap:16px}
+.peopleGrid {gap:12px;margin-top:18px}
+.personCard {padding:12px;gap:10px}
+.peopleEmpty {margin-top:16px;padding:16px;gap:14px}
+.railOpportunitiesPanel {padding:20px}
+@media(max-width:1300px) {
+  .layout {gap:18px}
+  .heroContent {padding:28px 10px 36px 26px}
+  .journeyPanel {padding:20px}
+}
+@media(max-width:1100px) {
+  .layout {gap:18px}
+  .rail {gap:16px}
+}
+@media(max-width:760px) {
+  .primaryColumn {gap:14px}
+  .hero {min-height:278px}
+  .heroContent {width:75%;padding:24px 12px 42px 22px}
+  .heroContent h2 {font-size:28px}
+  .metrics {gap:12px}
+  .metric {min-height:82px;padding:12px}
+  .journeyPanel {padding:18px}
+  .journeySteps {margin-top:20px}
+  .panel,.connectionsPanel,.railOpportunitiesPanel {padding:18px}
+  .nextEventPanel,.calendarPanel,.eventListPanel {padding:18px}
+}
+@media(max-width:520px) {
+  .hero {min-height:338px}
+  .heroContent {width:100%;padding:24px 20px 56px}
+  .heroContent h2 {font-size:27px;line-height:1.19}
+  .heroContent p {font-size:12px;line-height:1.55}
+  .heroActions {align-items:stretch;gap:9px;margin-top:18px}
+  .btnPrimary,.btnSecondary {min-height:44px}
+  .metric,.metricPurple {min-height:90px;gap:9px}
+  .metricIcon {width:40px;flex-basis:40px}
+  .journeySteps {gap:16px 10px}
+  .journeySummary {margin-top:8px}
+  .peopleEmpty a {margin-left:0}
+}

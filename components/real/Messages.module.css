@@ -73,3 +73,25 @@
 .sectionHeader {background:radial-gradient(ellipse at 94% 100%,rgba(0,165,153,.09),transparent 54%);}
 .threadRow:hover {background:rgba(0,165,153,.07) !important;}
 @media(max-width:620px){.pageHeader{padding:14px;}}
+
+/* Conversation density: separate lists, content, and composer by function. */
+.page {max-width:1380px;margin-inline:auto}
+.pageHeader {margin-bottom:24px;padding:22px 24px}
+.inboxLayout {gap:24px}
+.inboxPanel,.conversationShell {border-radius:14px}
+.sectionHeader {padding:22px 24px}
+.threadRow {padding:18px 22px;gap:14px}
+.startPanelIntro,.privacyTip {padding:20px}
+.conversationHeader {margin-bottom:20px;gap:14px}
+.messages {gap:12px}
+.composer {padding:18px 20px}
+.composer textarea {min-height:44px}
+.sendButton,.primary {min-height:44px}
+@media(max-width:900px){.inboxLayout{gap:18px}}
+@media(max-width:620px) {
+ .pageHeader {margin-bottom:18px;padding:18px}
+ .sectionHeader {padding:18px}
+ .threadRow {padding:16px;gap:12px}
+ .startPanelIntro,.privacyTip {padding:16px}
+ .composer {padding:14px}
+}
