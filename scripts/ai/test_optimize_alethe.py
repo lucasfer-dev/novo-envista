@@ -19,6 +19,14 @@ playbooks:
         tier: strong
       - id: read
         workers: 4
+      - id: build
+        tier: standard
+        provider: auto
+      - id: review
+        tier: standard
+        provider: codex
+        readOnly: true
+        gate: Checks pass
   scout-then-build:
     phases:
       - id: brief
@@ -27,6 +35,12 @@ playbooks:
         workers: 4
       - id: plan
         tier: strong
+      - id: build
+        tier: standard
+  plan-execute:
+    phases:
+      - id: execute
+        tier: standard
   plan-big-execute-small:
     phases:
       - id: investigate
@@ -34,19 +48,27 @@ playbooks:
   parallel-worktrees:
     phases:
       - id: build
+        tier: standard
         workers: 3
 """
 SCRIPT = Path(optimize_alethe.__file__)
 
 
 class OptimizeAletheTests(unittest.TestCase):
-    def test_changes_only_eight_target_fields_and_is_idempotent(self):
+    def test_balanced_routes_risk_review_and_idempotence(self):
         output = optimize_alethe.optimize(FIXTURE)
         self.assertEqual(output.count("tier: standard"), 4)
         self.assertEqual(output.count("workers: 2"), 4)
+        self.assertEqual(output.count("provider: codex"), 5)
+        self.assertIn("use: { provider: claude, tier: standard }", output)
         self.assertIn("providers: [claude, codex, agy]", output)
         self.assertIn("profile: savings", output)
         self.assertEqual(optimize_alethe.optimize(output), output)
+
+    def test_respects_custom_providers(self):
+        customized = FIXTURE.replace("provider: auto", "provider: claude")
+        with self.assertRaises(ValueError):
+            optimize_alethe.optimize(customized)
 
     def test_unknown_schema_does_not_modify_source(self):
         unknown = FIXTURE.replace("workers: 4", "workers: 7", 1)
