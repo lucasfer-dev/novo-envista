@@ -235,11 +235,13 @@ button, input, select, textarea, option { font-family: inherit; }
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/brand/envista-texture-green.svg") center/cover no-repeat;
-  opacity: .09;
+  background: url("/brand/manual-wave-green.svg") center/cover no-repeat;
+  opacity: .14;
   pointer-events: none;
 }
 .envista-auth-page .envista-auth-brand > * { position: relative; z-index: 1; }
+.envista-auth-page [class*="brandEarth"] { display: none !important; }
+.envista-auth-page::before { display: none !important; }
 .envista-auth-page [class*="formPanel"] {
   background: #0f1923 !important;
 }
@@ -290,7 +292,7 @@ button, input, select, textarea, option { font-family: inherit; }
   border-radius: 20px;
   background:
     linear-gradient(140deg,rgba(0,130,163,.23),rgba(0,165,153,.12) 52%,rgba(34,177,115,.16)),
-    url("/brand/envista-texture-green.svg") center/cover no-repeat;
+    url("/brand/manual-wave-blue.svg") center/cover no-repeat;
   overflow: hidden;
   min-height: 420px;
   max-height: 490px;
