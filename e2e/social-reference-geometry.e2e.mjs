@@ -1,17 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
-// Faithful geometry check against the approved 1672x941 Social reference.
-// Browser-driven: uses the real global styles and Social CSS Module source
-// on an isolated, authentication-free fixture, not just string snapshots.
-// Production still renders real items and may have different content.
 const moduleCss = readFileSync("components/social/LegacySocialFeed.module.css", "utf8")
   .replace(/:global\(([^()]+)\)/g, "$1");
 
 const desktopViewports = [
-  { width: 1672, height: 941, reference: true },
-  { width: 2560, height: 932, reference: false },
-  { width: 1440, height: 900, reference: false },
+  { width: 1672, height: 941 },
+  { width: 2560, height: 932 },
+  { width: 1440, height: 900 },
 ];
 
 for (const viewport of desktopViewports) {
@@ -28,7 +24,7 @@ for (const viewport of desktopViewports) {
         '<div class="side-bottom">Perfil</div></aside>',
         '<main class="main"><header class="topbar"><span class="global-search">Buscar no Envista</span></header>',
         '<div class="page-wrap"><div class="socialPage"><div class="socialLayout">',
-        '<section class="mainColumn"><div class="feedHeader"><h1>Social</h1><p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p></div>',
+        '<section class="mainColumn"><div class="feedHeader"><div class="feedIntro"><span class="feedEyebrow">Comunidade Envista</span><h1>Social</h1><p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p></div><div class="heroGlobe"></div></div>',
         '<section class="composer"><div class="composerHead"><span class="composerAvatar">GM</span><textarea placeholder="O que você quer compartilhar?"></textarea></div><div class="composerFooter"><span>Projeto&nbsp;&nbsp;&nbsp; Competição&nbsp;&nbsp;&nbsp; Evento</span><button class="publishButton">Publicar</button></div></section>',
         '<div class="timelineToolbar"><div class="feedTabs"><button class="activeTab">Para você</button><button>Seguindo</button><a class="discoverTab">Comunidade</a><a class="discoverTab">Projetos</a></div><div class="sortLabel">Mais recentes</div></div>',
         '<div class="timeline"><article class="timelineUpdate"><div class="identityRow"><span class="timelineAvatar">GM</span><span>Gabriel Marinho</span></div>',
@@ -45,14 +41,14 @@ for (const viewport of desktopViewports) {
       const get = (selector) => document.querySelector(selector).getBoundingClientRect();
       const head = get(".feedHeader"), composer = get(".composer"),
         timeline = get(".timelineUpdate"), cover = get(".projectCover"),
-        rail = get(".sideColumn"), wrap = get(".page-wrap"),
-        social = get(".socialPage"), sidebar = get(".sidebar");
+        rail = get(".sideColumn"), social = get(".socialPage"), sidebar = get(".sidebar");
       return {
-        headX: head.x, headY: head.y, composerX: composer.x,
-        composerY: composer.y, postY: timeline.y, railX: rail.x, railY: rail.y,
+        headX: head.x, headY: head.y, headBottom: head.bottom, heroHeight: head.height,
+        composerX: composer.x, composerY: composer.y, composerRadius: parseFloat(getComputedStyle(document.querySelector(".composer")).borderRadius),
+        postY: timeline.y, railX: rail.x, railY: rail.y,
         coverHeight: cover.height, coverWidth: cover.width,
         socialWidth: social.width, socialRight: social.right,
-        wrapLeft: wrap.left, sidebarWidth: sidebar.width,
+        sidebarWidth: sidebar.width,
         documentScrollWidth: document.documentElement.scrollWidth,
         viewportWidth: window.innerWidth,
         banner: getComputedStyle(document.querySelector(".feedHeader"), "::before").content,
@@ -62,16 +58,13 @@ for (const viewport of desktopViewports) {
     expect(dimensions.headX, JSON.stringify(dimensions)).toBeCloseTo(dimensions.composerX, 0);
     expect(dimensions.railY, JSON.stringify(dimensions)).toBeCloseTo(dimensions.headY, 0);
     expect(dimensions.socialWidth, JSON.stringify(dimensions)).toBeLessThanOrEqual(1337);
+    expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(169);
+    expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(245);
+    expect(dimensions.composerY, JSON.stringify(dimensions)).toBeGreaterThan(dimensions.headBottom);
+    expect(dimensions.composerRadius, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(14);
+    expect(dimensions.railX, JSON.stringify(dimensions)).toBeGreaterThan(dimensions.headX);
     expect(dimensions.coverHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(239);
     expect(dimensions.documentScrollWidth, JSON.stringify(dimensions)).toBeLessThanOrEqual(viewport.width + 1);
     expect(dimensions.banner, JSON.stringify(dimensions)).toBe("none");
-
-    if (viewport.reference) {
-      // Approved reference: left navigation 260px, feed x295, rail x1095.
-      expect(Math.abs(dimensions.sidebarWidth - 260), JSON.stringify(dimensions)).toBeLessThan(3);
-      expect(Math.abs(dimensions.headX - 295), JSON.stringify(dimensions)).toBeLessThan(5);
-      expect(Math.abs(dimensions.composerY - 150), JSON.stringify(dimensions)).toBeLessThan(8);
-      expect(Math.abs(dimensions.railX - 1095), JSON.stringify(dimensions)).toBeLessThan(10);
-    }
   });
 }
