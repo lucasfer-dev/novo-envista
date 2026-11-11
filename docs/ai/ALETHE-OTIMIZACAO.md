@@ -13,7 +13,7 @@ py -3 scripts/ai/optimize_alethe.py
 py -3 scripts/ai/optimize_alethe.py --apply
 ```
 
-Antes de aplicar, você também pode repetir os **4 testes automatizados** (estrutura, idempotência, sucesso do doctor e rollback):
+Antes de aplicar, você também pode repetir os **5 testes automatizados** (estrutura, idempotência, sucesso do doctor e rollback):
 
 ```powershell
 py -3 -m unittest discover -v -s scripts/ai -p "test_*.py"
@@ -36,7 +36,15 @@ Se a versão do YAML local tiver formato inesperado, o script para antes de alte
 | Plan big execute small | investigate | 4 workers | 2 workers | Preserva teto de concorrência |
 | Parallel worktrees | build | 3 workers | 2 workers | Alinha com policy de 2 workers |
 
-O script **não altera** `providers`, `tiers`, `profiles`, `quota`, `passive`, `policy`, `prices`, `trust`, `AGENTS.md` ou arquivos do app. As decisões de risco e o review-gate permanecem. Um modelo forte continua disponível para tarefas complexas ou escalonamento. Trocar o tier da etapa do lead **não muda automaticamente o modelo selecionado no Claude Code**: ajuste em `/model` se necessário.
+O script **não altera** as listas globais `providers`, `tiers`, `profiles`, `quota`, `passive`, `policy`, `prices`, `trust`, `AGENTS.md` ou arquivos do app; altera rotas de fases específicas. As decisões de risco e o review-gate permanecem. Um modelo forte continua disponível para tarefas complexas ou escalonamento. Trocar o tier da etapa do lead **não muda automaticamente o modelo selecionado no Claude Code**: ajuste em `/model` se necessário.
+
+## Balanceamento de qualidade por especialidade
+
+A versão mais recente do ajustador também define Codex como implementador padrão em `complete/build`, `scout-then-build/build`, `plan-execute/execute` e `parallel-worktrees/build`. Gemini/Antigravity continua disponível para scouts econômicos. A revisão comum de `complete` permanece no Codex; uma regra adicional encaminha revisões marcadas `risky` ao Claude Sonnet Standard. **Não é um ranking validado de modelos:** é um ponto de partida para medir taxa de sucesso, retrabalho e cota consumida.
+
+**Atenção à regra de exceção:** `complete/build` contém regras próprias de escalonamento para `deep` que podem selecionar um modelo diferente. Antes de usar o fluxo para alterações complexas, verifique o modelo resolvido no editor e confirme que o provedor/modelo são compatíveis. Se houver conflito, não aplique o script e use o fluxo original.
+
+Não há garantia de que a regra `risky` substitua o `review-gate`; este continua sendo obrigatório em mudanças sensíveis. Para UI/UX, pode ser mais adequado escolher Claude manualmente no agente principal. Os testes automatizados cobrem transformação, idempotência e rollback; **não substituem o doctor do Alethe no seu Windows nem um benchmark de qualidade**.
 
 ## Validar visualmente
 
