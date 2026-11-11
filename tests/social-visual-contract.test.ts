@@ -7,9 +7,9 @@ const page = readFileSync("components/social/LegacySocialServerPage.tsx", "utf8"
 const shell = readFileSync("components/social/LegacySocialShell.tsx", "utf8");
 const competitions = readFileSync("components/social/SocialCompetitionSpotlight.tsx", "utf8");
 
-describe("approved social UI / UX and existing functional contracts", () => {
+describe("manual-led social UI / UX and existing functional contracts", () => {
   it("shows the full social interface without invented posts or metrics", () => {
-    expect(feed).toContain("Conecte-se, compartilhe ideias, acompanhe projetos");
+    expect(feed).toContain("Compartilhe ideias, acompanhe projetos");
     expect(feed).toContain("SocialCompetitionSpotlight");
     expect(feed).toContain("Assuntos em alta");
     expect(feed).toContain("Sugestões de pessoas");
