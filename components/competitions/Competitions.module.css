@@ -195,3 +195,12 @@
 @media (max-width: 700px) {
   .recommendationPanel::before { opacity: .08; }
 }
+
+.page { color: #f4f7f8; }
+.grid { gap: 14px; }
+.card,.panel,.recommendationPanel { border: 1px solid rgba(151,185,193,.17) !important; border-radius: 13px !important; background: #172631 !important; box-shadow: none !important; }
+.card:hover { transform: none !important; box-shadow: none !important; }
+.banner { border-color: rgba(151,185,193,.2) !important; background: #142d36 !important; }
+.bannerArtwork { opacity: .22; }
+.filters :is(input,select) { border-color: rgba(151,185,193,.24) !important; background: #101e27 !important; }
+.empty { border-color: rgba(151,185,193,.2) !important; background: #172631 !important; }
