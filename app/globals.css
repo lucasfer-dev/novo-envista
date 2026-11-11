@@ -6,9 +6,9 @@
   --surface3: #203348;
   --text: #f7f9fb;
   --muted: #98a6b8;
-  --green: #00a99d;
-  --turq: #00a99d;
-  --cyan: #0086a7;
+  --green: #00a599;
+  --turq: #00a599;
+  --cyan: #0082a3;
   --border: rgba(255, 255, 255, 0.08);
   --shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
   --radius-control: 8px;
@@ -114,7 +114,7 @@ h3 {
   transition: 0.18s ease;
 }
 .primary {
-  background: linear-gradient(100deg, #22b573, #00a99d 52%, #0086a7);
+  background: linear-gradient(100deg, #22b173, #00a599 52%, #0082a3);
   color: #061916;
 }
 .primary:hover {
@@ -144,8 +144,8 @@ h3 {
 }
 .secondary:hover,
 .secondary.selected {
-  background: rgba(0, 169, 157, 0.08);
-  border-color: rgba(0, 169, 157, 0.35);
+  background: rgba(0,165,153, 0.08);
+  border-color: rgba(0,165,153, 0.35);
 }
 .text-btn,
 .link-btn {
@@ -193,8 +193,8 @@ h3 {
   width: max-content;
   padding: 5px 8px;
   border-radius: 999px;
-  background: rgba(0, 169, 157, 0.1);
-  border: 1px solid rgba(0, 169, 157, 0.18);
+  background: rgba(0,165,153, 0.1);
+  border: 1px solid rgba(0,165,153, 0.18);
   color: #66decf;
   font-size: 12px;
   font-weight: 700;
@@ -271,7 +271,7 @@ h3 {
 .profile-avatar-btn:hover .avatar,
 .profile-avatar-btn:focus-visible .avatar {
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.14);
+  box-shadow: 0 0 0 3px rgba(0,165,153, 0.14);
 }
 .icon-btn i {
   position: absolute;
@@ -869,7 +869,7 @@ h3 {
 }
 .onboard-card .organization-type-select:focus-visible {
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.14);
+  box-shadow: 0 0 0 3px rgba(0,165,153, 0.14);
 }
 .onboard-card .organization-type-select option {
   background: #162331;
@@ -1624,7 +1624,7 @@ h3 {
 .bubble.mine {
   align-self: flex-end;
   background: #17363a;
-  border-color: rgba(0, 169, 157, 0.14);
+  border-color: rgba(0,165,153, 0.14);
   border-radius: var(--radius-item) var(--radius-item) 3px var(--radius-item);
 }
 .bubble small,
@@ -1718,7 +1718,7 @@ h3 {
 .profile-skills .chips span {
   padding: 6px 10px;
   background: rgba(0, 191, 166, 0.07);
-  border-color: rgba(0, 169, 157, 0.18);
+  border-color: rgba(0,165,153, 0.18);
 }
 .achievement-grid {
   display: grid;
@@ -1849,7 +1849,7 @@ h3 {
   padding: 9px 11px;
   border: 1px solid rgba(0, 191, 166, 0.25);
   border-radius: var(--radius-control);
-  background: rgba(0, 169, 157, 0.08);
+  background: rgba(0,165,153, 0.08);
   color: #9ce9dd;
   font-size: 12px;
 }
@@ -1995,7 +1995,7 @@ h3 {
   border: 1px solid var(--border);
   border-radius: 22px;
   background:
-    radial-gradient(circle at 50% 45%, rgba(0, 169, 157, 0.1), transparent 38%),
+    radial-gradient(circle at 50% 45%, rgba(0,165,153, 0.1), transparent 38%),
     #13202c;
 }
 .hero-visual:before {
@@ -2013,7 +2013,7 @@ h3 {
   transform: translate(-50%, -50%);
   font-size: 110px;
   font-weight: 800;
-  color: rgba(0, 169, 157, 0.08);
+  color: rgba(0,165,153, 0.08);
 }
 .orbit-card {
   position: absolute;
@@ -2752,7 +2752,7 @@ h3 {
   display: inline-flex;
   padding: 5px 9px;
   border-radius: 999px;
-  background: rgba(0, 169, 157, 0.1);
+  background: rgba(0,165,153, 0.1);
   border: 1px solid rgba(0, 191, 166, 0.22);
   color: #68e1d1;
   font-size: 12px;
@@ -2814,7 +2814,7 @@ h3 {
 .settings-card > label:not(.toggle-row) input:focus-visible,
 .settings-card > label:not(.toggle-row) select:focus-visible {
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.14);
+  box-shadow: 0 0 0 3px rgba(0,165,153, 0.14);
 }
 .settings-card.danger-zone {
   grid-column: 1/-1;
@@ -3091,7 +3091,7 @@ h3 {
   color: #a5b4c4;
 }
 .chip-picker button.selected {
-  background: rgba(0, 169, 157, 0.18);
+  background: rgba(0,165,153, 0.18);
   border-color: var(--green);
   color: #eafffb;
 }
