@@ -1041,3 +1041,18 @@
   .shell,.loginShell { border: 0 !important; border-radius: 0; box-shadow: none !important; }
   .formPanel,.loginPanel { background: #0f1923 !important; }
 }
+
+/* Branding stays on the editorial side of authentication, not behind input fields. */
+.brandPanel,.loginBrand {
+  background:radial-gradient(ellipse at 8% 93%,rgba(34,177,115,.23),transparent 58%),linear-gradient(145deg,#0a2936,#0b3440) !important;
+}
+.brandPanel::before,.loginBrand::before {
+  background:linear-gradient(0deg,rgba(7,29,38,.14),rgba(7,29,38,.33)),url("/brand/envista-pattern-original.png") left bottom / 510px auto repeat !important;
+  opacity:.23 !important;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 42%,#000);
+  mask-image:linear-gradient(to bottom,transparent 42%,#000);
+}
+.verifyVisual {
+  background:radial-gradient(ellipse at 60% 42%,rgba(0,165,153,.2),transparent 62%),linear-gradient(135deg,#12343e,#132b36) !important;
+  border-color:rgba(58,149,154,.37) !important;
+}

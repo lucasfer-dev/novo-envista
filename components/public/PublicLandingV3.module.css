@@ -320,3 +320,32 @@
  .heroVisual { display: none !important; }
  .heroCopy { padding-block: 26px; }
 }
+
+/* The public website shares the dashboard's atmosphere but leaves text unobstructed. */
+.page .hero {
+  background:radial-gradient(ellipse at 76% 93%,rgba(34,177,115,.15),transparent 60%),linear-gradient(108deg,#061e29,#082c37 58%,#092d35) !important;
+}
+.page .heroPattern {display:block !important;opacity:.18 !important;}
+.page .hero .earth {display:block !important;opacity:.43 !important;}
+.page .heroVisual {
+  background:radial-gradient(ellipse at 90% 93%,rgba(34,177,115,.19),transparent 54%),linear-gradient(145deg,rgba(0,130,163,.19),rgba(0,165,153,.1)),url("/brand/manual-wave-blue.svg") center/cover no-repeat !important;
+}
+.page .heroVisual .brandGhost {display:block !important;visibility:visible !important;opacity:.3 !important;}
+.page .heroVisual .orbit {display:block !important;visibility:visible !important;opacity:.29 !important;}
+.page .heroVisual .floatCard,.page .heroVisual .phone {display:none !important;}
+.page .heroVisual::after {opacity:.12 !important;}
+.page .featured,.page .ecosystem {
+  background:radial-gradient(ellipse at 99% 96%,rgba(0,130,163,.09),transparent 56%),#0f1923 !important;
+}
+.page .process,.page .audience {
+  background:radial-gradient(ellipse at 0% 96%,rgba(34,177,115,.08),transparent 54%),#0f1923 !important;
+}
+.page .finalSection {
+  background:radial-gradient(ellipse at 95% 95%,rgba(0,165,153,.13),transparent 56%),#0f1923 !important;
+}
+.page .banner {
+  border-color:rgba(33,187,165,.42) !important;
+  background:linear-gradient(105deg,rgba(9,47,58,.96),rgba(10,51,53,.88)),url("/brand/manual-wave-green.svg") right center/cover no-repeat !important;
+}
+.page .projectCard,.page .feature,.page .audienceCard {border-color:rgba(65,142,154,.34);}
+@media(max-width:560px){.page .hero .earth{opacity:.24 !important;}.page .heroPattern{opacity:.09 !important;}}

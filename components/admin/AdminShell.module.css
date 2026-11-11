@@ -9,3 +9,17 @@
 @media(max-width:760px){.shell{display:block}.side{position:static;height:auto;border-right:0;border-bottom:1px solid rgba(255,255,255,.07)}.securityCard{display:none}.navigation{grid-template-columns:1fr 1fr;gap:10px}.group{min-width:0}.nav{grid-template-columns:1fr}.sideBottom{margin-top:0}.backToProduct{display:none}.meta{margin-top:4px}.top{min-height:64px;padding:0 18px}.content{padding:22px 16px 40px}.badge{font-size:10px}}
 @media(max-width:520px){.navigation{grid-template-columns:1fr}.brand small{display:none}.topEyebrow{display:none}.top strong{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.nav a{transition:none}}
+
+/* Admin inherits brand recognition without reducing information density. */
+.side {
+  background:radial-gradient(ellipse at 0 100%,rgba(0,165,153,.14),transparent 60%),linear-gradient(160deg,#081c27,#0b2731) !important;
+  border-right-color:rgba(68,144,156,.33) !important;
+}
+.securityCard {
+  background:linear-gradient(135deg,rgba(0,130,163,.14),rgba(34,177,115,.09));
+  border-color:rgba(49,171,158,.34);
+}
+.top {
+  background:radial-gradient(ellipse at 100% 0,rgba(0,165,153,.13),transparent 70%),#102a35 !important;
+  border-bottom-color:rgba(65,145,154,.3) !important;
+}
