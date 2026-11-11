@@ -20,6 +20,7 @@ import './product-x-minimal.css'
 import './product-brand-alive.css'
 import './sidebar-unified.css'
 import './brand-pattern-visibility.css'
+import './brand-manual-2026.css'
 import type { Metadata, Viewport } from 'next'
 
 const siteUrl = 'https://useenvista.com.br'
@@ -70,5 +71,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: '#0f1923', colorScheme: 'dark' }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="pt-BR" data-scroll-behavior="smooth"><body>{children}</body></html>
+  return <html lang="pt-BR" data-scroll-behavior="smooth"><head><link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" /><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></head><body>{children}</body></html>
 }
