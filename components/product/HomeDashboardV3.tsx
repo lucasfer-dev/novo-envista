@@ -13,6 +13,15 @@ import type {
 } from "./HomeDashboardRedesign";
 import styles from "./HomeDashboardV3.module.css";
 
+type SuggestedPerson = {
+  id: string;
+  username: string;
+  display_name: string;
+  bio?: string | null;
+  role?: string | null;
+  interest_tags?: string[] | null;
+};
+
 type Props = {
   name: string;
   projects: DashboardProject[];
@@ -24,6 +33,7 @@ type Props = {
   course: { slug: string; title: string; description: string | null } | null;
   courseProgress: number;
   followerCount?: number;
+  suggestedPeople?: SuggestedPerson[];
   learningCount?: number;
   competitionParticipations?: number;
   todayISO?: string;
@@ -32,13 +42,13 @@ type Props = {
 
 const HERO_SLIDES = [
   {
-    eyebrow: "IDEIAS · PESSOAS · PROJETOS · IMPACTO",
-    first: "Boas ideias merecem",
-    accent: "sair do papel.",
-    text: "Crie projetos, forme equipes, participe de competições e conecte-se com pessoas e oportunidades para gerar impacto real.",
-    action: "Criar novo projeto",
+    eyebrow: "BEM-VINDO AO ENVISTA",
+    first: "Transforme suas ideias em",
+    accent: "projetos, equipes e oportunidades.",
+    text: "Conecte-se com pessoas, forme equipes, participe de competições e tire suas ideias do papel com o apoio da comunidade Envista.",
+    action: "Começar um projeto",
     href: "/app/projects/new",
-    secondary: "Explorar oportunidades",
+    secondary: "Explorar o Envista",
     secondaryHref: "/explore",
   },
   {
@@ -186,7 +196,7 @@ function EventRow({ event, small = false }: { event: DashboardAgendaEvent; small
 }
 
 export default function HomeDashboardV3({
-  projects, teams, agenda = [], profileSteps = [], course,
+  projects, teams, agenda = [], profileSteps = [], course, suggestedPeople = [],
   courseProgress, learningCount = 0, competitionParticipations = 0,
   todayISO = "2026-11-10", nowISO,
 }: Props) {
@@ -233,8 +243,14 @@ export default function HomeDashboardV3({
           <section className={styles.hero} aria-label="Comece sua jornada no Envista">
             <span className={styles.heroPattern} aria-hidden="true" />
             <span className={styles.heroGlobe} aria-hidden="true" />
-            <img className={styles.heroSymbol} src="/brand/envista-symbol-gradient.svg" alt="" width="270" height="270" aria-hidden="true" />
-            <img className={styles.heroPerson} src="/brand/envista-hero-reference.webp" alt="" width="390" height="276" aria-hidden="true" />
+            <div className={styles.heroShowcase} aria-hidden="true">
+              <span className={styles.heroOrbit} />
+              <img className={styles.heroLaptop} src="/brand/envista-dashboard-laptop.svg" alt="" width="1400" height="900" />
+              <div className={styles.heroPhone}>
+                <span className={styles.phoneCamera} />
+                <img src="/brand/envista-symbol-gradient.svg" alt="" width="66" height="66" />
+              </div>
+            </div>
             <div className={styles.heroContent}>
               <span className={styles.eyebrow}>{slide.eyebrow}</span>
               <h2>{slide.first}<br /><span>{slide.accent}</span></h2>
@@ -310,7 +326,12 @@ export default function HomeDashboardV3({
                   {topProjects.map((project, index) => (
                     <Link className={styles.projectRow} key={project.id} href={"/projects/" + encodeURIComponent(project.slug)}>
                       <span className={styles.projectIcon}>{index === 0 ? <Code2 size={24} /> : <Leaf size={24} />}</span>
-                      <span className={styles.projectInfo}><strong>{project.title}</strong><small><span className={styles.statusDot} /> {project.stage || "Em desenvolvimento"}</small></span>
+                      <span className={styles.projectInfo}>
+                         <span className={styles.projectCategory}>{project.category || "Projeto"}</span>
+                         <strong>{project.title}</strong>
+                         <small className={styles.projectDescription}>{project.short_description || "Acompanhe a evolução e os próximos passos deste projeto."}</small>
+                         <small className={styles.projectStage}><span className={styles.statusDot} />{project.stage || "Em desenvolvimento"}</small>
+                       </span>
                       <span className={styles.projectArrow}><ArrowRight size={17} /></span>
                     </Link>
                   ))}
@@ -341,16 +362,6 @@ export default function HomeDashboardV3({
               )}
             </section>
 
-            <section className={styles.panel} aria-label="Oportunidades para você">
-              <PanelHeading icon={Sparkles} title="Oportunidades para você" href="/explore" action="Ver mais" />
-              <div className={styles.opportunityTiles}>
-                <Link href="/competitions" className={styles.tile}><Trophy size={30} /><span>Competições</span></Link>
-                <Link href="/teams" className={styles.tile + " " + styles.tileBlue}><Users size={30} /><span>Equipes</span></Link>
-                <Link href="/learn" className={styles.tile + " " + styles.tileViolet}><BookOpen size={30} /><span>Conteúdos</span></Link>
-                <Link href="/explore" className={styles.tile + " " + styles.tileGold}><Star size={30} /><span>Descobrir</span></Link>
-              </div>
-            </section>
-
             <section className={styles.learnPanel}>
               <div className={styles.learnCopy}>
                 <h2>Continue aprendendo</h2>
@@ -360,6 +371,31 @@ export default function HomeDashboardV3({
               <img src="/brand/envista-dashboard-laptop.svg" alt="" width="1400" height="900" aria-hidden="true" />
             </section>
           </div>
+
+          <section className={styles.connectionsPanel} aria-labelledby="connections-title">
+            <div className={styles.connectionsHead}>
+              <div>
+                <h2 id="connections-title"><Users size={22} aria-hidden="true" /> Pessoas para se conectar</h2>
+                <p>Amplie sua rede com pessoas e competências complementares às suas.</p>
+              </div>
+              <Link href="/explore" className={styles.connectionsMore}>Explorar pessoas <ArrowRight size={15} /></Link>
+            </div>
+            {suggestedPeople.length ? <div className={styles.peopleGrid}>
+              {suggestedPeople.map(person => <Link key={person.id} className={styles.personCard}
+                href={"/" + (person.role === "investor" ? "investors" : "participants") + "/" + encodeURIComponent(person.username)}>
+                <span className={styles.personAvatar} aria-hidden="true">{person.display_name.trim().slice(0, 1).toUpperCase()}</span>
+                <span className={styles.personInfo}>
+                  <strong>{person.display_name}</strong>
+                  <small>{person.interest_tags?.slice(0, 2).join(" · ") || person.bio || "Conheça este perfil"}</small>
+                </span>
+                <span className={styles.personAction}><Plus size={14} /> Ver perfil</span>
+              </Link>)}
+            </div> : <div className={styles.peopleEmpty}>
+              <span className={styles.peopleEmptyIcon}><Users size={24} aria-hidden="true" /></span>
+              <span><strong>Novas conexões começam por aqui.</strong><small>Descubra pessoas e equipes que compartilham seus interesses.</small></span>
+              <Link href="/explore">Explorar comunidade <ArrowRight size={16} /></Link>
+            </div>}
+          </section>
         </div>
 
         <aside className={styles.rail} aria-label="Agenda, calendário e próximos eventos">
@@ -376,6 +412,15 @@ export default function HomeDashboardV3({
             {upcoming.length ? upcoming.slice(0, 3).map(event => <EventRow key={event.id} event={event} small />) :
               <div className={styles.eventsEmpty}><CalendarDays size={23} /><p>Assim que houver eventos cadastrados, eles aparecerão aqui.</p></div>}
           </section>
+            <section className={styles.railOpportunitiesPanel} aria-label="Oportunidades para você">
+              <PanelHeading icon={Sparkles} title="Oportunidades para você" href="/explore" action="Ver todas" />
+              <div className={styles.opportunityTiles}>
+                <Link href="/competitions" className={styles.tile}><Trophy size={30} /><span>Competições</span></Link>
+                <Link href="/teams" className={styles.tile + " " + styles.tileBlue}><Users size={30} /><span>Equipes</span></Link>
+                <Link href="/learn" className={styles.tile + " " + styles.tileViolet}><BookOpen size={30} /><span>Conteúdos</span></Link>
+                <Link href="/explore" className={styles.tile + " " + styles.tileGold}><Star size={30} /><span>Descobrir</span></Link>
+              </div>
+            </section>
         </aside>
       </div>
     </div>
