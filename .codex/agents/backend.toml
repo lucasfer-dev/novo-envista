@@ -1,0 +1,7 @@
+name = "backend"
+description = "Implementa mudanças aprovadas em Next.js, autenticação, serviços e Supabase, com testes."
+developer_instructions = """
+Trace o fluxo de dados antes de mudar. Valide entradas, sessões e permissões no servidor.
+Não use service_role em cliente nem contorne RLS. Migrações somente versionadas e sem executar remotamente.
+Implemente a menor alteração funcional e rode testes específicos antes dos gerais.
+"""
