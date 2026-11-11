@@ -263,68 +263,6 @@ button, input, select, textarea, option { font-family: inherit; }
   box-shadow: none !important;
 }
 
-/* Landing and public showcase: one art-directed brand area, clean content afterwards. */
-[data-envista-public-shell] {
-  --navy: #0f1923;
-  --deep: #0f1923;
-  --mint: #00a599;
-  --teal: #00a599;
-  --blue: #0082a3;
-  --ink: #0f1923;
-  --line: rgba(151,185,193,.2);
-  background: #0f1923 !important;
-  color: #f4f7f8;
-  font-family: "Montserrat", Arial, sans-serif !important;
-}
-[data-envista-public-shell] :is(h1,h2,h3,p,a,button,span) { font-family: inherit; }
-[data-envista-public-shell] [class*="header"] {
-  border-color: rgba(151,185,193,.16);
-}
-[data-envista-public-shell] [class*="hero"]:not([class*="heroCopy"]):not([class*="heroInner"]):not([class*="heroVisual"]):not([class*="heroActions"]):not([class*="heroEyebrow"]) {
-  border-color: rgba(151,185,193,.16);
-}
-[data-envista-public-shell] [class*="heroPattern"],
-[data-envista-public-shell] [class*="earth"] {
-  opacity: 0 !important;
-}
-[data-envista-public-shell] [class*="heroVisual"] {
-  border: 1px solid rgba(144,192,195,.23);
-  border-radius: 20px;
-  background:
-    linear-gradient(140deg,rgba(0,130,163,.23),rgba(0,165,153,.12) 52%,rgba(34,177,115,.16)),
-    url("/brand/manual-wave-blue.svg") center/cover no-repeat;
-  overflow: hidden;
-  min-height: 420px;
-  max-height: 490px;
-}
-[data-envista-public-shell] [class*="heroVisual"] > * {
-  visibility: hidden;
-}
-[data-envista-public-shell] [class*="heroVisual"]::after {
-  content: "";
-  position: absolute;
-  width: 126px;
-  height: 169px;
-  right: 12%;
-  top: calc(50% - 84px);
-  background: url("/brand/envista-symbol-white.svg") center/contain no-repeat;
-  opacity: .72;
-}
-[data-envista-public-shell] :is([class*="primary"],[class*="primarySmall"],[class*="bannerButton"]) {
-  background: #00a599 !important;
-  color: #071f21 !important;
-  box-shadow: none !important;
-}
-[data-envista-public-shell] :is([class*="primary"],[class*="primarySmall"],[class*="bannerButton"]):hover {
-  background: #22b173 !important;
-  transform: none !important;
-}
-[data-envista-public-shell] [class*="floatCard"],
-[data-envista-public-shell] [class*="orbit"],
-[data-envista-public-shell] [class*="brandGhost"] {
-  display: none !important;
-}
-
 /* Admin: restrained hierarchy without changing permissions, routes or controls. */
 [data-envista-admin-shell] {
   background: #0f1923 !important;
@@ -351,11 +289,8 @@ button, input, select, textarea, option { font-family: inherit; }
 /* Accessibility and responsive behavior are shared across all screens. */
 @media (max-width: 760px) {
   .app-shell[data-envista-product-shell] .page-head h1 { font-size: 24px !important; }
-  [data-envista-public-shell] [class*="heroVisual"] { min-height: 290px; max-height: 350px; }
-  [data-envista-public-shell] [class*="heroVisual"]::after { height: 122px; width: 90px; top: calc(50% - 61px); }
 }
 @media (max-width: 560px) {
-  [data-envista-public-shell] [class*="heroVisual"] { display: none !important; }
   .envista-auth-page [class*="card"] { box-shadow: none !important; }
   .app-shell[data-envista-product-shell] .panel { border-radius: 12px !important; }
 }
