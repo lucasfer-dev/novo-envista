@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AlertTriangle, ArrowRight, CalendarDays, FileText, Flag, Laptop2, MapPin, RefreshCw, Search, Tag, Trophy, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { LiveCompetition, LiveCompetitionsResponse, CompetitionStatus } from "@/lib/competitions/types";
 import {
@@ -138,38 +139,56 @@ export function CompetitionsBrowser({
   const lastResult = Math.min(safePage * PAGE_SIZE, filtered.length);
 
   return <div className={styles.page}>
-    <div className={`page-head ${styles.head}`}>
-      <div>
-        <h1>Competições</h1>
+    <header className={styles.head}>
+      <div className={styles.heroIcon} aria-hidden="true"><Trophy size={34} strokeWidth={1.8} /></div>
+      <div className={styles.heroCopy}>
+        <span className={styles.eyebrow}>COMPETIÇÕES</span>
+        <h1>Competições de inovação</h1>
         <p>Encontre competições para seu projeto. Confira inscrições, datas e regulamentos nas fontes oficiais.</p>
       </div>
       <div className={styles.liveActions}>
-        <span className={styles.live}>{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))} · atualização automática a cada 5 min` : "Consultando fontes oficiais…"}</span>
-        <button className={styles.refreshButton} type="button" disabled={refreshing} onClick={() => void loadCompetitions(true)}>{refreshing ? "Buscando…" : "↻ Buscar agora"}</button>
+        <span className={styles.live} aria-live="polite">{data ? `Verificado ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(data.checkedAt))} · atualização automática a cada 5 min` : "Consultando fontes oficiais…"}</span>
+        <button className={styles.refreshButton} type="button" disabled={refreshing} onClick={() => void loadCompetitions(true)}><RefreshCw size={15} className={refreshing ? styles.refreshingIcon : undefined} aria-hidden="true" />{refreshing ? "Buscando…" : "Buscar agora"}</button>
       </div>
-    </div>
+    </header>
 
-    {data && <div className={styles.scanInfo}>
-      <span><b>{data.sourcesChecked}</b> fontes oficiais consultadas</span>
-      <span><b>{data.items.length}</b> competições/etapas encontradas</span>
-      <span><b>{counts.OPEN}</b> com inscrição aberta</span>
-      {data.errors.length > 0 && <span className={styles.scanWarning}>{data.errors.length} fonte{data.errors.length === 1 ? "" : "s"} com falha nesta consulta</span>}
-    </div>}
+    {data && <section className={styles.scanInfo} aria-label="Resumo das competições disponíveis">
+      <div className={styles.metric}><Trophy size={26} aria-hidden="true" /><span><b>{data.items.length}</b><small>Competições encontradas</small></span></div>
+      <div className={styles.metric}><FileText size={25} aria-hidden="true" /><span><b>{data.sourcesChecked}</b><small>Fontes oficiais</small></span></div>
+      <div className={styles.metric}><Users size={27} aria-hidden="true" /><span><b>{counts.OPEN}</b><small>Com inscrições abertas</small></span></div>
+      <div className={`${styles.metric} ${styles.warningMetric}`}><AlertTriangle size={26} aria-hidden="true" /><span><b>{data.errors.length}</b><small>Fontes com falha</small></span></div>
+    </section>}
 
     {hasContext && <div className={styles.recommendationIntro}>
       <div><strong>Recomendações personalizadas</strong><span>Comparação por área, tags e localização dos seus projetos e equipes. Não usa IA.</span></div>
       <label><input type="checkbox" checked={recommendedOnly} onChange={(event) => setRecommendedOnly(event.target.checked)} /> Só recomendadas para mim</label>
     </div>}
 
-    <div className={styles.tabs}>
-      {(["OPEN", "UPCOMING", "CLOSED", "ALL"] as Tab[]).map((value) => <button key={value} data-active={tab === value} onClick={() => setTab(value)}>{labels[value]} <b>{counts[value]}</b></button>)}
+    <div className={styles.tabs} role="group" aria-label="Status das competições">
+      {(["OPEN", "UPCOMING", "CLOSED", "ALL"] as Tab[]).map((value) => <button key={value} type="button" aria-pressed={tab === value} data-active={tab === value} onClick={() => setTab(value)}>{labels[value]} <b>{counts[value]}</b></button>)}
     </div>
 
-    <div className={styles.filters}>
-      <input aria-label="Pesquisar competições" placeholder="Pesquisar competição, cidade, modalidade..." value={q} onChange={(event) => setQ(event.target.value)} />
-      <input aria-label="Filtrar por idade" type="number" min="1" max="99" placeholder="Idade" value={age} onChange={(event) => setAge(event.target.value)} />
-      <select aria-label="Filtrar por estado" value={state} onChange={(event) => setState(event.target.value)}><option value="ALL">Todos os estados</option>{states.map((value) => <option key={value}>{value}</option>)}</select>
-      <select aria-label="Filtrar por modalidade" value={modality} onChange={(event) => setModality(event.target.value)}><option value="ALL">Todas as modalidades</option>{modalities.map((value) => <option key={value}>{value}</option>)}</select>
+    <div className={styles.filters} role="search" aria-label="Filtrar competições">
+      <label className={styles.searchField}>
+        <Search size={20} aria-hidden="true" />
+        <span className={styles.srOnly}>Pesquisar competições</span>
+        <input type="search" placeholder="Pesquisar competição, cidade, modalidade..." value={q} onChange={(event) => setQ(event.target.value)} />
+      </label>
+      <label className={styles.ageField}>
+        <Users size={18} aria-hidden="true" />
+        <span className={styles.srOnly}>Filtrar por idade</span>
+        <input type="number" min="1" max="99" placeholder="Idade" value={age} onChange={(event) => setAge(event.target.value)} />
+      </label>
+      <label className={styles.selectField}>
+        <MapPin size={17} aria-hidden="true" />
+        <span className={styles.srOnly}>Filtrar por estado</span>
+        <select value={state} onChange={(event) => setState(event.target.value)}><option value="ALL">Todos os estados</option>{states.map((value) => <option key={value}>{value}</option>)}</select>
+      </label>
+      <label className={styles.selectField}>
+        <Flag size={17} aria-hidden="true" />
+        <span className={styles.srOnly}>Filtrar por modalidade</span>
+        <select value={modality} onChange={(event) => setModality(event.target.value)}><option value="ALL">Todas as modalidades</option>{modalities.map((value) => <option key={value}>{value}</option>)}</select>
+      </label>
     </div>
 
     {!data && !error && <div className={styles.loading}>Buscando competições diretamente nas fontes oficiais…</div>}
@@ -178,17 +197,32 @@ export function CompetitionsBrowser({
 
     <div className={styles.grid}>
       {paginated.map(({ item, recommendation }) => <Link prefetch={false} className={styles.card} href={`${basePath}/${item.slug}`} key={item.id}>
-        <div className={styles.banner}><img className={styles.bannerArtwork} src={/ciência|cient|mostratec/i.test(`${item.name} ${item.type}`) ? "/brand/opportunity-science.svg" : "/brand/opportunity-challenge.svg"} alt="" width="320" height="200" loading="lazy" /><span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span><span>{item.level}</span></div>
+        <div className={styles.banner}>
+          <span className={styles.bannerIcon} aria-hidden="true"><Trophy size={28} strokeWidth={1.8} /></span>
+          <span className={`${styles.status} ${statusClass(item.status)}`}>{statusLabels[item.status]}</span>
+          <span className={styles.level}>{item.level}</span>
+        </div>
         <div className={styles.body}>
           {(recommendation.project || recommendation.team) && <div className={styles.matchStack}>
             {recommendation.project && <MatchBadge match={recommendation.project} />}
             {recommendation.team && <MatchBadge match={recommendation.team} />}
           </div>}
-          <h3>{item.name}</h3><p>{item.organizer}</p>
-          {item.description ? <p>{item.description}</p> : null}
-          <div className={styles.meta}>{item.type ? <span>🏷️ {item.type}</span> : null}{item.format ? <span>💻 {item.format}</span> : null}<span>📍 {[item.city, item.state].filter(Boolean).join(" — ") || item.country}</span><span>👥 {ageLabel(item)}</span><span>📅 Inscrição: {fmt(item.registrationStart)} → {fmt(item.registrationEnd)}</span>{item.eventDate && <span>🏁 Evento: {fmt(item.eventDate)}</span>}</div>
-          <div className={styles.chips}>{item.modalities.slice(0, 4).map((value) => <span key={value}>{value}</span>)}</div>
-          <small className={styles.verifiedSource}>Fonte: {item.sourceName} · {item.confidence}% de confiança</small>
+          <h3>{item.name}</h3>
+          <p className={styles.organizer}>{item.organizer}</p>
+          {item.description ? <p className={styles.description}>{item.description}</p> : null}
+          <div className={styles.meta}>
+            {item.type ? <span><Tag size={16} aria-hidden="true" /> {item.type}</span> : null}
+            {item.format ? <span><Laptop2 size={16} aria-hidden="true" /> {item.format}</span> : null}
+            <span><MapPin size={16} aria-hidden="true" /> {[item.city, item.state].filter(Boolean).join(" — ") || item.country}</span>
+            <span><Users size={16} aria-hidden="true" /> {ageLabel(item)}</span>
+            <span><CalendarDays size={16} aria-hidden="true" /> Inscrição: {fmt(item.registrationStart)} — {fmt(item.registrationEnd)}</span>
+            {item.eventDate && <span><Flag size={16} aria-hidden="true" /> Evento: {fmt(item.eventDate)}</span>}
+          </div>
+          <div className={styles.cardFooter}>
+            <div className={styles.chips}>{item.modalities.slice(0, 4).map((value) => <span key={value}>{value}</span>)}</div>
+            <span className={styles.cardArrow} aria-hidden="true"><ArrowRight size={21} /></span>
+          </div>
+          <small className={styles.verifiedSource}>Fonte: {item.sourceName} · monitoramento automático · confiança {item.confidence}%</small>
         </div>
       </Link>)}
     </div>
