@@ -48,18 +48,18 @@ IMPLEMENTATION_ROUTES = (
 
 
 def phase_bounds(text, book, phase):
-    start, _ = subsection(text, r"^playbooks:\s*$", r"^[A-Za-z][A-Za-z0-9_-]*:\s*$", "playbooks")
+    start, _ = subsection(text, r"^playbooks:[ \t]*$", r"^[A-Za-z][A-Za-z0-9_-]*:[ \t]*$", "playbooks")
     body = text[start:]
-    a, b = subsection(body, rf"^  {re.escape(book)}:\s*$", r"^  [a-z0-9-]+:\s*$", book)
+    a, b = subsection(body, rf"^  {re.escape(book)}:[ \t]*$", r"^  [a-z0-9-]+:[ \t]*$", book)
     book_text = body[a:b]
-    x, y = subsection(book_text, rf"^      - id: {re.escape(phase)}\s*$", r"^      - id: [a-z0-9-]+\s*$", f"{book}/{phase}")
+    x, y = subsection(book_text, rf"^      - id: {re.escape(phase)}[ \t]*$", r"^      - id: [a-z0-9-]+[ \t]*$", f"{book}/{phase}")
     return start + a + x, start + a + y
 
 
 def set_implementation_provider(text, book, phase):
     x, y = phase_bounds(text, book, phase)
     part = text[x:y]
-    providers = list(re.finditer(r"^        provider:\s*(\w+)\s*$", part, re.M))
+    providers = list(re.finditer(r"^        provider:\s*(\w+)[ \t]*$", part, re.M))
     if len(providers) > 1:
         raise ValueError(f"Provider duplicado em {book}/{phase}")
     if providers:
@@ -68,7 +68,7 @@ def set_implementation_provider(text, book, phase):
             raise ValueError(f"{book}/{phase} ja tem provider: {current}; preservar escolha existente")
         part = part[:providers[0].start(1)] + "codex" + part[providers[0].end(1):]
     else:
-        match = re.search(r"^        tier:\s*(?:cheap|standard|strong)\s*$", part, re.M)
+        match = re.search(r"^        tier:\s*(?:cheap|standard|strong)[ \t]*$", part, re.M)
         if not match:
             raise ValueError(f"{book}/{phase} sem tier conhecido")
         part = part[:match.end()] + "\n        provider: codex" + part[match.end():]
@@ -81,9 +81,9 @@ def set_risk_review(text):
     rule = "        rules:\n          - if: risky\n            use: { provider: claude, tier: standard }\n"
     if rule in part:
         return text
-    if re.search(r"^        rules:\s*$", part, re.M):
+    if re.search(r"^        rules:[ \t]*$", part, re.M):
         raise ValueError("Complete/review ja tem rules personalizadas; nao sobrescrever")
-    if not re.search(r"^        provider:\s*codex\s*$", part, re.M):
+    if not re.search(r"^        provider:\s*codex[ \t]*$", part, re.M):
         raise ValueError("Complete/review nao usa Codex como reviewer normal")
     # Acrescentar ao fim da fase, preservando as condicoes e o gate.
     part = part.rstrip("\n") + "\n" + rule
@@ -91,16 +91,16 @@ def set_risk_review(text):
 
 
 def optimize(original):
-    if not re.search(r"^playbooks:\s*$", original, re.M):
+    if not re.search(r"^playbooks:[ \t]*$", original, re.M):
         raise ValueError("O arquivo nao parece ser um playbook do Alethe")
     updated = original
     for book, phase, key, old, new in CHANGES:
-        books_start, _ = subsection(updated, r"^playbooks:\s*$", r"^[A-Za-z][A-Za-z0-9_-]*:\s*$", "playbooks")
+        books_start, _ = subsection(updated, r"^playbooks:[ \t]*$", r"^[A-Za-z][A-Za-z0-9_-]*:[ \t]*$", "playbooks")
         head = updated[:books_start]
         body = updated[books_start:]
-        a, b = subsection(body, rf"^  {re.escape(book)}:\s*$", r"^  [a-z0-9-]+:\s*$", book)
+        a, b = subsection(body, rf"^  {re.escape(book)}:[ \t]*$", r"^  [a-z0-9-]+:[ \t]*$", book)
         book_text = body[a:b]
-        x, y = subsection(book_text, rf"^      - id: {re.escape(phase)}\s*$", r"^      - id: [a-z0-9-]+\s*$", f"{book}/{phase}")
+        x, y = subsection(book_text, rf"^      - id: {re.escape(phase)}[ \t]*$", r"^      - id: [a-z0-9-]+[ \t]*$", f"{book}/{phase}")
         phase_text = book_text[x:y]
         line_re = rf"^(        {re.escape(key)}:\s*)({re.escape(old)}|{re.escape(new)})(\s*(?:#.*)?)$"
         hits = list(re.finditer(line_re, phase_text, re.M))
