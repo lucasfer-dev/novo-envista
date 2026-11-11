@@ -849,3 +849,59 @@
   opacity: .19;
 }
 @media (max-width:620px) { .heroPattern { opacity: .11; } }
+
+.dashboard {
+  --ev-turquoise: #00a599;
+  --ev-mint: #22b173;
+  --ev-teal: #00a599;
+  --ev-deep: #0f1923;
+  --ev-border: rgba(151,185,193,.17);
+  --ev-secondary: #b1c0c6;
+  color: #f4f7f8;
+}
+.layout { gap: 20px; }
+.primaryColumn { gap: 14px; }
+.greeting { min-height: 56px; }
+.greeting h1 { color: #f4f7f8; font-size: 23px; font-weight: 700; }
+.greeting p { color: #a7bac3; }
+.hero {
+  min-height: 194px;
+  border: 1px solid rgba(151,185,193,.18);
+  border-radius: 14px;
+  background: #172631;
+  box-shadow: none;
+}
+.heroPattern,.heroGlobe,.heroSymbol,.heroPerson { display: none !important; }
+.hero::after {
+  content: "";
+  position: absolute;
+  right: 8%; top: 13%;
+  width: 85px; height: 125px;
+  pointer-events: none;
+  background: url("/brand/envista-symbol-white.svg") center/contain no-repeat;
+  opacity: .075;
+}
+.heroContent { position: relative; z-index: 1; max-width: 76%; }
+.hero :is(h1,h2,h3) { color: #f4f7f8; font-weight: 700; }
+.hero :is(p,small) { color: #b5c5ca; }
+.eyebrow { color: #71cbbf; font-weight: 700; }
+.btnPrimary { background: #00a599 !important; color: #092422 !important; box-shadow: none !important; border-radius: 9px !important; }
+.btnPrimary:hover { background: #22b173 !important; }
+.btnSecondary { background: transparent !important; border-color: rgba(151,185,193,.3) !important; border-radius: 9px !important; }
+.metrics { gap: 12px; }
+.metric,.panel,.journeyPanel,.competitionCard,.learnPanel,.nextEventPanel,.calendarPanel,.eventListPanel,.progressPanel {
+  border: 1px solid rgba(151,185,193,.17) !important;
+  border-radius: 13px !important;
+  background: #172631 !important;
+  box-shadow: none !important;
+}
+.metric:hover,.panel:hover,.competitionCard:hover { transform: none !important; }
+.metricIcon,.journeyIcon { background: rgba(0,165,153,.09); border-color: rgba(0,165,153,.19); }
+.journeyPanel::before,.journeyPanel::after { opacity: 0 !important; }
+.journeyPanel { background: #172631 !important; }
+.rail { gap: 13px; }
+.railHeading h2,.panelHeading h2 { font-weight: 700; }
+@media(max-width:720px) {
+ .heroContent { max-width: 100%; }
+ .hero::after { opacity: .035; right: 4%; }
+}
