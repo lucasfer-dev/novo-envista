@@ -25,6 +25,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
+  Rocket,
+  ArrowRight,
   Settings,
   Trophy,
   Users,
@@ -300,6 +302,21 @@ export default function LegacySocialShell({
             );
           })}
         </div>
+        )}
+        {role === "participant" && (
+          <Link
+            className="sidebar-plans-promo"
+            href="/plans"
+            onClick={closeMobile}
+            aria-label="Conhecer os planos do Envista"
+            title={sidebarCollapsed ? "Conhecer planos do Envista" : undefined}
+          >
+            <span className="sidebar-plans-eyebrow">EVOLUA NO ENVISTA</span>
+            <span className="sidebar-plans-rocket" aria-hidden="true"><Rocket size={23} strokeWidth={1.9} /></span>
+            <strong className="sidebar-plans-title">Envista <span>Pro</span></strong>
+            <span className="sidebar-plans-description">Mais recursos, visibilidade e oportunidades.</span>
+            <span className="sidebar-plans-link">Conhecer planos <ArrowRight size={16} aria-hidden="true" /></span>
+          </Link>
         )}
         <div className="side-bottom">
           <div className="user-card">
