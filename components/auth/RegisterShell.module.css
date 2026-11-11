@@ -1056,3 +1056,25 @@
   background:radial-gradient(ellipse at 60% 42%,rgba(0,165,153,.2),transparent 62%),linear-gradient(135deg,#12343e,#132b36) !important;
   border-color:rgba(58,149,154,.37) !important;
 }
+
+/* Product rhythm and responsive spacing */
+.shell {width:min(100%,1180px)}
+.formPanel {padding:32px clamp(24px,4vw,52px) 40px}
+.formArea {max-width:640px}
+.intro {margin-bottom:26px}
+.intro h1 {line-height:1.2}
+.intro p {max-width:60ch;line-height:1.65}
+.formArea form {gap:18px}
+.fieldWithIcon input {min-height:44px}
+.submitButton,.verifyPrimary {min-height:46px}
+.verifyArea,.profileArea {max-width:720px}
+.verifyActions {gap:12px}
+@media(max-width:830px) {
+ .formPanel {padding:26px 24px 36px}
+ .intro {margin-bottom:22px}
+}
+@media(max-width:520px) {
+ .formPanel {padding:20px 16px 32px}
+ .intro {margin-bottom:20px}
+ .formArea form {gap:16px}
+}
