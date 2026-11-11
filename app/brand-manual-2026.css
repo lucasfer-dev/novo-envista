@@ -1,0 +1,365 @@
+/* Manual de Identidade Visual Envista, novembro de 2026.
+   Brand colours and typography are defined in the supplied manual.
+   Textures are intentionally limited to editorial and supporting surfaces. */
+:root {
+  --ev-brand-blue: #0082a3;
+  --ev-brand-teal: #00a599;
+  --ev-brand-green: #22b173;
+  --ev-brand-ink: #0f1923;
+  --ev-brand-gradient: linear-gradient(105deg, #0082a3 0%, #00a599 55%, #22b173 100%);
+  --ev-accent: #00a599;
+  --ev-accent-hover: #21b7a9;
+  --ev-accent-soft: rgba(0,165,153,.09);
+  --ev-bg: #0f1923;
+  --ev-bg-subtle: #15222d;
+  --ev-sidebar: #101d27;
+  --ev-surface: #172631;
+  --ev-surface-raised: #1b2d39;
+  --ev-surface-hover: #213442;
+  --ev-surface-gradient: #172631;
+  --ev-border: rgba(151,185,193,.16);
+  --ev-border-strong: rgba(151,185,193,.28);
+  --ev-text: #f4f7f8;
+  --ev-text-secondary: #ced9de;
+  --ev-muted: #a7bac3;
+  --ev-muted-subtle: #90a8b2;
+  --ev-radius-control: 9px;
+  --ev-radius-item: 11px;
+  --ev-radius-surface: 14px;
+  --ev-shadow-raised: 0 12px 30px rgba(0,0,0,.12);
+  --envista-blue: #0082a3;
+  --envista-teal: #00a599;
+  --envista-green: #22b173;
+  --envista-ink: #0f1923;
+  --bg: #0f1923;
+  --bg2: #15222d;
+  --surface: #172631;
+  --surface2: #1b2d39;
+  --surface3: #213442;
+  --green: #00a599;
+  --turq: #00a599;
+  --cyan: #0082a3;
+  --border: rgba(151,185,193,.16);
+  --muted: #a7bac3;
+  --radius-control: 9px;
+  --radius-item: 11px;
+  --radius-surface: 14px;
+  font-family: "Montserrat", Arial, sans-serif;
+}
+html, body { font-family: "Montserrat", Arial, sans-serif; background: #0f1923; }
+button, input, select, textarea, option { font-family: inherit; }
+:where(a,button,input,textarea,select,summary):focus-visible {
+  outline: 2px solid #22b173;
+  outline-offset: 3px;
+}
+:where(button,a,input,textarea,select) { -webkit-tap-highlight-color: rgba(0,165,153,.1); }
+
+/* Every authenticated participant, investor, and account screen. */
+.app-shell[data-envista-product-shell] {
+  --ev-brand-blue: #0082a3;
+  --ev-brand-teal: #00a599;
+  --ev-brand-green: #22b173;
+  --ev-brand-ink: #0f1923;
+  --ev-brand-gradient: linear-gradient(105deg, #0082a3 0%, #00a599 55%, #22b173 100%);
+  --ev-blue: #0082a3;
+  --ev-teal: #00a599;
+  --ev-green: #22b173;
+  --ev-brand-line: var(--ev-brand-gradient);
+  --ev-bg: #0f1923;
+  --ev-bg-subtle: #15222d;
+  --ev-sidebar: #101d27;
+  --ev-surface: #172631;
+  --ev-surface-gradient: #172631;
+  --ev-surface-raised: #1b2d39;
+  --ev-surface-hover: #213442;
+  --ev-border: rgba(151,185,193,.16);
+  --ev-border-strong: rgba(151,185,193,.27);
+  --ev-accent: #00a599;
+  --ev-accent-hover: #24b7a9;
+  --ev-accent-soft: rgba(0,165,153,.09);
+  --ev-text: #f4f7f8;
+  --ev-muted: #a7bac3;
+  --ev-muted-subtle: #90a8b2;
+  --ev-header-bg: #101d27;
+  --ev-primary-bg: #00a599;
+  --ev-primary-bg-hover: #22b173;
+  --ev-primary-fg: #051e22;
+  --ev-radius-control: 9px;
+  --ev-radius-item: 11px;
+  --ev-radius-surface: 14px;
+  --ev-shadow-raised: 0 10px 30px rgba(0,0,0,.11);
+  color: #f4f7f8;
+  background: #0f1923;
+  font-family: "Montserrat", Arial, sans-serif;
+}
+.app-shell[data-envista-product-shell] .main,
+.app-shell[data-envista-product-shell] .page-wrap {
+  background: #0f1923 !important;
+}
+.app-shell[data-envista-product-shell] .topbar {
+  border-bottom: 1px solid rgba(151,185,193,.14) !important;
+  background: #111f29 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .global-search {
+  border: 1px solid rgba(150,184,191,.2) !important;
+  border-radius: 10px !important;
+  background: #192b36 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .sidebar,
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar {
+  border-right: 1px solid rgba(151,185,193,.15) !important;
+  background: #101d27 !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .sidebar::before,
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+  background: url("/brand/envista-pattern-original.png") center bottom / 850px repeat !important;
+  opacity: .055 !important;
+  filter: none !important;
+  mask-image: linear-gradient(to bottom, transparent 66%, #000 100%) !important;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 66%, #000 100%) !important;
+}
+.app-shell[data-envista-product-shell] .sidebar::after,
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::after {
+  background: rgba(0,165,153,.14) !important;
+}
+.app-shell[data-envista-product-shell] .sidebar > nav a,
+.app-shell[data-envista-product-shell] .side-section a {
+  color: #d5e1e5 !important;
+}
+.app-shell[data-envista-product-shell] .sidebar > nav a:hover,
+.app-shell[data-envista-product-shell] .side-section a:hover {
+  background: rgba(0,165,153,.075) !important;
+}
+.app-shell[data-envista-product-shell] .sidebar > nav a[aria-current="page"],
+.app-shell[data-envista-product-shell] .side-section a[aria-current="page"] {
+  background: rgba(0,165,153,.13) !important;
+  box-shadow: inset 3px 0 #00a599 !important;
+  color: #f7ffff !important;
+}
+.app-shell[data-envista-product-shell] .sidebar > nav a[aria-current="page"] svg {
+  color: #4dc9bb !important;
+}
+.app-shell[data-envista-product-shell] .dashboard-new-project {
+  color: #071f21 !important;
+  background: #00a599 !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .dashboard-new-project:hover {
+  background: #23b7a9 !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary) {
+  color: #061f22 !important;
+  background: #00a599 !important;
+  border-radius: 9px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary):hover {
+  background: #22b173 !important;
+}
+.app-shell[data-envista-product-shell] .page-head,
+.app-shell[data-envista-product-shell] .section-row {
+  background: transparent !important;
+}
+.app-shell[data-envista-product-shell] .page-head::before,
+.app-shell[data-envista-product-shell] .page-head::after {
+  display: none !important;
+}
+.app-shell[data-envista-product-shell] .page-head h1 {
+  color: #f4f7f8 !important;
+  font-size: clamp(24px, 2vw, 30px) !important;
+  line-height: 1.2;
+  letter-spacing: -.03em !important;
+}
+.app-shell[data-envista-product-shell] .page-head p {
+  color: #a7bac3 !important;
+  line-height: 1.6;
+}
+.app-shell[data-envista-product-shell] .panel,
+.app-shell[data-envista-product-shell] .section-block {
+  background: #172631 !important;
+  border: 1px solid rgba(151,185,193,.16) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell] .panel::before {
+  background-image: none !important;
+}
+.app-shell[data-envista-product-shell] .panel-title {
+  background: transparent !important;
+  border-color: rgba(151,185,193,.12) !important;
+}
+.app-shell[data-envista-product-shell] :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+  border-color: rgba(151,185,193,.24);
+  background-color: #111f29;
+  color: #f1f7f7;
+}
+.app-shell[data-envista-product-shell] :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select):focus-visible {
+  border-color: #00a599;
+  box-shadow: 0 0 0 3px rgba(0,165,153,.1);
+}
+.app-shell[data-envista-product-shell] :is(.dashboard-opportunity,.dashboard-first-steps) {
+  background-image: none !important;
+}
+
+/* The social feed is a working area, not a marketing hero. */
+.app-shell[data-envista-social-reference="true"] .main {
+  background: #0f1923 !important;
+}
+.app-shell[data-envista-social-reference="true"] .page-wrap {
+  background: #0f1923 !important;
+}
+.app-shell[data-envista-social-reference="true"] .topbar {
+  background: #111f29 !important;
+}
+.app-shell[data-envista-social-reference="true"] .sidebar {
+  background: #101d27 !important;
+}
+
+/* Auth, onboarding, consent and recovery: calm forms; textured side, never under text fields. */
+.envista-auth-page {
+  background: #0f1923 !important;
+  color: #f4f7f8;
+}
+.envista-auth-page .envista-auth-brand {
+  background: linear-gradient(153deg, rgba(0,130,163,.13), transparent 45%),
+    linear-gradient(180deg,#11242d,#0f1923) !important;
+  border-color: rgba(151,185,193,.17) !important;
+}
+.envista-auth-page .envista-auth-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/brand/envista-texture-green.svg") center/cover no-repeat;
+  opacity: .09;
+  pointer-events: none;
+}
+.envista-auth-page .envista-auth-brand > * { position: relative; z-index: 1; }
+.envista-auth-page [class*="formPanel"] {
+  background: #0f1923 !important;
+}
+.envista-auth-page [class*="card"] {
+  border-color: rgba(151,185,193,.2) !important;
+  background: #172631 !important;
+  box-shadow: 0 14px 40px rgba(0,0,0,.16) !important;
+}
+.envista-auth-page [class*="cardAccent"] {
+  background: linear-gradient(90deg,#0082a3,#00a599,#22b173) !important;
+}
+.envista-auth-page [class*="form"] :is(input,select,textarea) {
+  background: #101e27 !important;
+  border-color: rgba(151,185,193,.25) !important;
+}
+.envista-auth-page [class*="primary"] {
+  color: #061f22 !important;
+  background: #00a599 !important;
+  box-shadow: none !important;
+}
+
+/* Landing and public showcase: one art-directed brand area, clean content afterwards. */
+[data-envista-public-shell] {
+  --navy: #0f1923;
+  --deep: #0f1923;
+  --mint: #00a599;
+  --teal: #00a599;
+  --blue: #0082a3;
+  --ink: #0f1923;
+  --line: rgba(151,185,193,.2);
+  background: #0f1923 !important;
+  color: #f4f7f8;
+  font-family: "Montserrat", Arial, sans-serif !important;
+}
+[data-envista-public-shell] :is(h1,h2,h3,p,a,button,span) { font-family: inherit; }
+[data-envista-public-shell] [class*="header"] {
+  border-color: rgba(151,185,193,.16);
+}
+[data-envista-public-shell] [class*="hero"]:not([class*="heroCopy"]):not([class*="heroInner"]):not([class*="heroVisual"]):not([class*="heroActions"]):not([class*="heroEyebrow"]) {
+  border-color: rgba(151,185,193,.16);
+}
+[data-envista-public-shell] [class*="heroPattern"],
+[data-envista-public-shell] [class*="earth"] {
+  opacity: 0 !important;
+}
+[data-envista-public-shell] [class*="heroVisual"] {
+  border: 1px solid rgba(144,192,195,.23);
+  border-radius: 20px;
+  background:
+    linear-gradient(140deg,rgba(0,130,163,.23),rgba(0,165,153,.12) 52%,rgba(34,177,115,.16)),
+    url("/brand/envista-texture-green.svg") center/cover no-repeat;
+  overflow: hidden;
+  min-height: 420px;
+  max-height: 490px;
+}
+[data-envista-public-shell] [class*="heroVisual"] > * {
+  visibility: hidden;
+}
+[data-envista-public-shell] [class*="heroVisual"]::after {
+  content: "";
+  position: absolute;
+  width: 126px;
+  height: 169px;
+  right: 12%;
+  top: calc(50% - 84px);
+  background: url("/brand/envista-symbol-white.svg") center/contain no-repeat;
+  opacity: .72;
+}
+[data-envista-public-shell] :is([class*="primary"],[class*="primarySmall"],[class*="bannerButton"]) {
+  background: #00a599 !important;
+  color: #071f21 !important;
+  box-shadow: none !important;
+}
+[data-envista-public-shell] :is([class*="primary"],[class*="primarySmall"],[class*="bannerButton"]):hover {
+  background: #22b173 !important;
+  transform: none !important;
+}
+[data-envista-public-shell] [class*="floatCard"],
+[data-envista-public-shell] [class*="orbit"],
+[data-envista-public-shell] [class*="brandGhost"] {
+  display: none !important;
+}
+
+/* Admin: restrained hierarchy without changing permissions, routes or controls. */
+[data-envista-admin-shell] {
+  background: #0f1923 !important;
+  color: #f4f7f8;
+  font-family: "Montserrat", Arial, sans-serif;
+}
+[data-envista-admin-shell] aside {
+  background: #101d27 !important;
+  border-color: rgba(151,185,193,.17) !important;
+}
+[data-envista-admin-shell] main {
+  background: #0f1923 !important;
+}
+[data-envista-admin-shell] header {
+  background: #14242e !important;
+  border-color: rgba(151,185,193,.17) !important;
+}
+[data-envista-admin-shell] nav a[aria-current="page"] {
+  background: rgba(0,165,153,.12) !important;
+  color: #f4f7f8 !important;
+}
+[data-envista-admin-shell] :is(button,input,select,textarea) { font-family: inherit; }
+
+/* Accessibility and responsive behavior are shared across all screens. */
+@media (max-width: 760px) {
+  .app-shell[data-envista-product-shell] .page-head h1 { font-size: 24px !important; }
+  [data-envista-public-shell] [class*="heroVisual"] { min-height: 290px; max-height: 350px; }
+  [data-envista-public-shell] [class*="heroVisual"]::after { height: 122px; width: 90px; top: calc(50% - 61px); }
+}
+@media (max-width: 560px) {
+  [data-envista-public-shell] [class*="heroVisual"] { display: none !important; }
+  .envista-auth-page [class*="card"] { box-shadow: none !important; }
+  .app-shell[data-envista-product-shell] .panel { border-radius: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *, .envista-auth-page *, [data-envista-public-shell] * {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
