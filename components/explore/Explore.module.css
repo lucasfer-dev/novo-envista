@@ -1034,3 +1034,40 @@
   .discoveryEmpty::before { width: 35%; opacity: .11; }
   .competitionPanel::before { opacity: .13; }
 }
+
+.page {
+  --explore-bg: #0f1923;
+  --explore-surface: #172631;
+  --explore-surface-raised: #1b2d39;
+  --explore-border: rgba(151,185,193,.17);
+  --explore-accent: #00a599;
+  --explore-blue: #0082a3;
+  --explore-green: #22b173;
+  --explore-muted: #a7bac3;
+  color: #f4f7f8;
+}
+.exploreHeader {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 4px 0 14px !important;
+}
+.exploreHeader::before,.exploreHeader::after { display: none !important; }
+.eyebrow { color: #73cbbf; font-weight: 700; }
+.pageHeading h1 { font-weight: 700; font-size: 27px; color: #f4f7f8; }
+.pageHeading h1 span { color: #73cbbf; }
+.pageHeading p { color: #a7bac3; }
+.searchForm {
+  height: 46px;
+  border-color: rgba(151,185,193,.2);
+  border-radius: 10px;
+  background: #172631;
+  box-shadow: none;
+}
+.searchForm:focus-within { border-color: #00a599; box-shadow: 0 0 0 3px rgba(0,165,153,.09); }
+.searchForm button { border-radius: 8px; background: #00a599; color: #061f22; }
+.columns { gap: 20px; }
+.rail { gap: 13px; }
+@media(max-width:760px) {
+  .pageHeading h1 { font-size: 24px; }
+  .columns { gap: 14px; }
+}
