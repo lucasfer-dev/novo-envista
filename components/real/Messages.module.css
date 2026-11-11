@@ -49,3 +49,11 @@
   border-color: rgba(0,165,153,.24);
 }
 .sendButton { background: linear-gradient(105deg,#00a599,#22b173); color: #06271f; }
+
+.page { color: #f4f7f8; }
+.inboxPanel,.conversationShell,.startPanelIntro,.privacyTip { border-color: rgba(151,185,193,.17) !important; border-radius: 13px !important; background: #172631 !important; box-shadow: none !important; }
+.threadRow { border-color: rgba(151,185,193,.13); }
+.threadRow:hover { background: rgba(0,165,153,.055) !important; }
+.searchBox { border: 1px solid rgba(151,185,193,.22) !important; background: #101e27 !important; border-radius: 9px !important; }
+.bubble { border-radius: 12px !important; }
+.sendButton,.primary { background: #00a599 !important; color: #061f22 !important; border-radius: 9px !important; box-shadow: none !important; }
