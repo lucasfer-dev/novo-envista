@@ -48,11 +48,11 @@ describe("Envista 2026 official visual identity and UX laws", () => {
   });
 
   it("meets AA small-text contrast against the darkest gradient stop", () => {
-    // The blue stop remains the darkest of the three official gradient stops.
-    expect(contrast("#000b0f", "#0082a3")).toBeGreaterThanOrEqual(4.5);
-    expect(contrast("#000b0f", "#00a599")).toBeGreaterThanOrEqual(4.5);
-    expect(contrast("#000b0f", "#22b173")).toBeGreaterThanOrEqual(4.5);
-    expect(style).toContain("color:#000b0f!important");
+    // The official blue stop needs a nearly black foreground for AA small-text contrast.
+    expect(contrast("#000507", "#0082a3")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("#000507", "#00a599")).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("#000507", "#22b173")).toBeGreaterThanOrEqual(4.5);
+    expect(style).toContain("color:#000507!important");
   });
 
   it("preserves a focus affordance, touch targets and motion preferences", () => {
