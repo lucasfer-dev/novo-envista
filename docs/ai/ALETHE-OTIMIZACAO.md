@@ -42,9 +42,9 @@ O script **não altera** as listas globais `providers`, `tiers`, `profiles`, `qu
 
 A versão mais recente do ajustador também define Codex como implementador padrão em `complete/build`, `scout-then-build/build`, `plan-execute/execute` e `parallel-worktrees/build`. Gemini/Antigravity continua disponível para scouts econômicos. A revisão comum de `complete` permanece no Codex; uma regra adicional encaminha revisões marcadas `risky` ao Claude Sonnet Standard. **Não é um ranking validado de modelos:** é um ponto de partida para medir taxa de sucesso, retrabalho e cota consumida.
 
-**Atenção à regra de exceção:** `complete/build` contém regras próprias de escalonamento para `deep` que podem selecionar um modelo diferente. Antes de usar o fluxo para alterações complexas, verifique o modelo resolvido no editor e confirme que o provedor/modelo são compatíveis. Se houver conflito, não aplique o script e use o fluxo original.
+**Regra de exceção corrigida:** `complete/build` pode escalar para Sonnet em uma condição `deep`. O ajustador fixa explicitamente o provedor Claude nessa exceção para evitar incompatibilidade com o Codex padrão. A sintaxe do playbook otimizado foi validada com o parser oficial do Alethe em CI; ainda é necessário conferir a resolução efetiva do modelo e os limites de cota no seu Windows.
 
-Não há garantia de que a regra `risky` substitua o `review-gate`; este continua sendo obrigatório em mudanças sensíveis. Para UI/UX, pode ser mais adequado escolher Claude manualmente no agente principal. Os testes automatizados cobrem transformação, idempotência e rollback; **não substituem o doctor do Alethe no seu Windows nem um benchmark de qualidade**.
+Não há garantia de que a regra `risky` substitua o `review-gate`; este continua sendo obrigatório em mudanças sensíveis. Para UI/UX, pode ser mais adequado escolher Claude manualmente no agente principal. Os cinco testes automatizados passaram em GitHub Actions, e o playbook otimizado foi aceito pelo parser oficial do Alethe. **Isso não substitui o doctor no seu Windows nem um benchmark de qualidade e consumo em tarefas reais.**
 
 ## Validar visualmente
 
@@ -66,6 +66,6 @@ Confirme que `Complete → planner` mostra `standard`, que scouts indicam no má
 4. Para tarefa pequena, teste `direct`; bug desconhecido, `scout-then-build`; funcionalidade, `plan-execute`. Permita `complete` só quando nenhuma rota específica se encaixar.
 5. Nunca rodar migrações, escrita de dados reais, push para `main`, merge ou deploy automaticamente.
 
-**Limitação da validação nesta entrega:** o script foi testado em fixture para diff, aplicação, backup e idempotência. O ambiente remoto não acessa diretamente o Windows. A validação definitiva do YAML personalizado depende de executar `--apply` no seu PC; a própria automação restaura o estado anterior se `doctor` reprovar.
+**Validação desta entrega:** cinco testes automatizados e validação do YAML original otimizado pelo parser oficial do Alethe passaram em GitHub Actions. O ambiente remoto não acessa diretamente seu Windows. A validação definitiva do YAML personalizado depende de executar `--apply` no seu PC; a automação restaura o estado anterior se `doctor` reprovar.
 
 Fontes técnicas: [documentação dos playbooks](https://github.com/Kc1t/alethe-orchestrate-skill/blob/main/skills/alethe/references/playbooks.md) e [skill oficial](https://github.com/Kc1t/alethe-orchestrate-skill/blob/main/skills/alethe/SKILL.md).
