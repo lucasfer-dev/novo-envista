@@ -299,3 +299,105 @@
 @media (prefers-contrast:more) {
   .app-shell[data-envista-product-shell] .page-wrap .page-head {background:#102b35 !important}
 }
+
+/* Navigation state — visual language for the authenticated participant shell.
+   Active: soft surface plus a quiet left indicator.
+   Hover: responsive feedback without shifts in layout or loud outlines. */
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a) {
+  border: 0 !important;
+  border-radius: 11px !important;
+  box-shadow: none !important;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)
+  :is(svg, .sidebar-notification-symbol) {
+  box-sizing: border-box;
+  width: 30px !important;
+  height: 30px !important;
+  flex: 0 0 30px;
+  padding: 5px;
+  border-radius: 9px;
+  background: transparent;
+  color: #b6d0d3 !important;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)
+  .sidebar-notification-symbol svg {
+  padding: 0;
+  width: 20px !important;
+  height: 20px !important;
+  flex: none;
+  background: transparent;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a):not([aria-current="page"]):hover {
+  background: linear-gradient(96deg, rgba(0,165,153,.11), rgba(0,130,163,.045) 85%) !important;
+  color: #f4fffd !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a):not([aria-current="page"]):hover
+  :is(svg, .sidebar-notification-symbol) {
+  color: #62e3d0 !important;
+  background: rgba(0,165,153,.10);
+  transform: translateX(1px);
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"] {
+  color: #f8ffff !important;
+  font-weight: 730 !important;
+  border: 0 !important;
+  background: linear-gradient(90deg, rgba(0,165,153,.18), rgba(0,130,163,.075) 88%) !important;
+  box-shadow: none !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  top: 11px;
+  bottom: 11px;
+  left: 1px;
+  width: 3px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #00a599, #30cbac);
+  pointer-events: none;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]
+  :is(svg, .sidebar-notification-symbol) {
+  color: #38dcc4 !important;
+  background: rgba(0,165,153,.13);
+  --envista-icon-knockout: #0a343b;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]
+  svg.envista-solid-nav-icon {
+  fill: currentColor;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]
+  .sidebar-notification-symbol svg {
+  background: transparent;
+  color: inherit !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)[aria-current="page"]:hover {
+  background: linear-gradient(90deg, rgba(0,165,153,.235), rgba(0,130,163,.105) 90%) !important;
+}
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+  .sidebar > nav a[href="/home"][aria-current="page"]::after {
+  display: none !important;
+  content: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+    :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a),
+  .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"]
+    :is(.sidebar > nav a, .side-section a, .dashboard-home-community nav a, .home-nav-section nav a)
+    :is(svg, .sidebar-notification-symbol) {
+    transition: none !important;
+    transform: none !important;
+  }
+}
