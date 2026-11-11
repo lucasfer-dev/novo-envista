@@ -654,7 +654,7 @@ export default function LegacySocialFeed({
                   </div>
                 )}
               </div>
-            )}}
+            )}
           </div>
 
           {pageCount > 1 && (
