@@ -1,0 +1,194 @@
+/* Envista: brand atmosphere for the entire product.
+   Richer at page edges and editorial features; quiet around readable controls. */
+:root {
+  --ev-brand-blue: #0082a3;
+  --ev-brand-teal: #00a599;
+  --ev-brand-green: #22b173;
+  --ev-brand-ink: #0f1923;
+}
+.app-shell[data-envista-product-shell] {
+  --ev-border: rgba(87, 155, 167, .28);
+  --ev-border-strong: rgba(38, 203, 178, .53);
+  --ev-surface: #102a35;
+  --ev-surface-raised: #19303b;
+}
+.app-shell[data-envista-product-shell] .main,
+.app-shell[data-envista-social-reference="true"] .main {
+  background:
+    radial-gradient(ellipse 520px 310px at 92% 3%, rgba(0,130,163,.14),transparent 78%),
+    radial-gradient(ellipse 650px 460px at 98% 98%,rgba(34,177,115,.09),transparent 76%),
+    linear-gradient(110deg,rgba(8,23,33,.96),rgba(8,24,34,.962)),
+    url("/brand/envista-texture-original.png") center / 1120px auto repeat !important;
+}
+.app-shell[data-envista-product-shell] .page-wrap,
+.app-shell[data-envista-social-reference="true"] .page-wrap {background:transparent !important;}
+.app-shell[data-envista-product-shell] .sidebar,
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar,
+.app-shell[data-envista-home-page="true"] .sidebar {
+  background:
+    radial-gradient(ellipse 270px 200px at 0 100%,rgba(0,165,153,.16),transparent 78%),
+    linear-gradient(160deg,#071923 0%,#081e29 59%,#092832 100%) !important;
+  border-right:1px solid rgba(44,152,151,.29) !important;
+}
+.app-shell[data-envista-product-shell] .sidebar::before,
+.app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
+  display:block !important;
+  background:url("/brand/envista-pattern-original.png") 48% bottom / 450px auto repeat !important;
+  filter:brightness(2.4) !important;
+  opacity:.22 !important;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 45%,rgba(0,0,0,.24) 65%,#000 94%) !important;
+  mask-image:linear-gradient(to bottom,transparent 45%,rgba(0,0,0,.24) 65%,#000 94%) !important;
+  pointer-events:none;
+}
+.app-shell[data-envista-product-shell] .sidebar > nav a[aria-current="page"],
+.app-shell[data-envista-product-shell] .side-section a[aria-current="page"] {
+  background:linear-gradient(96deg,rgba(0,130,163,.25),rgba(0,165,153,.24) 60%,rgba(34,177,115,.23)) !important;
+  border:1px solid rgba(13,202,169,.22) !important;
+  box-shadow:inset 0 0 22px rgba(0,165,153,.07),0 0 17px rgba(0,165,153,.09) !important;
+}
+.app-shell[data-envista-product-shell] .sidebar > nav a[aria-current="page"] svg {
+  color:#36dec8 !important;
+  fill:rgba(34,177,115,.12);
+}
+.app-shell[data-envista-product-shell] .dashboard-new-project {
+  background:linear-gradient(105deg,#00a599,#14c3aa 60%,#22b173) !important;
+  color:#031d22 !important;
+  box-shadow:0 8px 22px rgba(0,165,153,.17) !important;
+}
+.app-shell[data-envista-product-shell] .topbar,
+.app-shell[data-envista-home-page="true"] .topbar,
+.app-shell[data-envista-social-reference="true"] .topbar {
+  background:
+    radial-gradient(ellipse 340px 100px at 90% 0%,rgba(0,165,153,.17),transparent 80%),
+    linear-gradient(90deg,#0b1f2a,#0b2934) !important;
+  border-bottom:1px solid rgba(44,149,153,.33) !important;
+}
+.app-shell[data-envista-product-shell] .global-search {
+  background:rgba(8,31,42,.84) !important;
+  border:1px solid rgba(84,157,165,.33) !important;
+}
+.app-shell[data-envista-product-shell] .global-search:focus-within {
+  border-color:rgba(40,210,185,.67) !important;
+  box-shadow:0 0 0 3px rgba(0,165,153,.09) !important;
+}
+.app-shell[data-envista-product-shell] .page-wrap .page-head {
+  position:relative;
+  isolation:isolate;
+  padding:22px 24px !important;
+  border:1px solid rgba(59,144,155,.38);
+  border-radius:14px;
+  background:
+    radial-gradient(ellipse at 92% 97%,rgba(34,177,115,.23),transparent 50%),
+    linear-gradient(100deg,rgba(8,35,46,.98) 0%,rgba(9,41,50,.95) 70%,rgba(11,43,53,.72)),
+    url("/brand/envista-pattern-original.png") right center / 500px auto repeat !important;
+  box-shadow:inset 0 1px 0 rgba(165,255,241,.045),0 11px 29px rgba(0,8,18,.08);
+}
+.app-shell[data-envista-product-shell] .page-wrap .page-head h1 {color:#f5fcfc !important;text-wrap:balance;}
+.app-shell[data-envista-product-shell] .page-wrap .page-head p {color:#c2d6dc !important;}
+.app-shell[data-envista-product-shell] :is(.panel,.section-block) {
+  border:1px solid rgba(76,144,157,.33) !important;
+  border-radius:14px !important;
+  background:
+    radial-gradient(ellipse at 100% 100%,rgba(0,165,153,.12),transparent 52%),
+    linear-gradient(140deg,#122c37,#102a35) !important;
+  box-shadow:inset 0 1px 0 rgba(137,243,223,.035),0 8px 24px rgba(0,8,18,.08) !important;
+}
+.app-shell[data-envista-product-shell] :is(.panel,.section-block):hover {
+  border-color:rgba(61,171,164,.39) !important;
+}
+.app-shell[data-envista-product-shell] :is(.project-card,.team-card) {
+  background:
+    radial-gradient(ellipse at 100% 100%,rgba(34,177,115,.12),transparent 51%),
+    linear-gradient(140deg,#112d38,#0e2934) !important;
+  border-color:rgba(66,141,153,.36) !important;
+  box-shadow:0 7px 19px rgba(0,8,17,.08) !important;
+}
+.app-shell[data-envista-product-shell] :is(a.project-card,a.team-card):hover {
+  background:linear-gradient(145deg,#133640,#102e38) !important;
+  border-color:rgba(28,199,174,.53) !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary) {
+  color:#062520 !important;
+  background:linear-gradient(105deg,#00a599,#13bcaa 61%,#22b173) !important;
+  box-shadow:0 8px 20px rgba(0,165,153,.12) !important;
+}
+.app-shell[data-envista-product-shell] :is(.primary,button.primary,a.primary):hover {
+  background:linear-gradient(105deg,#1cc9b7,#2bceab,#3ec78a) !important;
+}
+.app-shell[data-envista-product-shell] :is(.empty,.empty-state) {
+  border-color:rgba(70,148,154,.36);
+  background:
+    radial-gradient(ellipse at 100% 100%,rgba(34,177,115,.13),transparent 55%),
+    linear-gradient(115deg,rgba(11,43,52,.96),rgba(11,36,46,.95)),
+    url("/brand/envista-pattern-original.png") right center/540px auto repeat;
+}
+.envista-auth-page {
+  background:radial-gradient(ellipse at 95% 99%,rgba(0,130,163,.13),transparent 51%),#0f1923 !important;
+}
+.envista-auth-page .envista-auth-brand {
+  background:
+    radial-gradient(ellipse at 0% 96%,rgba(34,177,115,.22),transparent 68%),
+    linear-gradient(145deg,#082734,#0a3640 70%,#0b2733) !important;
+  border-color:rgba(46,165,156,.32) !important;
+}
+.envista-auth-page .envista-auth-brand::before {
+  background:
+    linear-gradient(0deg,rgba(6,28,37,.12),rgba(6,28,37,.29)),
+    url("/brand/envista-pattern-original.png") left bottom/520px auto repeat !important;
+  opacity:.25 !important;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 40%,#000);
+  mask-image:linear-gradient(to bottom,transparent 40%,#000);
+}
+.envista-auth-page [class*="brandEarth"] {display:block !important;opacity:.24 !important;}
+.envista-auth-page [class*="formPanel"] {
+  background:linear-gradient(110deg,#101e29,#0f1923) !important;
+}
+.envista-auth-page [class*="card"] {
+  background:#162a35 !important;
+  border-color:rgba(69,145,157,.32) !important;
+  box-shadow:0 18px 44px rgba(0,9,19,.19) !important;
+}
+.envista-auth-page [class*="primary"] {
+  background:linear-gradient(105deg,#00a599,#22b173) !important;
+  box-shadow:0 8px 20px rgba(0,165,153,.13) !important;
+}
+[data-envista-public-shell] {
+  background:radial-gradient(ellipse at 90% 3%,rgba(0,130,163,.12),transparent 57%),#0f1923 !important;
+}
+[data-envista-public-shell] [class*="primary"],
+[data-envista-public-shell] [class*="bannerButton"] {
+  background:linear-gradient(105deg,#00a599,#1bb98c,#22b173) !important;
+  box-shadow:0 9px 24px rgba(0,165,153,.15) !important;
+}
+[data-envista-admin-shell] {
+  background:radial-gradient(ellipse at 92% 4%,rgba(0,130,163,.12),transparent 59%),#0f1923 !important;
+}
+[data-envista-admin-shell] aside {
+  background:
+    radial-gradient(ellipse 230px 260px at 0% 100%,rgba(0,165,153,.12),transparent 79%),
+    linear-gradient(150deg,#081c27,#0a2932) !important;
+}
+[data-envista-admin-shell] header {
+  background:radial-gradient(ellipse 300px 110px at 100% 0%,rgba(0,165,153,.13),transparent 72%),#102a35 !important;
+}
+[data-envista-admin-shell] main {background:transparent !important;}
+@media(max-width:980px){
+  .app-shell[data-envista-product-shell] .sidebar::before {opacity:.14 !important;}
+  .app-shell[data-envista-product-shell] .page-wrap .page-head {padding:18px !important;}
+}
+@media(max-width:560px){
+  .app-shell[data-envista-product-shell] .page-wrap .page-head {padding:14px !important;border-radius:12px;}
+  .app-shell[data-envista-product-shell] .page-wrap .page-head h1 {font-size:23px !important;}
+}
+@media(prefers-contrast:more){
+  .app-shell[data-envista-product-shell] .sidebar::before {opacity:.04 !important;}
+  .app-shell[data-envista-product-shell] .page-wrap .page-head {background:#0c2933 !important;}
+  .app-shell[data-envista-product-shell] :is(.panel,.section-block) {background:#132c36 !important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .app-shell[data-envista-product-shell] *,
+  .app-shell[data-envista-product-shell] *::before,
+  .app-shell[data-envista-product-shell] *::after {
+    animation:none !important;transition-duration:.01ms !important;
+  }
+}

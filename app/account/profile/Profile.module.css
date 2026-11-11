@@ -109,3 +109,14 @@
 .progressFill { background: #00a99d; }
 .workspace { min-width: 0; }
 @media(max-width:860px) { .summary { grid-template-columns: minmax(0,1fr); gap: 14px; } }
+
+/* Profile summary: a personal branded hero, quiet editable content. */
+.hero,.summary {
+  border-color:rgba(57,147,154,.39) !important;
+  background:radial-gradient(ellipse at 96% 95%,rgba(34,177,115,.19),transparent 54%),linear-gradient(120deg,#102e3a,#102b37) !important;
+}
+.card {
+  background:linear-gradient(145deg,#132d38,#102a35) !important;
+  border-color:rgba(70,140,154,.33) !important;
+}
+.progressFill {background:linear-gradient(90deg,#0082a3,#00a599,#22b173) !important;}

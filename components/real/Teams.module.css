@@ -86,3 +86,19 @@
 .card:hover { transform: none !important; box-shadow: none !important; border-color: rgba(0,165,153,.3) !important; }
 .empty { background: #172631 !important; border-color: rgba(151,185,193,.2) !important; }
 .primary { background: #00a599 !important; color: #061f22 !important; box-shadow: none !important; }
+
+/* Team workspace mirrors projects with a greener right-hand accent. */
+.head {
+  padding:17px 20px;
+  border:1px solid rgba(58,145,157,.34);
+  border-radius:13px;
+  background:radial-gradient(ellipse at 96% 100%,rgba(34,177,115,.2),transparent 56%),linear-gradient(125deg,#102e39,#112e37);
+}
+.card {
+  background:linear-gradient(145deg,#112e38,#102b35) !important;
+  border-color:rgba(67,146,157,.37) !important;
+}
+.empty {
+  border-color:rgba(39,172,157,.39) !important;
+  background:linear-gradient(108deg,rgba(10,40,51,.95),rgba(12,41,50,.89)),url("/brand/manual-wave-green.svg") right center/cover no-repeat !important;
+}

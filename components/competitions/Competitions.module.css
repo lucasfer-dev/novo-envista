@@ -204,3 +204,27 @@
 .bannerArtwork { opacity: .22; }
 .filters :is(input,select) { border-color: rgba(151,185,193,.24) !important; background: #101e27 !important; }
 .empty { border-color: rgba(151,185,193,.2) !important; background: #172631 !important; }
+
+/* Competition emphasis: move energy into banners and selected panels. */
+.head {
+  padding:20px 23px;
+  border-radius:14px;
+  border:1px solid rgba(53,141,153,.41);
+  background:
+    radial-gradient(ellipse at 96% 100%,rgba(34,177,115,.22),transparent 54%),
+    linear-gradient(105deg,rgba(9,37,48,.97),rgba(10,43,53,.88)),
+    url("/brand/envista-pattern-original.png") right center/540px auto repeat;
+}
+.banner {
+  border-color:rgba(34,183,162,.49) !important;
+  background:
+    radial-gradient(ellipse at 95% 100%,rgba(34,177,115,.21),transparent 58%),
+    linear-gradient(105deg,rgba(9,43,53,.96),rgba(8,43,48,.86)),
+    url("/brand/manual-wave-green.svg") right center/cover no-repeat !important;
+}
+.card,.panel,.recommendationPanel {
+  border-color:rgba(65,139,151,.36) !important;
+  background:radial-gradient(ellipse at 100% 100%,rgba(0,165,153,.12),transparent 55%),linear-gradient(140deg,#102c37,#102a35) !important;
+}
+.card:hover {border-color:rgba(34,194,169,.52) !important;}
+@media(max-width:700px){.head{padding:15px;}}

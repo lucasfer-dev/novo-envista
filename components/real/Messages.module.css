@@ -57,3 +57,19 @@
 .searchBox { border: 1px solid rgba(151,185,193,.22) !important; background: #101e27 !important; border-radius: 9px !important; }
 .bubble { border-radius: 12px !important; }
 .sendButton,.primary { background: #00a599 !important; color: #061f22 !important; border-radius: 9px !important; box-shadow: none !important; }
+
+/* Envista atmosphere around messages, never behind the conversation text. */
+.pageHeader {
+  padding:18px 20px;
+  border:1px solid rgba(66,143,151,.35);
+  border-radius:14px;
+  background:radial-gradient(ellipse at 96% 100%,rgba(0,165,153,.15),transparent 54%),linear-gradient(110deg,#102d38,#102c36);
+}
+.inboxPanel,.startPanelIntro,.privacyTip {
+  border-color:rgba(67,141,149,.36) !important;
+  background:linear-gradient(145deg,#112c36,#0f2833) !important;
+}
+.conversationShell {background:#132b36 !important;border-color:rgba(67,141,149,.32) !important;}
+.sectionHeader {background:radial-gradient(ellipse at 94% 100%,rgba(0,165,153,.09),transparent 54%);}
+.threadRow:hover {background:rgba(0,165,153,.07) !important;}
+@media(max-width:620px){.pageHeader{padding:14px;}}

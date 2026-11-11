@@ -112,3 +112,33 @@
 .courseCard:hover { transform: none !important; box-shadow: none !important; }
 .primary { background: #00a599 !important; color: #061f22 !important; border-radius: 9px !important; }
 .empty { border-color: rgba(151,185,193,.2) !important; background: #172631 !important; }
+
+/* Learning: rich course discovery, quiet lesson workspace. */
+.featured {
+  border-color:rgba(33,186,164,.49) !important;
+  background:
+    radial-gradient(ellipse at 87% 94%,rgba(34,177,115,.22),transparent 51%),
+    linear-gradient(108deg,rgba(9,39,50,.98),rgba(12,52,57,.87)),
+    url("/brand/manual-wave-blue.svg") right center/cover no-repeat !important;
+}
+.featuredGlow {opacity:.2 !important;}
+.featuredVisual {opacity:.74 !important;}
+.courseCover {
+  background:
+    radial-gradient(ellipse at 92% 98%,rgba(34,177,115,.2),transparent 55%),
+    linear-gradient(135deg,#0b3542,#0d2c38),
+    url("/brand/manual-wave-teal.svg") right center/cover no-repeat;
+}
+.courseCard {
+  border-color:rgba(65,140,151,.34) !important;
+  background:linear-gradient(150deg,#112e39,#102b35) !important;
+}
+.courseCard:hover {border-color:rgba(30,190,166,.51) !important;background:#11343d !important;}
+.learnHeading {
+  padding:16px 20px;
+  border-radius:13px;
+  background:linear-gradient(110deg,rgba(0,130,163,.09),rgba(34,177,115,.055));
+  border:1px solid rgba(64,137,150,.23);
+}
+.lesson,.materials {background:#142b36 !important;}
+@media(max-width:700px){.featuredVisual{opacity:.26 !important;}.learnHeading{padding:14px;}}

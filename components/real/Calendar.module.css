@@ -107,3 +107,18 @@
 
 /* When there are no events, use only the empty-state artwork. */
 .page:has(.empty) .hero::after { display: none; }
+
+/* Calendar banner: textured, with readable event listing underneath. */
+.hero {
+  padding:19px 23px;
+  border:1px solid rgba(37,173,163,.43);
+  border-radius:14px;
+  background:
+    radial-gradient(ellipse at 98% 98%,rgba(34,177,115,.22),transparent 55%),
+    linear-gradient(105deg,rgba(9,39,50,.97),rgba(9,43,50,.89)),
+    url("/brand/manual-wave-teal.svg") right center/cover no-repeat;
+}
+.hero::after {opacity:.17;}
+.weekNotice {border-color:rgba(53,145,150,.36);background:linear-gradient(140deg,#10303b,#112c36);}
+.card {border-color:rgba(67,143,151,.33);background:linear-gradient(145deg,#102d38,#102a35);}
+@media(max-width:650px){.hero{padding:15px;}}
