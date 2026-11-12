@@ -10,7 +10,6 @@ import {
   TrendingUp,
   CalendarDays,
   ChevronDown,
-  Clock3,
   Compass,
   Flame,
   Globe2,
