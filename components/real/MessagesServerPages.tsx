@@ -14,6 +14,11 @@ function cursor(value: string | undefined) {
 }
 function messagesPath(role: ProductRole) { return role === "investor" ? "/investor/messages" : "/messages"; }
 
+async function loadInboxData(supabase: Awaited<ReturnType<typeof requireProductUser>>["supabase"], userId: string) {
+  const { threads, suggestions, summaryError } = await loadInboxData(supabase, userId);
+  return { threads, suggestions, summaryError };
+}
+
 export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
   const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
   if (compliance.guardian_locked) {
@@ -111,6 +116,7 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
     );
   }
 
+  const inboxPromise = loadInboxData(supabase, userId);
   const query = await searchParams;
   const before = cursor(first(query.before));
   const base = messagesPath(expectedRole);
@@ -161,11 +167,14 @@ export async function ConversationServerPage({ expectedRole, conversationId, sea
   const blockedMe = (blocks ?? []).some((block: any) => block.blocker_id === targetId && block.blocked_id === userId);
   const canSend = !blockedByMe && !blockedMe && Boolean(profile?.allow_messages) && profile?.profile_visibility === "platform";
   const target = { id: targetId, display_name: profile?.display_name ?? "Conta privada", username: profile?.username ?? null };
+  const inbox = await inboxPromise;
 
   return (
     <LegacySocialShell user={appUser} role={expectedRole} pathname={`${base}/${conversationId}`}>
       <ConversationView
         role={expectedRole}
+        threads={inbox.threads}
+        suggestions={inbox.suggestions}
         currentUserId={userId}
         conversationId={conversationId}
         target={target}
