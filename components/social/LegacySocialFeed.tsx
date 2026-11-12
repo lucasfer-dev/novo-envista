@@ -476,7 +476,7 @@ export default function LegacySocialFeed({
           </div>
 
           <div className={styles.timeline}>
-            {items.map((item) => {
+            {displayItems.map((item) => {
               if (item.kind === "project-update") {
                 const projectTitle = item.title.trim().toLocaleLowerCase("pt-BR");
                 const projectImage = projectTitle === "elovia" ? "/brand/social-elovia-reference.webp"
@@ -527,7 +527,7 @@ export default function LegacySocialFeed({
 
               const commentsOpen = Boolean(openComments[item.id]);
               return (
-                <article className={styles.timelinePost} key={item.id}>
+                <article className={`${styles.timelinePost}${item.project ? ` ${styles.postWithProject}` : ""}`} key={item.id}>
                   <div className={styles.identityRow}>
                     <Link className={styles.timelineAvatar} href={item.authorHref}>
                       {item.authorAvatarUrl ? <img src={item.authorAvatarUrl} alt="" /> : initials(item.authorLabel)}
@@ -658,22 +658,26 @@ export default function LegacySocialFeed({
               );
             })}
 
-            {!items.length && (
+            {!displayItems.length && (
               <div className={styles.emptyFeed}>
                 <div className={styles.emptyIllustration} aria-hidden="true">
                   <div className={styles.emptyOrbit}><Activity size={30} /></div>
                 </div>
                 <span className={styles.emptyEyebrow}>O próximo movimento começa aqui</span>
-                <h3>{initialQuery ? "Nenhum resultado encontrado" : feedMode === "following" ? "Sua rede começa com uma conexão" : "Sua comunidade está pronta para conversar"}</h3>
+                <h3>{projectOnly ? "Nenhuma atividade de projeto nesta página" : initialQuery ? "Nenhum resultado encontrado" : feedMode === "following" ? "Sua rede começa com uma conexão" : "Sua comunidade está pronta para conversar"}</h3>
                 <p>
-                  {initialQuery
+                  {projectOnly
+                    ? "Ainda não há projetos vinculados às atividades carregadas. Explore projetos públicos ou volte a ver todas as publicações."
+                    : initialQuery
                     ? "Não encontramos atividades com esse termo. Experimente uma busca diferente."
                     : feedMode === "following"
                       ? "Siga pessoas, equipes e projetos para reunir as novidades que importam para você."
                       : "Ainda não há publicações por aqui. Compartilhe uma ideia, uma conquista ou uma pergunta para abrir a conversa."}
                 </p>
                 <div className={styles.emptyActions}>
-                  {initialQuery ? (
+                  {projectOnly ? (
+                    <button className={styles.emptyFeedPrimary} type="button" onClick={() => setProjectOnly(false)}>Ver todas as publicações <ArrowRight size={16} aria-hidden="true" /></button>
+                  ) : initialQuery ? (
                     <Link className={styles.emptyFeedAction} href={feedHref(path, feedMode, "", 1)}>Limpar busca <ArrowRight size={16} aria-hidden="true" /></Link>
                   ) : feedMode === "following" ? (
                     <button className={styles.emptyFeedPrimary} type="button" onClick={() => changeMode("for-you")}>Descobrir novidades <ArrowRight size={16} aria-hidden="true" /></button>
@@ -682,7 +686,7 @@ export default function LegacySocialFeed({
                   )}
                   {!initialQuery && <Link className={styles.emptyFeedAction} href="/explore">Explorar comunidade <ArrowRight size={16} aria-hidden="true" /></Link>}
                 </div>
-                {!initialQuery && feedMode === "for-you" && (
+                {!projectOnly && !initialQuery && feedMode === "for-you" && (
                   <div className={styles.emptyIdeas}>
                     <span><Lightbulb size={17} aria-hidden="true" /> Conte no que está trabalhando</span>
                     <span><Users size={17} aria-hidden="true" /> Encontre colaboradores</span>
@@ -726,22 +730,6 @@ export default function LegacySocialFeed({
               })}
             </div> : <div className={styles.railEmpty}><CalendarDays size={19} aria-hidden="true" /><p>Nenhum evento próximo no calendário.</p></div>}
           </section>
-          <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
-            <div className={styles.railTitle}>
-              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
-              <Link href="/explore">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
-            </div>
-            {topicStats.length ? <>
-              <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
-              <div className={styles.topicList}>
-                {topicStats.map(topic => <Link key={topic.label} href={"/explore?q=" + encodeURIComponent(topic.query)}>
-                  <span><strong>#{topic.label.replace(/\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
-                  <TrendingUp size={17} aria-hidden="true" />
-                </Link>)}
-              </div>
-            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>Os temas aparecerão conforme a comunidade publicar novas atividades.</p></div>}
-          </section>
-
           <section className={[styles.sideCard, styles.peoplePanel].join(" ")} aria-labelledby="social-suggestions-title">
             <div className={styles.railTitle}>
               <h2 id="social-suggestions-title"><Users size={20} aria-hidden="true" /> Sugestões de pessoas</h2>
@@ -765,6 +753,22 @@ export default function LegacySocialFeed({
               ))}
               {!visibleSuggestions.some(suggestion => suggestion.targetType === "profile") && <p className={styles.searchResultLabel}>Sem novas pessoas para sugerir agora.</p>}
             </div>
+          </section>
+
+          <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
+            <div className={styles.railTitle}>
+              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
+              <Link href="/explore">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
+            </div>
+            {topicStats.length ? <>
+              <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
+              <div className={styles.topicList}>
+                {topicStats.map(topic => <Link key={topic.label} href={"/explore?q=" + encodeURIComponent(topic.query)}>
+                  <span><strong>#{topic.label.replace(/\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
+                  <TrendingUp size={17} aria-hidden="true" />
+                </Link>)}
+              </div>
+            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>Os temas aparecerão conforme a comunidade publicar novas atividades.</p></div>}
           </section>
 
         </aside>
