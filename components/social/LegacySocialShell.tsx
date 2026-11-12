@@ -303,6 +303,7 @@ export default function LegacySocialShell({
           })}
         </div>
         )}
+        <div className="side-bottom">
         {role === "participant" && (
           <Link
             className="sidebar-plans-promo"
@@ -318,7 +319,6 @@ export default function LegacySocialShell({
             <span className="sidebar-plans-link">Conhecer planos <ArrowRight size={16} aria-hidden="true" /></span>
           </Link>
         )}
-        <div className="side-bottom">
           {role === "participant" && (
             <Link
               className="sidebar-settings-link"
