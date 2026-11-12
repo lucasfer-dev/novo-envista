@@ -11,7 +11,7 @@ const desktopViewports = [
 ];
 
 for (const viewport of desktopViewports) {
-  test("Social clean layout at " + viewport.width + "x" + viewport.height, async ({ page }) => {
+  test("Social hybrid layout at " + viewport.width + "x" + viewport.height, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto("/login");
 
@@ -26,7 +26,7 @@ for (const viewport of desktopViewports) {
         '<div class="page-wrap"><div class="socialPage"><div class="socialLayout">',
         '<section class="mainColumn"><div class="feedHeader"><div class="feedIntro"><span class="feedEyebrow">Comunidade Envista</span><h1>Social</h1><p>Conecte-se, compartilhe ideias, acompanhe projetos e converse com a comunidade Envista.</p></div><div class="heroGlobe"></div></div>',
         '<section class="composer"><div class="composerHead"><span class="composerAvatar">GM</span><textarea placeholder="O que você quer compartilhar?"></textarea></div><div class="composerFooter"><span>Projeto&nbsp;&nbsp;&nbsp; Competição&nbsp;&nbsp;&nbsp; Evento</span><button class="publishButton">Publicar</button></div></section>',
-        '<div class="timelineToolbar"><div class="feedTabs"><button class="activeTab">Para você</button><button>Seguindo</button><a class="discoverTab">Comunidade</a><a class="discoverTab">Projetos</a></div><div class="sortLabel">Mais recentes</div></div>',
+        '<div class="timelineToolbar"><div class="feedTabs"><button class="activeTab">Para você</button><button>Seguindo</button><button>Projetos</button></div><div class="sortLabel">Mais recentes</div></div>',
         '<div class="timeline"><article class="timelineUpdate"><div class="identityRow"><span class="timelineAvatar">GM</span><span>Gabriel Marinho</span></div>',
         '<p class="postBody">Novidades no projeto: Oficina Aberta.</p><a class="projectReference"><span class="projectCover"><span class="updateArtwork"><span class="updateArtworkCopy"><span class="updateArtworkKicker">PROJETO DA COMUNIDADE</span><strong>Oficina Aberta</strong><small>Validação</small></span><span class="dashboard-project-mark"><img src="/brand/project-build.svg" /></span></span></span></a>',
         '</article></div></section><aside class="sideColumn"><section class="sideCard competitionPanel">Em destaque</section>',
@@ -57,7 +57,10 @@ for (const viewport of desktopViewports) {
 
     expect(dimensions.headX, JSON.stringify(dimensions)).toBeCloseTo(dimensions.composerX, 0);
     expect(dimensions.railY, JSON.stringify(dimensions)).toBeCloseTo(dimensions.headY, 0);
-    expect(dimensions.socialWidth, JSON.stringify(dimensions)).toBeLessThanOrEqual(1337);
+    // The approved Social is a full-width dashboard rather than a 1337px article.
+    expect(dimensions.socialWidth, JSON.stringify(dimensions)).toBeLessThanOrEqual(viewport.width - dimensions.sidebarWidth);
+    expect(dimensions.socialWidth, JSON.stringify(dimensions)).toBeGreaterThan(viewport.width > 1900 ? 1800 : 900);
+    expect(dimensions.socialRight, JSON.stringify(dimensions)).toBeLessThanOrEqual(viewport.width - 12);
     expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(70);
     expect(dimensions.heroHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(200);
     expect(dimensions.composerY, JSON.stringify(dimensions)).toBeGreaterThanOrEqual(dimensions.headBottom);
@@ -65,6 +68,7 @@ for (const viewport of desktopViewports) {
     expect(dimensions.railX, JSON.stringify(dimensions)).toBeGreaterThan(dimensions.headX);
     expect(dimensions.coverHeight, JSON.stringify(dimensions)).toBeLessThanOrEqual(239);
     expect(dimensions.documentScrollWidth, JSON.stringify(dimensions)).toBeLessThanOrEqual(viewport.width + 1);
-    expect(dimensions.banner, JSON.stringify(dimensions)).toBe("none");
+    // Hero waves are intentional artwork, not an accidental texture.
+    expect(dimensions.banner, JSON.stringify(dimensions)).toBe('""');
   });
 }
