@@ -47,7 +47,7 @@ describe("Envista visual identity standardization", () => {
 
   it("keeps account management inside the authenticated product experience", () => {
     expect(accountShell).toContain("LegacySocialShell");
-    expect(accountShell).toContain("account-page-panel");
+    expect(accountShell).toContain("<SettingsWorkspace");
     for (const page of accountPages) {
       expect(page).toContain("AccountProductShell");
       expect(page).not.toContain("<AuthShell");
