@@ -15,6 +15,8 @@ import {
   Flame,
   Globe2,
   Lightbulb,
+  Layers,
+  SlidersHorizontal,
   Settings2,
   FolderKanban,
   Heart,
@@ -200,6 +202,8 @@ export default function LegacySocialFeed({
   const [composerBody, setComposerBody] = useState("");
   const [composerRecovered, setComposerRecovered] = useState(false);
   const [composerSettingsOpen, setComposerSettingsOpen] = useState(false);
+  const [projectOnly, setProjectOnly] = useState(false);
+  const [postIntent, setPostIntent] = useState<"idea" | "update" | "team" | "feedback" | null>(null);
   const composerDraftKey = "envista:social-draft:v2:" + userId;
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [replyingTo, setReplyingTo] = useState<Record<string, string | null>>({});
@@ -261,12 +265,23 @@ export default function LegacySocialFeed({
     }).length,
   })).filter(topic => topic.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
 
+  const displayItems = projectOnly
+    ? items.filter(item => item.kind === "project-update" || Boolean(item.kind === "post" && item.project))
+    : items;
+
   const visibleSuggestions = suggestions.filter(
     (suggestion) => !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
   );
 
   const changeMode = (mode: FeedMode) => {
+    setProjectOnly(false);
     router.push(feedHref(path, mode, query, 1), { scroll: false });
+  };
+
+  const chooseIntent = (intent: "idea" | "update" | "team" | "feedback", prefix: string) => {
+    setPostIntent(intent);
+    if (!composerBody.trim()) changeComposerBody(prefix);
+    document.getElementById("social-post-body")?.focus();
   };
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -306,7 +321,7 @@ export default function LegacySocialFeed({
         <div className={styles.feedIntro}>
           <span className={styles.feedEyebrow}>Comunidade Envista</span>
           <h1>Social</h1>
-          <p>Compartilhe ideias, acompanhe projetos e converse com a comunidade.</p>
+          <p>Descubra ideias, compartilhe projetos, encontre pessoas e evolua junto.</p>
         </div>
       </header>
 
@@ -314,19 +329,28 @@ export default function LegacySocialFeed({
             <nav className={styles.feedTabs} aria-label="Filtrar publicações">
               <button
                 type="button"
-                aria-pressed={feedMode === "for-you"}
-                className={feedMode === "for-you" ? styles.activeTab : ""}
+                aria-pressed={!projectOnly && feedMode === "for-you"}
+                className={!projectOnly && feedMode === "for-you" ? styles.activeTab : ""}
                 onClick={() => changeMode("for-you")}
               >
-                Descobrir
+                Para você
               </button>
               <button
                 type="button"
-                aria-pressed={feedMode === "following"}
-                className={feedMode === "following" ? styles.activeTab : ""}
+                aria-pressed={!projectOnly && feedMode === "following"}
+                className={!projectOnly && feedMode === "following" ? styles.activeTab : ""}
                 onClick={() => changeMode("following")}
               >
                 Seguindo
+              </button>
+              <button
+                type="button"
+                aria-pressed={projectOnly}
+                className={projectOnly ? styles.activeTab : ""}
+                onClick={() => setProjectOnly(true)}
+                title="Mostrar atividades de projetos nesta página do feed"
+              >
+                Projetos
               </button>
             </nav>
 
@@ -349,7 +373,15 @@ export default function LegacySocialFeed({
               )}
             </form>
               </details>
-            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Recentes</span>
+            <details className={styles.feedFiltersToggle}>
+                <summary title="Filtros da comunidade" aria-label="Filtros da comunidade"><SlidersHorizontal size={17} aria-hidden="true" /></summary>
+                <div className={styles.feedFilterPanel}>
+                  <strong>Ver publicações</strong>
+                  <button type="button" onClick={() => setProjectOnly(false)} aria-pressed={!projectOnly}>Todas as atividades</button>
+                  <button type="button" onClick={() => setProjectOnly(true)} aria-pressed={projectOnly}>Atividades de projetos</button>
+                  <small>Os filtros se aplicam aos itens carregados nesta página.</small>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -367,7 +399,7 @@ export default function LegacySocialFeed({
                   value={composerBody}
                   onChange={(event) => changeComposerBody(event.target.value)}
                   aria-label="Conteúdo da publicação"
-                  placeholder="O que você quer compartilhar com a comunidade?"
+                  placeholder="O que você está construindo?"
                 />
               </div>
 
@@ -411,18 +443,24 @@ export default function LegacySocialFeed({
               </div>
               </details>
               <div className={styles.composerFooter}>
-                <div className={styles.composerShortcuts}>
-                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(value => !value)}>
-                    <Settings2 size={17} aria-hidden="true" /> Opções
+                <div className={styles.composerShortcuts} role="group" aria-label="Começar uma publicação">
+                  <button type="button" aria-pressed={postIntent === "idea"} onClick={() => chooseIntent("idea", "💡 Ideia: ")}>
+                    <Lightbulb size={17} aria-hidden="true" /> Ideia
                   </button>
-                  {projects.length > 0 && <button type="button" onClick={() => setComposerSettingsOpen(true)}>
-                    <FolderKanban size={16} aria-hidden="true" /> Projeto
-                  </button>}
-                  {teams.length > 0 && <button type="button" onClick={() => setComposerSettingsOpen(true)}>
-                    <Users size={16} aria-hidden="true" /> Equipe
-                  </button>}
+                  <button type="button" aria-pressed={postIntent === "update"} onClick={() => chooseIntent("update", "📌 Atualização: ")}>
+                    <Layers size={17} aria-hidden="true" /> Atualização
+                  </button>
+                  <button type="button" aria-pressed={postIntent === "team"} onClick={() => chooseIntent("team", "🤝 Procurando equipe: ")}>
+                    <Users size={17} aria-hidden="true" /> Buscar equipe
+                  </button>
+                  <button type="button" aria-pressed={postIntent === "feedback"} onClick={() => chooseIntent("feedback", "💬 Preciso de feedback: ")}>
+                    <MessageCircle size={17} aria-hidden="true" /> Pedir feedback
+                  </button>
                 </div>
                 <div className={styles.composerActions}>
+                  <button className={styles.composerSettingsButton} type="button" aria-label="Opções de publicação" title="Vincular projeto, equipe ou GitHub" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(value => !value)}>
+                    <Settings2 size={18} aria-hidden="true" />
+                  </button>
                   <label className={styles.visibilityControl}>
                     <Globe2 size={16} aria-hidden="true" />
                     <span className={styles.visuallyHidden}>Quem pode ver a publicação</span>
