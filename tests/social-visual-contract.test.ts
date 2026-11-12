@@ -9,7 +9,10 @@ const competitions = readFileSync("components/social/SocialCompetitionSpotlight.
 
 describe("manual-led social UI / UX and existing functional contracts", () => {
   it("shows the full social interface without invented posts or metrics", () => {
-    expect(feed).toContain("Compartilhe ideias, acompanhe projetos");
+    expect(feed).toContain("Descubra ideias, compartilhe projetos");
+    expect(feed).toContain("Para você");
+    expect(feed).toContain("Pedir feedback");
+    expect(feed).toContain("displayItems.map((item)");
     expect(feed).toContain("SocialCompetitionSpotlight");
     expect(feed).toContain("Assuntos em alta");
     expect(feed).toContain("Sugestões de pessoas");
