@@ -15,26 +15,6 @@ function cursor(value: string | undefined) {
 function messagesPath(role: ProductRole) { return role === "investor" ? "/investor/messages" : "/messages"; }
 
 async function loadInboxData(supabase: Awaited<ReturnType<typeof requireProductUser>>["supabase"], userId: string) {
-  const { threads, suggestions, summaryError } = await loadInboxData(supabase, userId);
-  return { threads, suggestions, summaryError };
-}
-
-export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
-  const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
-  if (compliance.guardian_locked) {
-    return (
-      <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
-        <ProtectedFeatureGate
-          feature="messages"
-          nextHref={messagesPath(expectedRole)}
-          returnHref={expectedRole === "investor" ? "/investor" : "/home"}
-        />
-      </LegacySocialShell>
-    );
-  }
-
-  const query = await searchParams;
-
   const [{ data: summaries, error: summaryError }, { data: suggestionRows }] = await Promise.all([
     supabase.rpc("get_message_threads"),
     supabase
@@ -75,6 +55,26 @@ export async function MessagesServerPage({ expectedRole, searchParams }: { expec
     username: item.username as string,
     displayName: item.display_name as string,
   }));
+  return { threads, suggestions, summaryError };
+}
+
+export async function MessagesServerPage({ expectedRole, searchParams }: { expectedRole: ProductRole; searchParams: Search }) {
+  const { supabase, userId, appUser, compliance } = await requireProductUser(expectedRole);
+  if (compliance.guardian_locked) {
+    return (
+      <LegacySocialShell user={appUser} role={expectedRole} pathname={messagesPath(expectedRole)}>
+        <ProtectedFeatureGate
+          feature="messages"
+          nextHref={messagesPath(expectedRole)}
+          returnHref={expectedRole === "investor" ? "/investor" : "/home"}
+        />
+      </LegacySocialShell>
+    );
+  }
+
+  const query = await searchParams;
+
+  const { threads, suggestions, summaryError } = await loadInboxData(supabase, userId);
   const requestedTarget = first(query.to);
   let initialUsername = suggestions.find((item) => item.id === requestedTarget)?.username ?? "";
   if (!initialUsername && requestedTarget) {
