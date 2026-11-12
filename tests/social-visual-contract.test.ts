@@ -17,7 +17,7 @@ describe("manual-led social UI / UX and existing functional contracts", () => {
     expect(feed).toContain("Assuntos em alta");
     expect(feed).toContain("Sugestões de pessoas");
     expect(feed).toContain("Próximos eventos");
-    expect(feed).toContain("items.map((item)");
+    expect(feed).toContain("displayItems.map((item)");
     expect(feed).not.toContain("142 curtidas");
     expect(feed).not.toContain("1.324 publicações");
   });
