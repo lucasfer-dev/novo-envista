@@ -195,10 +195,10 @@ export default async function PublicLandingV3Server() {
             </div>
             <div className={styles.audienceGrid}>
               {audiences.map(({ Icon, title, text, href }) => {
-                 const content = <><Icon size={28} aria-hidden="true" /><h3>{title}</h3><p>{text}</p><span className={styles.audienceArrow}><ArrowRight size={17} aria-hidden="true" /></span></>;
+                 const content = <><Icon size={28} aria-hidden="true" /><h3>{title}</h3><p>{text}</p>{href && <span className={styles.audienceArrow}><ArrowRight size={17} aria-hidden="true" /></span>}</>;
                  return href
                    ? <Link className={styles.audienceCard} key={title} href={href}>{content}</Link>
-                   : <a className={styles.audienceCard} key={title}>{content}</a>;
+                   : <article className={styles.audienceCard} key={title}>{content}</article>;
                })}
             </div>
           </div>
@@ -220,8 +220,7 @@ export default async function PublicLandingV3Server() {
         <div className={styles.container}>
           <div className={styles.footerColumns}>
             <div className={styles.footerIntro}><Brand footer /><p>Ecossistema de inovação para ideias que ganham vida.</p></div>
-            <div><h3>Produto</h3><nav aria-label="Produto"><a href="#como-funciona">Como funciona</a><a>Explorar projetos</a><a href="#ecossistema">Aprender</a></nav></div>
-            <div><h3>Para escolas</h3><nav aria-label="Escolas"><a>Soluções educacionais</a><a>Conhecer mais</a></nav></div>
+            <div><h3>Produto</h3><nav aria-label="Produto"><a href="#como-funciona">Como funciona</a><Link href="/projects">Explorar projetos</Link><a href="#ecossistema">Aprender</a></nav></div>
             <div><h3>Institucional</h3><nav aria-label="Institucional"><Link href="/about">Sobre o Envista</Link><Link href="/privacy">Privacidade</Link><Link href="/terms">Termos de uso</Link></nav></div>
           </div>
           <div className={styles.footerBottom}>© {new Date().getFullYear()} Envista. Projetos que continuam.</div>

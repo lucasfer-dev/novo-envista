@@ -58,6 +58,7 @@ describe("product architecture boundaries", () => {
     expect(router).not.toContain('import EnvistaApp from "@/components/EnvistaApp"');
     expect(existsSync("app/about/page.tsx")).toBe(true);
     expect(existsSync("app/schools/page.tsx")).toBe(true);
+    expect(schools).toContain('redirect("/about#para-quem")');
     expect(schools).not.toContain("formulário do MVP é apenas demonstrativo");
     expect(schools).not.toContain("Interesse registrado no MVP");
   });

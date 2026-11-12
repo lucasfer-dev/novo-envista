@@ -5,7 +5,8 @@ const locations = readFileSync("lib/brazil-locations.ts", "utf8");
 const locationApi = readFileSync("app/api/locations/cities/route.ts", "utf8");
 const onboarding = readFileSync("app/onboarding/page.tsx", "utf8");
 const profile = readFileSync("app/account/profile/page.tsx", "utf8");
-const landing = readFileSync("components/public/PublicLandingServer.tsx", "utf8");
+const landing = readFileSync("components/public/PublicLandingV3Server.tsx", "utf8");
+const schools = readFileSync("app/schools/page.tsx", "utf8");
 const about = readFileSync("app/about/page.tsx", "utf8");
 const socialServer = readFileSync("components/social/LegacySocialServerPage.tsx", "utf8");
 const socialFeed = readFileSync("components/social/LegacySocialFeed.tsx", "utf8");
@@ -31,10 +32,12 @@ describe("product checklist round 2", () => {
     expect(profile).toContain("BrazilLocationFields");
   });
 
-  it("uses Schools as the institutional destination", () => {
-    expect(about).toContain('redirect("/schools")');
-    expect(landing).toContain('href="/schools"');
-    expect(landing).not.toContain('href="/about"');
+  it("keeps About accessible and legacy school URLs pointing to actual information", () => {
+    expect(about).toContain('title: "Sobre o Envista');
+    expect(about).toContain('id="para-quem"');
+    expect(schools).toContain('redirect("/about#para-quem")');
+    expect(landing).toContain('href="/about"');
+    expect(landing).not.toContain('<a>Soluções educacionais</a>');
   });
 
   it("renders comment replies and links comment authors to profiles", () => {
