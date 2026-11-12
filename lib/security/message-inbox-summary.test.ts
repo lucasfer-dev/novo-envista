@@ -21,7 +21,7 @@ describe("message inbox summaries", () => {
   });
 
   it("shows unread counts in the inbox", () => {
-    const view = read("components/real/MessagesViews.tsx");
+    const view = read("components/real/MessagesWorkspace.tsx");
     expect(view).toContain("unreadCount");
     expect(view).toContain("unreadBadge");
   });
