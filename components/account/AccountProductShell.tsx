@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
+import SettingsWorkspace, { settingsStyles } from "@/components/account/SettingsWorkspace";
 import { parseProductRole } from "@/lib/auth/validation";
 import type { User } from "@/types";
 
@@ -20,12 +21,7 @@ type Props = {
 };
 
 export default function AccountProductShell({
-  userId,
-  profile,
-  pathname,
-  title,
-  description,
-  children,
+  userId, profile, pathname, title, description, children,
 }: Props) {
   const role = parseProductRole(profile.role);
   const displayName = profile.display_name || profile.username || "Usuário Envista";
@@ -36,17 +32,15 @@ export default function AccountProductShell({
     role,
     avatar: profile.avatar_path || undefined,
   };
+  const active = pathname.includes("/security") ? "security" :
+    pathname.includes("/privacy") ? "privacy" :
+    pathname.includes("/feedback") ? "support" : "profile";
 
   return (
     <LegacySocialShell user={shellUser} role={role} pathname={pathname}>
-      <div className="page-head account-page-head">
-        <div>
-          <span className="account-page-kicker">CONTA</span>
-          <h1>{title}</h1>
-          <p>{description}</p>
-        </div>
-      </div>
-      <section className="panel account-page-panel">{children}</section>
+      <SettingsWorkspace active={active} title={title} description={description}>
+        <div className={settingsStyles.legacyContent}>{children}</div>
+      </SettingsWorkspace>
     </LegacySocialShell>
   );
 }

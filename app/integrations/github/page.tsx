@@ -1,4 +1,5 @@
 import LegacySocialShell from "@/components/social/LegacySocialShell";
+import SettingsWorkspace from "@/components/account/SettingsWorkspace";
 import GitHubIntegrationClient from "@/components/github/GitHubIntegrationClient";
 import { requireProductUser } from "@/lib/auth/require-product-user";
 import { getGitHubAppConfig } from "@/lib/github/app";
@@ -38,14 +39,16 @@ export default async function GitHubIntegrationPage({
 
   return (
     <LegacySocialShell user={appUser} role={role} pathname="/integrations/github">
-      <GitHubIntegrationClient
-        configured={Boolean(getGitHubAppConfig())}
-        connection={connectionResult.data ?? null}
-        repositories={repositoriesResult.data ?? []}
-        events={eventsResult.data ?? []}
-        initialStatus={status || null}
-        initialError={error || null}
-      />
+      <SettingsWorkspace active="integrations" title="Integrações" description="Conecte suas ferramentas e acompanhe a atividade dos repositórios vinculados.">
+        <GitHubIntegrationClient
+          configured={Boolean(getGitHubAppConfig())}
+          connection={connectionResult.data ?? null}
+          repositories={repositoriesResult.data ?? []}
+          events={eventsResult.data ?? []}
+          initialStatus={status || null}
+          initialError={error || null}
+        />
+      </SettingsWorkspace>
     </LegacySocialShell>
   );
 }
