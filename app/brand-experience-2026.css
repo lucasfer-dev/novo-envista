@@ -215,6 +215,18 @@
     calc((100% - var(--ev-page-max))/2 + var(--ev-page-gutter))
   ) !important;
 }
+/* Dashboard canvases are fluid, so their topbar does not use the article's
+   centered max-width alignment on wide monitors. */
+.app-shell[data-envista-product-shell]:is(
+  [data-envista-home-page="true"],
+  [data-envista-social-reference="true"],
+  [data-envista-clean-explore="true"]
+) .main > .topbar {
+  padding-inline: var(--ev-page-gutter) !important;
+}
+.app-shell[data-envista-messages-layout="true"] .main > .topbar {
+  padding-inline: 12px !important;
+}
 .app-shell[data-envista-product-shell]:not([data-envista-messages-layout="true"]) .main > .page-wrap {
   box-sizing: border-box !important;
   width: 100% !important;
