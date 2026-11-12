@@ -16,6 +16,7 @@ import {
   UserRound,
 } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
+import SettingsWorkspace from "@/components/account/SettingsWorkspace";
 import AvatarUploader from "@/components/storage/AvatarUploader";
 import { profileUpdateAction } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -106,7 +107,10 @@ export default async function AccountProfilePage({ searchParams }: { searchParam
 
   return (
     <LegacySocialShell user={shellUser} role={productRole} pathname="/account/profile">
-      <AccountProfileView profile={profile} userId={userId} restrictedMinor={restrictedMinor} saved={saved} error={error} home={home} />
+      <SettingsWorkspace active="profile" title="Edição avançada do perfil"
+        description="Complete sua apresentação, instituição, interesses e preferências de privacidade.">
+        <AccountProfileView profile={profile} userId={userId} restrictedMinor={restrictedMinor} saved={saved} error={error} home={home} />
+      </SettingsWorkspace>
     </LegacySocialShell>
   );
 }
@@ -135,12 +139,7 @@ function AccountProfileView({profile,userId,restrictedMinor,saved,error,home}:{p
 
   return (
       <div className={styles.page}>
-        <header className={`page-head ${styles.hero}`}>
-          <div>
-            <h1>Meu perfil</h1>
-            <p>Atualize suas informações e escolha como você aparece para a comunidade Envista.</p>
-          </div>
-        </header>
+
 
         {saved ? <div className={styles.notice} role="status">Perfil atualizado com sucesso.</div> : null}
         {error ? <div className={styles.error} role="alert">Não foi possível salvar: {error}</div> : null}

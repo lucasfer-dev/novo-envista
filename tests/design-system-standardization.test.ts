@@ -12,8 +12,8 @@ const publicSurfaces = [
   "app/p/[slug]/page.tsx",
 ].map((path) => readFileSync(path, "utf8"));
 
+const settingsPage = readFileSync("app/account/settings/page.tsx", "utf8");
 const accountPages = [
-  "app/account/settings/page.tsx",
   "app/account/security/page.tsx",
   "app/account/professional/page.tsx",
   "app/account/privacy/page.tsx",
@@ -47,7 +47,9 @@ describe("Envista visual identity standardization", () => {
 
   it("keeps account management inside the authenticated product experience", () => {
     expect(accountShell).toContain("LegacySocialShell");
-    expect(accountShell).toContain("account-page-panel");
+    expect(accountShell).toContain("<SettingsWorkspace");
+    expect(settingsPage).toContain("<SettingsWorkspace");
+    expect(settingsPage).toContain("<LegacySocialShell");
     for (const page of accountPages) {
       expect(page).toContain("AccountProductShell");
       expect(page).not.toContain("<AuthShell");
