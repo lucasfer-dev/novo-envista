@@ -7,9 +7,9 @@ const productShell = readFileSync("components/social/LegacySocialShell.tsx", "ut
 const accountShell = readFileSync("components/account/AccountProductShell.tsx", "utf8");
 const publicSurfaces = [
   "components/public/PublicLandingServer.tsx",
+  "components/public/PublicLandingV3Server.tsx",
   "app/projects/page.tsx",
   "app/p/[slug]/page.tsx",
-  "app/schools/page.tsx",
 ].map((path) => readFileSync(path, "utf8"));
 
 const accountPages = [

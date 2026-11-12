@@ -16,7 +16,7 @@ const plans = [
     price: "R$ 0",
     period: "/mês",
     Icon: Sparkles,
-    benefits: ["Criar projetos", "Participar de competições", "Acessar conteúdos"],
+    benefits: ["Criar projetos", "Explorar competições e desafios", "Acessar conteúdos"],
     available: true,
     featured: false,
   },
