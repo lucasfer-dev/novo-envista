@@ -10,11 +10,12 @@ import {
   TrendingUp,
   CalendarDays,
   ChevronDown,
-  Clock3,
   Compass,
   Flame,
   Globe2,
   Lightbulb,
+  Layers,
+  SlidersHorizontal,
   Settings2,
   FolderKanban,
   Heart,
@@ -200,6 +201,8 @@ export default function LegacySocialFeed({
   const [composerBody, setComposerBody] = useState("");
   const [composerRecovered, setComposerRecovered] = useState(false);
   const [composerSettingsOpen, setComposerSettingsOpen] = useState(false);
+  const [projectOnly, setProjectOnly] = useState(false);
+  const [postIntent, setPostIntent] = useState<"idea" | "update" | "team" | "feedback" | null>(null);
   const composerDraftKey = "envista:social-draft:v2:" + userId;
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [replyingTo, setReplyingTo] = useState<Record<string, string | null>>({});
@@ -261,12 +264,23 @@ export default function LegacySocialFeed({
     }).length,
   })).filter(topic => topic.count > 0).sort((a, b) => b.count - a.count).slice(0, 4);
 
+  const displayItems = projectOnly
+    ? items.filter(item => item.kind === "project-update" || Boolean(item.kind === "post" && item.project))
+    : items;
+
   const visibleSuggestions = suggestions.filter(
     (suggestion) => !normalized || normalize(`${suggestion.label} ${suggestion.subtitle}`).includes(normalized),
   );
 
   const changeMode = (mode: FeedMode) => {
+    setProjectOnly(false);
     router.push(feedHref(path, mode, query, 1), { scroll: false });
+  };
+
+  const chooseIntent = (intent: "idea" | "update" | "team" | "feedback", prefix: string) => {
+    setPostIntent(intent);
+    if (!composerBody.trim()) changeComposerBody(prefix);
+    document.getElementById("social-post-body")?.focus();
   };
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -306,7 +320,7 @@ export default function LegacySocialFeed({
         <div className={styles.feedIntro}>
           <span className={styles.feedEyebrow}>Comunidade Envista</span>
           <h1>Social</h1>
-          <p>Compartilhe ideias, acompanhe projetos e converse com a comunidade.</p>
+          <p>Descubra ideias, compartilhe projetos, encontre pessoas e evolua junto.</p>
         </div>
       </header>
 
@@ -314,19 +328,28 @@ export default function LegacySocialFeed({
             <nav className={styles.feedTabs} aria-label="Filtrar publicações">
               <button
                 type="button"
-                aria-pressed={feedMode === "for-you"}
-                className={feedMode === "for-you" ? styles.activeTab : ""}
+                aria-pressed={!projectOnly && feedMode === "for-you"}
+                className={!projectOnly && feedMode === "for-you" ? styles.activeTab : ""}
                 onClick={() => changeMode("for-you")}
               >
-                Descobrir
+                Para você
               </button>
               <button
                 type="button"
-                aria-pressed={feedMode === "following"}
-                className={feedMode === "following" ? styles.activeTab : ""}
+                aria-pressed={!projectOnly && feedMode === "following"}
+                className={!projectOnly && feedMode === "following" ? styles.activeTab : ""}
                 onClick={() => changeMode("following")}
               >
                 Seguindo
+              </button>
+              <button
+                type="button"
+                aria-pressed={projectOnly}
+                className={projectOnly ? styles.activeTab : ""}
+                onClick={() => setProjectOnly(true)}
+                title="Mostrar atividades de projetos nesta página do feed"
+              >
+                Projetos
               </button>
             </nav>
 
@@ -349,7 +372,15 @@ export default function LegacySocialFeed({
               )}
             </form>
               </details>
-            <span className={styles.sortLabel}><Clock3 size={14} aria-hidden="true" /> Recentes</span>
+            <details className={styles.feedFiltersToggle}>
+                <summary title="Filtros da comunidade" aria-label="Filtros da comunidade"><SlidersHorizontal size={17} aria-hidden="true" /></summary>
+                <div className={styles.feedFilterPanel}>
+                  <strong>Ver publicações</strong>
+                  <button type="button" onClick={() => setProjectOnly(false)} aria-pressed={!projectOnly}>Todas as atividades</button>
+                  <button type="button" onClick={() => setProjectOnly(true)} aria-pressed={projectOnly}>Atividades de projetos</button>
+                  <small>Os filtros se aplicam aos itens carregados nesta página.</small>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -367,7 +398,7 @@ export default function LegacySocialFeed({
                   value={composerBody}
                   onChange={(event) => changeComposerBody(event.target.value)}
                   aria-label="Conteúdo da publicação"
-                  placeholder="O que você quer compartilhar com a comunidade?"
+                  placeholder="O que você está construindo?"
                 />
               </div>
 
@@ -411,18 +442,24 @@ export default function LegacySocialFeed({
               </div>
               </details>
               <div className={styles.composerFooter}>
-                <div className={styles.composerShortcuts}>
-                  <button type="button" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(value => !value)}>
-                    <Settings2 size={17} aria-hidden="true" /> Opções
+                <div className={styles.composerShortcuts} role="group" aria-label="Começar uma publicação">
+                  <button type="button" aria-pressed={postIntent === "idea"} onClick={() => chooseIntent("idea", "💡 Ideia: ")}>
+                    <Lightbulb size={17} aria-hidden="true" /> Ideia
                   </button>
-                  {projects.length > 0 && <button type="button" onClick={() => setComposerSettingsOpen(true)}>
-                    <FolderKanban size={16} aria-hidden="true" /> Projeto
-                  </button>}
-                  {teams.length > 0 && <button type="button" onClick={() => setComposerSettingsOpen(true)}>
-                    <Users size={16} aria-hidden="true" /> Equipe
-                  </button>}
+                  <button type="button" aria-pressed={postIntent === "update"} onClick={() => chooseIntent("update", "📌 Atualização: ")}>
+                    <Layers size={17} aria-hidden="true" /> Atualização
+                  </button>
+                  <button type="button" aria-pressed={postIntent === "team"} onClick={() => chooseIntent("team", "🤝 Procurando equipe: ")}>
+                    <Users size={17} aria-hidden="true" /> Buscar equipe
+                  </button>
+                  <button type="button" aria-pressed={postIntent === "feedback"} onClick={() => chooseIntent("feedback", "💬 Preciso de feedback: ")}>
+                    <MessageCircle size={17} aria-hidden="true" /> Pedir feedback
+                  </button>
                 </div>
                 <div className={styles.composerActions}>
+                  <button className={styles.composerSettingsButton} type="button" aria-label="Opções de publicação" title="Vincular projeto, equipe ou GitHub" aria-expanded={composerSettingsOpen} onClick={() => setComposerSettingsOpen(value => !value)}>
+                    <Settings2 size={18} aria-hidden="true" />
+                  </button>
                   <label className={styles.visibilityControl}>
                     <Globe2 size={16} aria-hidden="true" />
                     <span className={styles.visuallyHidden}>Quem pode ver a publicação</span>
@@ -438,7 +475,7 @@ export default function LegacySocialFeed({
           </div>
 
           <div className={styles.timeline}>
-            {items.map((item) => {
+            {displayItems.map((item) => {
               if (item.kind === "project-update") {
                 const projectTitle = item.title.trim().toLocaleLowerCase("pt-BR");
                 const projectImage = projectTitle === "elovia" ? "/brand/social-elovia-reference.webp"
@@ -489,7 +526,7 @@ export default function LegacySocialFeed({
 
               const commentsOpen = Boolean(openComments[item.id]);
               return (
-                <article className={styles.timelinePost} key={item.id}>
+                <article className={`${styles.timelinePost}${item.project ? ` ${styles.postWithProject}` : ""}`} key={item.id}>
                   <div className={styles.identityRow}>
                     <Link className={styles.timelineAvatar} href={item.authorHref}>
                       {item.authorAvatarUrl ? <img src={item.authorAvatarUrl} alt="" /> : initials(item.authorLabel)}
@@ -620,22 +657,26 @@ export default function LegacySocialFeed({
               );
             })}
 
-            {!items.length && (
+            {!displayItems.length && (
               <div className={styles.emptyFeed}>
                 <div className={styles.emptyIllustration} aria-hidden="true">
                   <div className={styles.emptyOrbit}><Activity size={30} /></div>
                 </div>
                 <span className={styles.emptyEyebrow}>O próximo movimento começa aqui</span>
-                <h3>{initialQuery ? "Nenhum resultado encontrado" : feedMode === "following" ? "Sua rede começa com uma conexão" : "Sua comunidade está pronta para conversar"}</h3>
+                <h3>{projectOnly ? "Nenhuma atividade de projeto nesta página" : initialQuery ? "Nenhum resultado encontrado" : feedMode === "following" ? "Sua rede começa com uma conexão" : "Sua comunidade está pronta para conversar"}</h3>
                 <p>
-                  {initialQuery
+                  {projectOnly
+                    ? "Ainda não há projetos vinculados às atividades carregadas. Explore projetos públicos ou volte a ver todas as publicações."
+                    : initialQuery
                     ? "Não encontramos atividades com esse termo. Experimente uma busca diferente."
                     : feedMode === "following"
                       ? "Siga pessoas, equipes e projetos para reunir as novidades que importam para você."
                       : "Ainda não há publicações por aqui. Compartilhe uma ideia, uma conquista ou uma pergunta para abrir a conversa."}
                 </p>
                 <div className={styles.emptyActions}>
-                  {initialQuery ? (
+                  {projectOnly ? (
+                    <button className={styles.emptyFeedPrimary} type="button" onClick={() => setProjectOnly(false)}>Ver todas as publicações <ArrowRight size={16} aria-hidden="true" /></button>
+                  ) : initialQuery ? (
                     <Link className={styles.emptyFeedAction} href={feedHref(path, feedMode, "", 1)}>Limpar busca <ArrowRight size={16} aria-hidden="true" /></Link>
                   ) : feedMode === "following" ? (
                     <button className={styles.emptyFeedPrimary} type="button" onClick={() => changeMode("for-you")}>Descobrir novidades <ArrowRight size={16} aria-hidden="true" /></button>
@@ -644,7 +685,7 @@ export default function LegacySocialFeed({
                   )}
                   {!initialQuery && <Link className={styles.emptyFeedAction} href="/explore">Explorar comunidade <ArrowRight size={16} aria-hidden="true" /></Link>}
                 </div>
-                {!initialQuery && feedMode === "for-you" && (
+                {!projectOnly && !initialQuery && feedMode === "for-you" && (
                   <div className={styles.emptyIdeas}>
                     <span><Lightbulb size={17} aria-hidden="true" /> Conte no que está trabalhando</span>
                     <span><Users size={17} aria-hidden="true" /> Encontre colaboradores</span>
@@ -688,22 +729,6 @@ export default function LegacySocialFeed({
               })}
             </div> : <div className={styles.railEmpty}><CalendarDays size={19} aria-hidden="true" /><p>Nenhum evento próximo no calendário.</p></div>}
           </section>
-          <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
-            <div className={styles.railTitle}>
-              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
-              <Link href="/explore">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
-            </div>
-            {topicStats.length ? <>
-              <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
-              <div className={styles.topicList}>
-                {topicStats.map(topic => <Link key={topic.label} href={"/explore?q=" + encodeURIComponent(topic.query)}>
-                  <span><strong>#{topic.label.replace(/\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
-                  <TrendingUp size={17} aria-hidden="true" />
-                </Link>)}
-              </div>
-            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>Os temas aparecerão conforme a comunidade publicar novas atividades.</p></div>}
-          </section>
-
           <section className={[styles.sideCard, styles.peoplePanel].join(" ")} aria-labelledby="social-suggestions-title">
             <div className={styles.railTitle}>
               <h2 id="social-suggestions-title"><Users size={20} aria-hidden="true" /> Sugestões de pessoas</h2>
@@ -727,6 +752,22 @@ export default function LegacySocialFeed({
               ))}
               {!visibleSuggestions.some(suggestion => suggestion.targetType === "profile") && <p className={styles.searchResultLabel}>Sem novas pessoas para sugerir agora.</p>}
             </div>
+          </section>
+
+          <section className={[styles.sideCard, styles.topicPanel].join(" ")} aria-labelledby="social-topics-title">
+            <div className={styles.railTitle}>
+              <h2 id="social-topics-title"><Flame size={20} aria-hidden="true" /> Assuntos em alta</h2>
+              <Link href="/explore">Ver mais <ArrowRight size={14} aria-hidden="true" /></Link>
+            </div>
+            {topicStats.length ? <>
+              <p className={styles.topicContext}>Temas encontrados nas atividades desta página</p>
+              <div className={styles.topicList}>
+                {topicStats.map(topic => <Link key={topic.label} href={"/explore?q=" + encodeURIComponent(topic.query)}>
+                  <span><strong>#{topic.label.replace(/\s+/g, "")}</strong><small>{topic.count} {topic.count === 1 ? "atividade relacionada" : "atividades relacionadas"}</small></span>
+                  <TrendingUp size={17} aria-hidden="true" />
+                </Link>)}
+              </div>
+            </> : <div className={styles.railEmpty}><Compass size={20} aria-hidden="true" /><p>Os temas aparecerão conforme a comunidade publicar novas atividades.</p></div>}
           </section>
 
         </aside>
