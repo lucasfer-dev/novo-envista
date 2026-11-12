@@ -54,6 +54,7 @@ for (const viewport of viewports) {
           paddingLeft: parseFloat(pad.paddingLeft),
           paddingRight: parseFloat(pad.paddingRight),
           headerPaddingLeft: parseFloat(headerPad.paddingLeft),
+          topbarVisible: headerPad.display !== "none",
           scrollWidth: document.documentElement.scrollWidth,
           viewport: document.documentElement.clientWidth,
         };
@@ -61,7 +62,13 @@ for (const viewport of viewports) {
       expect(geometry.gutter, JSON.stringify(geometry)).toBe(viewport.gutter);
       expect(geometry.paddingLeft, JSON.stringify(geometry)).toBe(viewport.gutter);
       expect(geometry.paddingRight, JSON.stringify(geometry)).toBe(viewport.gutter);
-      expect(Math.abs(geometry.topbarLeft - geometry.contentLeft), JSON.stringify(geometry)).toBeLessThanOrEqual(1);
+      // Explore intentionally hides the global topbar at desktop widths.
+      if (type === "explore" && viewport.width > 980) {
+        expect(geometry.topbarVisible, JSON.stringify(geometry)).toBe(false);
+      } else {
+        expect(geometry.topbarVisible, JSON.stringify(geometry)).toBe(true);
+        expect(Math.abs(geometry.topbarLeft - geometry.contentLeft), JSON.stringify(geometry)).toBeLessThanOrEqual(1);
+      }
       expect(geometry.scrollWidth - geometry.viewport, JSON.stringify(geometry)).toBeLessThanOrEqual(1);
       expect(geometry.wrapperWidth, JSON.stringify(geometry)).toBeLessThanOrEqual(geometry.mainWidth + 1);
       if (type === "standard") {
