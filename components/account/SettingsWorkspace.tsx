@@ -52,14 +52,14 @@ export default function SettingsWorkspace({
         </nav>
       </aside>
 
-      <main className={styles.content} id="settings-main">
+      <section className={styles.content} id="settings-main" aria-label="Painel de configurações">
         <header className={styles.contentHeader}>
           <span className={styles.eyebrow}>{active === "profile" ? "PERFIL" : active === "notifications" ? "PREFERÊNCIAS" : "CONFIGURAÇÕES"}</span>
           <h1>{title}</h1>
           <p>{description}</p>
         </header>
         <div className={styles.contentBody}>{children}</div>
-      </main>
+      </section>
     </div>
   );
 }
