@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Bell, CalendarDays, Check, CircleUserRound, FolderKanban,
-  Github, Globe2, KeyRound, LifeBuoy, Link2, LockKeyhole, MapPin,
+  GitBranch, Globe2, KeyRound, LifeBuoy, Link2, LockKeyhole, MapPin,
   MessageCircle, ShieldCheck, Sparkles, UserRound, Users,
 } from "lucide-react";
 import LegacySocialShell from "@/components/social/LegacySocialShell";
@@ -70,7 +70,7 @@ function AccountOverview() {
     { href: "/account/professional", title: "Perfil profissional", body: "Headline, competências e links profissionais.", Icon: Sparkles },
     { href: "/account/security", title: "Login e segurança", body: "E-mail, senha e sessões conectadas.", Icon: KeyRound },
     { href: "/account/privacy", title: "Privacidade e dados", body: "Exportação, solicitações e controles.", Icon: ShieldCheck },
-    { href: "/integrations/github", title: "Integrações", body: "Conecte seu GitHub e gerencie repositórios.", Icon: Github },
+    { href: "/integrations/github", title: "Integrações", body: "Conecte seu GitHub e gerencie repositórios.", Icon: GitBranch },
     { href: "/account/feedback", title: "Suporte", body: "Envie sugestões e acompanhe solicitações.", Icon: LifeBuoy },
   ] as const;
   return <div className={s.overviewGrid}>{items.map(({ href, title, body, Icon }) =>
@@ -108,7 +108,7 @@ export default async function AccountSettingsPage({
   const error = typeof params.error === "string" ? params.error : "";
   const restricted = Boolean(compliance?.guardian_required && !compliance?.guardian_consent_verified_at);
   const role = parseProductRole(profile.role);
-  const displayName = profile.display_name || profile.username || "Participante Envista";
+  const displayName: string = String(profile.display_name || profile.username || "Participante Envista");
   const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map(value => value[0]?.toUpperCase() || "").join("") || "E";
   const raw = prefsResult.data;
   const prefs: NotificationPrefs = Object.fromEntries(
@@ -237,7 +237,7 @@ export default async function AccountSettingsPage({
               </div>
               <form action={saveSettingsLinksAction}>
                 <div className={s.linkList}>
-                  <label className={s.linkField}><span><Github size={16} aria-hidden="true" /> GitHub</span><input type="url" name="github_url" defaultValue={profile.github_url || ""} maxLength={500} placeholder="https://github.com/..." /></label>
+                  <label className={s.linkField}><span><GitBranch size={16} aria-hidden="true" /> GitHub</span><input type="url" name="github_url" defaultValue={profile.github_url || ""} maxLength={500} placeholder="https://github.com/..." /></label>
                   <label className={s.linkField}><span><Users size={16} aria-hidden="true" /> LinkedIn</span><input type="url" name="linkedin_url" defaultValue={profile.linkedin_url || ""} maxLength={500} placeholder="https://linkedin.com/in/..." /></label>
                   <label className={s.linkField}><span><Globe2 size={16} aria-hidden="true" /> Site pessoal</span><input type="url" name="website_url" defaultValue={profile.website_url || ""} maxLength={500} placeholder="https://..." /></label>
                 </div>
