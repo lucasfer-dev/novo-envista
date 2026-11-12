@@ -5,6 +5,7 @@ const actions = readFileSync("lib/messages/actions.ts", "utf8");
 const serverPages = readFileSync("components/real/MessagesServerPages.tsx", "utf8");
 const realtime = readFileSync("components/real/MessagesRealtime.tsx", "utf8");
 const views = readFileSync("components/real/MessagesViews.tsx", "utf8");
+const workspace = readFileSync("components/real/MessagesWorkspace.tsx", "utf8");
 const css = readFileSync("components/real/Messages.module.css", "utf8");
 const migration = readFileSync("supabase/migrations/20260915192918_sync_message_read_notifications.sql", "utf8");
 
@@ -38,15 +39,17 @@ describe("messages UX and read state", () => {
   });
 
   it("renders a conversation-first inbox and a focused chat shell", () => {
-    expect(views).toContain("Caixa de entrada");
-    expect(views).toContain("Suas conversas");
-    expect(views).toContain("Nova conversa");
+    expect(workspace).toContain("Caixa de entrada");
+    expect(workspace).toContain("Suas conversas");
+    expect(workspace).toContain("Nova conversa");
+    expect(workspace).toContain("unreadBadge");
+    expect(workspace).toContain("newMessageButton");
     expect(views).toContain("conversationShell");
-    expect(views).toContain("unreadBadge");
-    expect(css).toContain(".inboxLayout");
+    expect(css).toContain(".workspace");
+    expect(css).toContain(".chatPanel");
     expect(css).toContain(".threadUnread");
     expect(css).toContain(".conversationShell");
-    expect(css).toContain("100dvh");
+    expect(css).toContain("height:100%");
   });
 
   it("sends on Enter while preserving Shift+Enter for a line break", () => {

@@ -191,7 +191,7 @@ export default function LegacySocialShell({
   };
 
   return (
-    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined} data-envista-x-sidebar={role === "participant" ? "true" : undefined} data-envista-clean-explore={role === "participant" && pathname === "/explore" ? "true" : undefined} data-sidebar-collapsed={role === "participant" && sidebarCollapsed ? "true" : undefined}>
+    <div className="app-shell" data-envista-product-shell data-envista-home-reference={homeReference ? "true" : undefined} data-envista-home-page={role === "participant" && pathname === "/home" ? "true" : undefined} data-envista-social-reference={socialReference ? "true" : undefined} data-envista-x-sidebar={role === "participant" ? "true" : undefined} data-envista-clean-explore={role === "participant" && pathname === "/explore" ? "true" : undefined} data-sidebar-collapsed={role === "participant" && sidebarCollapsed ? "true" : undefined} data-envista-messages-layout={normalizedPathname === "/messages" || normalizedPathname.startsWith("/messages/") || normalizedPathname === "/investor/messages" || normalizedPathname.startsWith("/investor/messages/") ? "true" : undefined}>
       <a className="a11y-skip-link" href="#main-content">
         Pular para o conteúdo
       </a>
