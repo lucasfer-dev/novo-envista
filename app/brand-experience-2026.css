@@ -741,3 +741,23 @@
     padding:8px !important;
   }
 }
+
+/* Social-specific full-width canvas — no unintended 1220px centered wrapper. */
+.app-shell[data-envista-social-reference="true"] .main > .page-wrap {
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:14px clamp(16px,1.45vw,24px) 76px !important;
+}
+@media (max-width:980px) {
+  .app-shell[data-envista-social-reference="true"] .main > .page-wrap {
+    padding:14px 18px 90px !important;
+  }
+}
+@media (max-width:640px) {
+  .app-shell[data-envista-social-reference="true"] .main > .page-wrap {
+    padding:12px 12px 90px !important;
+  }
+}

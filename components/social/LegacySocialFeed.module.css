@@ -3851,3 +3851,297 @@
 @media (prefers-reduced-motion: reduce) {
   .feedTabs button,.composerShortcuts button,.feedFilterPanel button,.newMessageButton{transition:none!important;}
 }
+
+/* Social visual fidelity: consolidate geometry above legacy high-specificity rules.
+   Keeps original authenticated sidebar and real feed data unchanged. */
+.socialPage .socialLayout {
+  width: 100% !important;
+  max-width: none !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(315px, 27%) !important;
+  gap: 20px !important;
+  align-items: start !important;
+}
+.socialPage .mainColumn,
+.socialPage .sideColumn {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+.socialPage .feedHeader {
+  min-height: 110px !important;
+  height: 110px !important;
+  margin: 0 0 13px !important;
+  padding: 16px 26px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(14,198,174,.31) !important;
+  background:
+    radial-gradient(ellipse at 85% -12%,rgba(3,237,177,.26),transparent 55%),
+    linear-gradient(110deg,#05232c,#063e40) !important;
+}
+.socialPage .feedHeader::before {
+  content: "" !important;
+  display: block !important;
+  top: -57% !important;
+  right: -7% !important;
+  width: 66% !important;
+  height: 240% !important;
+  background: url("/brand/manual-wave-teal.svg") right center / contain no-repeat !important;
+  opacity: .82 !important;
+  -webkit-mask-image:linear-gradient(90deg,transparent 7%,#000 64%) !important;
+  mask-image:linear-gradient(90deg,transparent 7%,#000 64%) !important;
+}
+.socialPage .feedHeader::after {
+  content: "" !important;
+  display: block !important;
+  bottom: -185% !important;
+  right: -3% !important;
+  width: 38% !important;
+  height: 265% !important;
+  background: url("/brand/envista-pattern-original.png") right center / 400px auto repeat !important;
+  opacity: .11 !important;
+}
+.socialPage .feedHeader .feedIntro {
+  max-width: 75% !important;
+  z-index: 1;
+}
+.socialPage .timelineToolbar {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) auto !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  height: 47px !important;
+  min-height: 47px !important;
+  padding: 3px 8px !important;
+  margin: 0 0 13px !important;
+  gap: 12px !important;
+  border-radius: 12px !important;
+}
+.socialPage .timelineToolbar .feedTabs {
+  display: grid !important;
+  grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows: 41px !important;
+  grid-auto-rows: 41px !important;
+  grid-auto-flow: column !important;
+  flex: initial !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  width: min(100%,530px) !important;
+  min-width: 0 !important;
+  max-width: 530px !important;
+  height: 41px !important;
+  min-height: 41px !important;
+  overflow: visible !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+}
+.socialPage .timelineToolbar .feedTabs > button {
+  display: grid !important;
+  position: relative !important;
+  place-items: center !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 41px !important;
+  min-height: 41px !important;
+  max-height: 41px !important;
+  margin: 0 !important;
+  padding: 7px 6px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #bfdbdf !important;
+  white-space: nowrap !important;
+  font-size: 12.5px !important;
+  line-height: 1.1 !important;
+}
+.socialPage .timelineToolbar .feedTabs > button.activeTab {
+  background: rgba(0,165,153,.10) !important;
+  color: #f9ffff !important;
+  font-weight: 800 !important;
+}
+.socialPage .timelineToolbar .feedTabs > button.activeTab::after {
+  content: "" !important;
+  display:block !important;
+  left: 10% !important;
+  right: 10% !important;
+  bottom: -4px !important;
+  height: 3px !important;
+  background: #12dcbf !important;
+}
+.socialPage .timelineToolbar .toolbarRight {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  width:auto !important;
+  gap:8px !important;
+  margin:0 !important;
+}
+.socialPage .composer {
+  min-height: 120px !important;
+  margin: 0 0 15px !important;
+  padding: 13px 17px 12px !important;
+}
+.socialPage .composer form {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+.socialPage .composerHead {
+  display: grid !important;
+  grid-template-columns: 44px minmax(0,1fr) !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 46px !important;
+}
+.socialPage .composerHead textarea {
+  display: block !important;
+  min-width:0 !important;
+  width:100% !important;
+  min-height:44px !important;
+  height:44px !important;
+  max-height:160px !important;
+  padding:11px 15px !important;
+  margin:0 !important;
+  border-radius:999px !important;
+  resize:vertical;
+  line-height:1.5 !important;
+}
+.socialPage .composerFooter {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:100% !important;
+  min-width:0 !important;
+  min-height:39px !important;
+  padding:0 0 0 56px !important;
+  margin:9px 0 0 !important;
+  gap:12px !important;
+  flex-wrap:nowrap !important;
+}
+.socialPage .composerFooter .composerShortcuts {
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:7px !important;
+  width:100% !important;
+  min-width:0 !important;
+  flex:initial !important;
+}
+.socialPage .composerShortcuts > button,
+.socialPage .composerShortcuts > button:first-child {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 1 auto !important;
+  min-width:0 !important;
+  height:35px !important;
+  min-height:35px !important;
+  padding:6px 10px !important;
+  margin:0 !important;
+  font-size:10.5px !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+}
+.socialPage .composerShortcuts button svg { flex:0 0 16px !important; }
+.socialPage .composerFooter .composerActions {
+  display:flex !important;
+  flex:0 0 auto !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  min-width:0 !important;
+  width:auto !important;
+  margin:0 !important;
+}
+.visuallyHidden {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
+.socialPage .composerFooter .visibilityControl {
+  width:auto !important;
+  max-width:150px !important;
+  min-width:105px !important;
+  min-height:36px !important;
+  height:36px !important;
+  padding:0 7px !important;
+  margin:0 !important;
+  gap:5px !important;
+}
+.socialPage .composerFooter .visibilityControl select {
+  min-width:0 !important;
+  width:100% !important;
+  max-width:116px !important;
+  padding-right:12px !important;
+}
+.socialPage .composerFooter .publishButton {
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:104px !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:7px 12px !important;
+}
+.socialPage .emptyFeed {
+  min-height:240px !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:24px !important;
+}
+.socialPage .sideColumn {
+  display:flex !important;
+  flex-direction:column !important;
+  gap:13px !important;
+}
+.socialPage .sideColumn > * { min-width:0 !important; }
+@media (min-width: 1450px) {
+  .socialPage .composerShortcuts > button {font-size:11px !important;padding-inline:12px !important;}
+}
+@media (max-width: 1380px) and (min-width: 1081px) {
+  .socialPage .socialLayout {
+    grid-template-columns:minmax(0,1fr) minmax(260px,27%) !important;
+    gap:15px !important;
+  }
+  .socialPage .composerFooter {
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+    padding-left:56px !important;
+  }
+  .socialPage .composerFooter .composerShortcuts { flex-wrap:wrap !important;}
+  .socialPage .composerFooter .composerActions { justify-content:flex-end !important; }
+}
+@media (max-width: 1080px) {
+  .socialPage .socialLayout {grid-template-columns:minmax(0,1fr) !important;}
+  .socialPage .composerFooter {grid-template-columns:1fr !important;padding-left:56px !important;}
+  .socialPage .composerFooter .composerShortcuts {flex-wrap:wrap !important;}
+  .socialPage .sideColumn {display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width: 760px) {
+  .socialPage .feedHeader .feedIntro {max-width:100% !important;}
+  .socialPage .feedHeader::after {opacity:.07!important;}
+  .socialPage .timelineToolbar {gap:4px !important;}
+  .socialPage .timelineToolbar .feedTabs {min-width:0!important;width:100%!important;}
+  .socialPage .timelineToolbar .feedTabs > button {font-size:11px!important;}
+  .socialPage .composerFooter {padding-left:0 !important;}
+  .socialPage .composerFooter .composerShortcuts {flex-wrap:wrap !important;}
+  .socialPage .sideColumn {grid-template-columns:minmax(0,1fr) !important;}
+}
+@media (max-width: 420px) {
+  .socialPage .timelineToolbar .feedTabs > button {font-size:10px!important;padding-inline:3px!important;}
+  .socialPage .toolbarRight {gap:4px!important;}
+  .socialPage .feedSearchToggle summary,.socialPage .feedFiltersToggle summary{width:31px!important;}
+  .socialPage .composerHead{grid-template-columns:36px minmax(0,1fr)!important;}
+  .socialPage .composerFooter .composerShortcuts > button{font-size:10px!important;}
+}
