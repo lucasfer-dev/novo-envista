@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  Bell, CalendarDays, Check, CircleUserRound, Database, FolderKanban,
+  Bell, CalendarDays, Check, CircleUserRound, FolderKanban,
   Github, Globe2, KeyRound, LifeBuoy, Link2, LockKeyhole, MapPin,
   MessageCircle, ShieldCheck, Sparkles, UserRound, Users,
 } from "lucide-react";
