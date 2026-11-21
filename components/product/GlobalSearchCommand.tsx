@@ -39,7 +39,10 @@ export default function GlobalSearchCommand({
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<SearchItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(0);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const dialogRef = useRef<HTMLElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const wasOpenRef = useRef(false);
@@ -91,6 +94,9 @@ export default function GlobalSearchCommand({
       setLoading(false);
       return;
     }
+    setLoading(true);
+    setFailed(false);
+    setItems([]);
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setLoading(true);
@@ -102,18 +108,27 @@ export default function GlobalSearchCommand({
         });
         if (!response.ok) throw new Error("search-failed");
         const payload = (await response.json()) as { items?: SearchItem[] };
-        setItems(payload.items ?? []);
+        if (!controller.signal.aborted) setItems(payload.items ?? []);
       } catch (error) {
-        if ((error as Error).name !== "AbortError") setItems([]);
+        if (!controller.signal.aborted) {
+          setItems([]);
+          setFailed(true);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }, 180);
     return () => {
       controller.abort();
       window.clearTimeout(timer);
     };
-  }, [open, query]);
+  }, [open, query, retry]);
+
+  useEffect(() => {
+    if (open && activeIndex >= 0) {
+      document.getElementById(`global-search-result-${activeIndex}`)?.scrollIntoView({ block: "nearest" });
+    }
+  }, [open, activeIndex]);
 
   const go = (href: string) => {
     setOpen(false);
@@ -144,6 +159,21 @@ export default function GlobalSearchCommand({
   const overlay = open ? (
     <div className={styles.backdrop} role="presentation" onMouseDown={() => setOpen(false)}>
       <section
+        ref={dialogRef}
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const controls = dialogRef.current?.querySelectorAll<HTMLElement>('input, button:not([disabled]):not([tabindex="-1"])');
+          if (!controls?.length) return;
+          const first = controls[0];
+          const last = controls[controls.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
@@ -157,9 +187,10 @@ export default function GlobalSearchCommand({
             ref={inputRef}
             className={styles.searchInput}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => { setQuery(event.target.value); setItems([]); setActiveIndex(-1); setLoading(true); setFailed(false); }}
             onKeyDown={onInputKeyDown}
             placeholder="Projetos, equipes, pessoas ou cursos..."
+            aria-label="Buscar projetos, equipes, pessoas ou cursos"
             autoComplete="off"
             role="combobox"
             aria-expanded="true"
@@ -169,8 +200,13 @@ export default function GlobalSearchCommand({
           />
           <button type="button" onClick={() => setOpen(false)} aria-label="Fechar busca"><X size={18} /></button>
         </div>
+        {failed ? <div className={styles.emptyState} role="alert">
+          <strong>Não foi possível carregar a busca.</strong>
+          <span>Verifique sua conexão e tente novamente.</span>
+          <button type="button" onClick={() => setRetry((value) => value + 1)}>Tentar novamente</button>
+        </div> : null}
         <div className={styles.results} id="global-search-results" role="listbox" aria-label="Resultados da busca">
-          {trimmedQuery.length < 2 && !loading && !items.length ? (
+          {trimmedQuery.length < 2 && !loading && !failed && !items.length ? (
             <div className={styles.emptyState}>
               <Search size={22} aria-hidden="true" />
               <strong>Encontre qualquer coisa no Envista</strong>
@@ -179,7 +215,7 @@ export default function GlobalSearchCommand({
           ) : null}
           {trimmedQuery.length < 2 && items.length ? <p className={styles.hint}>Perfis sugeridos para você</p> : null}
           {loading ? <p className={styles.hint} role="status" aria-live="polite">Buscando no Envista...</p> : null}
-          {!loading && trimmedQuery.length >= 2 && !items.length ? (
+          {!loading && !failed && trimmedQuery.length >= 2 && !items.length ? (
             <div className={styles.emptyState} role="status" aria-live="polite">
               <Search size={22} aria-hidden="true" />
               <strong>Nenhum resultado para “{trimmedQuery}”</strong>
@@ -194,6 +230,7 @@ export default function GlobalSearchCommand({
                 id={`global-search-result-${index}`}
                 key={`${item.type}:${item.id}`}
                 type="button"
+                tabIndex={-1}
                 role="option"
                 aria-selected={active}
                 className={`${styles.result} ${active ? styles.resultActive : ""}`}

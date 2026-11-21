@@ -515,8 +515,7 @@
   width: min(970px, 72%); min-width: 0; height: 40px; border-radius: 10px;
   background: #0a2530; border-color: #42616a;
 }
-.app-shell[data-envista-home-page="true"] .page-wrap {
-  width: 100%; max-width: none; margin: 0; padding: 5px 18px 32px 26px;
+.app-shell[data-envista-home-page="true"] .page-wrap { margin: 0; padding: 5px 18px 32px 26px;
 }
 .app-shell[data-envista-home-page="true"] .top-actions { display: flex; align-items: center; gap: 20px; }
 .app-shell[data-envista-home-page="true"] .dashboard-top-user {

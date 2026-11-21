@@ -21,11 +21,9 @@
   overscroll-behavior: contain;
 }
 .app-shell[data-envista-product-shell][data-envista-x-sidebar="true"] .sidebar::before {
-  display: block !important;
   content: "";
   position: absolute;
   inset: 0;
-  pointer-events: none;
   background: url("/brand/envista-pattern-original.png") center bottom / 365px repeat;
   opacity: .09 !important;
   -webkit-mask-image: linear-gradient(to bottom, transparent 9%, #000);

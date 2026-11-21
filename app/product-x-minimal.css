@@ -95,13 +95,11 @@
 .app-shell[data-envista-product-shell] .section-row { margin-bottom: 12px; }
 .app-shell[data-envista-product-shell] :is(.panel,.card,.project-card,.team-card) {
   background: var(--ev-surface) !important;
-  border-color: var(--ev-border) !important;
   border-radius: var(--ev-radius-surface) !important;
   box-shadow: none !important;
 }
 .app-shell[data-envista-product-shell] :is(a.panel,button.panel,a.project-card,button.project-card,a.team-card,button.team-card):hover {
   background: var(--ev-surface-hover) !important;
-  border-color: var(--ev-border-strong) !important;
   box-shadow: none !important;
   transform: none !important;
 }
