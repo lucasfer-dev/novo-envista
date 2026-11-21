@@ -1,0 +1,56 @@
+name: Validar otimizador Alethe
+
+on:
+  push:
+    branches:
+      - chore/ai-agents-orca-alethe-setup
+    paths:
+      - scripts/ai/**
+      - .github/workflows/validate-alethe.yml
+  pull_request:
+    paths:
+      - scripts/ai/**
+      - .github/workflows/validate-alethe.yml
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testes do otimizador
+        run: python -m unittest discover -v -s scripts/ai -p 'test_*.py'
+      - name: Validar com parser oficial Alethe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 https://github.com/Kc1t/alethe-orchestrate-skill.git /tmp/alethe
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          import sys
+          import tempfile
+
+          sys.path.insert(0, 'scripts/ai')
+          from optimize_alethe import optimize
+
+          official = Path('/tmp/alethe/skills/alethe')
+          spec = importlib.util.spec_from_file_location('alethe_official', official / 'scripts/orchestrate.py')
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          spec.loader.exec_module(module)
+
+          source = (official / 'playbooks.yaml').read_text(encoding='utf-8')
+          result = optimize(source)
+          assert result != source, 'Otimizador nao aplicou mudancas'
+          assert optimize(result) == result, 'Otimizador nao e idempotente'
+          with tempfile.TemporaryDirectory() as directory:
+              directory = Path(directory)
+              (directory / 'alethe-playbooks.yaml').write_text(result, encoding='utf-8')
+              doctor = module.playbook_doctor(directory / 'alethe-orchestrate.json')
+              assert doctor['valid'], doctor
+              print('PASS: parser oficial validou playbooks otimizados')
+          PY
