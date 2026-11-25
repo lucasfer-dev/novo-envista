@@ -1187,3 +1187,13 @@
   .journeySummary {margin-top:8px}
   .peopleEmpty a {margin-left:0}
 }
+
+/* Keep the branded showcase inside its own column at every viewport. */
+.heroShowcase { width: 43%; inset: 8px 12px 24px auto; }
+.heroLaptop { width: 100%; height: 100%; right: 0; bottom: 0; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0,0,0,.28)); }
+.heroPhone { right: 3%; bottom: 8%; max-height: 56%; transform: rotate(5deg); }
+.heroPhone img { width: 48%; height: auto; max-height: 65%; object-fit: contain; filter: none; }
+.heroOrbit { opacity: .25; }
+.heroContent { width: 57%; }
+@media (max-width: 760px) { .heroContent { width: 100%; } .heroShowcase { opacity: .12; width: 48%; } }
+@media (max-width: 520px) { .heroShowcase { display: none; } }
